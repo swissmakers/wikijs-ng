@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [2.6.0] - Unreleased
 
+### Removed
+
+- **Telemetry removed entirely.** The hardened image no longer phones home: the telemetry module, its kernel/setup hooks, the GraphQL mutations and query fields (`setTelemetry`, `resetTelemetryClientId`, `telemetry`, `telemetryClientId`), the admin utility page, the setup-wizard opt-in and the related config defaults are gone. (The version update check and the translation download still contact the upstream service — see the notes in the README if you want to run fully offline.)
+- **CAS authentication and SFTP storage modules dropped.** Both were built on packages abandoned since 2013/2016 and were the sole source of four findings (`underscore` 1.6.0 critical, `xml2js` 0.4.4, `node-uuid` 1.4.1, `ip-address` 5.9.4 — the last one had no fix available at all). Existing installations that used them will see the strategy/target disappear automatically.
+- Dead dependencies: `image-size`, `markdown-it-external-links`, `markdown-it-mathjax` (none were imported anywhere).
+
+### Fixed
+
+- **Release images are no longer flagged as a development build.** `package.json` now ships `dev: false`, and the Gitea release workflow enforces it — the red "DEVELOPMENT VERSION / NOT for production use" banner in the navigation bar and setup wizard is gone.
+- **Brute-force protection rebuilt** on `rate-limiter-flexible` (`server/helpers/brute-force.js`), replacing the unmaintained `express-brute` and its deep internal import. Same behaviour (5 free attempts, then a temporary lock, reset on successful login); database-backed on PostgreSQL/MySQL/MariaDB, in-process on SQLite/MS SQL Server.
+- **Git storage keeps working with simple-git 3.36**, which blocks `core.sshCommand` (and `GIT_SSH_COMMAND`) by default — SSH-authenticated repositories would otherwise fail to initialise. The module now enables exactly the required protection categories, and only when the corresponding option is actually configured.
+
+### Security — dependency updates
+
+Closes the findings of a Trivy scan of the published image (5 critical, ~45 high).
+
+- Vulnerable chains eliminated through parent upgrades: `sqlite3` 6.0.1 (drops `tar` 6.x with its nine advisories, plus `node-gyp` 8, `make-fetch-happen` 9, `cacache` 15, `@tootallnate/once`), `express` 4.22.2 + `body-parser` 1.20.6 (pulls fixed `path-to-regexp` and `qs`), `passport-microsoft` 2.1.0 (fixed `passport-oauth2`), `diff2html` 3.4.56 (drops the bundled `highlight.js` 10.x).
+- Direct upgrades: `simple-git` 3.36.0, `multer` 2.2.0, `nodemailer` 8.0.11, `@apollo/server` 5.5.1, `i18next-http-middleware` 3.9.8, `js-yaml` 4.3.2, `lodash` 4.18.1, `dompurify` 3.4.14, `nanoid` 3.3.18, `ws` 8.21.3, `tar-fs` 2.1.5, `uuid` 11.1.1, `diff` 4.0.4, `highlight.js` 11.12.0.
+- Markdown rendering stack modernised (closes the `linkify-it` advisories): `markdown-it` 14.3.1 with `markdown-it-abbr` 2, `-sub` 2, `-sup` 2, `-mark` 4, `-footnote` 4, `-attrs` 5.0.1, `-emoji` 3.1.0, `-multimd-table` 4.2.3. `cheerio` 1.2.0 replaces the release candidate and removes the vulnerable `css-what` 4.
+- Container images run `apk upgrade` during the build so base-image packages (OpenSSL et al.) always carry the current Alpine patches.
+
+### Known, accepted findings
+
+`validate.js`, `markdown-it-decorate` and `string-math` (via `markdown-it-pivot-table`) have no fixed release available; all three are last-published versions of dormant projects with limited attack surface (input validation and markdown post-processing on already sanitised content). They are re-evaluated with every release.
+
 ### Added
 
 - **Rebranding to "Wiki.js NG"** across all user-visible surfaces: boot banner, default site title, setup wizard, PWA manifest, footer link (now pointing to the fork repository), admin UI copy, mail footer/`x-mailer`, installer, config sample. Functional identifiers deliberately untouched: JWT issuer/audience (`urn:wiki.js` — changing it would invalidate all sessions and API keys), i18next keys (translations come from the upstream locale service), migration IDs, `package.json` name

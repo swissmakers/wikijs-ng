@@ -11,6 +11,22 @@ If you find such vulnerability, it's important to disclose it in a quick and sec
 | 2.6.x   | :white_check_mark: |
 | 1.x.x   | :x:                |
 
+## Known accepted findings
+
+Container images are scanned before release. The following findings have no fixed
+upstream release available and are accepted for now; they are re-evaluated with
+every release:
+
+| Package | Reason |
+| --- | --- |
+| `validate.js` | Last published version of a dormant project; used only for form input validation, no parsing of untrusted network data. |
+| `markdown-it-decorate` | Last published version; markdown post-processing runs on content that is sanitised afterwards. |
+| `string-math` (via `markdown-it-pivot-table`) | Both packages are at their latest release; affects only the optional pivot-table renderer. |
+
+Telemetry has been removed from this fork entirely, and the CAS authentication
+and SFTP storage modules were dropped because their dependencies were abandoned
+and carried unfixable vulnerabilities.
+
 ## Reporting a Vulnerability
 
 > [!CAUTION]

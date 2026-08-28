@@ -3,7 +3,7 @@
 # ====================
 FROM node:24-alpine AS assets
 
-RUN apk add yarn g++ make cmake python3 --no-cache
+RUN apk upgrade --no-cache && apk add yarn g++ make cmake python3 --no-cache
 
 WORKDIR /wiki
 
@@ -43,7 +43,8 @@ LABEL maintainer="swissmakers.ch" \
       org.opencontainers.image.revision="$REVISION" \
       org.opencontainers.image.created="$CREATED"
 
-RUN apk add bash curl git openssh gnupg sqlite --no-cache && \
+RUN apk upgrade --no-cache && \
+    apk add bash curl git openssh gnupg sqlite --no-cache && \
     mkdir -p /wiki && \
     mkdir -p /logs && \
     mkdir -p /wiki/data/content && \
