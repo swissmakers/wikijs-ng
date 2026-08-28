@@ -62,29 +62,6 @@ module.exports = {
         responseResult: graphHelper.generateSuccess('System Flags applied successfully')
       }
     },
-    async resetTelemetryClientId (obj, args, context) {
-      try {
-        WIKI.telemetry.generateClientId()
-        await WIKI.configSvc.saveToDb(['telemetry'])
-        return {
-          responseResult: graphHelper.generateSuccess('Telemetry state updated successfully')
-        }
-      } catch (err) {
-        return graphHelper.generateError(err)
-      }
-    },
-    async setTelemetry (obj, args, context) {
-      try {
-        _.set(WIKI.config, 'telemetry.isEnabled', args.enabled)
-        WIKI.telemetry.enabled = args.enabled
-        await WIKI.configSvc.saveToDb(['telemetry'])
-        return {
-          responseResult: graphHelper.generateSuccess('Telemetry Client ID has been reset successfully')
-        }
-      } catch (err) {
-        return graphHelper.generateError(err)
-      }
-    },
     async performUpgrade (obj, args, context) {
       try {
         if (process.env.UPGRADE_COMPANION) {
@@ -402,12 +379,6 @@ module.exports = {
     },
     sslSubscriberEmail () {
       return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? WIKI.config.ssl.subscriberEmail : null
-    },
-    telemetry () {
-      return WIKI.telemetry.enabled
-    },
-    telemetryClientId () {
-      return WIKI.config.telemetry.clientId
     },
     async upgradeCapable () {
       return !_.isNil(process.env.UPGRADE_COMPANION)

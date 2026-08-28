@@ -121,10 +121,6 @@ module.exports = () => {
         analyticsId: ''
       })
       _.set(WIKI.config, 'sessionSecret', (await randomBytesAsync(32)).toString('hex'))
-      _.set(WIKI.config, 'telemetry', {
-        isEnabled: req.body.telemetry === true,
-        clientId: uuid()
-      })
       _.set(WIKI.config, 'theming', {
         theme: 'default',
         darkMode: false,
@@ -134,10 +130,6 @@ module.exports = () => {
         injectBody: ''
       })
       _.set(WIKI.config, 'title', 'Wiki.js NG')
-
-      // Init Telemetry
-      WIKI.kernel.initTelemetry()
-      // WIKI.telemetry.sendEvent('setup', 'install-start')
 
       // Basic checks
       if (!semver.satisfies(process.version, '>=24.0')) {
@@ -186,7 +178,6 @@ module.exports = () => {
         'mail',
         'seo',
         'sessionSecret',
-        'telemetry',
         'theming',
         'uploads',
         'title'
@@ -282,8 +273,6 @@ module.exports = () => {
       await WIKI.models.searchEngines.refreshSearchEnginesFromDisk()
       await WIKI.models.searchEngines.query().patch({ isEnabled: true }).where('key', 'db')
 
-      // WIKI.telemetry.sendEvent('setup', 'install-loadedmodules')
-
       // Load storage targets
       await WIKI.models.storage.refreshTargetsFromDisk()
 
@@ -346,16 +335,12 @@ module.exports = () => {
       })
 
       WIKI.logger.info('Setup is complete!')
-      // WIKI.telemetry.sendEvent('setup', 'install-completed')
+
       res.json({
         ok: true,
         redirectPath: '/',
         redirectPort: WIKI.config.port
       }).end()
-
-      if (WIKI.config.telemetry.isEnabled) {
-        await WIKI.telemetry.sendInstanceEvent('INSTALL')
-      }
 
       WIKI.config.setup = false
 
@@ -370,7 +355,6 @@ module.exports = () => {
       try {
         await WIKI.models.knex('settings').truncate()
       } catch (err) {}
-      WIKI.telemetry.sendError(err)
       res.json({ ok: false, error: err.message })
     }
   })
@@ -392,7 +376,6 @@ module.exports = () => {
       error: WIKI.IS_DEBUG ? err : {}
     })
     WIKI.logger.error(err.message)
-    WIKI.telemetry.sendError(err)
   })
 
   // ----------------------------------------

@@ -30,12 +30,6 @@ type SystemMutation {
     flags: [SystemFlagInput]!
   ): DefaultResponse @auth(requires: ["manage:system"])
 
-  resetTelemetryClientId: DefaultResponse @auth(requires: ["manage:system"])
-
-  setTelemetry(
-    enabled: Boolean!
-  ): DefaultResponse @auth(requires: ["manage:system"])
-
   performUpgrade: DefaultResponse @auth(requires: ["manage:system"])
 
   importUsersFromV1(
@@ -94,8 +88,6 @@ type SystemInfo {
   sslStatus: String @auth(requires: ["manage:system"])
   sslSubscriberEmail: String @auth(requires: ["manage:system"])
   tagsTotal: Int @auth(requires: ["manage:system", "manage:navigation", "manage:pages", "delete:pages"])
-  telemetry: Boolean @auth(requires: ["manage:system"])
-  telemetryClientId: String @auth(requires: ["manage:system"])
   upgradeCapable: Boolean @auth(requires: ["manage:system"])
   usersTotal: Int @auth(requires: ["manage:system", "manage:navigation", "manage:groups", "write:groups", "manage:users", "write:users"])
   workingDirectory: String @auth(requires: ["manage:system"])

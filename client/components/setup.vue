@@ -66,17 +66,6 @@
                   persistent-hint
                   @keyup.enter='install'
                 )
-                v-divider.mb-4
-                .overline.pl-3.mb-3 Telemetry
-                v-switch.ml-3(
-                  inset
-                  color='primary',
-                  v-model='conf.telemetry',
-                  label='Allow Telemetry',
-                  persistent-hint,
-                  hint='Help Wiki.js NG developers improve this app with anonymized telemetry.'
-                )
-                a.pl-3(style='font-size: 12px; letter-spacing: initial;', href='https://docs.requarks.io/telemetry', target='_blank') Learn more
               v-divider.mt-2
               v-card-actions
                 v-btn(color='primary', @click='install', :disabled='loading', x-large, depressed, block)
@@ -128,8 +117,7 @@ export default {
         adminEmail: '',
         adminPassword: '',
         adminPasswordConfirm: '',
-        siteUrl: 'https://wiki.yourdomain.com',
-        telemetry: true
+        siteUrl: 'https://wiki.yourdomain.com'
       },
       pwdMode: true,
       pwdConfirmMode: true,

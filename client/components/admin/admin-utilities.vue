@@ -38,8 +38,7 @@ export default {
     UtilityContent: () => import(/* webpackChunkName: "admin" */ './admin-utilities-content.vue'),
     UtilityCache: () => import(/* webpackChunkName: "admin" */ './admin-utilities-cache.vue'),
     UtilityExport: () => import(/* webpackChunkName: "admin" */ './admin-utilities-export.vue'),
-    UtilityImportv1: () => import(/* webpackChunkName: "admin" */ './admin-utilities-importv1.vue'),
-    UtilityTelemetry: () => import(/* webpackChunkName: "admin" */ './admin-utilities-telemetry.vue')
+    UtilityImportv1: () => import(/* webpackChunkName: "admin" */ './admin-utilities-importv1.vue')
   },
   data() {
     return {
@@ -79,12 +78,6 @@ export default {
           key: 'UtilityImportv1',
           icon: 'mdi-database-import',
           i18nKey: 'importv1',
-          isAvailable: true
-        },
-        {
-          key: 'UtilityTelemetry',
-          icon: 'mdi-math-compass',
-          i18nKey: 'telemetry',
           isAvailable: true
         }
       ]
