@@ -18,6 +18,21 @@ before kill), `MemoryMax`, `CPUQuota`, low CPU/IO weights and a capped Node heap
 A cold build takes longer, but the host stays responsive. Warm builds (webpack
 filesystem cache) finish in well under a minute either way.
 
+## Native modules on older distributions
+
+`sqlite3` ships prebuilt binaries that require **glibc 2.38 or newer**. On older
+distributions (RHEL 9, Ubuntu 22.04, Debian 12) the prebuilt binary fails to load
+with `GLIBC_2.38 not found` and the server aborts at startup with a Knex driver
+error. Rebuild the module from source once — this needs a compiler toolchain
+(`gcc-c++` / `build-essential`, `make`, `python3`):
+
+```bash
+npm rebuild sqlite3 --build-from-source
+```
+
+The published container images are unaffected: they are Alpine (musl) based and
+build the module during the image build, where the toolchain is present.
+
 # Building the container image with Podman
 
 Quick reference for building and running the container image on your own machine. The CI equivalent lives in `.gitea/workflows/build-harbor.yml`.

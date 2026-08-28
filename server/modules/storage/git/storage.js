@@ -40,6 +40,14 @@ module.exports = {
       maxConcurrentProcesses: 1,
       timeout: {
         block: opTimeout
+      },
+      // simple-git blocks `core.sshCommand` (and the equivalent GIT_SSH_COMMAND
+      // env var) by default. Both are set from the administrator-provided storage
+      // configuration here, so allow exactly those two categories when they are
+      // actually configured — every other unsafe operation stays blocked.
+      unsafe: {
+        allowUnsafeSshCommand: this.config.authType === 'ssh',
+        allowUnsafeCustomBinary: !_.isEmpty(this.config.gitBinaryPath)
       }
     })
 

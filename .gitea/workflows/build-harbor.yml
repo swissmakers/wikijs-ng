@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "$GHCR_TOKEN" | podman login ghcr.io --username "$GHCR_USER" --password-stdin
 
-      - name: Extract version
+      - name: Extract version and disable dev flag
         id: version
         run: |
           VERSION=$(sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' package.json | head -1)
@@ -48,6 +48,8 @@ jobs:
             echo "Failed to parse version from package.json" >&2
             exit 1
           fi
+          # Release images must never be flagged as a development build
+          sed -i 's/"dev"[[:space:]]*:[[:space:]]*true/"dev": false/' package.json
           echo "version=v$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Build multi-arch manifest locally

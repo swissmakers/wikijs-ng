@@ -38,9 +38,6 @@ defaults:
       namespaces: []
       namespacing: false
       rtl: false
-    telemetry:
-      clientId: ''
-      isEnabled: false
     title: Wiki.js NG
     company: ''
     contentLicense: ''

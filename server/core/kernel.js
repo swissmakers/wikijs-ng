@@ -31,7 +31,7 @@ module.exports = {
    */
   async preBootMaster() {
     try {
-      await this.initTelemetry()
+      this.initProcessHandlers()
       WIKI.sideloader = await require('./sideloader').init()
       WIKI.cache = require('./cache').init()
       WIKI.scheduler = require('./scheduler').init()
@@ -89,18 +89,14 @@ module.exports = {
     await WIKI.models.subscribeToNotifications()
   },
   /**
-   * Init Telemetry
+   * Init global process error handlers
    */
-  async initTelemetry() {
-    require('./telemetry').init()
-
+  initProcessHandlers() {
     process.on('unhandledRejection', (err) => {
       WIKI.logger.warn(err)
-      WIKI.telemetry.sendError(err)
     })
     process.on('uncaughtException', (err) => {
       WIKI.logger.warn(err)
-      WIKI.telemetry.sendError(err)
     })
   },
   /**

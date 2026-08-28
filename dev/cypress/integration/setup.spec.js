@@ -15,9 +15,6 @@ describe('Setup', () => {
   it('Enter a Site URL', () => {
     cy.get('.v-input').contains('Site URL').next('input').click().clear().type('http://localhost:3000')
   })
-  it('Disable Telemetry', () => {
-    cy.contains('Telemetry').next('.v-input').click()
-  })
   it('Press Install', () => {
     cy.get('.v-card__actions').find('button').click()
   })
