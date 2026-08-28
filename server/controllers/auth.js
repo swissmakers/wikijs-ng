@@ -1,23 +1,10 @@
 /* global WIKI */
 
 const express = require('express')
-const ExpressBrute = require('express-brute')
-const BruteKnex = require('../helpers/brute-knex')
+const bruteforce = require('../helpers/brute-force')
 const router = express.Router()
 const _ = require('lodash')
 const commonHelper = require('../helpers/common')
-
-const bruteforce = new ExpressBrute(new BruteKnex({
-  createTable: true,
-  knex: WIKI.models.knex
-}), {
-  freeRetries: 5,
-  minWait: 5 * 60 * 1000, // 5 minutes
-  maxWait: 60 * 60 * 1000, // 1 hour
-  failCallback: (req, res, next) => {
-    res.status(401).send('Too many failed attempts. Try again later.')
-  }
-})
 
 /**
  * Login form
