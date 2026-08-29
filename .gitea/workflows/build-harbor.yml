@@ -57,7 +57,7 @@ jobs:
           LOCAL_MANIFEST: localhost/wikijs-ng:${{ github.sha }}
           PLATFORMS: linux/amd64,linux/arm64
         run: |
-          podman build --pull \
+          podman build --pull --format docker \
             --platform "$PLATFORMS" \
             --manifest "$LOCAL_MANIFEST" \
             --build-arg VERSION="${{ steps.version.outputs.version }}" \
