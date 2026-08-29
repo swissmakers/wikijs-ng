@@ -9,7 +9,7 @@ If you find such vulnerability, it's important to disclose it in a quick and sec
 | Version | Supported          |
 | ------- | ------------------ |
 | 2.6.x   | :white_check_mark: |
-| 1.x.x   | :x:                |
+| < 2.6   | :x:                |
 
 ## Known accepted findings
 

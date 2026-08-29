@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [2.6.0] - Unreleased
 
+### Changed — User interface refresh (Swissmakers branding)
+
+- **New brand color scheme** applied through a proper Vuetify theme map (previously none existed — the UI ran on stock Material blue): primary `#2A5BD6`, navy `#00204B` for the top navigation and dark surfaces, matching light/dark palettes. The parallel SCSS theme map (`mc('theme', …)`) is kept in sync.
+- Navigation header, sidebar, admin area, page view (TOC/tags/history), dialogs and forms now follow the theme; hardcoded `blue`/`indigo`/`teal`/`deep-purple` accents on the main surfaces were replaced.
+- **Login page redesigned** as a centered enterprise card (Red Hat SSO style): compact white card with centered logo/title and outlined fields on a calm navy/brand gradient — the stock photo background is gone; a configured `loginBgUrl` still takes precedence. When the selected strategy accepts usernames, the field now indicates that both username and email work.
+- **LDAP: users can sign in with username or email.** The default search filter now matches both attributes (`(|(uid={{username}})(mail={{username}}))`) and the setting's help text documents the Active Directory variant. Existing installations keep their configured filter — extend it accordingly to enable email sign-in.
+- Dialog headers are flat brand surfaces instead of radial gradients; dashboard stat tiles use a primary/navy ramp; PWA `theme_color` and browser meta colors updated; dead favicon references removed.
+- **`/a/contribute` rebuilt** as a factual "About Wiki.js NG" page (project links, GitHub Sponsors, commercial support, upstream AGPL attribution). All upstream fundraising content is gone: PayPal button, Ethereum address, Patreon/OpenCollective/T-shirt links, sponsor logos hotlinked from the upstream CDN, and the dashboard promo card.
+
+### Removed — upstream services and dead weight
+
+- **Unauthenticated `contribute` GraphQL query removed** — it let any caller make the server issue outbound requests to the upstream sponsor API.
+- **Update-check and container self-upgrade removed**: the daily `checkForUpdates` call to the upstream service, the `latestVersion`/`upgradeCapable` API fields and the admin "Perform Upgrade" button (which relied on upstream's update-companion container and could have pulled the upstream image over this fork). Translation downloads are unchanged.
+- Upstream CI and packaging: GitHub workflows (`build`/`helm`/`packer` — the build workflow fired on every push and pushed `requarks/wiki` image tags), issue-template redirection to the upstream tracker, reviewer auto-assign, DigitalOcean packer image, upstream Helm chart, the abandoned Go installer (contained a hardcoded Bugsnag API key), the Solr stub, the broken "Firebase" auth module (it actually instantiated the GitHub strategy), orphaned admin pages (`webhooks`, `stats`), dead vendored client libs and unused GraphQL documents.
+- Fixed defaults that leaked to upstream infrastructure: PlantUML renders now default to `plantuml.com` instead of upstream's server, the Let's Encrypt contact default no longer points at upstream's security mailbox, and sample configs use `changeme` instead of a project-branded password.
+- Container images now define a `HEALTHCHECK` (the `/healthz` endpoint existed but was never wired up).
+
+### Added — operations
+
+- `dev/deploy-test.sh`: generic build / test / cleanup helper — builds the image locally (`--format docker`, so the `HEALTHCHECK` survives; OCI images silently drop it) and runs a throwaway instance on port 3006 with its own SQLite volume for verifying changes before committing. Production deployments always use the CI/CD-built registry images. Documented in `dev/BUILD.md`, together with a "Running fully offline" section in the README.
+
 ### Removed
 
 - **Telemetry removed entirely.** The hardened image no longer phones home: the telemetry module, its kernel/setup hooks, the GraphQL mutations and query fields (`setTelemetry`, `resetTelemetryClientId`, `telemetry`, `telemetryClientId`), the admin utility page, the setup-wizard opt-in and the related config defaults are gone. (The version update check and the translation download still contact the upstream service — see the notes in the README if you want to run fully offline.)
@@ -106,7 +127,7 @@ Full dependency and toolchain modernization of the 2.x codebase, Node.js 24 enfo
   - subscriptions served via **graphql-ws** (`graphql-transport-ws` protocol) on `/graphql-subscriptions` with the same JWT + `manage:system` gate; `graphql-subscriptions` 3 (`asyncIterableIterator`)
 - **GraphQL client**: apollo-client 2 + `apollo-link-*` / `apollo-cache-inmemory` → **@apollo/client 3.14** (`/core` entry, `BatchHttpLink`, `onError`, `GraphQLWsLink`); vue-apollo 3.1.2; graphql-tag 2.12.6
 - **Database layer**: knex 0.21 → **3.1**, objection 2 → **3.1**, connect-session-knex 2 → **5** (new `ConnectSessionKnexStore` API); `mssql` package replaced by knex 3's native **tedious** driver (connection config mapped to `server` + `options{}`)
-- **i18next 19 → 25** with **i18next-http-middleware** (replaces deprecated i18next-express-middleware); mongodb driver 3 → 6 (promise API in v1-import paths); js-yaml 3 → 4 (`safeLoad` → `load`); luxon 1 → 3; jsdom 16 → 26; nodemailer 6 → 7; uuid 9 → 11; ssh2 1.17; node-2fa 2; d3 6 → 7; codemirror 5.65 (staying on the v5 line)
+- **i18next 19 → 25** with **i18next-http-middleware** (replaces deprecated i18next-express-middleware); mongodb driver 3 → 6 (promise API in v1-import paths); js-yaml 3 → 4 (`safeLoad` → `load`); luxon 1 → 3; jsdom 16 → 26; nodemailer 6 → 7; uuid 9 → 11; node-2fa 2; d3 6 → 7; codemirror 5.65 (staying on the v5 line)
 - **Lint/test tooling**: ESLint 7 → **8.57** with `eslint-config-standard` 17 and `@babel/eslint-parser` (replaces the dead `eslint-config-requarks` / `babel-eslint`); eslint-plugin-vue 9 (Vue 2 configs); Jest 26 → **29**; Cypress 5 → **13** (`cypress.json` → `cypress.config.js`). New standard@17 style findings are parked via a `rules:` block in `.eslintrc.yml` for incremental cleanup
 - GitHub `build.yml` Windows job: obsolete `extract-files` patch workaround steps removed (the patched package left the dependency tree)
 - Build warnings eliminated: removed `graphql-persisted-document-loader` (its `documentId` output was never consumed; drops the ancient `persistgraphql` → `apollo-client@1` chain and with it the graphql-0.10 resolution warnings — the `resolutions` field in `package.json` is gone entirely), removed the unused Modernizr stack (`webpack-modernizr-loader`, `client/.modernizrrc.js`, vendored `client/libs/modernizr/` — the generated `mdz-*` class was referenced nowhere), pinned `rate-limiter-flexible` to 5.0.5 and bumped `pug-plain-loader` to 1.1.0 (peer ranges satisfied), added `@opentelemetry/core` as a direct dependency (Sentry peer), set `"private": true`

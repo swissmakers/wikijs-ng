@@ -6,9 +6,9 @@
 [![GitHub Sponsors](https://img.shields.io/badge/sponsor-github-ea4aaa?logo=github)](https://github.com/sponsors/swissmakers)
 [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-green.svg?style=flat&logo=javascript&logoColor=white)](http://standardjs.com/)
 
-**Wiki.js NG is a hardened, actively maintained fork of Wiki.js 2.5. "the modern, lightweight and powerful wiki engine built on Node.js.**"
+**Wiki.js NG** is a hardened, actively maintained fork of Wiki.js 2.x — the modern, lightweight and powerful wiki engine built on Node.js.
 
-Wiki.js NG is maintained by [Swissmakers GmbH](https://swissmakers.ch) and focuses on long-term operability. Our current runtime and dependency baseline, closed security findings, bug, and reliability fixes for enterprise deployments while remaining fully compatible with existing Wiki.js installations and content.
+Wiki.js NG is maintained by [Swissmakers GmbH](https://swissmakers.ch) and focuses on long-term operability: a current runtime and dependency baseline, closed security findings and reliability fixes for enterprise deployments — while remaining fully compatible with existing Wiki.js installations and content.
 
 ## Overview
 
@@ -98,6 +98,14 @@ Building the container image locally, including multi-arch builds, is documented
 ## Upgrading from Wiki.js 2.5.314
 
 Wiki.js NG is intended to be a direct replacement for Wiki.js. It uses the same database schema, configuration format and content storage. You can point the container at your existing database and data volumes. Review the [CHANGELOG](CHANGELOG.md) before upgrading, in particular the notes on the Git storage module and SAML configuration options.
+
+## Running fully offline
+
+For air-gapped environments set `offline: true` in `config.yml`. This disables
+all outbound calls to the upstream translation service. To install or update
+interface translations offline, place the sideload files (`locales.json` plus
+one `<code>.json` per language) into `data/sideload/` and restart — they are
+imported at startup.
 
 ## Security
 

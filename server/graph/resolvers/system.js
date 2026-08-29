@@ -4,7 +4,6 @@ const os = require('os')
 const filesize = require('filesize')
 const path = require('path')
 const fs = require('fs-extra')
-const moment = require('moment')
 const graphHelper = require('../../helpers/graph')
 const crypto = require('crypto')
 const nanoid = require('nanoid/non-secure').customAlphabet('1234567890abcdef', 10)
@@ -60,28 +59,6 @@ module.exports = {
       await WIKI.configSvc.saveToDb(['flags'])
       return {
         responseResult: graphHelper.generateSuccess('System Flags applied successfully')
-      }
-    },
-    async performUpgrade (obj, args, context) {
-      try {
-        if (process.env.UPGRADE_COMPANION) {
-          const qs = new URLSearchParams({
-            ...process.env.UPGRADE_COMPANION_REF && { container: process.env.UPGRADE_COMPANION_REF }
-          }).toString()
-          const resp = await fetch(`http://wiki-update-companion/upgrade${qs ? `?${qs}` : ''}`, {
-            method: 'POST'
-          })
-          if (!resp.ok) {
-            throw new Error(`Unexpected response code ${resp.status} from wiki-update-companion.`)
-          }
-          return {
-            responseResult: graphHelper.generateSuccess('Upgrade has started.')
-          }
-        } else {
-          throw new Error('You must run the wiki-update-companion container and pass the UPGRADE_COMPANION env var in order to use this feature.')
-        }
-      } catch (err) {
-        return graphHelper.generateError(err)
       }
     },
     /**
@@ -338,12 +315,6 @@ module.exports = {
     httpsPort () {
       return WIKI.servers.servers.https ? _.get(WIKI.servers.servers.https.address(), 'port', 0) : 0
     },
-    latestVersion () {
-      return WIKI.system.updates.version
-    },
-    latestVersionReleaseDate () {
-      return moment.utc(WIKI.system.updates.releaseDate)
-    },
     nodeVersion () {
       return process.version.substr(1)
     },
@@ -379,9 +350,6 @@ module.exports = {
     },
     sslSubscriberEmail () {
       return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? WIKI.config.ssl.subscriberEmail : null
-    },
-    async upgradeCapable () {
-      return !_.isNil(process.env.UPGRADE_COMPANION)
     },
     workingDirectory () {
       return process.cwd()

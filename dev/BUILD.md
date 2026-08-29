@@ -33,6 +33,22 @@ npm rebuild sqlite3 --build-from-source
 The published container images are unaffected: they are Alpine (musl) based and
 build the module during the image build, where the toolchain is present.
 
+# Testing the image locally before committing
+
+`dev/deploy-test.sh` builds the container image and runs it as a throwaway test
+instance so changes can be verified before they are committed. Production
+deployments always use the CI/CD-built images from the registry.
+
+```bash
+dev/deploy-test.sh build      # build localhost/wikijs-ng:local-test (--format docker)
+dev/deploy-test.sh test       # throwaway instance on :3006 (SQLite, own volume)
+dev/deploy-test.sh cleanup    # remove test container + volume
+```
+
+Everything is configurable through environment variables (`WIKI_IMAGE`,
+`WIKI_TEST_PORT`, `WIKI_PODMAN`, `DB_*` for an external test database — never a
+production one); see the script header.
+
 # Building the container image with Podman
 
 Quick reference for building and running the container image on your own machine. The CI equivalent lives in `.gitea/workflows/build-harbor.yml`.

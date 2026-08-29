@@ -93,7 +93,7 @@
             xl2
             )
             v-card.page-toc-card.mb-5(v-if='tocDecoded.length')
-              .overline.pa-5.pb-0(:class='$vuetify.theme.dark ? `blue--text text--lighten-2` : `primary--text`') {{$t('common:page.toc')}}
+              .overline.pa-5.pb-0(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:page.toc')}}
               v-list.pb-3(dense, nav, :class='$vuetify.theme.dark ? `darken-3-d3` : ``')
                 template(v-for='(tocItem, tocIdx) in tocDecoded')
                   v-list-item(@click='$vuetify.goTo(tocItem.anchor, scrollOpts)')
@@ -108,23 +108,23 @@
 
             v-card.page-tags-card.mb-5(v-if='tags.length > 0')
               .pa-5
-                .overline.teal--text.pb-2(:class='$vuetify.theme.dark ? `text--lighten-3` : ``') {{$t('common:page.tags')}}
+                .overline.primary--text.pb-2(:class='$vuetify.theme.dark ? `text--lighten-3` : ``') {{$t('common:page.tags')}}
                 v-chip.mr-1.mb-1(
                   label
-                  :color='$vuetify.theme.dark ? `teal darken-1` : `teal lighten-5`'
+                  :color='$vuetify.theme.dark ? `primary darken-1` : `grey lighten-4`'
                   v-for='(tag, idx) in tags'
                   :href='`/t/` + tag.tag'
                   :key='`tag-` + tag.tag'
                   )
-                  v-icon(:color='$vuetify.theme.dark ? `teal lighten-3` : `teal`', left, small) mdi-tag
-                  span(:class='$vuetify.theme.dark ? `teal--text text--lighten-5` : `teal--text text--darken-2`') {{tag.title}}
+                  v-icon(:color='$vuetify.theme.dark ? `accent` : `primary`', left, small) mdi-tag
+                  span(:class='$vuetify.theme.dark ? `white--text` : `primary--text text--darken-1`') {{tag.title}}
                 v-chip.mr-1.mb-1(
                   label
-                  :color='$vuetify.theme.dark ? `teal darken-1` : `teal lighten-5`'
+                  :color='$vuetify.theme.dark ? `primary darken-1` : `grey lighten-4`'
                   :href='`/t/` + tags.map(t => t.tag).join(`/`)'
                   :aria-label='$t(`common:page.tagsMatching`)'
                   )
-                  v-icon(:color='$vuetify.theme.dark ? `teal lighten-3` : `teal`', size='20') mdi-tag-multiple
+                  v-icon(:color='$vuetify.theme.dark ? `accent` : `primary`', size='20') mdi-tag-multiple
 
             v-card.page-comments-card.mb-5(v-if='commentsEnabled && commentsPerms.read')
               .pa-5
@@ -164,7 +164,7 @@
 
             v-card.page-author-card.mb-5
               .pa-5
-                .overline.indigo--text.d-flex(:class='$vuetify.theme.dark ? `text--lighten-3` : ``')
+                .overline.primary--text.d-flex(:class='$vuetify.theme.dark ? `text--lighten-3` : ``')
                   span {{$t('common:page.lastEditedBy')}}
                   v-spacer
                   v-tooltip(right, v-if='isAuthenticated')
@@ -177,7 +177,7 @@
                         v-if='hasReadHistoryPermission'
                         :aria-label='$t(`common:header.history`)'
                         )
-                        v-icon(color='indigo', dense) mdi-history
+                        v-icon(color='primary', dense) mdi-history
                     span {{$t('common:header.history')}}
                 .page-author-card-name.body-2.grey--text(:class='$vuetify.theme.dark ? `` : `text--darken-3`') {{ authorName }}
                 .page-author-card-date.caption.grey--text.text--darken-1 {{ updatedAt | moment('calendar') }}
@@ -517,9 +517,9 @@ export default {
         },
         bar: {
           onlyShowBarOnScroll: false,
-          background: '#42A5F5',
+          background: '#5B85E8',
           hoverStyle: {
-            background: '#64B5F6'
+            background: '#7FA0EC'
           }
         }
       },

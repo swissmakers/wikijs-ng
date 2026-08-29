@@ -37,8 +37,8 @@ props:
   searchFilter:
     title: Search Filter
     type: String
-    default: '(uid={{username}})'
-    hint: The query to use to match username. {{username}} must be present and will be interpolated with the user provided username when performing the LDAP search.
+    default: '(|(uid={{username}})(mail={{username}}))'
+    hint: The query used to find the user. {{username}} is interpolated with the login input and should match both the username and the email attribute (e.g. '(|(uid={{username}})(mail={{username}}))', for Active Directory '(|(sAMAccountName={{username}})(mail={{username}}))') so users can sign in either way.
     order: 5
   tlsEnabled:
     title: Use TLS

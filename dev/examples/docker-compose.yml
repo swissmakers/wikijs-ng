@@ -1,11 +1,10 @@
-version: "3"
 services:
 
   db:
     image: postgres:17-alpine
     environment:
       POSTGRES_DB: wiki
-      POSTGRES_PASSWORD: swissmakers
+      POSTGRES_PASSWORD: changeme
       POSTGRES_USER: wikijs
     logging:
       driver: "none"
@@ -22,7 +21,7 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_USER: wikijs
-      DB_PASS: swissmakers
+      DB_PASS: changeme
       DB_NAME: wiki
     restart: unless-stopped
     ports:

@@ -14,7 +14,19 @@ Vue.component('setup', () => import(/* webpackMode: "eager" */ './components/set
 let bootstrap = () => {
   window.WIKI = new Vue({
     el: '#root',
-    vuetify: new Vuetify()
+    vuetify: new Vuetify({
+      theme: {
+        themes: {
+          light: {
+            primary: '#2A5BD6',
+            secondary: '#00204B',
+            accent: '#5B85E8',
+            anchor: '#2A5BD6',
+            info: '#2A5BD6'
+          }
+        }
+      }
+    })
   })
 }
 

@@ -15,17 +15,17 @@
         border-color: mc('grey', '700') !important;
 
         .v-label.v-label--active.primary--text {
-          color: mc('blue', '500') !important;
+          color: mc('theme', 'primary') !important;
         }
       }
     }
     &.v-input--is-focused .v-input__slot {
-      border-color: mc('blue', '500') !important;
+      border-color: mc('theme', 'primary') !important;
     }
 
     @at-root .theme--dark & {
       .v-icon.primary--text {
-        color: mc('blue', '500') !important;
+        color: mc('theme', 'primary') !important;
       }
     }
   }
