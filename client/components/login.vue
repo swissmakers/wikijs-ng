@@ -1,6 +1,6 @@
 <template lang="pug">
   v-app
-    .login(:style='`background-image: url(` + bgUrl + `);`')
+    .login(:style='bgUrl ? `background-image: url(` + bgUrl + `);` : ``')
       .login-sd
         .d-flex.mb-5
           .login-logo
@@ -47,7 +47,7 @@
               flat
               prepend-inner-icon='mdi-clipboard-account'
               background-color='white'
-              color='blue darken-2'
+              color='primary'
               hide-details
               ref='iptEmail'
               v-model='username'
@@ -61,7 +61,7 @@
               flat
               prepend-inner-icon='mdi-form-textbox-password'
               background-color='white'
-              color='blue darken-2'
+              color='primary'
               hide-details
               ref='iptPassword'
               v-model='password'
@@ -76,7 +76,7 @@
             v-btn.mt-2.text-none(
               width='100%'
               large
-              color='blue darken-2'
+              color='primary'
               dark
               @click='login'
               :loading='isLoading'
@@ -91,7 +91,7 @@
                 ): .caption {{ $t('auth:forgotPasswordLink') }}
               v-btn.text-none(
                 v-if='selectedStrategyKey === `local` && selectedStrategy.selfRegistration'
-                color='indigo darken-2'
+                color='secondary'
                 text
                 rounded
                 href='/register'
@@ -109,7 +109,7 @@
               flat
               prepend-inner-icon='mdi-clipboard-account'
               background-color='white'
-              color='blue darken-2'
+              color='primary'
               hide-details
               ref='iptForgotPwdEmail'
               v-model='username'
@@ -121,7 +121,7 @@
             v-btn.mt-2.text-none(
               width='100%'
               large
-              color='blue darken-2'
+              color='primary'
               dark
               @click='forgotPasswordSubmit'
               :loading='isLoading'
@@ -147,7 +147,7 @@
               flat
               prepend-inner-icon='mdi-form-textbox-password'
               background-color='white'
-              color='blue darken-2'
+              color='primary'
               hide-details
               ref='iptNewPassword'
               v-model='newPassword'
@@ -162,7 +162,7 @@
               flat
               prepend-inner-icon='mdi-form-textbox-password'
               background-color='white'
-              color='blue darken-2'
+              color='primary'
               hide-details
               v-model='newPasswordVerify'
               :placeholder='$t(`auth:changePwd.newPasswordVerifyPlaceholder`)'
@@ -173,7 +173,7 @@
             v-btn.mt-2.text-none(
               width='100%'
               large
-              color='blue darken-2'
+              color='primary'
               dark
               @click='changePassword'
               :loading='isLoading'
@@ -191,7 +191,7 @@
             solo
             flat
             background-color='white'
-            color='blue darken-2'
+            color='primary'
             hide-details
             ref='iptTFA'
             v-model='securityCode'
@@ -203,7 +203,7 @@
           v-btn.mt-2.text-none(
             width='100%'
             large
-            color='blue darken-2'
+            color='primary'
             dark
             @click='verifySecurityCode(false)'
             :loading='isLoading'
@@ -225,7 +225,7 @@
             solo
             flat
             background-color='white'
-            color='blue darken-2'
+            color='primary'
             hide-details
             ref='iptTFASetup'
             v-model='securityCode'
@@ -237,7 +237,7 @@
           v-btn.mt-2.text-none(
             width='100%'
             large
-            color='blue darken-2'
+            color='primary'
             dark
             @click='verifySecurityCode(true)'
             :loading='isLoading'
@@ -698,26 +698,23 @@ export default {
 
 <style lang="scss">
   .login {
-    // background-image: url('/_assets/img/splash/1.jpg');
-    background-color: mc('grey', '900');
+    // Default: calm enterprise gradient in brand colors; a configured
+    // loginBgUrl (auth settings) still takes precedence as an inline style.
+    background-color: mc('theme', 'navy');
+    background-image: linear-gradient(135deg, mc('theme', 'navy') 0%, mc('theme', 'primary-dark') 60%, mc('theme', 'primary') 100%);
     background-size: cover;
     background-position: center center;
     width: 100%;
     height: 100%;
 
     &-sd {
-      background-color: rgba(255,255,255,.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background-color: rgba(255,255,255,.96);
       border-left: 1px solid rgba(255,255,255,.85);
       border-right: 1px solid rgba(255,255,255,.85);
+      box-shadow: 0 0 24px rgba(0, 12, 28, .25);
       width: 450px;
       height: 100%;
       margin-left: 5vw;
-
-      @at-root .no-backdropfilter & {
-        background-color: rgba(255,255,255,.95);
-      }
 
       @include until($tablet) {
         margin-left: 0;
@@ -729,10 +726,10 @@ export default {
       padding: 12px 0 0 12px;
       width: 58px;
       height: 58px;
-      background-color: #222;
+      background-color: mc('theme', 'navy');
       margin-left: 12px;
-      border-bottom-left-radius: 7px;
-      border-bottom-right-radius: 7px;
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
     }
 
     &-title {

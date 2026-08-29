@@ -18,7 +18,7 @@
   // ---------------------------------
 
   a {
-    color: mc('blue', '700');
+    color: mc('theme', 'primary');
 
     &.is-internal-link.is-invalid-page {
       color: mc('red', '700');
@@ -85,7 +85,7 @@
 
   h1 {
     padding: 0;
-    color: mc('blue', '800');
+    color: mc('theme', 'navy');
     margin-top: 2rem;
     position: relative;
 
