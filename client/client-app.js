@@ -221,12 +221,12 @@ let bootstrap = () => {
             error: '#FF5252'
           },
           dark: {
-            primary: '#6B93F0',
+            primary: '#0f3c78',
             secondary: '#8FA8CC',
             accent: '#5B85E8',
-            header: '#001B3F',
-            anchor: '#6B93F0',
-            info: '#6B93F0',
+            header: '#0b1522',
+            anchor: '#0f3c78',
+            info: '#0f3c78',
             success: '#4CAF50',
             warning: '#FB8C00',
             error: '#FF5252'
