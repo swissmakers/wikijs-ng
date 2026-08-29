@@ -9,13 +9,6 @@ const { Readable, Transform } = require('node:stream')
 /* global WIKI */
 
 module.exports = {
-  updates: {
-    channel: 'BETA',
-    version: WIKI.version,
-    releaseDate: WIKI.releaseDate,
-    minimumVersionRequired: '2.0.0-beta.0',
-    minimumNodeRequired: '24.0.0'
-  },
   exportStatus: {
     status: 'notrunning',
     progress: 0,

@@ -19,7 +19,7 @@
               easing='easeOutQuint'
               )
       v-flex(xs12 md6 lg4 xl3 d-flex)
-        v-card.blue.darken-3.dashboard-card.animated.fadeInUp.wait-p2s(dark)
+        v-card.dashboard-stat-mid.dashboard-card.animated.fadeInUp.wait-p2s(dark)
           v-card-text
             v-icon.dashboard-icon mdi-account
             .overline {{$t('admin:dashboard.users')}}
@@ -30,7 +30,7 @@
               easing='easeOutQuint'
               )
       v-flex(xs12 md6 lg4 xl3 d-flex)
-        v-card.blue.darken-4.dashboard-card.animated.fadeInUp.wait-p4s(dark)
+        v-card.dashboard-stat-deep.dashboard-card.animated.fadeInUp.wait-p4s(dark)
           v-card-text
             v-icon.dashboard-icon mdi-account-group
             .overline {{$t('admin:dashboard.groups')}}
@@ -41,17 +41,13 @@
               easing='easeOutQuint'
               )
       v-flex(xs12 md6 lg12 xl3 d-flex)
-        v-card.dashboard-card.animated.fadeInUp.wait-p6s(
-          :class='isLatestVersion ? "green" : "red lighten-2"'
-          dark
-          )
+        v-card.dashboard-stat-deep.dashboard-card.animated.fadeInUp.wait-p6s(dark)
           v-btn.btn-animate-wrench(fab, absolute, :right='!$vuetify.rtl', :left='$vuetify.rtl', top, small, light, to='system', v-if='hasPermission(`manage:system`)')
-            v-icon(:color='isLatestVersion ? `green` : `red darken-4`', small) mdi-wrench
+            v-icon(color='primary', small) mdi-wrench
           v-card-text
             v-icon.dashboard-icon mdi-blur
-            .subtitle-1 Wiki.js NG {{info.currentVersion}}
-            .body-2(v-if='isLatestVersion') {{$t('admin:dashboard.versionLatest')}}
-            .body-2(v-else) {{$t('admin:dashboard.versionNew', { version: info.latestVersion })}}
+            .subtitle-1 Wiki.js NG
+            .body-2 Version {{info.currentVersion}}
       v-flex(xs12, xl6)
         v-card.radius-7.animated.fadeInUp.wait-p2s
           v-toolbar(:color='$vuetify.theme.dark ? `grey darken-2` : `grey lighten-5`', dense, flat)
@@ -92,17 +88,6 @@
                   .body-2: strong {{ props.item.name }}
                 td.text-right.caption(width='250') {{ props.item.lastLoginAt | moment('calendar') }}
 
-      v-flex(xs12)
-        v-card.dashboard-contribute.animated.fadeInUp.wait-p4s
-          v-card-text
-            img(src='/_assets/svg/icon-heart-health.svg', alt='Contribute', style='height: 80px;')
-            .pl-5
-              .subtitle-1 {{$t('admin:contribute.title')}}
-              .body-2.mt-3: strong {{$t('admin:dashboard.contributeSubtitle')}}
-              .body-2 {{$t('admin:dashboard.contributeHelp')}}
-              v-btn.mx-0.mt-4(:color='$vuetify.theme.dark ? `indigo lighten-3` : `indigo`', outlined, small, to='/contribute')
-                .caption: strong {{$t('admin:dashboard.contributeLearnMore')}}
-
 </template>
 
 <script>
@@ -110,7 +95,6 @@ import _ from 'lodash'
 import AnimatedNumber from 'animated-number-vue'
 import { get } from 'vuex-pathify'
 import gql from 'graphql-tag'
-import semverLte from 'semver/functions/lte'
 
 export default {
   components: {
@@ -134,13 +118,6 @@ export default {
     }
   },
   computed: {
-    isLatestVersion() {
-      if (this.info.latestVersion === 'n/a' || this.info.currentVersion === 'n/a') {
-        return true
-      } else {
-        return semverLte(this.info.latestVersion, this.info.currentVersion)
-      }
-    },
     info: get('admin/info'),
     permissions: get('user/permissions')
   },
@@ -219,25 +196,12 @@ export default {
   }
 }
 
-.dashboard-contribute {
-  background-color: #FFF;
-  background-image: linear-gradient(to bottom, #FFF 0%, lighten(mc('indigo', '50'), 3%) 100%);
-  border-radius: 7px;
+.dashboard-stat-mid {
+  background-color: mc('theme', 'primary-dark') !important;
+}
 
-  @at-root .theme--dark & {
-    background-color: mc('grey', '800');
-    background-image: linear-gradient(to bottom, mc('grey', '800') 0%, darken(mc('grey', '800'), 6%) 100%);
-  }
-
-  .v-card__text {
-    display: flex;
-    align-items: center;
-    color: mc('indigo', '500') !important;
-
-    @at-root .theme--dark & {
-      color: mc('grey', '300') !important;
-    }
-  }
+.dashboard-stat-deep {
+  background-color: mc('theme', 'navy') !important;
 }
 
 .v-icon.dashboard-icon {

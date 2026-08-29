@@ -15,28 +15,10 @@
               v-list(two-line, dense)
                 v-list-item
                   v-list-item-avatar
-                    v-icon.blue.white--text mdi-application-export
+                    v-icon.primary.white--text mdi-application-export
                   v-list-item-content
                     v-list-item-title {{ $t('admin:system.currentVersion') }}
                     v-list-item-subtitle {{ info.currentVersion }}
-                v-list-item
-                  v-list-item-avatar
-                    v-icon.blue.white--text mdi-inbox-arrow-up
-                  v-list-item-content
-                    v-list-item-title {{ $t('admin:system.latestVersion') }}
-                    v-list-item-subtitle {{ info.latestVersion }}
-                  v-list-item-action
-                    v-list-item-action-text {{ $t('admin:system.published') }} {{ info.latestVersionReleaseDate | moment('from') }}
-              v-card-actions(v-if='info.upgradeCapable && !isLatestVersion && info.platform === `docker`', :class='$vuetify.theme.dark ? `grey darken-3-d5` : `indigo lighten-5`')
-                .caption.indigo--text.pl-3(:class='$vuetify.theme.dark ? `text--lighten-4` : ``') Wiki.js NG can perform the upgrade to the latest version for you.
-                v-spacer
-                v-btn.px-3(
-                  color='indigo'
-                  dark
-                  @click='performUpgrade'
-                  )
-                  v-icon(left) mdi-upload
-                  span Perform Upgrade
 
             v-card.mt-4.animated.fadeInUp.wait-p2s
               v-subheader {{ $t('admin:system.hostInfo') }}
@@ -95,7 +77,7 @@
               v-list(dense)
                 v-list-item
                   v-list-item-avatar
-                    v-avatar.indigo.darken-1(size='40')
+                    v-avatar.primary(size='40')
                       v-icon(color='white') mdi-database
                   v-list-item-content
                     v-list-item-title(v-html='dbVersion')
@@ -103,50 +85,16 @@
 
                 v-alert.mt-3.mx-4(:value='isDbLimited', color='deep-orange darken-2', icon='mdi-alert', dark) {{ $t('admin:system.dbPartialSupport') }}
 
-    v-dialog(
-      v-model='isUpgrading'
-      persistent
-      width='450'
-      )
-      v-card.blue.darken-5(dark)
-        v-card-text.text-center.pa-10
-          self-building-square-spinner(
-            :animation-duration='4000'
-            :size='40'
-            color='#FFF'
-            style='margin: 0 auto;'
-            )
-          .body-2.mt-5.blue--text.text--lighten-4 Your Wiki.js NG container is being upgraded...
-          .caption.blue--text.text--lighten-2 Please wait
-          v-progress-linear.mt-5(
-            color='blue lighten-2'
-            :value='upgradeProgress'
-            :buffer-value='upgradeProgress'
-            rounded
-            :stream='isUpgradingStarted'
-            query
-            :indeterminate='!isUpgradingStarted'
-          )
 </template>
 
 <script>
 import _ from 'lodash'
-import semverLte from 'semver/functions/lte'
-
-import { SelfBuildingSquareSpinner } from 'epic-spinners'
 
 import systemInfoQuery from 'gql/admin/system/system-query-info.gql'
-import performUpgradeMutation from 'gql/admin/system/system-mutation-upgrade.gql'
 
 export default {
-  components: {
-    SelfBuildingSquareSpinner
-  },
   data () {
     return {
-      isUpgrading: false,
-      isUpgradingStarted: false,
-      upgradeProgress: 0,
       info: {}
     }
   },
@@ -174,12 +122,6 @@ export default {
     },
     isDbLimited () {
       return this.info.dbType === 'MySQL' && this.dbVersion.indexOf('5.') === 0
-    },
-    isLatestVersion () {
-      if (this.info.latestVersion === 'n/a' || this.info.currentVersion === 'n/a') {
-        return true
-      }
-      return semverLte(this.info.latestVersion, this.info.currentVersion)
     }
   },
   methods: {
@@ -190,34 +132,6 @@ export default {
         style: 'success',
         icon: 'cached'
       })
-    },
-    async performUpgrade () {
-      this.isUpgrading = true
-      this.isUpgradingStarted = false
-      this.upgradeProgress = 0
-      this.$store.commit(`loadingStart`, 'admin-system-upgrade')
-      try {
-        const respRaw = await this.$apollo.mutate({
-          mutation: performUpgradeMutation
-        })
-        const resp = _.get(respRaw, 'data.system.performUpgrade.responseResult', {})
-        if (resp.succeeded) {
-          this.isUpgradingStarted = true
-          let progressInterval = setInterval(() => {
-            this.upgradeProgress += 0.83
-          }, 500)
-          _.delay(() => {
-            clearInterval(progressInterval)
-            window.location.reload(true)
-          }, 60000)
-        } else {
-          throw new Error(resp.message)
-        }
-      } catch (err) {
-        this.$store.commit('pushGraphError', err)
-        this.$store.commit(`loadingStop`, 'admin-system-upgrade')
-        this.isUpgrading = false
-      }
     }
   },
   apollo: {

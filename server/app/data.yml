@@ -12,7 +12,7 @@ defaults:
       host: localhost
       port: 5432
       user: wikijs
-      pass: swissmakers
+      pass: changeme
       db: wiki
       ssl: false
       storage: ./db.sqlite
@@ -109,7 +109,7 @@ defaults:
       origin: true
     search:
       maxHits: 100
-    maintainerEmail: security@requarks.io
+    maintainerEmail: security@swissmakers.ch
 localeNamespaces:
   - admin
   - auth
@@ -121,11 +121,6 @@ jobs:
     offlineSkip: false
     repeat: true
   syncGraphLocales:
-    onInit: true
-    schedule: P1D
-    offlineSkip: true
-    repeat: true
-  syncGraphUpdates:
     onInit: true
     schedule: P1D
     offlineSkip: true

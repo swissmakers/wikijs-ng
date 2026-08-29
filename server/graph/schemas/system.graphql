@@ -30,8 +30,6 @@ type SystemMutation {
     flags: [SystemFlagInput]!
   ): DefaultResponse @auth(requires: ["manage:system"])
 
-  performUpgrade: DefaultResponse @auth(requires: ["manage:system"])
-
   importUsersFromV1(
     mongoDbConnString: String!
     groupMode: SystemImportUsersGroupMode!
@@ -75,8 +73,6 @@ type SystemInfo {
   httpPort: Int @auth(requires: ["manage:system"])
   httpRedirection: Boolean @auth(requires: ["manage:system"])
   httpsPort: Int @auth(requires: ["manage:system"])
-  latestVersion: String @auth(requires: ["manage:system"])
-  latestVersionReleaseDate: Date @auth(requires: ["manage:system"])
   nodeVersion: String @auth(requires: ["manage:system"])
   operatingSystem: String @auth(requires: ["manage:system"])
   pagesTotal: Int @auth(requires: ["manage:system", "manage:navigation", "manage:pages", "delete:pages"])
@@ -88,7 +84,6 @@ type SystemInfo {
   sslStatus: String @auth(requires: ["manage:system"])
   sslSubscriberEmail: String @auth(requires: ["manage:system"])
   tagsTotal: Int @auth(requires: ["manage:system", "manage:navigation", "manage:pages", "delete:pages"])
-  upgradeCapable: Boolean @auth(requires: ["manage:system"])
   usersTotal: Int @auth(requires: ["manage:system", "manage:navigation", "manage:groups", "write:groups", "manage:users", "write:users"])
   workingDirectory: String @auth(requires: ["manage:system"])
 }
