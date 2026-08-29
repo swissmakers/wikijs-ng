@@ -2,17 +2,14 @@
   v-app
     .login(:style='bgUrl ? `background-image: url(` + bgUrl + `);` : ``')
       .login-sd
-        .d-flex.mb-5
-          .login-logo
-            v-avatar(tile, size='34')
-              v-img(:src='logoUrl')
-          .login-title
-            .text-h6.grey--text.text--darken-4 {{ siteTitle }}
-        v-alert.mb-0(
+        .login-head
+          v-avatar.login-head-logo(tile, size='42')
+            v-img(:src='logoUrl', contain)
+          .text-h6.login-head-title {{ siteTitle }}
+        v-alert.mx-3.mb-0(
           v-model='errorShown'
           transition='slide-y-reverse-transition'
           color='red darken-2'
-          tile
           dark
           dense
           icon='mdi-alert'
@@ -43,24 +40,22 @@
             .text-subtitle-1 {{$t('auth:enterCredentials')}}
           .login-form
             v-text-field(
-              solo
-              flat
+              outlined
+              dense
               prepend-inner-icon='mdi-clipboard-account'
-              background-color='white'
               color='primary'
               hide-details
               ref='iptEmail'
               v-model='username'
-              :placeholder='isUsernameEmail ? $t(`auth:fields.email`) : $t(`auth:fields.username`)'
+              :placeholder='isUsernameEmail ? $t(`auth:fields.email`) : $t(`auth:fields.username`) + ` / ` + $t(`auth:fields.email`)'
               :type='isUsernameEmail ? `email` : `text`'
               :autocomplete='isUsernameEmail ? `email` : `username`'
               light
               )
             v-text-field.mt-2(
-              solo
-              flat
+              outlined
+              dense
               prepend-inner-icon='mdi-form-textbox-password'
-              background-color='white'
               color='primary'
               hide-details
               ref='iptPassword'
@@ -105,10 +100,9 @@
           .login-info {{ $t('auth:forgotPasswordSubtitle') }}
           .login-form
             v-text-field(
-              solo
-              flat
+              outlined
+              dense
               prepend-inner-icon='mdi-clipboard-account'
-              background-color='white'
               color='primary'
               hide-details
               ref='iptForgotPwdEmail'
@@ -143,10 +137,9 @@
           .login-form
             v-text-field.mt-2(
               type='password'
-              solo
-              flat
+              outlined
+              dense
               prepend-inner-icon='mdi-form-textbox-password'
-              background-color='white'
               color='primary'
               hide-details
               ref='iptNewPassword'
@@ -158,10 +151,9 @@
               password-strength(slot='progress', v-model='newPassword')
             v-text-field.mt-2(
               type='password'
-              solo
-              flat
+              outlined
+              dense
               prepend-inner-icon='mdi-form-textbox-password'
-              background-color='white'
               color='primary'
               hide-details
               v-model='newPasswordVerify'
@@ -698,76 +690,71 @@ export default {
 
 <style lang="scss">
   .login {
-    // Default: calm enterprise gradient in brand colors; a configured
-    // loginBgUrl (auth settings) still takes precedence as an inline style.
     background-color: mc('theme', 'navy');
-    background-image: linear-gradient(135deg, mc('theme', 'navy') 0%, mc('theme', 'primary-dark') 60%, mc('theme', 'primary') 100%);
+    background-image: linear-gradient(135deg, mc('theme', 'navy') 0%, mc('theme', 'primary-dark') 70%, mc('theme', 'primary') 100%);
     background-size: cover;
     background-position: center center;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &-sd {
-      background-color: rgba(255,255,255,.96);
-      border-left: 1px solid rgba(255,255,255,.85);
-      border-right: 1px solid rgba(255,255,255,.85);
-      box-shadow: 0 0 24px rgba(0, 12, 28, .25);
-      width: 450px;
-      height: 100%;
-      margin-left: 5vw;
+      background-color: #FFF;
+      border-radius: 10px;
+      box-shadow: 0 12px 40px rgba(0, 12, 28, .45);
+      width: 420px;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      padding: 8px 8px 20px 8px;
 
       @include until($tablet) {
-        margin-left: 0;
         width: 100%;
+        margin: 16px;
       }
     }
 
-    &-logo {
-      padding: 12px 0 0 12px;
-      width: 58px;
-      height: 58px;
-      background-color: mc('theme', 'navy');
-      margin-left: 12px;
-      border-bottom-left-radius: 6px;
-      border-bottom-right-radius: 6px;
-    }
-
-    &-title {
-      height: 58px;
-      padding-left: 12px;
+    &-head {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      text-shadow: .5px .5px #FFF;
+      padding: 28px 12px 4px 12px;
+
+      &-logo {
+        margin-bottom: 10px;
+      }
+
+      &-title {
+        color: mc('theme', 'navy');
+        font-weight: 600;
+      }
     }
 
     &-subtitle {
-      padding: 24px 12px 12px 12px;
-      color: #111;
+      padding: 18px 12px 6px 12px;
+      color: mc('grey', '700');
       font-weight: 500;
-      text-shadow: 1px 1px rgba(255,255,255,.5);
-      background-image: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.15));
       text-align: center;
-      border-bottom: 1px solid rgba(0,0,0,.3);
     }
 
     &-info {
-      border-top: 1px solid rgba(255,255,255,.85);
-      background-color: rgba(255,255,255,.15);
-      border-bottom: 1px solid rgba(0,0,0,.15);
+      background-color: mc('grey', '100');
+      border-radius: 6px;
+      margin: 0 12px;
       padding: 12px;
       font-size: 13px;
       text-align: center;
-      color: mc('grey', '900');
+      color: mc('grey', '800');
     }
 
     &-list {
-      border-top: 1px solid rgba(255,255,255,.85);
       padding: 12px;
     }
 
     &-form {
       padding: 12px;
-      border-top: 1px solid rgba(255,255,255,.85);
     }
 
     &-main {
