@@ -2,7 +2,7 @@
 # -- DO NOT USE IN PRODUCTION! --
 
 FROM node:24
-LABEL maintainer "requarks.io"
+LABEL maintainer "swissmakers.ch"
 
 RUN apt-get update && \
     apt-get install -y bash curl git python3 make g++ nano openssh-server gnupg && \

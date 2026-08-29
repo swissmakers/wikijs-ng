@@ -121,9 +121,6 @@ module.exports = {
     },
     {
       test: /\.svg$/,
-      exclude: [
-        path.join(process.cwd(), 'node_modules/grapesjs')
-      ],
       type: 'asset/resource',
       generator: {
         filename: 'svg/[name][ext]'

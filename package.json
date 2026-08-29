@@ -18,23 +18,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Requarks/wiki.git"
+    "url": "git+https://github.com/swissmakers/wikijs-ng.git"
   },
   "keywords": [
-    "wiki",
-    "wikis",
-    "docs",
+    "wikijs",
+    "wikijs-ng",
+    "swissmakers",
     "documentation",
     "markdown",
     "guides",
     "knowledge base"
   ],
-  "author": "Nicolas Giard",
+  "author": "Swissmakers GmbH",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/Requarks/wiki/issues"
+    "url": "https://github.com/swissmakers/wikijs-ng/issues"
   },
-  "homepage": "https://github.com/Requarks/wiki#readme",
+  "homepage": "https://github.com/swissmakers/wikijs-ng#readme",
   "engines": {
     "node": ">=24"
   },
@@ -257,7 +257,6 @@
     "stream-browserify": "3.0.0",
     "style-loader": "4.0.0",
     "terser-webpack-plugin": "5.6.1",
-    "twemoji-awesome": "1.0.6",
     "util": "0.12.5",
     "velocity-animate": "1.5.2",
     "viz.js": "2.1.2",
@@ -331,10 +330,5 @@
       "server/views/setup.pug",
       "server/views/legacy/master.pug"
     ]
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/wikijs",
-    "logo": "https://opencollective.com/opencollective/logo.txt"
   }
 }

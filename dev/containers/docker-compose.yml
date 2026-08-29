@@ -1,14 +1,13 @@
 # -- DEV DOCKER-COMPOSE --
 # -- DO NOT USE IN PRODUCTION! --
 
-version: "3"
 services:
   db:
     container_name: wiki-db
     image: postgres:17-alpine
     environment:
       POSTGRES_DB: wiki
-      POSTGRES_PASSWORD: swissmakers
+      POSTGRES_PASSWORD: changeme
       POSTGRES_USER: wikijs
     logging:
       driver: "none"

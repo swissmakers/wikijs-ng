@@ -30,7 +30,7 @@
                         ref='folderNameIpt'
                         )
                       i18next.caption.grey--text.text--darken-1.pl-5(path='editor:assets.folderNameNamingRules', tag='div')
-                        a(place='namingRules', href='https://docs-beta.requarks.io/guide/assets#naming-restrictions', target='_blank') {{$t('editor:assets.folderNameNamingRulesLink')}}
+                        a(place='namingRules', href='https://docs.requarks.io/guide/assets#naming-restrictions', target='_blank') {{$t('editor:assets.folderNameNamingRulesLink')}}
                     v-card-chin
                       v-spacer
                       v-btn(text, @click='newFolderDialog = false') {{$t('common:actions.cancel')}}

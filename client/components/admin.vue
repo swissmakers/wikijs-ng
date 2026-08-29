@@ -115,7 +115,7 @@
             v-divider.my-2
           v-list-item(to='/contribute', color='primary')
             v-list-item-avatar(size='24', tile): v-icon mdi-heart-outline
-            v-list-item-title {{ $t('admin:contribute.title') }}
+            v-list-item-title About
 
     v-main(:class='$vuetify.theme.dark ? "grey darken-5" : "grey lighten-5"')
       transition(name='admin-router')
@@ -172,7 +172,6 @@ const router = new VueRouter({
     { path: '/ssl', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-ssl.vue') },
     { path: '/system', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-system.vue') },
     { path: '/utilities', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-utilities.vue') },
-    { path: '/webhooks', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-webhooks.vue') },
     { path: '/dev-flags', component: () => import(/* webpackChunkName: "admin-dev" */ './admin/admin-dev-flags.vue') },
     { path: '/contribute', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-contribute.vue') }
   ]
@@ -279,10 +278,10 @@ export default {
 .theme--dark {
   .admin-sidebar .v-list__tile--active {
     background-color: rgba(0,0,0, .2);
-    color: mc('blue', '500') !important;
+    color: mc('theme', 'accent') !important;
 
     .v-icon {
-      color: mc('blue', '500');
+      color: mc('theme', 'accent');
     }
   }
 }
