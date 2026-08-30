@@ -3,6 +3,7 @@ query {
     tags {
       tag
       title
+      count
     }
   }
 }

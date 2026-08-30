@@ -271,7 +271,9 @@ module.exports = () => {
 
       // Load search engines + enable default
       await WIKI.models.searchEngines.refreshSearchEnginesFromDisk()
-      await WIKI.models.searchEngines.query().patch({ isEnabled: true }).where('key', 'db')
+      // -> Pick the best search engine available for the configured database
+      const defaultSearchEngine = (WIKI.config.db.type === 'mariadb' || WIKI.config.db.type === 'mysql') ? 'mariadb' : 'db'
+      await WIKI.models.searchEngines.query().patch({ isEnabled: true }).where('key', defaultSearchEngine)
 
       // Load storage targets
       await WIKI.models.storage.refreshTargetsFromDisk()

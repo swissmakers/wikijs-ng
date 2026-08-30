@@ -163,7 +163,8 @@ module.exports = {
     await pipeline(
       WIKI.models.knex.column('path', 'localeCode', 'title', 'description', 'render').select().from('pages').where({
         isPublished: true,
-        isPrivate: false
+        isPrivate: false,
+        isTemplate: false
       }).stream(),
       new Transform({
         objectMode: true,
