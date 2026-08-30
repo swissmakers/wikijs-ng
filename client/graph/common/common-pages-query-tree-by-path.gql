@@ -1,0 +1,24 @@
+query ($path: String!, $locale: String!) {
+  pages {
+    treeByPath(path: $path, locale: $locale) {
+      folder {
+        id
+        path
+        title
+        isFolder
+        pageId
+        locale
+      }
+      children {
+        id
+        path
+        title
+        isFolder
+        pageId
+        locale
+        description
+        updatedAt
+      }
+    }
+  }
+}
