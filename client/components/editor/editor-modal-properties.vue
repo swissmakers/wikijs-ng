@@ -101,6 +101,14 @@
               persistent-hint
               inset
               )
+            v-switch(
+              :label='$t(`editor:props.templateToggle`, { defaultValue: `Use as Template` })'
+              v-model='isTemplate'
+              color='primary'
+              :hint='$t(`editor:props.templateToggleHint`, { defaultValue: `Offer this page as a starting template when creating new pages. Template pages are excluded from search results.` })'
+              persistent-hint
+              inset
+              )
           v-divider
           v-card-text.grey.pt-5(:class='$vuetify.theme.dark ? `darken-3-d3` : `lighten-5`')
             v-container.pa-0(fluid, grid-list-lg)
@@ -295,6 +303,7 @@ export default {
     tags: sync('page/tags'),
     path: sync('page/path'),
     isPublished: sync('page/isPublished'),
+    isTemplate: sync('page/isTemplate'),
     publishStartDate: sync('page/publishStartDate'),
     publishEndDate: sync('page/publishEndDate'),
     scriptJs: sync('page/scriptJs'),

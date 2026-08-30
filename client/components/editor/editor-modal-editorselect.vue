@@ -56,12 +56,28 @@
                   img(src='/_assets/svg/icon-cube.svg', alt='From Template', style='width: 42px; opacity: .5;')
                   .body-2.mt-1.teal--text From Template
                   .caption.grey--text Use an existing page...
+        template(v-if='templates.length > 0')
+          v-divider.mx-4
+          .subtitle-2.white--text.mt-4 {{$t('editor:select.templates', { defaultValue: 'Templates' })}}
+          v-container(grid-list-lg, fluid)
+            v-layout(row, wrap, justify-center)
+              v-flex(xs6, sm4, v-for='tmpl of templates', :key='`tmpl-` + tmpl.id')
+                v-card.radius-7.animated.fadeInUp(
+                  hover
+                  light
+                  ripple
+                  )
+                  v-card-text.text-center(@click='useTemplate(tmpl)')
+                    v-icon(color='teal', size='32') mdi-file-document-multiple-outline
+                    .body-2.primary--text.mt-2.text-truncate {{tmpl.title}}
+                    .caption.grey--text.text-truncate {{tmpl.description || tmpl.path}}
 
     page-selector(mode='select', v-model='templateDialogIsShown', :open-handler='fromTemplateHandle', :path='path', :locale='locale', must-exist)
 </template>
 
 <script>
 import _ from 'lodash'
+import gql from 'graphql-tag'
 import { sync, get } from 'vuex-pathify'
 
 export default {
@@ -73,7 +89,8 @@ export default {
   },
   data() {
     return {
-      templateDialogIsShown: false
+      templateDialogIsShown: false,
+      templates: []
     }
   },
   computed: {
@@ -102,6 +119,34 @@ export default {
       this.$nextTick(() => {
         window.location.assign(`/e/${this.locale}/${this.path}?from=${id}`)
       })
+    },
+    useTemplate (tmpl) {
+      this.isShown = false
+      this.$nextTick(() => {
+        window.location.assign(`/e/${this.locale}/${this.path}?from=${tmpl.id}`)
+      })
+    }
+  },
+  apollo: {
+    templates: {
+      query: gql`
+        {
+          pages {
+            templates {
+              id
+              path
+              locale
+              title
+              description
+            }
+          }
+        }
+      `,
+      fetchPolicy: 'network-only',
+      update: (data) => _.get(data, 'pages.templates', []),
+      skip () {
+        return !this.isShown
+      }
     }
   }
 }
