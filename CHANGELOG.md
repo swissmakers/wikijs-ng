@@ -4,6 +4,62 @@ All notable changes to **wikijs-ng** (fork of [Requarks/wiki](https://github.com
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.7.0] - Unreleased
+
+### Added — navigation & content discovery
+
+- **Folder view for virtual folders.** Navigating to a path that has no page of its own but *does* have child pages (e.g. clicking an intermediate breadcrumb segment) now renders a proper folder page with the normal chrome (header, sidebar, breadcrumbs) listing all subfolders and pages the user may read, plus a "Create this page" action for editors. Previously this was a dead-end fullscreen splash. Backed by a new `pages.treeByPath` GraphQL query (permission-filtered) and a `folder` server view; the browse sidebar now also recovers when the current path is a folder instead of silently staying empty.
+- **Scoped search.** The search overlay gained filter chips to restrict results to the current locale and/or the current path subtree — the server side of this existed but was never exposed in the UI.
+- **Tag browser improvements**: a filter box for the tag list, per-tag page counts, and the `?sort=` URL parameter is no longer appended when the default order is active.
+
+### Added — search
+
+- **New MariaDB/MySQL search engine** (`Database - MariaDB / MySQL`) using InnoDB FULLTEXT indexes over title, description *and page content* with relevance ranking (title matches boosted), boolean-mode prefix fallback for partial words, real total hit counts and title-based suggestions. New installations on MariaDB/MySQL get it by default; existing installations can enable it under Admin → Search Engine (then Rebuild Index). Ops note: set `innodb_ft_min_token_size=2` (and rebuild the index) if 2-character terms must be searchable.
+- The basic database engine now tokenizes the query (all words must match, in any field), orders title matches first, returns real totals and offers title-prefix suggestions.
+
+### Added — editing
+
+- **Server-side drafts with autosave.** The editor saves a draft (per user + page) every 30 seconds while you type. Reopening the editor after a crash, closed tab or losing an edit session offers to restore or discard the draft; drafts are cleared automatically on successful save.
+- **Page templates.** Any page can be marked "Use as Template" in the page properties. Templates appear as one-click starting points in the new-page dialog (reusing the existing copy-from-page mechanism), are excluded from search indexing, and only require read access to be used.
+- Inserting a page link from an editor now uses the target page's **title** as the link text instead of the last path segment.
+- The page selector dialog gained **search-as-you-type** (by title, with path shown), page paths under each title in the browse list, and a "Recent" section of the last 8 selected pages.
+
+### Added — asset management
+
+- **Full folder management**: rename, move and delete asset folders (with optional recursive delete of contents) — previously folders could only ever be created. All operations recompute the affected asset hashes, flush caches and emit the proper storage events, so git/disk/S3/Azure sync targets follow along (moves become `git mv`, not delete+add).
+- **Move assets between folders**, from the editor's media manager (new Move action) and the new admin area.
+- **New Admin → Assets page**: full-page asset manager with a folder tree, sortable file table, multi-select bulk move/delete, uploads into any folder, and drag & drop of files onto folders to move them. A header shortcut ("Images & Files") appears for users with asset permissions.
+- Server-side sorting arguments on the asset list API and a one-request `folderTree` query.
+
+### Added — administration
+
+- **Page rule presets and import/export**: the group page-rules editor's overflow menu now works — three starter presets (read-only / editors / restricted section), JSON export of a group's rules, and JSON import with validation and regenerated rule IDs.
+- Vendored **English and German locale files** (`server/locales/en.yml`, `de.yml`) are always loaded as the base translation layer, with database strings (downloaded packs, admin overrides) on top. A fresh install now renders a fully translated UI with **no connection to the upstream localization service**; the optional daily sync still works when enabled.
+
+### Changed — user interface
+
+- **System pages redesigned** (page-not-found, create-page prompt, unauthorized, welcome, error) as centered cards on the brand gradient, matching the login screen; the create-page prompt no longer shows a "deleted file" icon.
+- **Page view refresh**: larger navy page title with the tags shown as chips directly in the header, an author/date footer strip under the content (freeing the sidebar), a table-of-contents with active-section highlighting (scroll-spy) instead of chevron rows, a collapsible TOC above the content on tablet/mobile, better content line-height and heading rhythm, and the edit speed-dial no longer collides with the footer on phones.
+- **Admin area polish**: modernized page headers (icon in a tinted tile), content constrained to a readable width on ultra-wide screens, active sidebar item highlight fixed (stale Vuetify 1 selector), and a new Assets entry in the Site section.
+- **Profile area polish** (`/p/profile`, `/p/pages`): same modernized header treatment as the admin area, brand-colored card toolbars instead of the old blue-grey/purple/teal mix, content width constrained, a quick-filter box on the "My Pages" list, and the fake "Comments posted: 0" stat removed.
+- **Dark mode: readable primary-colored text.** The dark theme's deep primary (`#0f3c78`) stays on surfaces (buttons, header), but `primary--text`, links (`anchor`) and `info` elements now use a readable light blue (`#659DE7`) — tag chips, overline titles and in-content links are legible again.
+- Removed remaining upstream `docs.requarks.io` help links from the admin pages and page selector.
+
+### Fixed
+
+- `assetFolders` model: the `parent` relation joined on the wrong column and `getAllPaths()` could crash on a missing parent — both fixed (required for the new folder operations).
+- Tag browsing: multi-tag selection duplicates removed; sort parameter comparison bug fixed.
+
+### Removed — dead weight ("coming soon" stubs)
+
+- Stub admin pages that only said "coming soon": Editor, Logging (+ live console), Extensions (read-only, uninstallable); their routes are gone.
+- The dead puppeteer extension (its availability check tested for the wrong binary and nothing ever called it), the empty Solr/Sphinx/Manticore search engine stubs, the commented-out page rating/bookmark/comment-count widgets, the "My Wiki" and site-map menu remnants, the profile "Comments" stub page, the disabled recycle-bin button, ratings/personal-wikis admin toggles, and the dead `tag.js` resolver (100% commented-out code).
+- `theme.yml` no longer declares broken, unwired theme props (`showTags` was declared three times).
+
+### Database
+
+- New migrations `2.7.0` (asset folder/file indexes), `2.7.1` (`pageDrafts` table), `2.7.2` (`pages.isTemplate` column). Applied automatically on first start.
+
 ## [2.6.0] - Unreleased
 
 ### Changed — User interface refresh (Swissmakers branding)
