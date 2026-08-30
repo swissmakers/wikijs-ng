@@ -161,6 +161,7 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
     _.set(res.locals, 'pageMeta.description', page.description)
     page.mode = 'update'
     page.isPublished = (page.isPublished === true || page.isPublished === 1) ? 'true' : 'false'
+    page.isTemplate = (page.isTemplate === true || page.isTemplate === 1) ? 'true' : 'false'
     page.content = Buffer.from(page.content).toString('base64')
   } else {
     // -> CREATE MODE
@@ -178,6 +179,7 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
       content: null,
       title: null,
       description: null,
+      isTemplate: 'false',
       updatedAt: new Date().toISOString(),
       extra: {
         css: '',
@@ -219,7 +221,9 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
           _.set(res.locals, 'pageMeta.title', 'Page Not Found')
           return res.status(404).render('notfound', { action: 'template' })
         }
-        if (!WIKI.auth.checkAccess(req.user, ['read:source'], { path: pageOriginal.path, locale: pageOriginal.locale })) {
+        // -> Template pages only require read access; other pages require source access
+        const tmplRequiredPermissions = (pageOriginal.isTemplate === true || pageOriginal.isTemplate === 1) ? ['read:pages'] : ['read:source']
+        if (!WIKI.auth.checkAccess(req.user, tmplRequiredPermissions, { path: pageOriginal.path, locale: pageOriginal.locale })) {
           _.set(res.locals, 'pageMeta.title', 'Unauthorized')
           return res.status(403).render('unauthorized', { action: 'source' })
         }
@@ -459,6 +463,17 @@ router.get('/*', async (req, res, next) => {
       _.set(res, 'locals.siteConfig.lang', pageArgs.locale)
       _.set(res, 'locals.siteConfig.rtl', req.i18n.dir() === 'rtl')
 
+      // -> Build sidebar navigation
+      let sdi = 1
+      const sidebar = (await WIKI.models.navigation.getTree({ cache: true, locale: pageArgs.locale, groups: req.user.groups })).map(n => ({
+        i: `sdi-${sdi++}`,
+        k: n.kind,
+        l: n.label,
+        c: n.icon,
+        y: n.targetType,
+        t: n.target
+      }))
+
       if (page) {
         _.set(res.locals, 'pageMeta.title', page.title)
         _.set(res.locals, 'pageMeta.description', page.description)
@@ -477,17 +492,6 @@ router.get('/*', async (req, res, next) => {
             action: 'view'
           })
         }
-
-        // -> Build sidebar navigation
-        let sdi = 1
-        const sidebar = (await WIKI.models.navigation.getTree({ cache: true, locale: pageArgs.locale, groups: req.user.groups })).map(n => ({
-          i: `sdi-${sdi++}`,
-          k: n.kind,
-          l: n.label,
-          c: n.icon,
-          y: n.targetType,
-          t: n.target
-        }))
 
         // -> Build theme code injection
         const injectCode = {
@@ -562,11 +566,28 @@ router.get('/*', async (req, res, next) => {
         _.set(res.locals, 'pageMeta.title', 'Welcome')
         res.render('welcome', { locale: pageArgs.locale })
       } else {
-        _.set(res.locals, 'pageMeta.title', 'Page Not Found')
-        if (effectivePermissions.pages.write) {
-          res.status(404).render('new', { path: pageArgs.path, locale: pageArgs.locale })
+        // -> Virtual folder with children? Render a browsable folder view instead of a dead end
+        const folderRow = await WIKI.models.knex('pageTree').first('id').where({
+          path: pageArgs.path,
+          localeCode: pageArgs.locale,
+          isFolder: true
+        })
+        if (folderRow) {
+          _.set(res.locals, 'pageMeta.title', _.startCase(_.last(pageArgs.path.split('/'))))
+          res.set('X-Robots-Tag', 'noindex')
+          res.render('folder', {
+            path: pageArgs.path,
+            locale: pageArgs.locale,
+            sidebar,
+            effectivePermissions
+          })
         } else {
-          res.status(404).render('notfound', { action: 'view' })
+          _.set(res.locals, 'pageMeta.title', 'Page Not Found')
+          if (effectivePermissions.pages.write) {
+            res.status(404).render('new', { path: pageArgs.path, locale: pageArgs.locale })
+          } else {
+            res.status(404).render('notfound', { action: 'view' })
+          }
         }
       }
     } catch (err) {

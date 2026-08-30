@@ -306,6 +306,7 @@ module.exports = class Page extends Model {
       hash: pageHelper.generateHash({ path: opts.path, locale: opts.locale, privateNS: opts.isPrivate ? 'TODO' : '' }),
       isPrivate: opts.isPrivate,
       isPublished: opts.isPublished,
+      isTemplate: opts.isTemplate === true,
       localeCode: opts.locale,
       path: opts.path,
       publishEndDate: opts.publishEndDate || '',
@@ -335,10 +336,12 @@ module.exports = class Page extends Model {
     // -> Rebuild page tree
     await WIKI.models.pages.rebuildTree()
 
-    // -> Add to Search Index
-    const pageContents = await WIKI.models.pages.query().findById(page.id).select('render')
-    page.safeContent = WIKI.models.pages.cleanHTML(pageContents.render)
-    await WIKI.data.searchEngine.created(page)
+    // -> Add to Search Index (templates are excluded)
+    if (!page.isTemplate) {
+      const pageContents = await WIKI.models.pages.query().findById(page.id).select('render')
+      page.safeContent = WIKI.models.pages.cleanHTML(pageContents.render)
+      await WIKI.data.searchEngine.created(page)
+    }
 
     // -> Add to Storage
     if (!opts.skipStorage) {
@@ -428,6 +431,7 @@ module.exports = class Page extends Model {
       content: opts.content,
       description: opts.description,
       isPublished: opts.isPublished === true || opts.isPublished === 1,
+      ...(_.isBoolean(opts.isTemplate) && { isTemplate: opts.isTemplate }),
       publishEndDate: opts.publishEndDate || '',
       publishStartDate: opts.publishStartDate || '',
       title: opts.title,
@@ -446,10 +450,14 @@ module.exports = class Page extends Model {
     await WIKI.models.pages.renderPage(page)
     WIKI.events.outbound.emit('deletePageFromCache', page.hash)
 
-    // -> Update Search Index
-    const pageContents = await WIKI.models.pages.query().findById(page.id).select('render')
-    page.safeContent = WIKI.models.pages.cleanHTML(pageContents.render)
-    await WIKI.data.searchEngine.updated(page)
+    // -> Update Search Index (templates are excluded)
+    if (page.isTemplate) {
+      await WIKI.data.searchEngine.deleted(page)
+    } else {
+      const pageContents = await WIKI.models.pages.query().findById(page.id).select('render')
+      page.safeContent = WIKI.models.pages.cleanHTML(pageContents.render)
+      await WIKI.data.searchEngine.updated(page)
+    }
 
     // -> Update on Storage
     if (!opts.skipStorage) {
@@ -986,6 +994,7 @@ module.exports = class Page extends Model {
           'pages.description',
           'pages.isPrivate',
           'pages.isPublished',
+          'pages.isTemplate',
           'pages.privateNS',
           'pages.publishStartDate',
           'pages.publishEndDate',

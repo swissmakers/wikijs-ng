@@ -210,7 +210,11 @@ module.exports = {
           locale: r.locale
         })
       }).flatMap(r => r.tags)
-      return _.orderBy(_.uniqBy(allTags, 'id'), ['tag'], ['asc'])
+      const tagCounts = _.countBy(allTags, 'id')
+      return _.orderBy(_.uniqBy(allTags, 'id'), ['tag'], ['asc']).map(t => ({
+        ...t,
+        count: tagCounts[t.id] || 0
+      }))
     },
     /**
      * SEARCH TAGS
@@ -292,6 +296,91 @@ module.exports = {
         parent: r.parent || 0,
         locale: r.localeCode
       }))
+    },
+    /**
+     * FETCH FOLDER + CHILDREN BY PATH
+     */
+    async treeByPath (obj, args, context, info) {
+      if (!args.locale) { args.locale = WIKI.config.lang.code }
+
+      const folder = await WIKI.models.knex('pageTree').first('*').where({
+        path: args.path,
+        localeCode: args.locale
+      })
+      if (!folder) {
+        return null
+      }
+
+      const results = await WIKI.models.knex('pageTree')
+        .column('pageTree.*', { description: 'pages.description' }, { updatedAt: 'pages.updatedAt' })
+        .leftJoin('pages', 'pageTree.pageId', 'pages.id')
+        .where({
+          'pageTree.localeCode': args.locale,
+          'pageTree.parent': folder.id
+        })
+        .orderBy([{ column: 'pageTree.isFolder', order: 'desc' }, 'pageTree.title'])
+
+      const mapItem = r => ({
+        ...r,
+        parent: r.parent || 0,
+        locale: r.localeCode
+      })
+
+      return {
+        folder: WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
+          path: folder.path,
+          locale: folder.localeCode
+        }) ? mapItem(folder) : null,
+        children: results.filter(r => {
+          return WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
+            path: r.path,
+            locale: r.localeCode
+          })
+        }).map(mapItem)
+      }
+    },
+    /**
+     * FETCH CURRENT USER'S DRAFT FOR A PATH
+     */
+    async draft (obj, args, context, info) {
+      if (!args.locale) { args.locale = WIKI.config.lang.code }
+      const draft = await WIKI.models.pageDrafts.query().findOne({
+        authorId: context.req.user.id,
+        path: args.path,
+        localeCode: args.locale
+      })
+      if (!draft) {
+        return null
+      }
+      return {
+        ...draft,
+        locale: draft.localeCode,
+        editor: draft.editorKey
+      }
+    },
+    /**
+     * FETCH TEMPLATE PAGES
+     */
+    async templates (obj, args, context, info) {
+      const results = await WIKI.models.pages.query().column([
+        'pages.id',
+        'path',
+        { locale: 'localeCode' },
+        'title',
+        'description',
+        'contentType',
+        'isPublished',
+        'isPrivate',
+        'privateNS',
+        'createdAt',
+        'updatedAt'
+      ]).where('isTemplate', true).orderBy('title')
+      return results.filter(r => {
+        return WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
+          path: r.path,
+          locale: r.locale
+        })
+      })
     },
     /**
      * FETCH PAGE LINKS
@@ -419,6 +508,51 @@ module.exports = {
         return {
           responseResult: graphHelper.generateSuccess('Page has been updated.'),
           page
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
+    /**
+     * SAVE DRAFT
+     */
+    async saveDraft(obj, args, context) {
+      try {
+        if (!WIKI.auth.checkAccess(context.req.user, ['write:pages'], {
+          locale: args.locale,
+          path: args.path
+        })) {
+          throw new WIKI.Error.PageUpdateForbidden()
+        }
+        await WIKI.models.pageDrafts.saveDraft({
+          authorId: context.req.user.id,
+          pageId: args.pageId,
+          path: args.path,
+          localeCode: args.locale,
+          title: args.title,
+          description: args.description || '',
+          content: args.content,
+          editorKey: args.editor
+        })
+        return {
+          responseResult: graphHelper.generateSuccess('Draft saved successfully.')
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
+    /**
+     * DISCARD DRAFT
+     */
+    async discardDraft(obj, args, context) {
+      try {
+        await WIKI.models.pageDrafts.query().delete().where({
+          authorId: context.req.user.id,
+          path: args.path,
+          localeCode: args.locale
+        })
+        return {
+          responseResult: graphHelper.generateSuccess('Draft discarded successfully.')
         }
       } catch (err) {
         return graphHelper.generateError(err)
