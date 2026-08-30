@@ -1,16 +1,17 @@
 <template lang='pug'>
   v-app
-    .unauthorized
-      .unauthorized-content
-        img.animated.fadeIn(src='/_assets/svg/icon-delete-shield.svg', alt='Unauthorized')
-        .headline {{$t('unauthorized.title')}}
-        .subtitle-1.mt-3 {{$t('unauthorized.action.' + action)}}
-        v-btn.mt-5(href='/login', x-large)
-          v-icon(left) mdi-login
-          span {{$t('unauthorized.login')}}
-        v-btn.mt-5(color='red lighten-4', href='javascript:window.history.go(-1);', outlined)
-          v-icon(left) mdi-arrow-left
-          span {{$t('unauthorized.goback')}}
+    .system-page
+      .system-page-card.animated.fadeIn
+        v-icon(size='96', color='error') mdi-shield-lock-outline
+        .system-page-title {{$t('unauthorized.title')}}
+        .system-page-subtitle {{$t('unauthorized.action.' + action)}}
+        .system-page-actions
+          v-btn(href='/login', color='primary', depressed, x-large)
+            v-icon(left) mdi-login
+            span {{$t('unauthorized.login')}}
+          v-btn(color='primary', text, href='javascript:window.history.go(-1);')
+            v-icon(left) mdi-arrow-left
+            span {{$t('unauthorized.goback')}}
 </template>
 
 <script>

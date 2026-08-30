@@ -1,5 +1,6 @@
 .app-error {
-  background: linear-gradient(to bottom, mc('grey', '900') 0%, mc('grey', '800') 100%);
+  background-color: mc('theme', 'navy');
+  background-image: linear-gradient(135deg, mc('theme', 'navy') 0%, mc('theme', 'primary-dark') 70%, mc('theme', 'primary') 100%);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -9,52 +10,11 @@
   font-family: Roboto, Arial, sans-serif;
 
   img {
-    width: 250px;
-    filter: grayscale(50%) brightness(120%);
-    animation: errorlogo 5s linear infinite;
-    margin-bottom: 3rem;
+    width: 200px;
+    margin-bottom: 2rem;
 
     @include until($tablet) {
-      width: 200px;
-    }
-  }
-
-  @keyframes errorlogo {
-    0% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(110deg);
-    }
-    10% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(110deg) invert(100%);
-    }
-    15% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(110deg) invert(0%);
-    }
-    30% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(110deg);
-    }
-    32% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(2700deg) invert(100%);
-    }
-    34% {
-      filter: blur(0) grayscale(100%) brightness(50%) hue-rotate(110deg);
-    }
-    50% {
-      filter: blur(0) grayscale(100%) brightness(200%) hue-rotate(110deg) sepia(0%);
-    }
-    55% {
-      filter: blur(0) grayscale(100%) brightness(100%) hue-rotate(110deg) sepia(100%);
-    }
-    60% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(110deg) sepia(0%);
-    }
-    90% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(110deg);
-    }
-    95% {
-      filter: blur(5px) grayscale(50%) brightness(200%) hue-rotate(720deg);
-    }
-    100% {
-      filter: blur(0) grayscale(50%) brightness(200%) hue-rotate(110deg) invert(100%);
+      width: 150px;
     }
   }
 
@@ -64,13 +24,16 @@
 
   > span {
     margin-top: 1rem;
+    opacity: .85;
   }
 
   > pre {
     margin-top: 2rem;
+    max-width: 90vw;
+    overflow-x: auto;
 
     code {
-      color: mc('grey', '500');
+      color: rgba(255, 255, 255, .6);
       font-size: .8rem;
     }
   }

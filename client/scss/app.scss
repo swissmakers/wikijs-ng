@@ -21,10 +21,12 @@
 // @import '~xterm/dist/xterm.css';
 // @import 'node_modules/diff2html/dist/diff2html.min';
 
-@import 'pages/new';
-@import 'pages/notfound';
-@import 'pages/unauthorized';
-@import 'pages/welcome';
+@import 'pages/system-page';
 @import 'pages/error';
 
 @import 'layout/_rtl';
+
+.v-application.theme--dark .primary--text {
+  color: mc('theme', 'primary-text-dark') !important;
+  caret-color: mc('theme', 'primary-text-dark') !important;
+}
