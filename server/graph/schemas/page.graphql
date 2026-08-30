@@ -65,6 +65,18 @@ type PageQuery {
     includeAncestors: Boolean
   ): [PageTreeItem] @auth(requires: ["manage:system", "read:pages"])
 
+  treeByPath(
+    path: String!
+    locale: String!
+  ): PageTreeChildrenResult @auth(requires: ["manage:system", "read:pages"])
+
+  draft(
+    path: String!
+    locale: String!
+  ): PageDraft @auth(requires: ["write:pages", "manage:pages", "manage:system"])
+
+  templates: [PageListItem!]! @auth(requires: ["write:pages", "manage:pages", "manage:system"])
+
   links(
     locale: String!
   ): [PageLinkItem] @auth(requires: ["manage:system", "read:pages"])
@@ -98,6 +110,7 @@ type PageMutation {
     scriptJs: String
     tags: [String]!
     title: String!
+    isTemplate: Boolean
   ): PageResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
   update(
@@ -115,7 +128,23 @@ type PageMutation {
     scriptJs: String
     tags: [String]
     title: String
+    isTemplate: Boolean
   ): PageResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
+
+  saveDraft(
+    pageId: Int
+    path: String!
+    locale: String!
+    title: String!
+    description: String
+    content: String!
+    editor: String!
+  ): DefaultResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
+
+  discardDraft(
+    path: String!
+    locale: String!
+  ): DefaultResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
   convert(
     id: Int!
@@ -207,12 +236,27 @@ type Page {
   creatorId: Int! @auth(requires: ["write:pages", "manage:system"])
   creatorName: String! @auth(requires: ["write:pages", "manage:system"])
   creatorEmail: String! @auth(requires: ["write:pages", "manage:system"])
+  isTemplate: Boolean
+}
+
+type PageDraft {
+  id: Int!
+  pageId: Int
+  path: String!
+  locale: String!
+  title: String
+  description: String
+  content: String
+  editor: String!
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 type PageTag {
   id: Int!
   tag: String!
   title: String
+  count: Int
   createdAt: Date!
   updatedAt: Date!
 }
@@ -294,6 +338,13 @@ type PageTreeItem {
   parent: Int
   pageId: Int
   locale: String!
+  description: String
+  updatedAt: Date
+}
+
+type PageTreeChildrenResult {
+  folder: PageTreeItem
+  children: [PageTreeItem]!
 }
 
 type PageLinkItem {

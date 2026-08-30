@@ -8,8 +8,6 @@
             .headline.primary--text.animated.fadeInLeft {{$t('admin:search.title')}}
             .subtitle-1.grey--text.animated.fadeInLeft.wait-p2s {{$t('admin:search.subtitle')}}
           v-spacer
-          v-btn.mr-3.animated.fadeInDown.wait-p3s(icon, outlined, color='grey', href='https://docs.requarks.io/search', target='_blank')
-            v-icon mdi-help-circle
           v-btn.animated.fadeInDown.wait-p2s(icon, outlined, color='grey', @click='refresh')
             v-icon mdi-refresh
           v-btn.mx-3.animated.fadeInDown.wait-p1s(color='black', dark, depressed, @click='rebuild')

@@ -1,16 +1,17 @@
 <template lang='pug'>
   v-app
-    .newpage
-      .newpage-content
-        img.animated.fadeIn(src='/_assets/svg/icon-delete-file.svg', alt='Not Found')
-        .headline {{ $t('newpage.title') }}
-        .subtitle-1.mt-3 {{ $t('newpage.subtitle') }}
-        v-btn.mt-5(:href='`/e/` + locale + `/` + path', x-large)
-          v-icon(left) mdi-plus
-          span {{ $t('newpage.create') }}
-        v-btn.mt-5(color='purple lighten-3', href='javascript:window.history.go(-1);', outlined)
-          v-icon(left) mdi-arrow-left
-          span {{ $t('newpage.goback') }}
+    .system-page
+      .system-page-card.animated.fadeIn
+        v-icon(size='96', color='primary') mdi-file-plus-outline
+        .system-page-title {{ $t('newpage.title') }}
+        .system-page-subtitle {{ $t('newpage.subtitle') }}
+        .system-page-actions
+          v-btn(:href='`/e/` + locale + `/` + path', color='primary', depressed, x-large)
+            v-icon(left) mdi-plus
+            span {{ $t('newpage.create') }}
+          v-btn(color='primary', text, href='javascript:window.history.go(-1);')
+            v-icon(left) mdi-arrow-left
+            span {{ $t('newpage.goback') }}
 </template>
 
 <script>

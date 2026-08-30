@@ -8,8 +8,6 @@
             .headline.primary--text.animated.fadeInLeft {{$t('navigation.title')}}
             .subtitle-1.grey--text.animated.fadeInLeft.wait-p4s {{$t('navigation.subtitle')}}
           v-spacer
-          v-btn.animated.fadeInDown.wait-p3s(icon, outlined, color='grey', href='https://docs.requarks.io/navigation', target='_blank')
-            v-icon mdi-help-circle
           v-btn.mx-3.animated.fadeInDown.wait-p2s.mr-3(icon, outlined, color='grey', @click='refresh')
             v-icon mdi-refresh
           v-btn.animated.fadeInDown(color='success', depressed, @click='save', large)

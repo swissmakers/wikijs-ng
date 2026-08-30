@@ -3,6 +3,16 @@
     nav-header
     v-navigation-drawer.pb-0.elevation-1(app, fixed, clipped, :right='$vuetify.rtl', permanent, width='300')
       vue-scroll(:ops='scrollStyle')
+        .px-3.pt-3
+          v-text-field(
+            v-model='tagFilter'
+            :label='$t(`tags:filterTagsPlaceholder`, { defaultValue: `Filter tags...` })'
+            outlined
+            dense
+            hide-details
+            prepend-inner-icon='mdi-magnify'
+            clearable
+          )
         v-list(dense, nav)
           v-list-item(href='/')
             v-list-item-icon: v-icon mdi-home
@@ -15,6 +25,8 @@
                 v-icon(v-if='isSelected(tag.tag)', color='primary') mdi-checkbox-intermediate
                 v-icon(v-else) mdi-checkbox-blank-outline
               v-list-item-title {{tag.title}}
+              v-list-item-action.my-0(v-if='tag.count')
+                v-chip(x-small, label, outlined) {{tag.count}}
     v-content.grey(:class='$vuetify.theme.dark ? `darken-4-d5` : `lighten-3`')
       v-toolbar(color='primary', dark, flat, height='58')
         template(v-if='selection.length > 0')
@@ -171,6 +183,7 @@ export default {
     return {
       tags: [],
       selection: [],
+      tagFilter: '',
       innerSearch: '',
       locale: 'any',
       locales: [],
@@ -211,7 +224,11 @@ export default {
   },
   computed: {
     tagsGrouped () {
-      return _.groupBy(this.tags, t => t.title.charAt(0).toUpperCase())
+      const filter = _.trim(this.tagFilter).toLowerCase()
+      const tags = filter.length > 0
+        ? _.filter(this.tags, t => t.title.toLowerCase().includes(filter) || t.tag.includes(filter))
+        : this.tags
+      return _.groupBy(tags, t => t.title.charAt(0).toUpperCase())
     },
     tagsSelected () {
       return _.filter(this.tags, t => _.includes(this.selection, t.tag))
@@ -285,7 +302,7 @@ export default {
       if (this.locale !== `any`) {
         _.set(urlObj, 'query.lang', this.locale)
       }
-      if (this.orderBy !== `TITLE`) {
+      if (this.orderBy !== `title`) {
         _.set(urlObj, 'query.sort', this.orderBy.toLowerCase())
       }
       if (this.orderByDirection !== 0) {

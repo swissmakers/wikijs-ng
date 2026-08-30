@@ -1,0 +1,11 @@
+extends master.pug
+
+block body
+  #root
+    folder-view(
+      locale=locale
+      path=path
+      sidebar=Buffer.from(JSON.stringify(sidebar)).toString('base64')
+      nav-mode=config.nav.mode
+      effective-permissions=Buffer.from(JSON.stringify(effectivePermissions)).toString('base64')
+      )

@@ -1,13 +1,18 @@
 <template lang='pug'>
   v-app
-    .notfound
-      .notfound-content
-        img.animated.fadeIn(src='/_assets/svg/icon-delete-file.svg', alt='Not Found')
-        .headline {{$t('notfound.title')}}
-        .subheading.mt-3 {{$t('notfound.subtitle')}}
-        v-btn.mt-5(color='red lighten-4', href='/', large, outlined)
-          v-icon(left) mdi-home
-          span {{$t('notfound.gohome')}}
+    .system-page
+      .system-page-card.animated.fadeIn
+        v-icon(size='96', color='error') mdi-text-box-remove-outline
+        .system-page-title {{$t('notfound.title')}}
+        .system-page-subtitle {{$t('notfound.subtitle')}}
+        .system-page-hint {{$t('notfound.searchHint', { defaultValue: 'Tip: use the search bar on the home page to find what you were looking for.' })}}
+        .system-page-actions
+          v-btn(color='primary', href='/', depressed, x-large)
+            v-icon(left) mdi-home
+            span {{$t('notfound.gohome')}}
+          v-btn(color='primary', text, href='javascript:window.history.go(-1);')
+            v-icon(left) mdi-arrow-left
+            span {{$t('common:actions.goBack', { defaultValue: 'Go Back' })}}
 </template>
 
 <script>

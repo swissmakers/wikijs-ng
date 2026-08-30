@@ -27,7 +27,7 @@ module.exports = class AssetFolder extends Model {
         relation: Model.BelongsToOneRelation,
         modelClass: AssetFolder,
         join: {
-          from: 'assetFolders.folderId',
+          from: 'assetFolders.parentId',
           to: 'assetFolders.id'
         }
       }
@@ -67,8 +67,11 @@ module.exports = class AssetFolder extends Model {
     all.forEach(fld => {
       _.set(folders, fld.id, fld.slug)
       let parentId = fld.parentId
-      while (parentId !== null || parentId > 0) {
+      while (parentId) {
         const parent = _.find(all, ['id', parentId])
+        if (!parent) {
+          break
+        }
         _.set(folders, fld.id, `${parent.slug}/${_.get(folders, fld.id)}`)
         parentId = parent.parentId
       }

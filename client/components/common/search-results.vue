@@ -1,6 +1,25 @@
 <template lang="pug">
   .search-results(v-if='searchIsFocused || (search && search.length > 1)')
     .search-results-container
+      .search-results-filters(v-if='search && search.length > 1 && (locales.length > 0 || currentPath)')
+        v-chip.mx-1(
+          v-if='locales.length > 0'
+          small
+          :color='searchRestrictLocale ? `primary` : `grey darken-2`'
+          dark
+          @click='searchRestrictLocale = !searchRestrictLocale'
+          )
+          v-icon(left, small) mdi-translate
+          span {{restrictLocaleLabel}}
+        v-chip.mx-1(
+          v-if='currentPath'
+          small
+          :color='searchRestrictPath ? `primary` : `grey darken-2`'
+          dark
+          @click='searchRestrictPath = !searchRestrictPath'
+          )
+          v-icon(left, small) mdi-file-tree
+          span {{restrictPathLabel}}
       .search-results-help(v-if='!search || (search && search.length < 2)')
         img(src='/_assets/svg/icon-search-alt.svg')
         .mt-4 {{$t('common:header.searchHint')}}
@@ -46,9 +65,6 @@
                 v-list-item-title(v-text='term')
             v-divider(v-if='idx < suggestions.length - 1')
       .text-xs-center.pt-5(v-if='search && search.length > 1')
-        //- v-btn.mx-2(outlined, color='orange', @click='search = ``', v-if='results.length > 0')
-        //-   v-icon(left) mdi-content-save
-        //-   span {{$t('common:header.searchCopyLink')}}
         v-btn.mx-2(outlined, color='pink', @click='search = ``')
           v-icon(left) mdi-close
           span {{$t('common:header.searchClose')}}
@@ -56,10 +72,12 @@
 
 <script>
 import _ from 'lodash'
-import { sync } from 'vuex-pathify'
+import { get, sync } from 'vuex-pathify'
 import { OrbitSpinner } from 'epic-spinners'
 
 import searchPagesQuery from 'gql/common/common-pages-query-search.gql'
+
+/* global siteLangs */
 
 export default {
   components: {
@@ -70,6 +88,7 @@ export default {
       cursor: 0,
       pagination: 1,
       perPage: 10,
+      locales: siteLangs,
       response: {
         results: [],
         suggestions: [],
@@ -83,6 +102,14 @@ export default {
     searchIsLoading: sync('site/searchIsLoading'),
     searchRestrictLocale: sync('site/searchRestrictLocale'),
     searchRestrictPath: sync('site/searchRestrictPath'),
+    currentPath: get('page/path'),
+    currentLocale: get('page/locale'),
+    restrictLocaleLabel () {
+      return this.$t('common:header.searchRestrictLocale', { locale: this.currentLocale.toUpperCase(), defaultValue: 'Only {{locale}}' })
+    },
+    restrictPathLabel () {
+      return this.$t('common:header.searchRestrictPath', { path: this.currentPath, defaultValue: 'Only under /{{path}}' })
+    },
     results() {
       const currentIndex = (this.pagination - 1) * this.perPage
       return this.response.results ? _.slice(this.response.results, currentIndex, currentIndex + this.perPage) : []
@@ -147,7 +174,9 @@ export default {
       query: searchPagesQuery,
       variables() {
         return {
-          query: this.search
+          query: this.search,
+          path: (this.searchRestrictPath && this.currentPath) ? this.currentPath : null,
+          locale: (this.searchRestrictLocale && this.currentLocale) ? this.currentLocale : null
         }
       },
       fetchPolicy: 'network-only',
@@ -189,6 +218,11 @@ export default {
     margin: 12px auto;
     width: 90vw;
     max-width: 1024px;
+  }
+
+  &-filters {
+    padding: 8px 0;
+    text-align: left;
   }
 
   &-help {

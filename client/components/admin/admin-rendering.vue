@@ -8,8 +8,6 @@
             .headline.primary--text.animated.fadeInLeft {{ $t('admin:rendering.title') }}
             .subtitle-1.grey--text.animated.fadeInLeft.wait-p4s {{ $t('admin:rendering.subtitle') }}
           v-spacer
-          v-btn.animated.fadeInDown.wait-p3s(icon, outlined, color='grey', href='https://docs.requarks.io/rendering', target='_blank')
-            v-icon mdi-help-circle
           v-btn.mx-3.animated.fadeInDown.wait-p2s(icon, outlined, color='grey', @click='refresh')
             v-icon mdi-refresh
           v-btn.animated.fadeInDown(color='success', @click='save', depressed, large)
@@ -88,7 +86,6 @@
           v-card-info(color='blue')
             div
               div {{currentRenderer.description}}
-              span.caption: a(href='https://docs.requarks.io/en/rendering', target='_blank') Documentation
           v-card-text.pb-4.pl-4
             .overline.mb-5 Rendering Module Configuration
             .body-2.ml-3(v-if='!currentRenderer.config || currentRenderer.config.length < 1'): em This rendering module has no configuration options you can modify.

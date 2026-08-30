@@ -121,38 +121,6 @@
                 v-toolbar(color='indigo', dark, dense, flat)
                   v-toolbar-title.subtitle-1 Features
                 v-card-text
-                  //- v-switch(
-                  //-   inset
-                  //-   label='Asset Image Optimization'
-                  //-   color='indigo'
-                  //-   v-model='config.featureTinyPNG'
-                  //-   persistent-hint
-                  //-   hint='Image optimization tool to reduce filesize and bandwidth costs.'
-                  //-   disabled
-                  //-   )
-                  //- v-text-field.mt-3(
-                  //-   outlined
-                  //-   label='TinyPNG API Key'
-                  //-   :counter='255'
-                  //-   v-model='config.description'
-                  //-   prepend-icon='mdi-subdirectory-arrow-right'
-                  //-   hint='Get your API key at https://tinypng.com/developers'
-                  //-   persistent-hint
-                  //-   disabled
-                  //-   )
-
-                  //- v-divider.mt-3
-                  //- v-switch(
-                  //-   inset
-                  //-   label='Page Ratings'
-                  //-   color='indigo'
-                  //-   v-model='config.featurePageRatings'
-                  //-   persistent-hint
-                  //-   hint='Allow users to rate pages.'
-                  //-   disabled
-                  //-   )
-
-                  //- v-divider.mt-3
                   v-switch.mt-0(
                     inset
                     label='Comments'
@@ -161,17 +129,6 @@
                     persistent-hint
                     hint='Allow users to leave comments on pages.'
                     )
-
-                  //- v-divider.mt-3
-                  //- v-switch(
-                  //-   inset
-                  //-   label='Personal Wikis'
-                  //-   color='indigo'
-                  //-   v-model='config.featurePersonalWikis'
-                  //-   persistent-hint
-                  //-   hint='Allow users to have their own personal wiki.'
-                  //-   disabled
-                  //-   )
 
               v-card.mt-5.animated.fadeInUp.wait-p6s
                 v-toolbar(color='primary', dark, dense, flat)

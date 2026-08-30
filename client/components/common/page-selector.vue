@@ -6,7 +6,7 @@
     overlay-opacity='.7'
     )
     v-card.page-selector
-      .dialog-header.is-blue
+      .dialog-header
         v-icon.mr-3(color='white') mdi-page-next-outline
         .body-1(v-if='mode === `create`') {{$t('common:pageSelector.createTitle')}}
         .body-1(v-else-if='mode === `move`') {{$t('common:pageSelector.moveTitle')}}
@@ -19,13 +19,43 @@
           :width='2'
           v-show='searchLoading'
           )
-      .d-flex
+      v-toolbar(flat, :color='$vuetify.theme.dark ? `grey darken-3` : `grey lighten-4`', dense)
+        v-text-field(
+          ref='searchIpt'
+          v-model='searchQuery'
+          :label='$t(`common:pageSelector.searchPlaceholder`, { defaultValue: `Search pages by title...` })'
+          prepend-inner-icon='mdi-magnify'
+          hide-details
+          dense
+          solo
+          flat
+          :background-color='$vuetify.theme.dark ? `grey darken-3` : `grey lighten-4`'
+          clearable
+          single-line
+        )
+      v-divider
+      //- SEARCH RESULTS
+      div(v-if='isSearching', style='height: 400px;')
+        vue-scroll(:ops='scrollStyle')
+          v-list.py-0(dense, two-line)
+            template(v-for='(page, idx) of searchResults')
+              v-list-item(:key='`sresult-` + page.id', @click='selectSearchResult(page)')
+                v-list-item-icon: v-icon(color='primary') mdi-text-box
+                v-list-item-content
+                  v-list-item-title {{page.title}}
+                  v-list-item-subtitle.caption /{{page.path}}
+                v-list-item-action(v-if='page.locale')
+                  v-chip(x-small, label, outlined) {{page.locale.toUpperCase()}}
+              v-divider(v-if='idx < searchResults.length - 1')
+            v-list-item(v-if='searchResults.length < 1 && !searchLoading')
+              v-list-item-content
+                v-list-item-title.grey--text {{$t('common:pageSelector.noResults', { defaultValue: 'No matching pages found.' })}}
+      //- BROWSE MODE
+      .d-flex(v-else)
         v-flex.grey(xs5, :class='$vuetify.theme.dark ? `darken-4` : `lighten-3`')
           v-toolbar(color='grey darken-3', dark, dense, flat)
             .body-2 {{$t('common:pageSelector.virtualFolders')}}
             v-spacer
-            v-btn(icon, tile, href='https://docs.requarks.io/guide/pages#folders', target='_blank')
-              v-icon mdi-help-box
           div(style='height:400px;')
             vue-scroll(:ops='scrollStyle')
               v-treeview(
@@ -44,14 +74,20 @@
                 template(slot='prepend', slot-scope='{ item, open, leaf }')
                   v-icon mdi-{{ open ? 'folder-open' : 'folder' }}
         v-flex(xs7)
-          v-toolbar(color='blue darken-2', dark, dense, flat)
+          v-toolbar(color='primary', dark, dense, flat)
             .body-2 {{$t('common:pageSelector.pages')}}
-            //- v-spacer
-            //- v-btn(icon, tile, disabled): v-icon mdi-content-save-move-outline
-            //- v-btn(icon, tile, disabled): v-icon mdi-trash-can-outline
-          div(v-if='currentPages.length > 0', style='height:400px;')
+          div(style='height:400px;')
             vue-scroll(:ops='scrollStyle')
-              v-list.py-0(dense)
+              template(v-if='recentPages.length > 0 && currentNode.length > 0 && currentNode[0] === 0')
+                .overline.px-4.pt-3.grey--text {{$t('common:pageSelector.recent', { defaultValue: 'Recent' })}}
+                v-list.py-0(dense)
+                  v-list-item(v-for='page of recentPages', :key='`recent-` + page.locale + page.path', @click='selectRecent(page)')
+                    v-list-item-icon: v-icon(color='grey') mdi-history
+                    v-list-item-content
+                      v-list-item-title {{page.title}}
+                      v-list-item-subtitle.caption /{{page.path}}
+                v-divider
+              v-list.py-0(dense, v-if='currentPages.length > 0')
                 v-list-item-group(
                   v-model='currentPage'
                   color='primary'
@@ -59,16 +95,17 @@
                   template(v-for='(page, idx) of currentPages')
                     v-list-item(:key='`page-` + page.id', :value='page')
                       v-list-item-icon: v-icon mdi-text-box
-                      v-list-item-title {{page.title}}
+                      v-list-item-content
+                        v-list-item-title {{page.title}}
+                        v-list-item-subtitle.caption /{{page.path}}
                     v-divider(v-if='idx < pages.length - 1')
-          v-alert.animated.fadeIn(
-            v-else
-            text
-            color='orange'
-            prominent
-            icon='mdi-alert'
-            )
-            .body-2 {{$t('common:pageSelector.folderEmptyWarning')}}
+              v-alert.animated.fadeIn.ma-3(
+                v-else
+                text
+                color='orange'
+                icon='mdi-alert'
+                )
+                .body-2 {{$t('common:pageSelector.folderEmptyWarning')}}
       v-card-actions.grey.pa-2(:class='$vuetify.theme.dark ? `darken-2` : `lighten-1`', v-if='!mustExist')
         v-select(
           solo
@@ -138,6 +175,9 @@ export default {
     return {
       treeViewCacheId: 0,
       searchLoading: false,
+      searchQuery: '',
+      searchResults: [],
+      recentPages: [],
       currentLocale: siteConfig.lang,
       currentFolderPath: '',
       currentPath: 'new-page',
@@ -179,6 +219,9 @@ export default {
       get() { return this.value },
       set(val) { this.$emit('input', val) }
     },
+    isSearching () {
+      return this.searchQuery && this.searchQuery.length >= 2
+    },
     currentPages () {
       return _.sortBy(_.filter(this.pages, ['parent', _.head(this.currentNode) || 0]), ['title', 'path'])
     },
@@ -209,11 +252,53 @@ export default {
       if (newValue && !oldValue) {
         this.currentPath = this.path
         this.currentLocale = this.locale
+        this.searchQuery = ''
+        this.loadRecent()
         _.delay(() => {
-          this.$refs.pathIpt.focus()
+          if (this.mustExist && this.$refs.searchIpt) {
+            this.$refs.searchIpt.focus()
+          } else if (this.$refs.pathIpt) {
+            this.$refs.pathIpt.focus()
+          }
         })
       }
     },
+    searchQuery: _.debounce(async function (newValue) {
+      if (!newValue || newValue.length < 2) {
+        this.searchResults = []
+        return
+      }
+      this.searchLoading = true
+      try {
+        const resp = await this.$apollo.query({
+          query: gql`
+            query ($query: String!, $locale: String) {
+              pages {
+                search(query: $query, locale: $locale) {
+                  results {
+                    id
+                    title
+                    description
+                    path
+                    locale
+                  }
+                }
+              }
+            }
+          `,
+          fetchPolicy: 'network-only',
+          variables: {
+            query: newValue,
+            locale: siteLangs.length > 0 ? this.currentLocale : null
+          }
+        })
+        this.searchResults = _.get(resp, 'data.pages.search.results', [])
+      } catch (err) {
+        console.warn(err)
+        this.searchResults = []
+      }
+      this.searchLoading = false
+    }, 300),
     currentNode (newValue, oldValue) {
       if (newValue.length < 1) { // force a selection
         this.$nextTick(() => {
@@ -265,13 +350,66 @@ export default {
       this.isShown = false
     },
     open() {
+      this.pushRecent({
+        locale: this.currentLocale,
+        path: this.currentPath,
+        title: _.get(this.currentPage, 'title', _.last(this.currentPath.split('/')))
+      })
       const exit = this.openHandler({
         locale: this.currentLocale,
         path: this.currentPath,
-        id: (this.mustExist && this.currentPage) ? this.currentPage.pageId : 0
+        id: (this.mustExist && this.currentPage) ? this.currentPage.pageId : 0,
+        title: _.get(this.currentPage, 'title', null)
       })
       if (exit !== false) {
         this.close()
+      }
+    },
+    selectSearchResult (page) {
+      const applySelection = () => {
+        this.currentPage = {
+          id: page.id,
+          pageId: page.id,
+          path: page.path,
+          title: page.title
+        }
+        this.currentPath = page.path
+      }
+      if (page.locale && page.locale !== this.currentLocale) {
+        // The locale watcher resets the tree state on the next tick, apply the selection after it
+        this.currentLocale = page.locale
+        this.$nextTick(() => {
+          this.$nextTick(applySelection)
+        })
+      } else {
+        applySelection()
+      }
+      this.searchQuery = ''
+      this.searchResults = []
+    },
+    selectRecent (page) {
+      this.currentLocale = page.locale || this.currentLocale
+      this.currentPath = page.path
+      if (this.mustExist) {
+        // Recent entries carry no page id, so a fresh selection is still required
+        this.searchQuery = page.title
+      }
+    },
+    loadRecent () {
+      try {
+        this.recentPages = JSON.parse(window.localStorage.getItem('pageSelectorRecent') || '[]')
+      } catch (err) {
+        this.recentPages = []
+      }
+    },
+    pushRecent (page) {
+      try {
+        let recent = JSON.parse(window.localStorage.getItem('pageSelectorRecent') || '[]')
+        recent = [page, ..._.reject(recent, r => r.path === page.path && r.locale === page.locale)].slice(0, 8)
+        window.localStorage.setItem('pageSelectorRecent', JSON.stringify(recent))
+        this.recentPages = recent
+      } catch (err) {
+        // localStorage unavailable - ignore
       }
     },
     async fetchFolders (item) {

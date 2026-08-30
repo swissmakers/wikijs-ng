@@ -1,20 +1,25 @@
-## IMPORTANT
+# Locales
 
-Localization files are not stored into files!
+This folder contains the **bundled base locale files** for Wiki.js NG.
 
-Contact us on Gitter to request access to the translation web service: https://gitter.im/Requarks/wiki
+At startup (and whenever locales are reloaded), strings are loaded in this order:
 
-## Development Mode
+1. **Bundled file** `{LANG}.yml` from this folder (base strings, always available — no internet access required)
+2. **Database strings** (downloaded locale packs and admin-side overrides) — these take precedence over the bundled base
 
-If you need to add new keys and test them live, simply create a {LANG}.yml file in this folder containing the values you want to test. e.g.:
+This means a fresh install renders a fully translated UI without any connection to the upstream localization service. The optional daily sync job (`sync-graph-locales`, gated by the *Update Automatically* toggle in Admin → Locale) can still pull newer strings into the database on top of the bundled base; failures are logged as warnings and never break the UI.
 
-### en.yml
+## File format
+
+Top-level keys are i18next namespaces (`common`, `admin`, `auth`, `editor`, `history`, `profile`, `tags`), with nested keys below. e.g.:
+
 ```yml
 admin:
-  api.title: 'API Access'
-  auth.title: 'Authentication'
+  api:
+    title: 'API Access'
+common:
+  header:
+    search: 'Search...'
 ```
 
-The official localization keys will still be loaded first, but your local files will overwrite any existing keys (and add new ones).
-
-Note that you must restart Wiki.js to load any changes made to the files, which happens automatically on save when in dev mode.
+To test new keys live, add them to the corresponding `{LANG}.yml` file and restart Wiki.js. New UI code should also pass an inline `defaultValue` to `$t()` so it renders correctly even before the locale files are updated.

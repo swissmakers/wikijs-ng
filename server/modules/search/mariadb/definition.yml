@@ -1,0 +1,8 @@
+key: mariadb
+title: Database - MariaDB / MySQL
+description: Advanced MariaDB/MySQL search engine using InnoDB FULLTEXT indexes.
+author: Swissmakers GmbH
+logo: https://static.requarks.io/logo/database.svg
+website: https://swissmakers.ch/
+isAvailable: true
+props: {}

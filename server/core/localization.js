@@ -63,6 +63,22 @@ module.exports = {
    * @param {*} opts Additional options
    */
   async loadLocale(locale, opts = { silent: false }) {
+    // -> Load bundled locale file first (base strings, always available offline)
+    try {
+      const fileEntriesRaw = await fs.readFile(path.join(WIKI.SERVERPATH, `locales/${locale}.yml`), 'utf8')
+      if (fileEntriesRaw) {
+        const fileEntries = yaml.load(fileEntriesRaw)
+        _.forOwn(fileEntries, (data, ns) => {
+          this.namespaces.push(ns)
+          this.engine.addResourceBundle(locale, ns, data, true, true)
+        })
+        WIKI.logger.info(`Loaded bundled locale strings from ${locale}.yml`)
+      }
+    } catch (err) {
+      // no bundled file for this locale
+    }
+
+    // -> DB strings (downloaded packs + admin overrides) take precedence over the bundled base
     const res = await WIKI.models.locales.query().findOne('code', locale)
     if (res) {
       if (_.isPlainObject(res.strings)) {
@@ -73,23 +89,6 @@ module.exports = {
       }
     } else if (!opts.silent) {
       throw new Error('No such locale in local store.')
-    }
-
-    // -> Load dev locale files if present
-    if (WIKI.IS_DEBUG) {
-      try {
-        const devEntriesRaw = await fs.readFile(path.join(WIKI.SERVERPATH, `locales/${locale}.yml`), 'utf8')
-        if (devEntriesRaw) {
-          const devEntries = yaml.load(devEntriesRaw)
-          _.forOwn(devEntries, (data, ns) => {
-            this.namespaces.push(ns)
-            this.engine.addResourceBundle(locale, ns, data, true, true)
-          })
-          WIKI.logger.info(`Loaded dev locales from ${locale}.yml`)
-        }
-      } catch (err) {
-        // ignore
-      }
     }
   },
   /**

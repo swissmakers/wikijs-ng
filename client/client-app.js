@@ -151,6 +151,7 @@ Vue.prototype.Velocity = Velocity
 Vue.component('Admin', () => import(/* webpackChunkName: "admin" */ './components/admin.vue'))
 Vue.component('Comments', () => import(/* webpackChunkName: "comments" */ './components/comments.vue'))
 Vue.component('Editor', () => import(/* webpackPrefetch: -100, webpackChunkName: "editor" */ './components/editor.vue'))
+Vue.component('FolderView', () => import(/* webpackChunkName: "folder-view" */ './components/folder-view.vue'))
 Vue.component('History', () => import(/* webpackChunkName: "history" */ './components/history.vue'))
 Vue.component('Loader', () => import(/* webpackPrefetch: true, webpackChunkName: "ui-extra" */ './components/common/loader.vue'))
 Vue.component('Login', () => import(/* webpackPrefetch: true, webpackChunkName: "login" */ './components/login.vue'))
@@ -225,8 +226,8 @@ let bootstrap = () => {
             secondary: '#8FA8CC',
             accent: '#5B85E8',
             header: '#0b1522',
-            anchor: '#0f3c78',
-            info: '#0f3c78',
+            anchor: '#659DE7',
+            info: '#659DE7',
             success: '#4CAF50',
             warning: '#FB8C00',
             error: '#FF5252'

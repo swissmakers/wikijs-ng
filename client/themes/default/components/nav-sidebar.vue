@@ -1,27 +1,27 @@
 <template lang="pug">
   div
     .pa-3.d-flex(v-if='navMode === `MIXED`', :class='$vuetify.theme.dark ? `grey darken-5` : `sidebar-header-light`')
-      v-btn(
+      v-btn.sidebar-btn(
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : `#1E45A8`'
+        :color='$vuetify.theme.dark ? `grey darken-4` : ``'
         style='min-width:0;'
         @click='goHome'
         :aria-label='$t(`common:header.home`)'
         )
         v-icon(size='20') mdi-home
-      v-btn.ml-3(
+      v-btn.ml-3.sidebar-btn(
         v-if='currentMode === `custom`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : `#1E45A8`'
+        :color='$vuetify.theme.dark ? `grey darken-4` : ``'
         style='flex: 1 1 100%;'
         @click='switchMode(`browse`)'
         )
         v-icon(left) mdi-file-tree
         .body-2.text-none {{$t('common:sidebar.browse')}}
-      v-btn.ml-3(
+      v-btn.ml-3.sidebar-btn(
         v-else-if='currentMode === `browse`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : `#1E45A8`'
+        :color='$vuetify.theme.dark ? `grey darken-4` : ``'
         style='flex: 1 1 100%;'
         @click='switchMode(`custom`)'
         )
@@ -195,7 +195,26 @@ export default {
       const items = _.get(resp, 'data.pages.tree', [])
       const curPage = _.find(items, ['pageId', this.$store.get('page/id')])
       if (!curPage) {
+        // Fallback: locate the current path itself (e.g. a virtual folder with no page)
+        const curFolder = _.find(items, ['path', this.path])
+        if (curFolder && curFolder.isFolder) {
+          let folderParentId = curFolder.parent
+          const folderAncestors = []
+          while (folderParentId) {
+            const folderParent = _.find(items, ['id', folderParentId])
+            if (!folderParent) {
+              break
+            }
+            folderAncestors.push(folderParent)
+            folderParentId = folderParent.parent
+          }
+          this.parents = [this.currentParent, ...folderAncestors.reverse()]
+          this.currentParent = _.last(this.parents)
+          this.$store.commit(`loadingStop`, 'browse-load')
+          return this.fetchBrowseItems(curFolder)
+        }
         console.warn('Could not find current page in page tree listing!')
+        this.$store.commit(`loadingStop`, 'browse-load')
         return
       }
 
@@ -240,5 +259,14 @@ export default {
 <style lang="scss">
 .sidebar-header-light {
   background-color: mc('theme', 'primary-dark');
+}
+
+.theme--light .sidebar-btn {
+  background-color: mc('theme', 'primary-dark') !important;
+  color: #FFF !important;
+
+  .v-icon {
+    color: #FFF !important;
+  }
 }
 </style>

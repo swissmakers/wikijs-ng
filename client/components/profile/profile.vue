@@ -6,7 +6,7 @@
           img.animated.fadeInUp(src='/_assets/svg/icon-profile.svg', alt='Users', style='width: 80px;')
           .profile-header-title
             .headline.primary--text.animated.fadeInLeft {{$t('profile:title')}}
-            .subheading.grey--text.animated.fadeInLeft {{$t('profile:subtitle')}}
+            .subtitle-1.grey--text.animated.fadeInLeft {{$t('profile:subtitle')}}
           v-spacer
           v-btn.animated.fadeInDown(color='success', depressed, @click='saveProfile', :loading='saveLoading', large)
             v-icon(left) mdi-check
@@ -16,7 +16,7 @@
           //-   span {{$t('profile:viewPublicProfile')}}
       v-flex(lg6 xs12)
         v-card.animated.fadeInUp
-          v-toolbar(color='blue-grey', dark, dense, flat)
+          v-toolbar(color='primary', dark, dense, flat)
             v-toolbar-title.subtitle-1 {{$t('profile:myInfo')}}
           v-list(two-line, dense)
             v-list-item
@@ -110,18 +110,18 @@
                     )
 
         v-card.mt-3.animated.fadeInUp.wait-p2s
-          v-toolbar(color='blue-grey', dark, dense, flat)
+          v-toolbar(color='primary', dark, dense, flat)
             v-toolbar-title
               .subtitle-1 {{$t('profile:auth.title')}}
           v-card-text.pt-0
             v-subheader.pl-0: span.subtitle-2 {{$t('profile:auth.provider')}}
             v-toolbar(
               flat
-              :color='$vuetify.theme.dark ? "grey darken-2" : "purple lighten-5"'
+              :color='$vuetify.theme.dark ? "grey darken-2" : "grey lighten-4"'
               dense
-              :class='$vuetify.theme.dark ? "grey--text text--lighten-1" : "purple--text text--darken-4"'
+              :class='$vuetify.theme.dark ? "grey--text text--lighten-1" : "primary--text"'
               )
-              v-icon(:color='$vuetify.theme.dark ? "grey lighten-1" : "purple darken-4"') mdi-shield-lock
+              v-icon(:color='$vuetify.theme.dark ? "grey lighten-1" : "primary"') mdi-shield-lock
               .subheading.ml-3 {{ user.providerName }}
             //- v-divider.mt-3
             //- v-subheader.pl-0: span.subtitle-2 Two-Factor Authentication (2FA)
@@ -165,7 +165,7 @@
                   )
           v-card-chin(v-if='user.providerKey === `local`')
             v-spacer
-            v-btn.px-4(color='purple darken-4', dark, depressed, :loading='changePassLoading', type='submit', form='change-password-form')
+            v-btn.px-4(color='primary', dark, depressed, :loading='changePassLoading', type='submit', form='change-password-form')
               v-icon(left) mdi-progress-check
               span {{$t('profile:auth.changePassword')}}
       v-flex(lg6 xs12)
@@ -181,7 +181,7 @@
         //-     v-btn(outlined).mx-4 Upload Picture
         //-     v-btn(outlined, disabled) Remove Picture
         v-card.animated.fadeInUp.wait-p2s
-          v-toolbar(color='blue-grey', dark, dense, flat)
+          v-toolbar(color='primary', dark, dense, flat)
             v-toolbar-title.subtitle-1 {{$t('profile:preferences')}}
           v-list(two-line, dense)
             v-list-item
@@ -327,7 +327,7 @@
               v-divider(v-if='idx < user.groups.length - 1')
 
         v-card.mt-3.animated.fadeInUp.wait-p4s
-          v-toolbar(color='teal', dark, dense, flat)
+          v-toolbar(color='primary', dark, dense, flat)
             v-toolbar-title
               .subtitle-1 {{$t('profile:activity.title')}}
           v-card-text.grey--text.text--darken-2
@@ -340,8 +340,6 @@
             v-divider.mt-3
             .caption.grey--text.mt-3 {{$t('profile:activity.pagesCreated')}}
             .body-2: strong {{ user.pagesTotal }}
-            .caption.grey--text.mt-3 {{$t('profile:activity.commentsPosted')}}
-            .body-2: strong 0
 </template>
 
 <script>

@@ -1,0 +1,12 @@
+mutation ($id: Int!, $folderId: Int!) {
+  assets {
+    moveAsset(id: $id, folderId: $folderId) {
+      responseResult {
+        succeeded
+        errorCode
+        slug
+        message
+      }
+    }
+  }
+}

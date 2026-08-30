@@ -1,0 +1,11 @@
+query {
+  assets {
+    folderTree {
+      id
+      slug
+      name
+      parentId
+      path
+    }
+  }
+}

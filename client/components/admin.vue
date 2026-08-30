@@ -11,7 +11,7 @@
           v-list-item(to='/dashboard', color='primary')
             v-list-item-avatar(size='24', tile): v-icon mdi-view-dashboard-variant
             v-list-item-title {{ $t('admin:dashboard.title') }}
-          template(v-if='hasPermission([`manage:system`, `manage:navigation`, `write:pages`, `manage:pages`, `delete:pages`])')
+          template(v-if='hasPermission([`manage:system`, `manage:navigation`, `write:pages`, `manage:pages`, `delete:pages`, `write:assets`, `manage:assets`])')
             v-divider.my-2
             v-subheader.pl-4 {{ $t('admin:nav.site') }}
             v-list-item(to='/general', color='primary', v-if='hasPermission(`manage:system`)')
@@ -29,6 +29,9 @@
               v-list-item-action(style='min-width:auto;')
                 v-chip(x-small, :color='$vuetify.theme.dark ? `grey darken-3-d4` : `grey lighten-5`')
                   .caption.grey--text {{ info.pagesTotal }}
+            v-list-item(to='/assets', color='primary', v-if='hasPermission([`manage:system`, `write:assets`, `manage:assets`])')
+              v-list-item-avatar(size='24', tile): v-icon mdi-folder-multiple-image
+              v-list-item-title {{ $t('admin:assets.title', { defaultValue: 'Assets' }) }}
             v-list-item(to='/tags', v-if='hasPermission([`manage:system`])')
               v-list-item-avatar(size='24', tile): v-icon mdi-tag-multiple
               v-list-item-title {{ $t('admin:tags.title') }}
@@ -118,8 +121,9 @@
             v-list-item-title About
 
     v-main(:class='$vuetify.theme.dark ? "grey darken-5" : "grey lighten-5"')
-      transition(name='admin-router')
-        router-view
+      .admin-content-container
+        transition(name='admin-router')
+          router-view
 
     nav-footer
     notify
@@ -157,13 +161,11 @@ const router = new VueRouter({
     { path: '/groups/:id(\\d+)', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-groups-edit.vue') },
     { path: '/users', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-users.vue') },
     { path: '/users/:id(\\d+)', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-users-edit.vue') },
+    { path: '/assets', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-assets.vue') },
     { path: '/analytics', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-analytics.vue') },
     { path: '/auth', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-auth.vue') },
     { path: '/comments', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-comments.vue') },
     { path: '/rendering', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-rendering.vue') },
-    { path: '/editor', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-editor.vue') },
-    { path: '/extensions', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-extensions.vue') },
-    { path: '/logging', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-logging.vue') },
     { path: '/search', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-search.vue') },
     { path: '/storage', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-storage.vue') },
     { path: '/api', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-api.vue') },
@@ -276,7 +278,7 @@ export default {
 }
 
 .theme--dark {
-  .admin-sidebar .v-list__tile--active {
+  .admin-sidebar .v-list-item--active {
     background-color: rgba(0,0,0, .2);
     color: mc('theme', 'accent') !important;
 
@@ -290,10 +292,32 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  padding-bottom: 4px;
+
+  > img {
+    width: 64px !important;
+    height: 64px;
+    padding: 10px;
+    background-color: rgba(mc('theme', 'primary'), .08);
+    border-radius: 12px;
+
+    @at-root .theme--dark & {
+      background-color: rgba(mc('theme', 'accent'), .15);
+    }
+  }
 
   &-title {
     margin-left: 1rem;
+
+    .headline {
+      font-weight: 500;
+      letter-spacing: -.25px;
+    }
   }
+}
+
+.admin-content-container {
+  max-width: 1400px;
 }
 
 .admin-providerlogo {

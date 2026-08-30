@@ -28,25 +28,22 @@
             v-btn.is-icon(v-on='on', outlined, color='primary')
               v-icon mdi-dots-horizontal
           v-list(dense)
-            v-list-item(@click='comingSoon')
+            v-subheader Presets
+            v-list-item(v-for='preset of presets', :key='`preset-` + preset.key', @click='applyPreset(preset)')
               v-list-item-avatar
                 v-icon mdi-application-import
-              v-list-item-title Load Preset
+              v-list-item-title {{preset.title}}
             v-divider
-            v-list-item(@click='comingSoon')
-              v-list-item-avatar
-                v-icon mdi-application-export
-              v-list-item-title Save As Preset
-            v-divider
-            v-list-item(@click='comingSoon')
+            v-list-item(@click='importRules')
               v-list-item-avatar
                 v-icon mdi-cloud-upload
               v-list-item-title Import Rules
             v-divider
-            v-list-item(@click='comingSoon')
+            v-list-item(@click='exportRules')
               v-list-item-avatar
                 v-icon mdi-cloud-download
               v-list-item-title Export Rules
+        input.d-none(type='file', ref='importRulesInput', accept='application/json', @change='importRulesFileChanged')
       v-card-text(:class='$vuetify.theme.dark ? `grey darken-4-l5` : `white`')
         .rules
           .caption(v-if='group.pageRules.length === 0')
@@ -234,6 +231,29 @@ export default {
         { text: 'Path Ends With...', value: 'END', icon: '.../' },
         { text: 'Path Matches Regex...', value: 'REGEX', icon: '$.*' },
         { text: 'Tag Matches...', value: 'TAG', icon: 'T' }
+      ],
+      presets: [
+        {
+          key: 'readonly',
+          title: 'Read-only Section',
+          rules: [
+            { path: '', roles: ['read:pages', 'read:assets', 'read:comments'], match: 'START', deny: false, locales: [] }
+          ]
+        },
+        {
+          key: 'editors',
+          title: 'Editors Section',
+          rules: [
+            { path: '', roles: ['read:pages', 'write:pages', 'manage:pages', 'read:source', 'read:history', 'read:assets', 'write:assets', 'read:comments', 'write:comments'], match: 'START', deny: false, locales: [] }
+          ]
+        },
+        {
+          key: 'restricted',
+          title: 'Restricted Section (deny all)',
+          rules: [
+            { path: '', roles: ['read:pages', 'write:pages', 'manage:pages', 'delete:pages', 'read:source', 'read:history', 'read:assets', 'write:assets', 'manage:assets', 'read:comments', 'write:comments', 'manage:comments'], match: 'START', deny: true, locales: [] }
+          ]
+        }
       ]
     }
   },
@@ -258,15 +278,72 @@ export default {
     removeRule(ruleId) {
       this.group.pageRules.splice(_.findIndex(this.group.pageRules, ['id', ruleId]), 1)
     },
-    comingSoon() {
+    applyPreset(preset) {
+      for (const rule of preset.rules) {
+        this.group.pageRules.push({
+          ...rule,
+          id: nanoid()
+        })
+      }
       this.$store.commit('showNotification', {
-        style: 'indigo',
-        message: `Coming soon...`,
-        icon: 'directions_boat'
+        style: 'success',
+        message: `Preset "${preset.title}" added. Set the path(s) on the new rule(s).`,
+        icon: 'check'
       })
     },
-    dude (stuff) {
-      console.info(stuff)
+    exportRules() {
+      const blob = new Blob([JSON.stringify(this.group.pageRules, null, 2)], { type: 'application/json' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = `pageRules-${_.kebabCase(this.group.name || 'group')}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(link.href)
+    },
+    importRules() {
+      this.$refs.importRulesInput.click()
+    },
+    importRulesFileChanged(ev) {
+      const file = _.get(ev, 'target.files[0]', null)
+      if (!file) { return }
+      const reader = new FileReader()
+      reader.onload = () => {
+        try {
+          const rules = JSON.parse(reader.result)
+          if (!_.isArray(rules)) {
+            throw new Error('Invalid format: expected a JSON array of rules.')
+          }
+          let imported = 0
+          for (const rule of rules) {
+            if (!_.isArray(rule.roles) || !_.isString(rule.match) || !_.isString(rule.path)) {
+              continue
+            }
+            this.group.pageRules.push({
+              id: nanoid(),
+              path: rule.path,
+              roles: _.intersection(rule.roles, this.roles.map(r => r.value)),
+              match: _.includes(['START', 'EXACT', 'END', 'REGEX', 'TAG'], rule.match) ? rule.match : 'START',
+              deny: rule.deny === true,
+              locales: _.isArray(rule.locales) ? rule.locales : []
+            })
+            imported++
+          }
+          this.$store.commit('showNotification', {
+            style: imported > 0 ? 'success' : 'warning',
+            message: `${imported} rule(s) imported. Don't forget to save your changes.`,
+            icon: imported > 0 ? 'check' : 'alert'
+          })
+        } catch (err) {
+          this.$store.commit('showNotification', {
+            style: 'error',
+            message: `Import failed: ${err.message}`,
+            icon: 'alert'
+          })
+        }
+      }
+      reader.readAsText(file)
+      ev.target.value = ''
     }
   }
 }

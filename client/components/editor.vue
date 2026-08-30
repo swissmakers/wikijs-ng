@@ -51,6 +51,13 @@
       editor-modal-unsaved(v-model='dialogUnsaved', @discard='exitGo')
       component(:is='activeModal')
 
+    v-snackbar(v-model='draftBannerShown', :timeout='-1', bottom)
+      .body-2 {{$t('editor:draft.found', { defaultValue: 'An unsaved draft of this page was found.' })}}
+      .caption(v-if='draftFound') {{ draftFound.updatedAt | moment('calendar') }}
+      template(v-slot:action='{ attrs }')
+        v-btn(text, color='green lighten-2', v-bind='attrs', @click='restoreDraft') {{$t('editor:draft.restore', { defaultValue: 'Restore' })}}
+        v-btn(text, color='orange lighten-2', v-bind='attrs', @click='discardDraftAction') {{$t('editor:draft.discard', { defaultValue: 'Discard' })}}
+
     loader(v-model='dialogProgress', :title='$t(`editor:save.processing`)', :subtitle='$t(`editor:save.pleaseWait`)')
     notify
 </template>
@@ -113,6 +120,10 @@ export default {
       type: Boolean,
       default: true
     },
+    isTemplate: {
+      type: Boolean,
+      default: false
+    },
     scriptCss: {
       type: String,
       default: ''
@@ -164,9 +175,14 @@ export default {
       dialogUnsaved: false,
       exitConfirmed: false,
       initContentParsed: '',
+      draftFound: null,
+      draftBannerShown: false,
+      draftAutosaveHandle: null,
+      lastDraftContent: '',
       savedState: {
         description: '',
         isPublished: false,
+        isTemplate: false,
         publishEndDate: '',
         publishStartDate: '',
         tags: '',
@@ -193,6 +209,7 @@ export default {
         this.savedState.description !== this.$store.get('page/description'),
         this.savedState.tags !== this.$store.get('page/tags'),
         this.savedState.isPublished !== this.$store.get('page/isPublished'),
+        this.savedState.isTemplate !== this.$store.get('page/isTemplate'),
         this.savedState.publishStartDate !== this.$store.get('page/publishStartDate'),
         this.savedState.publishEndDate !== this.$store.get('page/publishEndDate'),
         this.savedState.css !== this.$store.get('page/scriptCss'),
@@ -216,6 +233,7 @@ export default {
     this.$store.set('page/id', this.pageId)
     this.$store.set('page/description', this.description)
     this.$store.set('page/isPublished', this.isPublished)
+    this.$store.set('page/isTemplate', this.isTemplate)
     this.$store.set('page/publishStartDate', this.publishStartDate)
     this.$store.set('page/publishEndDate', this.publishEndDate)
     this.$store.set('page/locale', this.locale)
@@ -260,8 +278,17 @@ export default {
       this.isConflict = false
     })
 
-    // this.$store.set('editor/mode', 'edit')
-    // this.currentEditor = `editorApi`
+    // -> Check for an unsaved draft + start autosave
+    this.lastDraftContent = this.initContentParsed
+    this.checkForDraft()
+    this.draftAutosaveHandle = setInterval(() => {
+      this.saveDraftSilent()
+    }, 30000)
+  },
+  beforeDestroy () {
+    if (this.draftAutosaveHandle) {
+      clearInterval(this.draftAutosaveHandle)
+    }
   },
   methods: {
     openPropsModal(name) {
@@ -298,6 +325,7 @@ export default {
                 $editor: String!
                 $isPrivate: Boolean!
                 $isPublished: Boolean!
+                $isTemplate: Boolean
                 $locale: String!
                 $path: String!
                 $publishEndDate: Date
@@ -314,6 +342,7 @@ export default {
                     editor: $editor
                     isPrivate: $isPrivate
                     isPublished: $isPublished
+                    isTemplate: $isTemplate
                     locale: $locale
                     path: $path
                     publishEndDate: $publishEndDate
@@ -344,6 +373,7 @@ export default {
               locale: this.$store.get('page/locale'),
               isPrivate: false,
               isPublished: this.$store.get('page/isPublished'),
+              isTemplate: this.$store.get('page/isTemplate'),
               path: this.$store.get('page/path'),
               publishEndDate: this.$store.get('page/publishEndDate') || '',
               publishStartDate: this.$store.get('page/publishStartDate') || '',
@@ -365,6 +395,7 @@ export default {
             this.$store.set('editor/id', _.get(resp, 'page.id'))
             this.$store.set('editor/mode', 'update')
             this.exitConfirmed = true
+            await this.discardDraftAction()
             window.location.assign(`/${this.$store.get('page/locale')}/${this.$store.get('page/path')}`)
           } else {
             throw new Error(_.get(resp, 'responseResult.message'))
@@ -402,6 +433,7 @@ export default {
                 $editor: String
                 $isPrivate: Boolean
                 $isPublished: Boolean
+                $isTemplate: Boolean
                 $locale: String
                 $path: String
                 $publishEndDate: Date
@@ -419,6 +451,7 @@ export default {
                     editor: $editor
                     isPrivate: $isPrivate
                     isPublished: $isPublished
+                    isTemplate: $isTemplate
                     locale: $locale
                     path: $path
                     publishEndDate: $publishEndDate
@@ -449,6 +482,7 @@ export default {
               locale: this.$store.get('page/locale'),
               isPrivate: false,
               isPublished: this.$store.get('page/isPublished'),
+              isTemplate: this.$store.get('page/isTemplate'),
               path: this.$store.get('page/path'),
               publishEndDate: this.$store.get('page/publishEndDate') || '',
               publishStartDate: this.$store.get('page/publishStartDate') || '',
@@ -478,7 +512,9 @@ export default {
         }
 
         this.initContentParsed = this.$store.get('editor/content')
+        this.lastDraftContent = this.initContentParsed
         this.setCurrentSavedState()
+        this.discardDraftAction()
       } catch (err) {
         this.$store.commit('showNotification', {
           message: err.message,
@@ -531,12 +567,117 @@ export default {
       this.savedState = {
         description: this.$store.get('page/description'),
         isPublished: this.$store.get('page/isPublished'),
+        isTemplate: this.$store.get('page/isTemplate'),
         publishEndDate: this.$store.get('page/publishEndDate') || '',
         publishStartDate: this.$store.get('page/publishStartDate') || '',
         tags: this.$store.get('page/tags'),
         title: this.$store.get('page/title'),
         css: this.$store.get('page/scriptCss'),
         js: this.$store.get('page/scriptJs')
+      }
+    },
+    async checkForDraft () {
+      try {
+        const resp = await this.$apollo.query({
+          query: gql`
+            query ($path: String!, $locale: String!) {
+              pages {
+                draft(path: $path, locale: $locale) {
+                  id
+                  title
+                  description
+                  content
+                  editor
+                  updatedAt
+                }
+              }
+            }
+          `,
+          fetchPolicy: 'network-only',
+          variables: {
+            path: this.path,
+            locale: this.locale
+          }
+        })
+        const draft = _.get(resp, 'data.pages.draft', null)
+        if (draft && draft.content && draft.content !== this.initContentParsed &&
+          (this.mode === 'create' || new Date(draft.updatedAt) > new Date(this.checkoutDate))) {
+          this.draftFound = draft
+          this.draftBannerShown = true
+        }
+      } catch (err) {
+        console.warn('Could not check for existing draft:', err.message)
+      }
+    },
+    restoreDraft () {
+      if (!this.draftFound) { return }
+      this.$store.set('editor/content', this.draftFound.content)
+      if (this.draftFound.title) {
+        this.$store.set('page/title', this.draftFound.title)
+      }
+      if (this.draftFound.description) {
+        this.$store.set('page/description', this.draftFound.description)
+      }
+      if (this.mode === 'create' && this.draftFound.editor) {
+        this.dialogEditorSelector = false
+        this.currentEditor = `editor${_.startCase(this.draftFound.editor)}`
+      }
+      this.lastDraftContent = this.draftFound.content
+      this.$root.$emit('overwriteEditorContent')
+      this.draftBannerShown = false
+    },
+    async discardDraftAction () {
+      this.draftBannerShown = false
+      this.draftFound = null
+      try {
+        await this.$apollo.mutate({
+          mutation: gql`
+            mutation ($path: String!, $locale: String!) {
+              pages {
+                discardDraft(path: $path, locale: $locale) {
+                  responseResult { succeeded }
+                }
+              }
+            }
+          `,
+          variables: {
+            path: this.path,
+            locale: this.locale
+          }
+        })
+      } catch (err) {
+        console.warn('Could not discard draft:', err.message)
+      }
+    },
+    async saveDraftSilent () {
+      if (this.isSaving || this.draftBannerShown) { return }
+      const content = this.$store.get('editor/content')
+      const editorKey = this.$store.get('editor/editorKey')
+      if (!content || !editorKey || content === this.lastDraftContent) { return }
+      try {
+        await this.$apollo.mutate({
+          mutation: gql`
+            mutation ($pageId: Int, $path: String!, $locale: String!, $title: String!, $description: String, $content: String!, $editor: String!) {
+              pages {
+                saveDraft(pageId: $pageId, path: $path, locale: $locale, title: $title, description: $description, content: $content, editor: $editor) {
+                  responseResult { succeeded }
+                }
+              }
+            }
+          `,
+          variables: {
+            pageId: this.pageId > 0 ? this.pageId : null,
+            path: this.path,
+            locale: this.locale,
+            title: this.$store.get('page/title') || '',
+            description: this.$store.get('page/description') || '',
+            content,
+            editor: editorKey
+          }
+        })
+        this.lastDraftContent = content
+      } catch (err) {
+        console.warn('Draft autosave failed:', err.message)
       }
     },
     injectCustomCss: _.debounce(css => {

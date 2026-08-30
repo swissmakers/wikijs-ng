@@ -314,10 +314,10 @@ export default {
     insertLink () {
       this.insertLinkDialog = true
     },
-    insertLinkHandler ({ locale, path }) {
-      const lastPart = _.last(path.split('/'))
+    insertLinkHandler ({ locale, path, title }) {
+      const linkText = title || _.last(path.split('/'))
       this.insertAtCursor({
-        content: siteLangs.length > 0 ? `link:/${locale}/${path}[${lastPart}]` : `link:/${path}[${lastPart}]`
+        content: siteLangs.length > 0 ? `link:/${locale}/${path}[${linkText}]` : `link:/${path}[${linkText}]`
       })
     },
     processMarkers (from, to) {
