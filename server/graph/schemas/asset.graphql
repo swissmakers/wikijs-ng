@@ -18,11 +18,15 @@ type AssetQuery {
   list(
     folderId: Int!
     kind: AssetKind!
+    orderBy: AssetOrderBy
+    orderByDirection: AssetOrderByDirection
   ): [AssetItem] @auth(requires: ["manage:system", "read:assets"])
 
   folders(
     parentFolderId: Int!
   ): [AssetFolder] @auth(requires: ["manage:system", "read:assets"])
+
+  folderTree: [AssetFolderTreeItem] @auth(requires: ["manage:system", "read:assets"])
 }
 
 # -----------------------------------------------
@@ -36,9 +40,30 @@ type AssetMutation {
     name: String
   ): DefaultResponse @auth(requires: ["manage:system", "write:assets"])
 
+  renameFolder(
+    id: Int!
+    slug: String!
+    name: String
+  ): DefaultResponse @auth(requires: ["manage:system", "manage:assets"])
+
+  moveFolder(
+    id: Int!
+    parentFolderId: Int!
+  ): DefaultResponse @auth(requires: ["manage:system", "manage:assets"])
+
+  deleteFolder(
+    id: Int!
+    deleteContents: Boolean
+  ): DefaultResponse @auth(requires: ["manage:system", "manage:assets"])
+
   renameAsset(
     id: Int!
     filename: String!
+  ): DefaultResponse @auth(requires: ["manage:system", "manage:assets"])
+
+  moveAsset(
+    id: Int!
+    folderId: Int!
   ): DefaultResponse @auth(requires: ["manage:system", "manage:assets"])
 
   deleteAsset(
@@ -72,8 +97,28 @@ type AssetFolder {
   name: String
 }
 
+type AssetFolderTreeItem {
+  id: Int!
+  slug: String!
+  name: String
+  parentId: Int!
+  path: String!
+}
+
 enum AssetKind {
   IMAGE
   BINARY
   ALL
+}
+
+enum AssetOrderBy {
+  FILENAME
+  CREATED_AT
+  UPDATED_AT
+  FILESIZE
+}
+
+enum AssetOrderByDirection {
+  ASC
+  DESC
 }

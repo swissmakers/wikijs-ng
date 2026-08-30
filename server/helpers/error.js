@@ -37,6 +37,18 @@ module.exports = {
     message: 'You are not authorized to rename this asset to the requested name.',
     code: 2009
   }),
+  AssetFolderInvalid: CustomError('AssetFolderInvalid', {
+    message: 'This asset folder does not exist or is invalid.',
+    code: 2010
+  }),
+  AssetFolderNotEmpty: CustomError('AssetFolderNotEmpty', {
+    message: 'This asset folder is not empty.',
+    code: 2011
+  }),
+  AssetFolderMoveInvalid: CustomError('AssetFolderMoveInvalid', {
+    message: 'Cannot move an asset folder into itself or one of its own subfolders.',
+    code: 2012
+  }),
   AuthAccountBanned: CustomError('AuthAccountBanned', {
     message: 'Your account has been disabled.',
     code: 1013

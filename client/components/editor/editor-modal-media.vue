@@ -57,8 +57,7 @@
                 :items-per-page='15'
                 :loading='loading'
                 must-sort,
-                sort-by='ID',
-                sort-desc,
+                sort-by='filename',
                 hide-default-footer,
                 dense
               )
@@ -104,10 +103,10 @@
                             v-list-item-avatar(size='24')
                               v-icon(color='orange') mdi-keyboard-outline
                             v-list-item-content {{$t('common:actions.rename')}}
-                          //- v-list-item(@click='', disabled)
-                          //-   v-list-item-avatar(size='24')
-                          //-     v-icon(color='blue') mdi-file-move
-                          //-   v-list-item-content {{$t('common:actions.move')}}
+                          v-list-item(@click='openMoveDialog')
+                            v-list-item-avatar(size='24')
+                              v-icon(color='blue') mdi-file-move
+                            v-list-item-content {{$t('common:actions.move')}}
                           v-list-item(@click='deleteDialog = true')
                             v-list-item-avatar(size='24')
                               v-icon(color='red') mdi-file-hidden
@@ -210,6 +209,30 @@
           v-btn(text, @click='renameDialog = false', :disabled='renameAssetLoading') {{$t('common:actions.cancel')}}
           v-btn.px-3(color='orange darken-3', @click='renameAsset', :loading='renameAssetLoading').white--text {{$t('common:actions.rename')}}
 
+    //- MOVE DIALOG
+
+    v-dialog(v-model='moveDialog', max-width='550', persistent)
+      v-card
+        .dialog-header.is-short
+          v-icon.mr-2(color='white') mdi-file-move
+          span {{$t('common:actions.move')}}
+        v-card-text.pt-5
+          .body-2 {{currentAsset.filename}}
+          v-treeview.mt-3(
+            :items='moveFolderTreeNested'
+            :active.sync='moveTargetFolders'
+            item-key='id'
+            activatable
+            hoverable
+            dense
+          )
+            template(v-slot:prepend='{ item, active }')
+              v-icon(:color='active ? `primary` : ``') {{ item.id === 0 ? 'mdi-home' : 'mdi-folder' }}
+        v-card-chin
+          v-spacer
+          v-btn(text, @click='moveDialog = false', :disabled='moveAssetLoading') {{$t('common:actions.cancel')}}
+          v-btn.px-3(color='primary', @click='moveAsset', :disabled='moveTargetFolders.length < 1', :loading='moveAssetLoading') {{$t('common:actions.move')}}
+
     //- DELETE DIALOG
 
     v-dialog(v-model='deleteDialog', max-width='550', persistent)
@@ -239,6 +262,8 @@ import listFolderAssetQuery from 'gql/editor/editor-media-query-folder-list.gql'
 import createAssetFolderMutation from 'gql/editor/editor-media-mutation-folder-create.gql'
 import renameAssetMutation from 'gql/editor/editor-media-mutation-asset-rename.gql'
 import deleteAssetMutation from 'gql/editor/editor-media-mutation-asset-delete.gql'
+import moveAssetMutation from 'gql/editor/editor-media-mutation-asset-move.gql'
+import folderTreeQuery from 'gql/editor/editor-media-query-folder-tree.gql'
 
 const FilePond = vueFilePond()
 const localeSegmentRegex = /^[A-Z]{2}(-[A-Z]{2})?$/i
@@ -277,6 +302,10 @@ export default {
       renameDialog: false,
       renameAssetName: '',
       renameAssetLoading: false,
+      moveDialog: false,
+      moveTargetFolders: [],
+      moveAssetLoading: false,
+      allFolders: [],
       deleteDialog: false,
       deleteAssetLoading: false
     }
@@ -313,6 +342,20 @@ export default {
     },
     currentAsset () {
       return _.find(this.assets, ['id', this.currentFileId]) || {}
+    },
+    moveFolderTreeNested () {
+      const buildChildren = parentId => {
+        return _.sortBy(_.filter(this.allFolders, ['parentId', parentId]), 'name').map(f => ({
+          id: f.id,
+          name: f.name || f.slug,
+          children: buildChildren(f.id)
+        }))
+      }
+      return [{
+        id: 0,
+        name: '/ root',
+        children: buildChildren(0)
+      }]
     },
     filePondServerOpts () {
       const jwtToken = Cookies.get('jwt')
@@ -485,6 +528,39 @@ export default {
       this.renameAssetLoading = false
       this.$store.commit(`loadingStop`, 'editor-media-renameasset')
     },
+    openMoveDialog() {
+      this.moveTargetFolders = []
+      this.moveDialog = true
+    },
+    async moveAsset() {
+      this.$store.commit(`loadingStart`, 'editor-media-moveasset')
+      this.moveAssetLoading = true
+      try {
+        const resp = await this.$apollo.mutate({
+          mutation: moveAssetMutation,
+          variables: {
+            id: this.currentFileId,
+            folderId: _.head(this.moveTargetFolders)
+          }
+        })
+        if (_.get(resp, 'data.assets.moveAsset.responseResult.succeeded', false)) {
+          this.currentFileId = null
+          await this.$apollo.queries.assets.refetch()
+          this.$store.commit('showNotification', {
+            message: this.$t('admin:assets.moveSuccess', { defaultValue: 'Asset moved successfully.' }),
+            style: 'success',
+            icon: 'check'
+          })
+          this.moveDialog = false
+        } else {
+          this.$store.commit('pushGraphError', new Error(_.get(resp, 'data.assets.moveAsset.responseResult.message')))
+        }
+      } catch (err) {
+        this.$store.commit('pushGraphError', err)
+      }
+      this.moveAssetLoading = false
+      this.$store.commit(`loadingStop`, 'editor-media-moveasset')
+    },
     async deleteAsset() {
       this.$store.commit(`loadingStart`, 'editor-media-deleteasset')
       this.deleteAssetLoading = true
@@ -518,6 +594,14 @@ export default {
     }
   },
   apollo: {
+    allFolders: {
+      query: folderTreeQuery,
+      fetchPolicy: 'network-only',
+      update: (data) => data.assets.folderTree,
+      skip() {
+        return !this.moveDialog
+      }
+    },
     folders: {
       query: listFolderAssetQuery,
       variables() {
