@@ -39,14 +39,6 @@
                 v-list-item-icon
                   v-icon(color='indigo') mdi-pencil
                 v-list-item-title Edit
-              //- v-list-item(@click='', disabled)
-              //-   v-list-item-icon
-              //-     v-icon(color='grey') mdi-cube-scan
-              //-   v-list-item-title Re-Render
-              //- v-list-item(@click='', disabled)
-              //-   v-list-item-icon
-              //-     v-icon(color='grey') mdi-earth-remove
-              //-   v-list-item-title Unpublish
               v-list-item(:href='`/s/` + page.locale + `/` + page.path')
                 v-list-item-icon
                   v-icon(color='indigo') mdi-code-tags
@@ -55,14 +47,6 @@
                 v-list-item-icon
                   v-icon(color='indigo') mdi-history
                 v-list-item-title View History
-              //- v-list-item(@click='', disabled)
-              //-   v-list-item-icon
-              //-     v-icon(color='grey') mdi-content-duplicate
-              //-   v-list-item-title Duplicate
-              //- v-list-item(@click='', disabled)
-              //-   v-list-item-icon
-              //-     v-icon(color='grey') mdi-content-save-move-outline
-              //-   v-list-item-title Move / Rename
               v-dialog(v-model='deletePageDialog', max-width='500')
                 template(v-slot:activator='{ on }')
                   v-list-item(v-on='on')
@@ -85,9 +69,6 @@
                     v-spacer
                     v-btn(text, @click='deletePageDialog = false', :disabled='loading') {{$t('common:actions.cancel')}}
                     v-btn(color='red darken-2', @click='deletePage', :loading='loading').white--text {{$t('common:actions.delete')}}
-          v-btn.animated.fadeInDown(color='success', large, depressed, disabled)
-            v-icon(left) mdi-check
-            span Save Changes
       v-flex(xs12, lg6)
         v-card.animated.fadeInUp
           v-toolbar(color='primary', dense, dark, flat)

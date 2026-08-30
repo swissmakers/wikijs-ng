@@ -6,15 +6,30 @@
           img.animated.fadeInUp(src='/_assets/svg/icon-file.svg', alt='Users', style='width: 80px;')
           .profile-header-title
             .headline.primary--text.animated.fadeInLeft {{$t('profile:pages.title')}}
-            .subheading.grey--text.animated.fadeInLeft {{$t('profile:pages.subtitle')}}
+            .subtitle-1.grey--text.animated.fadeInLeft {{$t('profile:pages.subtitle')}}
           v-spacer
-          v-btn.animated.fadeInDown.wait-p1s(color='grey', outlined, @click='refresh', large)
-            v-icon.grey--text mdi-refresh
+          v-btn.animated.fadeInDown.wait-p1s(icon, outlined, color='grey', @click='refresh')
+            v-icon mdi-refresh
       v-flex(xs12)
         v-card.animated.fadeInUp
+          v-toolbar(flat, :color='$vuetify.theme.dark ? `grey darken-3` : `grey lighten-4`', dense)
+            v-text-field(
+              v-model='filter'
+              :label='$t(`profile:pages.filterPlaceholder`, { defaultValue: `Filter my pages...` })'
+              prepend-inner-icon='mdi-magnify'
+              hide-details
+              dense
+              solo
+              flat
+              :background-color='$vuetify.theme.dark ? `grey darken-3` : `grey lighten-4`'
+              clearable
+              single-line
+            )
+          v-divider
           v-data-table(
             :items='pages'
             :headers='headers'
+            :search='filter'
             :page.sync='pagination'
             :items-per-page='15'
             :loading='loading'
@@ -36,7 +51,7 @@
             template(slot='no-data')
               v-alert.ma-3(icon='mdi-alert', :value='true', outlined, color='grey')
                 em.caption {{$t('profile:pages.emptyList')}}
-          .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')
+          .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1 && !filter')
             v-pagination(v-model='pagination', :length='pageTotal')
 </template>
 
@@ -49,6 +64,7 @@ export default {
       selectedPage: {},
       pagination: 1,
       pages: [],
+      filter: '',
       loading: false
     }
   },

@@ -7,24 +7,15 @@
           v-list-item-action: v-icon mdi-face-profile
           v-list-item-content
             v-list-item-title {{$t('profile:title')}}
-        //- v-list-item(to='/preferences', disabled)
-        //-   v-list-item-action: v-icon(color='grey lighten-1') mdi-cog-outline
-        //-   v-list-item-content
-        //-     v-list-item-title Preferences
-        //-     v-list-item-subtitle.caption.grey--text.text--lighten-1 Coming soon
         v-list-item(to='/pages', color='primary')
           v-list-item-action: v-icon mdi-file-document-outline
           v-list-item-content
             v-list-item-title {{$t('profile:pages.title')}}
-        //- v-list-item(to='/comments', disabled)
-        //-   v-list-item-action: v-icon(color='grey lighten-1') mdi-message-reply-text
-        //-   v-list-item-content
-        //-     v-list-item-title {{$t('profile:comments.title')}}
-        //-     v-list-item-subtitle.caption.grey--text.text--lighten-1 Coming soon
 
-    v-content(:class='$vuetify.theme.dark ? "grey darken-4" : "grey lighten-5"')
-      transition(name='profile-router')
-        router-view
+    v-main(:class='$vuetify.theme.dark ? "grey darken-4" : "grey lighten-5"')
+      .profile-content-container
+        transition(name='profile-router')
+          router-view
 
     nav-footer
     notify
@@ -42,8 +33,7 @@ const router = new VueRouter({
   routes: [
     { path: '/', redirect: '/profile' },
     { path: '/profile', component: () => import(/* webpackChunkName: "profile" */ './profile/profile.vue') },
-    { path: '/pages', component: () => import(/* webpackChunkName: "profile" */ './profile/pages.vue') },
-    { path: '/comments', component: () => import(/* webpackChunkName: "profile" */ './profile/comments.vue') }
+    { path: '/pages', component: () => import(/* webpackChunkName: "profile" */ './profile/pages.vue') }
   ]
 })
 
@@ -89,10 +79,32 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  padding-bottom: 4px;
+
+  > img {
+    width: 64px !important;
+    height: 64px;
+    padding: 10px;
+    background-color: rgba(mc('theme', 'primary'), .08);
+    border-radius: 12px;
+
+    @at-root .theme--dark & {
+      background-color: rgba(mc('theme', 'accent'), .15);
+    }
+  }
 
   &-title {
     margin-left: 1rem;
+
+    .headline {
+      font-weight: 500;
+      letter-spacing: -.25px;
+    }
   }
+}
+
+.profile-content-container {
+  max-width: 1400px;
 }
 
 </style>
