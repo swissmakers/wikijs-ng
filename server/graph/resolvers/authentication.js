@@ -51,6 +51,8 @@ module.exports = {
      */
     async activeStrategies (obj, args, context, info) {
       let strategies = await WIKI.models.authentication.getStrategies()
+      // -> Skip strategies whose module has been removed (kept in DB while users reference them)
+      strategies = strategies.filter(stg => _.some(WIKI.data.authentication, ['key', stg.strategyKey]))
       strategies = strategies.map(stg => {
         const strategyInfo = _.find(WIKI.data.authentication, ['key', stg.strategyKey]) || {}
         return {

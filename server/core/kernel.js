@@ -32,7 +32,6 @@ module.exports = {
   async preBootMaster() {
     try {
       this.initProcessHandlers()
-      WIKI.sideloader = await require('./sideloader').init()
       WIKI.cache = require('./cache').init()
       WIKI.scheduler = require('./scheduler').init()
       WIKI.servers = require('./servers')

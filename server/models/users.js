@@ -139,7 +139,7 @@ module.exports = class User extends Model {
   }
 
   async disableTFA() {
-    return this.$query.patch({
+    return this.$query().patch({
       tfaIsActive: false,
       tfaSecret: ''
     })
@@ -653,7 +653,7 @@ module.exports = class User extends Model {
       }
 
       if (sendWelcomeEmail) {
-        // Send welcome email
+        // Send welcome email (a failure must not undo the already created account)
         await WIKI.mail.send({
           template: 'accountWelcome',
           to: email,
@@ -666,6 +666,8 @@ module.exports = class User extends Model {
             buttonText: 'Login'
           },
           text: `You've been invited to the wiki ${WIKI.config.title}: ${WIKI.config.host}/login`
+        }).catch(err => {
+          WIKI.logger.warn(`Failed to send welcome email to ${email}: ${err.message}`)
         })
       }
     } else {

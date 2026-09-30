@@ -87,11 +87,9 @@ module.exports = () => {
         featurePageComments: true,
         featurePersonalWikis: true
       })
-      _.set(WIKI.config, 'graphEndpoint', 'https://graph.requarks.io')
       _.set(WIKI.config, 'host', req.body.siteUrl)
       _.set(WIKI.config, 'lang', {
         code: 'en',
-        autoUpdate: true,
         namespacing: false,
         namespaces: []
       })
@@ -171,7 +169,6 @@ module.exports = () => {
         'certs',
         'company',
         'features',
-        'graphEndpoint',
         'host',
         'lang',
         'logo',
@@ -215,15 +212,9 @@ module.exports = () => {
           break
       }
 
-      // Create default locale
-      WIKI.logger.info('Installing default locale...')
-      await WIKI.models.locales.query().insert({
-        code: 'en',
-        strings: {},
-        isRTL: false,
-        name: 'English',
-        nativeName: 'English'
-      })
+      // Create bundled locales
+      WIKI.logger.info('Installing bundled locales...')
+      await WIKI.models.locales.syncRows(await WIKI.models.locales.getBundledLocales(), { clearStrings: true })
 
       // Create default groups
 

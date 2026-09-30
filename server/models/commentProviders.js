@@ -40,62 +40,13 @@ module.exports = class CommentProvider extends Model {
   }
 
   static async refreshProvidersFromDisk() {
-    let trx
-    try {
-      const dbProviders = await WIKI.models.commentProviders.query()
-
-      // -> Fetch definitions from disk
-      const commentDirs = await fs.readdir(path.join(WIKI.SERVERPATH, 'modules/comments'))
-      let diskProviders = []
-      for (let dir of commentDirs) {
-        const def = await fs.readFile(path.join(WIKI.SERVERPATH, 'modules/comments', dir, 'definition.yml'), 'utf8')
-        diskProviders.push(yaml.load(def))
-      }
-      WIKI.data.commentProviders = diskProviders.map(provider => ({
-        ...provider,
-        props: commonHelper.parseModuleProps(provider.props)
-      }))
-
-      let newProviders = []
-      for (let provider of WIKI.data.commentProviders) {
-        if (!_.some(dbProviders, ['key', provider.key])) {
-          newProviders.push({
-            key: provider.key,
-            isEnabled: provider.key === 'default',
-            config: _.transform(provider.props, (result, value, key) => {
-              _.set(result, key, value.default)
-              return result
-            }, {})
-          })
-        } else {
-          const providerConfig = _.get(_.find(dbProviders, ['key', provider.key]), 'config', {})
-          await WIKI.models.commentProviders.query().patch({
-            config: _.transform(provider.props, (result, value, key) => {
-              if (!_.has(result, key)) {
-                _.set(result, key, value.default)
-              }
-              return result
-            }, providerConfig)
-          }).where('key', provider.key)
-        }
-      }
-      if (newProviders.length > 0) {
-        trx = await WIKI.models.Objection.transaction.start(WIKI.models.knex)
-        for (let provider of newProviders) {
-          await WIKI.models.commentProviders.query(trx).insert(provider)
-        }
-        await trx.commit()
-        WIKI.logger.info(`Loaded ${newProviders.length} new comment providers: [ OK ]`)
-      } else {
-        WIKI.logger.info(`No new comment providers found: [ SKIPPED ]`)
-      }
-    } catch (err) {
-      WIKI.logger.error(`Failed to scan or load new comment providers: [ FAILED ]`)
-      WIKI.logger.error(err)
-      if (trx) {
-        trx.rollback()
-      }
-    }
+    return commonHelper.refreshModulesFromDisk({
+      dirName: 'comments',
+      dataKey: 'commentProviders',
+      model: 'commentProviders',
+      label: 'comment providers',
+      isEnabledDefault: def => def.key === 'default'
+    })
   }
 
   static async initProvider() {

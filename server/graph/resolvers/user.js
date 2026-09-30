@@ -174,9 +174,6 @@ module.exports = {
         return graphHelper.generateError(err)
       }
     },
-    resetPassword (obj, args) {
-      return false
-    },
     async updateProfile (obj, args, context) {
       try {
         if (!context.req.user || context.req.user.id < 1 || context.req.user.id === 2) {

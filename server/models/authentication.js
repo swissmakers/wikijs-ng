@@ -91,12 +91,19 @@ module.exports = class Authentication extends Model {
         })
       }
 
+      // -> Remove strategies whose module is gone (disabled only while users still reference them)
+      await commonHelper.removeMissingModules({
+        model: 'authentication',
+        records: dbStrategies,
+        keyField: 'strategyKey',
+        isPresent: strategy => _.some(WIKI.data.authentication, ['key', strategy.strategyKey]),
+        references: [{ table: 'users', column: 'providerKey' }]
+      })
+
       for (const strategy of dbStrategies) {
         let newProps = false
         const strategyDef = _.find(WIKI.data.authentication, ['key', strategy.strategyKey])
         if (!strategyDef) {
-          await WIKI.models.authentication.query().delete().where('key', strategy.key)
-          WIKI.logger.info(`Authentication strategy ${strategy.strategyKey} was removed from disk: [ REMOVED ]`)
           continue
         }
         strategy.config = _.transform(strategyDef.props, (result, value, key) => {

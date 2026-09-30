@@ -1,0 +1,1075 @@
+admin:
+  adminArea: Area Amministrazione
+  analytics:
+    providerConfiguration: Configurazione del provider
+    providerNoConfiguration: Questo provider non ha opzioni di configurazione che puoi modificare.
+    providers: Providers
+    refreshSuccess: Elenco dei provider aggiornati correttamente.
+    saveSuccess: Configurazioni di analitica salvate correttamente
+    subtitle: Aggiungi strumenti di analisi e tracciamento al tuo wiki
+    title: Analitiche
+  api:
+    disableButton: Disabilita API
+    disabled: API disabilitata
+    enableButton: Abilita API
+    enabled: API abilitate
+    expiration180d: 180 giorni
+    expiration1y: 1 anno
+    expiration30d: 30 giorni
+    expiration3y: 3 anni
+    expiration90d: 90 giorni
+    headerCreated: Creato
+    headerExpiration: Scadenza
+    headerKeyEnding: Fine chiave
+    headerLastUpdated: Ultimo aggiornamento
+    headerName: Nome
+    headerRevoke: Revoca
+    newKeyButton: Nuova chiave API
+    newKeyCopyWarn: Copia la chiave mostrata di seguito come {{bold}}
+    newKeyCopyWarnBold: NON verrà mostrato di nuovo
+    newKeyExpiration: Scadenza
+    newKeyExpirationHint: È comunque possibile revocare una chiave in qualsiasi momento, indipendentemente dalla scadenza.
+    newKeyFullAccess: Accesso completo
+    newKeyGroup: Gruppo
+    newKeyGroupError: È necessario selezionare un gruppo.
+    newKeyGroupHint: La chiave API avrà gli stessi permessi del gruppo selezionato.
+    newKeyGroupPermissions: oppure utilizzare i permessi di gruppo...
+    newKeyGuestGroupError: Il gruppo ospiti non può essere utilizzato per le chiavi API.
+    newKeyName: Nome
+    newKeyNameError: Il nome è mancante o non valido.
+    newKeyNameHint: Scopo di questa chiave
+    newKeyPermissionScopes: Ambiti di autorizzazione
+    newKeySuccess: Chiave API creata correttamente.
+    newKeyTitle: Nuova chiave API
+    noKeyInfo: Nessuna chiave API è stata ancora generata.
+    refreshSuccess: L'elenco delle chiavi API è stato aggiornato.
+    revoke: Revoca
+    revokeConfirm: Revocare la chiave API?
+    revokeConfirmText: Sei sicuro di voler revocare la chiave {{name}}? Questa azione non può essere annullata!
+    revokeSuccess: La chiave è stata revocata correttamente.
+    subtitle: Gestisci le chiavi per accedere all'API
+    title: Accesso all'API
+    toggleStateDisabledSuccess: L'API è stata disabilitata con successo.
+    toggleStateEnabledSuccess: L'API è stata abilitata con successo.
+  auth:
+    activeStrategies: Strategie attive
+    addStrategy: Aggiungi strategia
+    allowedWebOrigins: Ammessi Web Origins
+    autoEnrollGroups: Assegna al gruppo
+    autoEnrollGroupsHint: Assegna automaticamente nuovi utenti a questi gruppi.
+    callbackUrl: URL di callback / URI di reindirizzamento
+    configReference: Configurazione di riferimento
+    configReferenceSubtitle: Alcune strategie potrebbero richiedere l'impostazione di alcuni valori di configurazione nel provider. Questi sono forniti solo per riferimento e potrebbero non essere necessari per la strategia attuale.
+    displayName: Nome visualizzato
+    displayNameHint: Il titolo mostrato all'utente per questa strategia di autenticazione.
+    domainsWhitelist: Limita a specifici domini di posta elettronica
+    domainsWhitelistHint: Un elenco di domini autorizzati a registrarsi. Il dominio dell'indirizzo di posta elettronica dell'utente deve corrispondere a uno di questi per ottenere l'accesso.
+    force2fa: Forza tutti gli utenti ad utilizzare l'autenticazione a due fattori (2FA)
+    force2faHint: Agli utenti sarà richiesto di impostare 2FA la prima volta che si connettono e non potrà essere disabilitato dall'utente.
+    globalAdvSettings: Impostazioni globali avanzate
+    jwtAudience: Pubblico JWT
+    jwtAudienceHint: URN del pubblico utilizzato in JWT emesso al momento del login. Di solito il tuo nome di dominio. (ad es. urn:your.domain.com)
+    loginUrl: URL di login
+    logoutUrl: URL di logout
+    refreshSuccess: L'elenco delle strategie è stato aggiornato.
+    registration: Registrazione
+    saveSuccess: Configurazione di autenticazione salvata con successo.
+    security: Sicurezza
+    selfRegistration: Consenti la registrazione autonoma
+    selfRegistrationHint: Consentire ad un qualsiasi utente autorizzato con successo dalla strategia di accedere alla Wiki.
+    siteUrlNotSetup: Devi prima impostare un {{siteUrl}} valido! Fai clic su {{general}} nella barra laterale di sinistra.
+    strategies: Strategie
+    strategyConfiguration: Configurazione della strategia
+    strategyIsEnabled: Attivo
+    strategyIsEnabledHint: Gli utenti possono effettuare il login utilizzando questa strategia?
+    strategyNoConfiguration: Questa strategia non ha opzioni di configurazione che puoi modificare.
+    strategyState: Questa strategia è {{state}} {{locked}}
+    strategyStateActive: attivo
+    strategyStateInactive: non attivo
+    strategyStateLocked: e non può essere disabilitato.
+    subtitle: Configura le impostazioni di autenticazione della tua Wiki
+    title: Accesso
+    tokenEndpointAuthMethod: Metodo di autenticazione dell'endpoint token
+    tokenExpiration: Scadenza del token
+    tokenExpirationHint: 'Periodo di scadenza di un token fino a quando non deve essere rinnovato. (impostazione predefinita: 30m)'
+    tokenRenewalPeriod: Periodo di rinnovo del token
+    tokenRenewalPeriodHint: 'Periodo massimo di rinnovo di un token alla scadenza. (impostazione predefinita: 14 giorni)'
+  comments:
+    configSaveSuccess: Configurazione dei commenti salvata con successo.
+    provider: Provider
+    providerConfig: Configurazione del provider
+    providerNoConfig: Questo provider non ha opzioni di configurazione che puoi modificare.
+    subtitle: Aggiungi discussioni alle tue pagine wiki
+    title: Commenti
+  contribute:
+    becomeAPatron: Diventa un Benefattore
+    becomeASponsor: Diventa uno sponsor
+    contribute: Contribuisci
+    ethereum: 'Accettiamo donazioni utilizzando Ethereum:'
+    followUsOnTwitter: Seguici su {{0}}.
+    foundABug: Hai trovato un bug? Faccelo sapere su {{0}}.
+    fundOurWork: Sostieni il nostro lavoro
+    github: Diventa uno sponsor tramite GitHub Sponsor (va direttamente a sostenere l'obiettivo di Nicolas Giard di lavorare a tempo pieno su Wiki.js)
+    helpTranslate: Aiuta a tradurre Wiki.js nella tua lingua. Faccelo sapere su {{0}}.
+    makeADonation: Effettua una donazione
+    needYourHelp: Abbiamo bisogno del tuo aiuto per continuare a migliorare il software e gestire i vari servizi associati (ad esempio hosting e networking).
+    openCollective: 'Wiki.js fa parte dell''iniziativa Open Collective, un fondo trasparente destinato alle risorse della comunità. Puoi contribuire finanziariamente effettuando una donazione mensile o una tantum:'
+    openSource: Wiki.js è un software gratuito e open source offerti con il {{0}} da {{1}} e {{2}} .
+    openSourceContributors: contributori
+    patreon: Diventa un sostenitore o uno sponsor con Patreon (supporta direttamente l'obiettivo del team di sviluppo di Nicolas Giard per lavorare full-time su Wiki.js)
+    paypal: 'Effettua una donazione una tantum o ricorrente tramite Paypal:'
+    shop: Negozio di Wiki.js
+    spreadTheWord: Spargi la voce
+    submitAnIdea: Invia un'idea o vota una proposta su {{0}} .
+    submitAnIdeaLink: scheda delle richieste di funzionalità
+    subtitle: Aiuta e sostieni lo sviluppo e le operazioni di Wiki.js
+    talkToFriends: Condividi con i tuoi amici e colleghi quanto sia fantastico Wiki.js!
+    title: Contribuisci a Wiki.js
+    tshirts: 'Puoi anche acquistare le magliette di Wiki.js per sostenere finanziariamente il progetto:'
+  dashboard:
+    contributeHelp: Abbiamo bisogno del tuo aiuto!
+    contributeLearnMore: Per saperne di più
+    contributeSubtitle: Wiki.js è un progetto gratuito e open source. Esistono diversi modi per contribuire al progetto.
+    groups: Gruppi
+    lastLogins: Ultimi accessi
+    mostPopularPages: Pagine più popolari
+    pages: Pagine
+    recentPages: Pagine recenti
+    subtitle: Wiki.js
+    title: Dashboard
+    users: Utenti
+    versionLatest: Stai usando l'ultima versione.
+    versionNew: 'È disponibile una nuova versione: {{version}}'
+  dev:
+    flags:
+      title: Flags
+    graphiql:
+      title: GraphiQL
+    title: Strumenti di sviluppo
+    voyager:
+      title: Passeggero
+  editor:
+    title: Editor
+  extensions:
+    subtitle: Installa le estensioni per funzionalità aggiuntive
+    title: Estensioni
+  general:
+    companyName: Nome dell'azienda / organizzazione
+    companyNameHint: Nome da utilizzare quando si visualizza l'avviso di copyright nel piè di pagina. Lasciare vuoto per nasconderlo.
+    contentLicense: Licenza di contenuto
+    contentLicenseHint: Licenza visualizzata nel piè di pagina di tutte le pagine di contenuto.
+    displayEditMenuBar: Mostra la barra di menù di modifica
+    displayEditMenuBarHint: Mostra la barra di menù di modifica nell'intestazione di pagina.
+    displayEditMenuBtn: Mostra il pulsante Modifica
+    displayEditMenuBtnHint: Mostra un pulsante per modificare la pagina corrente.
+    displayEditMenuExternalBtn: Mostra il pulsante Modifiche Esterne
+    displayEditMenuExternalBtnHint: Mostra un pulsante che collega ad un repository esterno (es. GitHub) attraverso il quale gli utenti possono modificare o sottomettere una PR relativa alla pagina corrente.
+    editFab: Menù di modifica rapida (FAB)
+    editFabHint: Visualizzare il pulsante di modifica fluttuante (FAB) con un menu di selezione rapida nell'angolo inferiore destro dello schermo.
+    editMenuBar: Barra di menù di modifica
+    editMenuExternalIcon: Icona del pulsante
+    editMenuExternalIconHint: L'icona da visualizzare sul pulsante di modifica. Ad esempio, mdi-github per visualizzare l'icona di GitHub.
+    editMenuExternalName: Nome del sito del pulsante
+    editMenuExternalNameHint: Il nome del sito esterno da visualizzare sul pulsante di modifica. Non includere il prefisso "Modifica su".
+    editMenuExternalUrl: URL del pulsante
+    editMenuExternalUrlHint: URL della pagina nel repository esterno. Utilizza il segnaposto {filename} quando il nome del file deve essere incluso (ad esempio, https://github.com/foo/bar/blob/main/{filename})
+    editShortcuts: Modifica delle scorciatoie
+    footerCopyright: Copyright piè di pagina
+    footerOverride: Sovrascrittura del testo del piè pagina
+    footerOverrideHint: Facoltativamente sostituisci il testo del piè pagina con un testo personalizzato. Utile se nessuna delle licenze precedenti è appropriata.
+    general: Generale
+    logo: Logo
+    logoUrl: URL del logo
+    logoUrlHint: Specifica un'immagine da utilizzare come logo. SVG, PNG, JPG sono supportati, in un rapporto quadrato, 34x34 pixel o superiore. Fai clic sul pulsante a destra per caricare una nuova immagine.
+    metaRobots: Meta Robots
+    metaRobotsHint: 'Predefinito: Indice, Follow. Può anche essere impostato su una base per pagina.'
+    pageExtensions: Estensioni di Pagina
+    pageExtensionsHint: Lista di estensioni URL separate da virgola che verranno considerate come pagine. Ad esempio, aggiungendo md il percorso /foobar.md sarà trattato come /foobar.
+    saveSuccess: Configurazione del sito salvata con successo.
+    siteBranding: Marchio del sito
+    siteDescription: Descrizione del sito
+    siteDescriptionHint: Descrizione di default quando non viene fornita alcuna descrizione per una pagina.
+    siteInfo: Informazioni sul sito
+    siteTitle: Titolo del sito
+    siteTitleHint: Visualizzato nella barra in alto e inserito in tutte le pagine nel meta title.
+    siteTitleInvalidChars: Il titolo del sito contiene caratteri non validi.
+    siteUrl: URL del sito
+    siteUrlHint: URL completo del tuo wiki, senza slash finale. (ad esempio, https://wiki.example.com).
+    subtitle: Impostazioni principali della tua wiki
+    title: Generale
+    uploadClear: Ripulisci
+    uploadLogo: Carica Logo
+    uploadSizeHint: Per ottenere i migliori risultati, si raccomanda un'immagine di {{size}} pixel.
+    uploadTypesHint: Solo file di tipo {{typeList}} o {{lastType}}
+  groups:
+    title: Gruppi
+  locale:
+    activeNamespaces:
+      hint: Elenco di lingue che possono utilizzare il namespace multilingue. La lingua base definita qui sopra sarà inclusa indipendentemente da questa selezione.
+      label: Namespace attivi
+    base:
+      hint: Tutti gli elementi di testo dell'interfaccia utente verranno visualizzati nella lingua selezionata.
+      label: Lingua del sito
+      labelWithNS: Lingua base
+    code: Codice
+    name: Nome
+    namespaces:
+      hint: Se attivo, permette l'utilizzo di più lingue per ogni pagina.
+      label: Namespace multilingue
+    namespacing: Namespacing multilingue
+    namespacingPrefixWarning:
+      subtitle: I percorsi che non includono la lingua verranno automaticamente reindirizzati alla lingua di base definita sopra.
+      title: Il codice della lingua sarà il prefisso di ogni percorso. (ad es. /{{langCode}}/nome-della-pagina)
+    nativeName: Nome nativo
+    rtl: RTL
+    settings: Impostazioni della lingua
+    sideload: Lingue personalizzate e aggiuntive
+    sideloadHelp: Inglese, tedesco, francese e italiano sono inclusi in Wiki.js NG. Per aggiungere un’altra lingua o sostituire singoli testi, inserisci i file di lingua YAML nella cartella seguente e riavvia Wiki.js.
+    subtitle: Imposta le opzioni della lingua per la tua wiki
+    title: Lingua
+    availableTitle: Lingue disponibili
+    source: Origine
+    sourceBundled: Incluso
+    sourceSideloaded: Aggiunto manualmente
+    sourceDatabase: Database (pacchetto precedente)
+    sideloadFolder: Cartella dei file di lingua
+  logging:
+    title: Registro
+  mail:
+    configuration: Configurazione
+    dkim: DKIM (facoltativo)
+    dkimDomainName: Nome del dominio
+    dkimHint: DKIM (DomainKeys Identified Mail) fornisce un livello di sicurezza su tutte le email inviate da Wiki.js fornendo ai destinatari i mezzi per convalidare il nome di dominio e garantire l'autenticità del messaggio.
+    dkimKeySelector: Selettore chiave
+    dkimPrivateKey: Chiave privata
+    dkimPrivateKeyHint: Chiave privata per il selettore in formato PEM
+    dkimUse: Usa DKIM
+    saveSuccess: Configurazione salvata con successo.
+    sendTestSuccess: Un'Email di prova è stata inviata correttamente.
+    sender: Mittente
+    senderEmail: Email mittente
+    senderName: Nome mittente
+    smtp: Impostazioni SMTP
+    smtpHost: Host
+    smtpName: Nome host identificativo del client
+    smtpNameHint: Un nome opzionale da inviare al server SMTP per identificare il tuo mittente. Lascia vuoto per usare il nome host del server. Per i clienti Google Workspace, questo dovrebbe essere il vostro nome di dominio.
+    smtpPort: Porta
+    smtpPortHint: Solitamente 465 (consigliato), 587 o 25.
+    smtpPwd: Password
+    smtpTLS: Sicuro (TLS)
+    smtpTLSHint: Dovrebbe essere abilitato quando si utilizza la porta 465, altrimenti spento (587 o 25).
+    smtpUser: Username
+    smtpVerifySSL: Verifica certificato SSL
+    smtpVerifySSLHint: Alcuni host richiedono che il controllo del certificato SSL sia disabilitato. Lasciare abilitato per una sicurezza adeguata.
+    subtitle: Configura le impostazioni email
+    test: Invia un'email di prova
+    testHint: Invia un'Email di prova per assicurarti che la tua configurazione SMTP funzioni.
+    testRecipient: Indirizzo email destinatario
+    testSend: Invia email
+    title: Email
+  nav:
+    modules: Moduli
+    site: Sito
+    system: Sistema
+    users: Utenti
+  navigation:
+    copyFromLocale: Copia da lingua ...
+    copyFromLocaleInfoText: Seleziona la lingua dalla quale verranno copiati gli elementi. Gli articoli verranno aggiunti all'elenco degli elementi già presenti della lingua attiva.
+    delete: Elimina {{kind}}
+    divider: Divisore
+    edit: Modifica {{kind}}
+    emptyList: La navigazione è vuota.
+    header: Intestazione
+    icon: Icona
+    label: Etichetta
+    link: Link
+    mode: Modalità di navigazione
+    modeCustom:
+      description: Menu di navigazione statico + Pulsante struttura ad albero del sito
+      title: Navigazione personalizzata
+    modeNone:
+      description: Disabilita la navigazione del sito
+      title: Nessuno
+    modeSiteTree:
+      description: Navigazione classica ad albero
+      title: Albero del sito
+    modeStatic:
+      description: Solo menu di navigazione statico
+      title: Navigazione statica
+    navType:
+      external: Link esterno
+      externalblank: Link esterno (nuova finestra)
+      home: Pagina principale
+      page: Pagina
+      searchQuery: Ricerca
+    noItemsText: Fai clic sul pulsante Aggiungi per aggiungere il tuo primo oggetto alla navigazione.
+    noSelectionText: Seleziona un elemento di navigazione a sinistra.
+    saveSuccess: La navigazione è stata salvata con successo.
+    selectPageButton: Seleziona pagina...
+    sourceLocale: Lingua di provenienza
+    sourceLocaleHint: La lingua dalla quale verranno copiati gli elementi di navigazione.
+    subtitle: Gestisci la navigazione del sito
+    target: Destinazione
+    targetType: Tipo di destinazione
+    title: Navigazione
+    untitled: Senza titolo {{kind}}
+    visibilityMode:
+      all: Visibile a tutti
+      restricted: Visibile per i gruppi...
+  pages:
+    title: Pagine
+  rendering:
+    subtitle: Configura la pipeline di rendering della pagina
+    title: Rendering
+  search:
+    configSaveSuccess: La configurazione del motore di ricerca è stata salvata con successo.
+    engineConfig: Configurazione del motore
+    engineNoConfig: Questo motore non ha opzioni di configurazione che puoi modificare.
+    indexRebuildSuccess: Indice ricostruito con successo.
+    listRefreshSuccess: L'elenco dei motori di ricerca è stato aggiornato.
+    rebuildIndex: Ricostruisci indice
+    searchEngine: Motore di ricerca
+    subtitle: Configura le capacità di ricerca della tua Wiki
+    title: Motore di ricerca
+  security:
+    bypassLogin: Salta schermata di accesso
+    bypassLoginHint: L'utente dovrebbe essere reindirizzato automaticamente al primo provider di autenticazione.
+    enforce2fa: Attiva la verifica in due passaggi
+    enforce2faHint: Forza tutti gli utenti a utilizzare l'autenticazione a due fattori quando si utilizza un provider di autenticazione con un modulo utente/password.
+    hideLocalLogin: Nascondi provider di autenticazione locale
+    hideLocalLoginHint: Non mostrare il provider di autenticazione locale nella schermata di accesso. Aggiungi ?all all'URL per utilizzarlo temporaneamente.
+    jwt: Configurazione JWT
+    login: Login
+    loginBgUrl: URL dell'immagine di sfondo del login
+    loginBgUrlHint: Specificare un'immagine da utilizzare come sfondo di login. Sono supportati PNG e JPG, di dimensione consigliata 1920x1080. Lasciare vuoto per usare l'impostazione predefinita. Fare clic sul pulsante a destra per caricare una nuova immagine. Ricorda che il gruppo Guests deve disporre dell'accesso in lettura all'immagine selezionata.
+    loginScreen: Schermata di login
+    loginSecurity: Sicurezza
+    maxUploadBatch: Numero massimo di file per caricamento
+    maxUploadBatchHint: Quanti file possono essere caricati in un'unica volta?
+    maxUploadBatchSuffix: files
+    maxUploadSize: Dimensione massima caricamento
+    maxUploadSizeHint: La dimensione massima per un singolo file.
+    maxUploadSizeSuffix: bytes
+    subtitle: Configura le impostazioni di sicurezza
+    title: Sicurezza
+    uploads: Uploads
+    uploadsInfo: Queste impostazioni riguardano solo Wiki.js. Se si utilizza un reverse-proxy (ad esempio nginx, apache, Cloudflare), è necessario modificare anche le sue impostazioni in modo che corrispondano.
+  ssl:
+    currentState: Stato corrente
+    domain: Dominio
+    domainHint: Inserisci il dominio completo che punta alla tua wiki. (ad esempio wiki.example.com)
+    expiration: Scadenza del certificato
+    httpPort: Porta HTTP
+    httpPortHint: Porta non SSL sulla quale il server sarà in ascolto per le richieste HTTP. Di solito 80 o 3000.
+    httpPortRedirect: Reindirizza le richieste HTTP su HTTPS
+    httpPortRedirectHint: Reindirizzerà automaticamente qualsiasi richiesta sulla porta HTTP verso quella HTTPS.
+    httpPortRedirectSaveSuccess: Il reindirizzamento HTTP è stato modificato con successo.
+    httpPortRedirectTurnOff: Disattiva
+    httpPortRedirectTurnOn: Attiva
+    httpsPort: Porta HTTPS
+    httpsPortHint: Porta SSL sulla quale il server sarà in ascolto per le richieste HTTPS. Di solito 443.
+    ports: Porte
+    provider: Provider
+    providerCustomCertificate: Certificato personalizzato
+    providerDisabled: Disabilitato
+    providerHint: Seleziona Certificato personalizzato se si dispone già di un proprio certificato.
+    providerLetsEncrypt: Let's Encrypt
+    providerOptions: Opzioni provider
+    renewCertificate: Rinnova certificato
+    renewCertificateLoadingSubtitle: Non uscire da questa pagina.
+    renewCertificateLoadingTitle: Sto rinnovando il certificato...
+    renewCertificateSuccess: Il certificato è stato rinnovato con successo.
+    status: Stato del certificato
+    subscriberEmail: Email dell'abbonato
+    subtitle: Gestisci la configurazione SSL
+    title: SSL
+    writableConfigFileWarning: Nota che il tuo file di configurazione deve essere scrivibile per mantenere le impostazioni delle porte.
+  stats:
+    title: Statistiche
+  storage:
+    actionRun: Esegui
+    actions: Azioni
+    actionsInactiveWarn: Devi abilitare lo storage selezionato ed applicare le modifiche prima di eseguire azioni.
+    errorMsg: Messaggio di errore
+    lastSync: Ultima sincronizzazione {{time}}
+    lastSyncAttempt: L'ultimo tentativo è stato {{time}}
+    noConfigOption: Questa destinazione di archiviazione non dispone di opzioni di configurazione che è possibile modificare.
+    noTarget: Non hai selezionato alcun storage attivo
+    status: Stato
+    subtitle: Impostare le destinazioni di backup e sincronizzazione per i tuoi dati
+    syncDirBi: Bidirezionale
+    syncDirBiHint: In modalità bidirezionale, il contenuto viene prima estratto dalla destinazione di archiviazione. Qualsiasi contenuto più recente sovrascrive il contenuto locale. Il nuovo contenuto dall'ultima sincronizzazione viene quindi inviato alla destinazione di archiviazione, sovrascrivendo qualsiasi contenuto nella destinazione, se presente.
+    syncDirPull: Scarica da target
+    syncDirPullHint: Il contenuto viene sempre estratto dal target di archiviazione, sovrascrivendo qualsiasi contenuto locale già esistente. Questa scelta è solitamente riservata all'importazione di contenuti monouso. Attenzione con questa opzione in quanto qualsiasi contenuto locale sarà sempre sovrascritto!
+    syncDirPush: Carica su target
+    syncDirPushHint: Il contenuto viene sempre inviato al target di archiviazione, sovrascrivendo qualsiasi contenuto esistente. Questa è la scelta più sicura per gli scenari di backup.
+    syncDirection: Direzione di sincronizzazione
+    syncDirectionSubtitle: Scegliere la modalità di gestione della sincronizzazione del contenuto per questa destinazione di archiviazione.
+    syncSchedule: Programma di sincronizzazione
+    syncScheduleCurrent: Attualmente impostato su ogni {{schedule}}.
+    syncScheduleDefault: L'impostazione predefinita è ogni {{schedule}}.
+    syncScheduleHint: Per motivi di prestazioni, questa destinazione di archiviazione sincronizza le modifiche in base a una pianificazione basata su intervalli, anziché a ogni modifica. Definire in quale intervallo deve essere eseguita la sincronizzazione.
+    targetConfig: Configurazione di destinazione
+    targetState: Lo storage scelto è {{state}}
+    targetStateActive: attivo
+    targetStateInactive: inattivo
+    targets: Obiettivi
+    title: Spazio su disco
+    unsupported: Non supportato
+  system:
+    configFile: File della configurazione
+    cpuCores: Cores del processore
+    currentVersion: Versione attuale
+    dbPartialSupport: La versione del tuo database non è completamente supportata. Alcune funzionalità potrebbero essere limitate o non funzionare come previsto.
+    hostInfo: Informazioni sull'host
+    hostname: Nome dell'host
+    latestVersion: Ultima versione disponibile
+    os: Sistema operativo
+    published: Pubblicata
+    ramUsage: 'Utilizzo della RAM: {{used}} / {{total}}'
+    refreshSuccess: Le informazioni di sistema sono state aggiornate.
+    subtitle: Informazioni sul tuo sistema
+    title: Informazioni di sistema
+    totalRAM: Memoria RAM totale
+    workingDirectory: Cartella utilizzata
+  tags:
+    date: Creato {{created}} e aggiornato per ultimo {{updated}}.
+    delete: Elimina questo tag
+    deleteConfirm: Eliminare il tag?
+    deleteConfirmText: Sei sicuro di voler eliminare il tag {{tag}}? Il tag verrà anche scollegato da tutte le pagine.
+    deleteSuccess: Tag eliminato con successo.
+    edit: Modifica tag
+    emptyList: Nessun tag da visualizzare.
+    filter: Filtro...
+    label: Etichetta
+    noItemsText: Aggiungi un tag a una pagina per iniziare.
+    noSelectionText: Seleziona un tag dall'elenco a sinistra.
+    refreshSuccess: I tag sono stati aggiornati.
+    saveSuccess: Il tag è stato salvato con successo.
+    subtitle: Gestisci tag di pagina
+    tag: Tag
+    title: Tags
+    viewLinkedPages: Visualizza le pagine collegate
+  theme:
+    bodyHtmlInjection: Iniezione Body HTML
+    bodyHtmlInjectionHint: Codice HTML da iniettare appena prima del tag di chiusura del corpo.
+    codeInjection: Iniezione di codice
+    cssOverride: Override CSS
+    cssOverrideHint: Codice CSS da iniettare dopo il CSS di default. Considerare l'utilizzo di temi personalizzati se si dispone di una grande quantità di codice CSS. Se si inietta troppo codice CSS, le prestazioni di caricamento peggioreranno! I CSS saranno automaticamente rimpiccioliti.
+    cssOverrideWarning: '{{caution}}Quando si aggiungono stili per il contenuto della pagina, devi cercarli nella classe {{cssClass}}. Dimenticandosi di farlo, potresti rompere il layout dell''editor.'
+    cssOverrideWarningCaution: 'ATTENZIONE:'
+    darkMode: Modalità Scura
+    darkModeHint: Non consigliato per l'accessibilità. Può non essere supportato da tutti i temi.
+    downloadAuthor: Autore
+    downloadDownload: Download
+    downloadName: Nome
+    downloadThemes: Scarica i temi
+    headHtmlInjection: Iniezione head HTML
+    headHtmlInjectionHint: Codice HTML da iniettare appena prima del tag head di chiusura. Di solito per i tag di script.
+    iconset: Set di icone
+    iconsetHint: Set di icone da usare per barra di navigazione laterale.
+    options: Opzioni Temi
+    siteTheme: Tema del sito
+    siteThemeHint: I temi influiscono sulla visualizzazione delle pagine di contenuto. Altre sezioni del sito (come l'editor o l'area di amministrazione) non sono interessate.
+    subtitle: Modifica l'aspetto del tuo wiki
+    title: Tema
+    tocHeadingLevels: Livelli d'intestazione indice predefiniti
+    tocHeadingLevelsHint: Per impostazione predefinita, l'indice mostra i titoli a partire da e fino ai livelli selezionati.
+  users:
+    active: Attivo
+    authProvider: Provider
+    authProviderId: Provider Id
+    authentication: Autenticazione
+    basicInfo: Informazioni Base
+    changePassword: Cambio Password
+    deleteConfirmForeignNotice: Si noti che non è possibile eliminare un utente che ha già creato contenuti. Devi invece disattivare l'utente o eliminare tutto il contenuto creato da quell'utente.
+    deleteConfirmReplaceWarn: Qualsiasi contenuto (pagine, caricamenti, commenti, ecc.) creato da questo utente verrà riassegnato all'utente selezionato di seguito. Si consiglia di creare un utente target fittizio (ad es. Utente eliminato) se non si desidera riassegnare il contenuto a nessun utente attivo corrente.
+    deleteConfirmText: Sei sicuro di voler eliminare l'utente {{username}} ?
+    deleteConfirmTitle: Eliminare l'utente?
+    displayName: Nome in Evidenza
+    edit: Modifica l'utente
+    email: Email
+    extendedMetadata: Extended Metadata
+    groupAssign: Assegna
+    groupAssignNotice: Da questo pannello non è possibile assegnare utenti ai gruppi degli amministratori o degli ospiti.
+    groups: Gruppi Utenti
+    id: ID {{id}}
+    inactive: Inattivo
+    jobTitle: Titolo di lavoro
+    location: Località
+    newPassword: Nuova Password
+    noGroupAssigned: L'utente non è assegnato a nessun gruppo. Devi assegnare l'utente ad almeno un gruppo.
+    password: Password
+    selectGroup: Seleziona un gruppo...
+    tfa: Two Factor Authentication (2FA)
+    timezone: Fuso Orario
+    title: Utenti
+    toggle2FA: Abilita 2FA
+    unverified: Non verificato
+    updateUser: Aggiorna utente
+    userActivateSuccess: Utente attivato con successo.
+    userAlreadyAssignedToGroup: L'utente è già assegnato a questo gruppo!
+    userDeactivateSuccess: Utente disattivato con successo.
+    userTFADisableSuccess: 2FA è stato disabilitato con successo.
+    userTFAEnableSuccess: 2FA è stato abilitato con successo.
+    userUpdateSuccess: Utente aggiornato con successo.
+    userVerifySuccess: Utente verificato con successo.
+    verified: Verificato
+  utilities:
+    authSubtitle: Vari strumenti per autenticazione / utenti
+    authTitle: Autenticazione
+    cacheSubtitle: Svuota la cache dei vari componenti
+    cacheTitle: Svuota la cache
+    contentSubtitle: Tools per le pagine
+    contentTitle: Contenuto
+    exportSubtitle: Salva il contenuto su tarball per backup / migrazione
+    exportTitle: Esporta su disco
+    graphEndpointSubtitle: Cambia l'endpoint GraphQL per Wiki.js
+    graphEndpointTitle: Endpoint GraphQL
+    importv1Subtitle: Migrare i dati da una precedente installazione 1.x.
+    importv1Title: Importa da Wiki.js 1.x
+    subtitle: Strumenti vari e di manutenzione
+    telemetrySubtitle: Abilita/disabilita la telemetria o reimposta il client ID
+    telemetryTitle: Telemetria
+    title: Strumenti
+    tools: Strumenti
+  webhooks:
+    subtitle: Gestisci i webhook verso servizi esterni
+    title: Webhooks
+  assets:
+    title: File
+    subtitle: Gestisci i file e le cartelle caricati
+    folders: Cartelle
+    newFolder: Nuova cartella
+    folderName: Nome della cartella
+    folderEmpty: Questa cartella è vuota.
+    uploadHint: Trascina qui i file o fai clic per sfogliare...
+    headerFilename: Nome del file
+    headerType: Tipo
+    headerFileSize: Dimensione
+    headerUpdated: Aggiornato
+    moveFolderTarget: 'Seleziona la cartella di destinazione:'
+    moveAssetTarget: 'Seleziona la cartella di destinazione:'
+    deleteFolderConfirm: Vuoi davvero eliminare questa cartella?
+    deleteFolderContents: Elimina anche tutti i file e le sottocartelle contenuti
+    deleteFolderContentsWarn: Tutti i file contenuti verranno eliminati definitivamente!
+    deleteAssetConfirm: Vuoi davvero eliminare i seguenti file?
+    refreshSuccess: Elenco dei file aggiornato con successo.
+    folderCreateSuccess: Cartella creata con successo.
+    folderRenameSuccess: Cartella rinominata con successo.
+    folderMoveSuccess: Cartella spostata con successo.
+    folderDeleteSuccess: Cartella eliminata con successo.
+    renameSuccess: File rinominato con successo.
+    moveSuccess: File spostato con successo.
+    deleteSuccess: File eliminato con successo.
+    noUploadError: Devi prima scegliere un file da caricare!
+    uploadFailed: Caricamento non riuscito
+auth:
+  actions:
+    login: Accedi
+    register: Registrati
+  changePwd:
+    instructions: 'Inserisci una nuova password:'
+    loading: Cambio password in corso...
+    newPasswordPlaceholder: Nuova Password
+    newPasswordVerifyPlaceholder: Verifica la Nuova Password
+    proceed: Cambio Password
+    subtitle: 'Inserisci una nuova password:'
+  enterCredentials: Inserisci le tue credenziali
+  errors:
+    invalidLogin: Accesso non valido.
+    invalidLoginMsg: L'email o la password non sono valide.
+    invalidUserEmail: L'email non è valida.
+    loginError: Errore d'accesso.
+    notYetAuthorized: Non sei ancora stato autorizzato ad accedere a questo sito.
+    tooManyAttempts: Troppi tentativi d'accesso!
+    tooManyAttemptsMsg: Hai effettuato troppi tentativi falliti in un breve periodo di tempo, riprova {{time}}.
+    userNotFound: L'utente non è stato trovato.
+  fields:
+    email: Indirizzo email
+    emailUser: Email/nome utente
+    name: Nome
+    password: Password
+    username: Nome utente
+    verifyPassword: Verifica la password
+  forgotPasswordCancel: Annulla
+  forgotPasswordLink: Hai dimenticato la password?
+  forgotPasswordLoading: Richiesta reimpostazione password ...
+  forgotPasswordSubtitle: 'Inserisci il tuo indirizzo email per ricevere le istruzioni per ripristinare la tua password:'
+  forgotPasswordSuccess: Controlla le tue E-mail per le istruzioni di reimpostazione password!
+  forgotPasswordTitle: Hai dimenticato la password?
+  genericError: L'autenticazione non è disponibile.
+  invalidEmail: L'indirizzo email non è valido.
+  invalidEmailUsername: Inserisci un indirizzo email/nome utente valido.
+  invalidPassword: Inserisci una password valida.
+  loginRequired: È richiesto l'accesso.
+  loginSuccess: Accesso riuscito! Reindirizzamento in corso...
+  loginUsingStrategy: Accedi con {{strategy}}
+  missingEmail: Manca l'indirizzo email.
+  missingName: Manca il nome.
+  missingPassword: Password mancante.
+  nameTooLong: Il nome è troppo lungo.
+  nameTooShort: Il nome è troppo corto.
+  orLoginUsingStrategy: oppure, accedi con...
+  passwordNotMatch: Entrambe le password non corrispondono.
+  passwordTooShort: La password è troppo corta.
+  pleaseWait: Attendere prego
+  providers:
+    azure: Active Directory di Azure
+    facebook: Facebook
+    github: GitHub
+    google: ID Google
+    ldap: LDAP/Active Directory
+    local: Locale
+    slack: Slack
+    windowslive: Account Microsoft
+  registerCheckEmail: Controlla le tue email per attivare il tuo account.
+  registerSubTitle: Compila il modulo sottostante per creare il tuo account.
+  registerSuccess: L'account è stato creato con successo!
+  registerTitle: Crea un account
+  registering: Creazione dell'account in corso...
+  selectAuthProvider: Seleziona Provider di autenticazione
+  sendResetPassword: Ripristina la password
+  signingIn: Registrazione in corso...
+  switchToLogin:
+    link: Accedi
+    text: Hai già un account? {{link}}
+  switchToRegister:
+    link: Crea un account
+    text: Non hai ancora un account? {{link}}
+  tfa:
+    placeholder: XXXXXX
+    subtitle: 'Inserisci il codice di sicurezza:'
+    title: Verifica in due passaggi
+    verifyToken: Verifica
+  tfaFormTitle: 'Inserisci il codice di sicurezza generato dal tuo dispositivo fidato:'
+  tfaSetupInstrFirst: '1) Scansiona il codice QR qui sotto dalla tua applicazione 2FA mobile:'
+  tfaSetupInstrSecond: '2) Inserisci il codice di sicurezza generato dal tuo dispositivo fidato:'
+  tfaSetupTitle: Il tuo amministratore ha richiesto che l'autenticazione a due fattori (2FA) sia abilitata sul tuo account.
+common:
+  actions:
+    add: Aggiungi
+    apply: Applica
+    browse: Sfoglia......
+    cancel: Annulla
+    clear: Ripulisci
+    close: Chiudi
+    confirm: Confermare
+    convert: Converti
+    copy: Copia
+    create: Crea
+    delete: Elimina
+    discard: Scarta
+    discardChanges: Scarta le Modifiche
+    download: Scarica
+    edit: Modifica
+    exit: Esci
+    fetch: Cerca
+    generate: Genera
+    insert: Inserisci
+    move: Sposta
+    ok: OK
+    optimize: Ottimizza
+    page: Pagina
+    preview: Anteprima
+    proceed: Procedi
+    properties: Proprietà
+    refresh: Ricarica
+    rename: Rinomina
+    returnToTop: Torna in cima
+    save: Salva
+    saveChanges: Salva le modifiche
+    select: Seleziona
+    upload: Carica
+    goBack: Indietro
+  comments:
+    beFirst: Sii il primo a commentare.
+    contentMissingError: Il commento è vuoto o troppo corto!
+    deleteConfirmTitle: Conferma cancellazione
+    deletePermanentWarn: Questa azione non può essere annullata!
+    deleteSuccess: Il commento è stato cancellato con successo.
+    deleteWarn: Sei sicuro di voler eliminare definitivamente questo commento?
+    fieldContent: Contenuto del commento
+    fieldEmail: Il tuo indirizzo e-mail
+    fieldName: Il tuo nome
+    loading: Caricamento commenti in corso ...
+    markdownFormat: Formato markdown
+    modified: modificato il {{reldate}}
+    newComment: Nuovo commento
+    newPlaceholder: Scrivi un nuovo commento ...
+    none: Non ci sono ancora commenti.
+    postComment: Invia un commento
+    postSuccess: Nuovo commento pubblicato con successo.
+    postingAs: Pubblicando come {{name}}
+    sdTitle: Commenta
+    title: Commenti
+    updateComment: Aggiorna commento
+    updateSuccess: Il commento è stato aggiornato con successo.
+    viewDiscussion: Vedi discussione
+  duration:
+    days: Giorno(i)
+    every: Ogni
+    hours: Ora(i)
+    minutes: Minuto(i)
+    months: Mese(i)
+    years: Anno(i)
+  error:
+    unexpected: Si è verificato un errore imprevisto.
+  footer:
+    copyright: © {{year}} {{company}}. Tutti i diritti riservati.
+    license: Il contenuto è disponibile sotto la {{license}}, da {{company}}.
+    poweredBy: Basato su
+  header:
+    account: Account
+    admin: Amministrazione
+    assets: Risorse
+    browseTags: Sfoglia per tag
+    convert: Converti
+    currentPage: Pagina corrente
+    delete: Elimina
+    duplicate: Duplicare
+    edit: Modifica
+    history: Cronologia
+    home: Home
+    imagesFiles: Immagini & file
+    language: Lingua
+    login: Login
+    logout: Logout
+    move: Sposta / Rinomina
+    myWiki: Il mio Wiki
+    newPage: Nuova pagina
+    pageActions: Azioni della pagina
+    profile: Profilo
+    search: Cerca...
+    searchClose: Chiudi
+    searchCopyLink: Copia il link di ricerca
+    searchDidYouMean: Intendevi...
+    searchHint: Digita almeno 2 caratteri per iniziare la ricerca ...
+    searchLoading: Ricerca in corso ...
+    searchNoResult: Nessuna pagina corrispondente alla tua richiesta.
+    searchResultsCount: Trovato(i) {{total}} risultato(i)
+    siteMap: Mappa del sito
+    view: Visualizza
+    viewSource: Visualizza Sorgente
+    searchRestrictLocale: Solo {{locale}}
+    searchRestrictPath: Solo sotto /{{path}}
+  license:
+    alr: Tutti i diritti riservati
+    cc0: Pubblico dominio
+    ccby: Licenza di Attribuzione Creative Commons
+    ccbync: Licenza Creative Commons Attribuzione-Non commerciale-No derivati
+    ccbyncnd: Licenza Creative Commons Attribuzione-Non commerciale-No derivati
+    ccbyncsa: Licenza di Attribuzione Creative Commons-Non commerciale-Condividi allo stesso modo
+    ccbynd: Licenza Creative Commons Attribuzione-No derivati
+    ccbysa: Licenza di Attribuzione Creative Commons-Condividi allo stesso
+    none: Nessuno
+  modernBrowser: browser moderno
+  newpage:
+    create: Crea la pagina
+    goback: Torna indietro
+    subtitle: Vuoi crearla ora?
+    title: Questa pagina non esiste ancora.
+  notfound:
+    gohome: Home
+    subtitle: Questa pagina non esiste.
+    title: Pagina non trovata
+    searchHint: 'Suggerimento: usa la barra di ricerca della pagina iniziale per trovare ciò che stavi cercando.'
+  outdatedBrowserWarning: Il tuo browser non è aggiornato. Esegui l'upgrade a {{modernBrowser}}.
+  page:
+    bookmark: Segnalibro
+    convert: Converti pagina
+    convertSubtitle: Il contenuto della pagina verrà convertito nel formato dell' editor appena selezionato. Tieni presente che alcune formattazioni o contenuti non renderizzati potrebbero andare persi a causa della conversione. Un'istantanea sarà aggiunta alla cronologia della pagina e potrà essere ripristinata in qualsiasi momento.
+    convertTitle: 'Seleziona l''editor che vuoi usare in futuro per la pagina {{title}}:'
+    delete: Elimina pagina
+    deleteSubtitle: La pagina può essere ripristinata dall'area di amministrazione.
+    deleteTitle: Sei sicuro di voler eliminare la pagina {{title}}?
+    editExternal: Modifica su {{name}}
+    editPage: Modifica Pagina
+    global: Globale
+    id: ID {{id}}
+    lastEditedBy: Ultima modifica di
+    loading: Caricamento pagina in corso ...
+    printFormat: Formato di stampa
+    private: Privato
+    published: Pubblicata
+    returnNormalView: Ritorna alla visualizzazione normale
+    share: Condividi
+    tags: Tags
+    tagsMatching: Pagine che corrispondono ai tag
+    toc: Sommario
+    unpublished: Inedito
+    unpublishedWarning: Questa pagina non è pubblicata
+    versionId: ID versione {{id}}
+    viewingSource: Visualizza sorgente della pagina {{path}}
+    viewingSourceVersion: Visualizzazione della fonte a partire da {{date}} della pagina {{path}}
+  pageSelector:
+    createTitle: Seleziona una nuova posizione della pagina
+    folderEmptyWarning: Questa cartella è vuota.
+    moveTitle: Sposta / Rinomina posizione della pagina
+    pages: Pagine
+    selectTitle: Seleziona una pagina
+    virtualFolders: Cartelle virtuali
+  password:
+    average: Media
+    strong: Forte
+    veryStrong: Molto forte
+    veryWeak: Molto debole
+    weak: Debole
+  sidebar:
+    browse: Sfoglia
+    currentDirectory: Cartella attuale
+    mainMenu: Menù principale
+    root: (root)
+  unauthorized:
+    action:
+      create: Non è possibile creare la pagina.
+      download: Non è possibile scaricare il contenuto della pagina.
+      downloadVersion: Non è possibile scaricare il contenuto di questa versione della pagina.
+      edit: Non è possibile modificare la pagina.
+      history: Non è possibile visualizzare la cronologia della pagina.
+      source: Non è possibile visualizzare il sorgente della pagina.
+      sourceVersion: Non è possibile visualizzare la fonte di questa versione della pagina.
+      view: Non è possibile visualizzare questa pagina.
+    goback: Torna indietro
+    login: Accedi come...
+    title: Non autorizzato
+  user:
+    search: Cerca utente
+    searchPlaceholder: Cerca utenti ...
+  welcome:
+    createhome: Crea la pagina principale
+    goadmin: Amministrazione
+    subtitle: Iniziamo a creare la pagina principale.
+    title: Benvenuto nella tua wiki!
+  folderView:
+    createPage: Crea questa pagina
+    folders: Cartelle
+    pages: Pagine
+    empty: Questa cartella non contiene pagine che puoi visualizzare.
+editor:
+  assets:
+    deleteAsset: Elimina risorsa
+    deleteAssetConfirm: Sei sicuro di voler eliminare la risorsa
+    deleteAssetWarn: Questa azione non può essere annullata!
+    deleteSuccess: Risorsa eliminata correttamente.
+    fetchImage: Scarica immagine remota
+    fileCount: '{{count}} files'
+    folderCreateSuccess: Cartella delle risorse creata correttamente.
+    folderEmpty: Questa cartella di risorse è vuota.
+    folderName: Nome della cartella
+    folderNameNamingRules: Deve rispettare le {{namingRules}} delle cartelle per le risorse.
+    folderNameNamingRulesLink: regole per i nomi
+    headerActions: Azioni
+    headerAdded: Aggiunto
+    headerFileSize: Dimensione del file
+    headerFilename: Nome del file
+    headerId: ID
+    headerType: Tipo
+    imageAlign: Allineamento dell'immagine
+    newFolder: Nuova cartella
+    noUploadError: Devi prima scegliere un file da caricare!
+    refreshSuccess: Elenco delle risorse aggiornate correttamente.
+    renameAsset: Rinomina risorsa
+    renameAssetSubtitle: 'Inserisci il nuovo nome per questa risorsa:'
+    renameSuccess: Risorsa rinominata correttamente.
+    title: Risorse
+    uploadAssets: Carica risorse
+    uploadAssetsDropZone: Sfoglia o trascina i file qui ...
+    uploadFailed: Caricamento del file non riuscito.
+    uploadLimits: Max {{maxFiles}} file, {{maxSize}} ciascuno
+  backToEditor: Torna all'editor
+  ckeditor:
+    stats: '{{chars}} caratteri, {{words}} parole'
+  conflict:
+    editable: (modificabile)
+    infoGeneric: Una versione più recente di questa pagina è stata salvata da {{authorName}} , {{date}}
+    leftPanelInfo: La tua modifica attuale, in base alla versione della pagina da {{date}}
+    localVersion: Versione locale {{refEditable}}
+    overwrite:
+      description: Sei sicuro di voler sostituire la tua versione attuale con l'ultimo contenuto remoto? {{refEditsLost}}
+      editsLost: Le tue modifiche attuali andranno perse.
+      title: Sovrascrivi con versione remota?
+    pageDescription: 'Descrizione:'
+    pageTitle: 'Titolo:'
+    readonly: (sola lettura)
+    remoteVersion: Versione remota {{refReadOnly}}
+    rightPanelInfo: Ultima modifica di {{authorName}} , {{date}}
+    title: Risolvere i conflitti di salvataggio
+    useLocal: Usa locale
+    useLocalHint: Usa il contenuto nel riquadro di sinistra
+    useRemote: Usa remoto
+    useRemoteHint: Annulla le modifiche locali e usa l'ultima versione
+    viewLatestVersion: Visualizza ultima versione
+    warning: Il salvataggio ha generato un conflitto! Un altro utente ha già modificato questa pagina.
+    whatToDo: Cosa vuoi fare?
+    whatToDoLocal: Usa la tua versione locale attuale e ignora le ultime modifiche.
+    whatToDoRemote: Usa la versione remota (più recente) e scarta le modifiche.
+  markup:
+    blockquote: Blockquote
+    blockquoteError: Errore Blockquote
+    blockquoteInfo: Info Blockquote
+    blockquoteSuccess: Successo Blockquote
+    blockquoteWarning: Avviso Blockquote
+    bold: Grassetto
+    distractionFreeMode: Modalità senza distrazioni
+    heading: Titolo {{level}}
+    horizontalBar: Barra orizzontale
+    inlineCode: Codice in Riga
+    insertAssets: Inserisci risorse
+    insertBlock: Inserisci blocco
+    insertCodeBlock: Inserisci blocco di codice
+    insertDiagram: Inserisci diagramma
+    insertLink: Inserisci collegamento
+    insertMathExpression: Inserisci espressione matematica
+    insertVideoAudio: Inserisci video / audio
+    italic: Corsivo
+    keyboardKey: Tasto della tastiera
+    markdownFormattingHelp: Guida alla formattazione del markdown
+    noSelectionError: Il testo deve essere selezionato prima!
+    orderedList: Lista ordinata
+    strikethrough: Barrato
+    subscript: Subscript
+    superscript: Superscript
+    tableHelper: Assistente per Tabelle
+    togglePreviewPane: Nascondi / Mostra riquadro di anteprima
+    toggleSpellcheck: Attiva / disattiva controllo ortografico
+    unorderedList: Lista non ordinata
+  page: Pagina
+  props:
+    allowComments: Consenti i commenti
+    allowCommentsHint: Abilita commenti su questa pagina
+    allowRatings: Consenti valutazioni
+    allowRatingsHint: Abilitare le funzionalità di classificazione in questa pagina.
+    categorization: Categorizzazione
+    css: CSS
+    cssHint: Il CSS verrà automaticamente minimizzato al salvataggio. Non includere i tag di stile, solo il codice CSS effettivo.
+    displayAuthor: Visualizza informazioni sull'autore
+    displayAuthorHint: Mostra l'autore della pagina insieme all'ultima modifica.
+    displaySharingBar: Visualizza barra degli strumenti di condivisione
+    displaySharingBarHint: Mostra una barra degli strumenti con pulsanti per condividere e stampare questa pagina
+    html: HTML
+    htmlHint: È necessario racchiudere il codice javascript con tag di script HTML.
+    info: Informazioni
+    locale: Lingua
+    pageInfo: Informazioni sulla pagina
+    pageProperties: Proprietà della pagina
+    path: Percorso
+    pathCategorization: Percorso & Categorizzazione
+    pathHint: Non Inserire slash all'inizio o alla fine.
+    publishEnd: La pubblicazione termina il ...
+    publishEndHint: Lascia vuoto per nessuna data di fine
+    publishStart: Pubblica a partire da ...
+    publishStartHint: Lascia vuoto per nessuna data di inizio
+    publishState: Stato di pubblicazione
+    publishToggle: Pubblicata
+    publishToggleHint: Le pagine non pubblicate possono ancora essere visualizzate dagli utenti con autorizzazioni di scrittura su questa pagina.
+    scheduling: Programmazione
+    scripts: Scripts
+    shortDescription: Breve descrizione
+    shortDescriptionHint: Mostrato sotto il titolo
+    social: Social
+    socialFeatures: Funzionalità social
+    styles: Stili
+    tags: Tags
+    tagsHint: Usa i tag per classificare le tue pagine e renderle più facili da trovare.
+    title: Titolo
+    toc: TOC
+    tocHeadingLevels: Livelli d'intestazione indice
+    tocHeadingLevelsHint: Il sommario mostrerà le intestazioni dai - e fino ai - livelli selezionati.
+    tocTitle: Sommario
+    tocUseDefault: Usa Impostazioni Predefinite del Sito
+    templateToggle: Usa come modello
+    templateToggleHint: Offri questa pagina come modello di partenza durante la creazione di nuove pagine. I modelli sono esclusi dai risultati di ricerca.
+  save:
+    createSuccess: La pagina è stata creata con successo.
+    error: Si è verificato un errore durante la creazione della pagina.
+    pleaseWait: Attendere prego...
+    processing: Elaborazione in corso
+    saved: Salvato
+    updateSuccess: La pagina è stata aggiornata con successo.
+  select:
+    cannotChange: Questo non può essere modificato una volta creata la pagina.
+    customView: o creare una vista personalizzata?
+    title: Quale editor vuoi utilizzare per questa pagina?
+    templates: Modelli
+  unsaved:
+    body: Hai modifiche non salvate. Sei sicuro di voler uscire dall'editor e scartare le modifiche apportate dall'ultimo salvataggio?
+    title: Scartare le modifiche non salvate?
+  unsavedWarning: Hai delle modifiche non salvate. Sei sicuro di voler uscire dall'editor?
+  draft:
+    found: È stata trovata una bozza non salvata di questa pagina.
+    restore: Ripristina
+    discard: Scarta
+history:
+  restore:
+    confirmButton: Ripristina
+    confirmText: Sei sicuro di voler ripristinare il contenuto di questa pagina così com'era il {{date}}? Questa versione sarà copiata in cima alla cronologia attuale. Come tale, le versioni più recenti saranno ancora conservate.
+    confirmTitle: Ripristinare la versione della pagina?
+    success: Versione della pagina ripristinata correttamente!
+profile:
+  activity:
+    commentsPosted: Commenti pubblicati
+    joinedOn: Iscritto il
+    lastLoginOn: Ultimo accesso
+    lastUpdatedOn: Ultimo aggiornamento del profilo su
+    pagesCreated: Pagine create
+    title: Attività
+  appearance: Aspetto
+  appearanceDark: Scuro
+  appearanceDefault: Sito predefinito
+  appearanceLight: Chiaro
+  auth:
+    changePassSuccess: La password è stata modificata con successo.
+    changePassword: Cambio Password
+    currentPassword: Password Attuale
+    newPassword: Nuova Password
+    provider: Provider
+    title: Autenticazione
+    verifyPassword: Conferma la nuova password
+  comments:
+    title: Commenti
+  dateFormat: Formato data
+  displayName: Nome visualizzato
+  groups:
+    title: Gruppi
+  jobTitle: Titolo di lavoro
+  localeDefault: Impostazioni internazionali predefinite
+  location: Posizione
+  myInfo: Le mie informazioni
+  pages:
+    emptyList: Nessuna pagina da visualizzare.
+    headerCreatedAt: Creato
+    headerPath: Percorso
+    headerTitle: Titolo
+    headerUpdatedAt: Ultimo aggiornamento
+    refreshSuccess: L'elenco delle pagine è stato aggiornato.
+    subtitle: Elenco di pagine che ho creato o modificato per ultime
+    title: Pagine
+    filterPlaceholder: Filtra le mie pagine...
+  preferences: Preferenze
+  save:
+    success: Profilo salvato correttamente.
+  subtitle: Le mie informazioni personali
+  timezone: Fuso Orario
+  title: Profilo
+  viewPublicProfile: Visualizza il profilo pubblico
+tags:
+  clearSelection: Cancella selezione
+  currentSelection: Selezione attuale
+  locale: Lingua
+  localeAny: Qualunque
+  noResults: Impossibile trovare una pagina con i tag selezionati.
+  noResultsWithFilter: Impossibile trovare una pagina corrispondente alle opzioni di filtro correnti.
+  orderBy: Ordina per
+  orderByField:
+    ID: ID
+    creationDate: Data di creazione
+    lastModified: Ultima modifica
+    path: Percorso
+    title: Titolo
+  pageLastUpdated: Aggiornato il {{date}}
+  retrievingResultsLoading: Recupero i risultati della pagina ...
+  searchWithinResultsPlaceholder: Ricerca all'interno dei risultati...
+  selectOneMoreTags: Seleziona uno o più tag
+  selectOneMoreTagsHint: Seleziona uno o più tag a sinistra
+  filterTagsPlaceholder: Filtra i tag...

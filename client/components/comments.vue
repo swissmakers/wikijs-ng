@@ -82,7 +82,7 @@
             span.white--text.title {{cm.initials}}
         v-card.elevation-1
           v-card-text
-            .comments-post-actions(v-if='permissions.manage && !isBusy && commentEditId === 0')
+            .comments-post-actions(v-if='canChange(cm) && !isBusy && commentEditId === 0')
               v-icon.mr-3(small, @click='editComment(cm)') mdi-pencil
               v-icon(small, @click='deleteCommentConfirm(cm)') mdi-delete
             .comments-post-name.caption: strong {{cm.authorName}}
@@ -164,9 +164,16 @@ export default {
     pageId: get('page/id'),
     permissions: get('page/effectivePermissions@comments'),
     isAuthenticated: get('user/authenticated'),
-    userDisplayName: get('user/name')
+    userDisplayName: get('user/name'),
+    userId: get('user/id')
   },
   methods: {
+    /**
+     * Moderators may change any comment, authors their own
+     */
+    canChange (cm) {
+      return this.permissions.manage || (this.isAuthenticated && this.permissions.write && cm.authorId === this.userId)
+    },
     onIntersect (entries, observer, isIntersecting) {
       if (isIntersecting) {
         this.fetch(true)
@@ -182,6 +189,7 @@ export default {
                 list(locale: $locale, path: $path) {
                   id
                   render
+                  authorId
                   authorName
                   createdAt
                   updatedAt

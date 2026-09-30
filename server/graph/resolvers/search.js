@@ -13,6 +13,8 @@ module.exports = {
   SearchQuery: {
     async searchEngines(obj, args, context, info) {
       let searchEngines = await WIKI.models.searchEngines.getSearchEngines()
+      // -> Skip engines that have no definition on disk (stale rows would fail the whole query)
+      searchEngines = searchEngines.filter(searchEngine => _.some(WIKI.data.searchEngines, ['key', searchEngine.key]))
       searchEngines = searchEngines.map(searchEngine => {
         const searchEngineInfo = _.find(WIKI.data.searchEngines, ['key', searchEngine.key]) || {}
         return {

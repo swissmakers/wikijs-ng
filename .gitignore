@@ -45,6 +45,8 @@ server/views/setup.pug
 test-results/
 .scannerwork
 
-# Localization Resources
-/server/locales/**/*.yml
 dev/deploy-test.local.env
+
+# Cypress test-output
+dev/cypress/screenshots/
+dev/cypress/videos/

@@ -141,7 +141,7 @@
                 :label-idle='$t(`editor:assets.uploadAssetsDropZone`)'
                 allow-multiple='true'
                 :files='files'
-                max-files='10'
+                :max-files='uploadMaxFiles'
                 :server='filePondServerOpts'
                 :instant-upload='false'
                 :allow-revert='false'
@@ -149,7 +149,7 @@
               )
             v-divider
             v-card-actions.pa-3
-              .caption.grey--text.text-darken-2 Max 10 files, 5 MB each
+              .caption.grey--text.text-darken-2 {{ uploadLimitsLabel }}
               v-spacer
               v-btn.px-4(color='teal', dark, @click='upload') {{$t('common:actions.upload')}}
 
@@ -311,6 +311,16 @@ export default {
     }
   },
   computed: {
+    uploadMaxFiles () {
+      return siteConfig.uploadMaxFiles || 10
+    },
+    uploadLimitsLabel () {
+      return this.$t('editor:assets.uploadLimits', {
+        maxFiles: this.uploadMaxFiles,
+        maxSize: this.$options.filters.prettyBytes(siteConfig.uploadMaxFileSize || 5242880),
+        defaultValue: 'Max {{maxFiles}} files, {{maxSize}} each'
+      })
+    },
     isShown: {
       get() { return this.value },
       set(val) { this.$emit('input', val) }

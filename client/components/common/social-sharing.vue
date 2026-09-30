@@ -39,7 +39,7 @@ export default {
   props: {
     url: {
       type: String,
-      default: window.location.url
+      default: window.location.href
     },
     title: {
       type: String,

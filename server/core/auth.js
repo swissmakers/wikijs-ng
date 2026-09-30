@@ -40,7 +40,7 @@ module.exports = {
         if (user) {
           done(null, user)
         } else {
-          done(new Error(WIKI.lang.t('auth:errors:usernotfound')), null)
+          done(new WIKI.Error.UserNotFound(), null)
         }
       } catch (err) {
         done(err, null)
@@ -79,6 +79,10 @@ module.exports = {
       const enabledStrategies = await WIKI.models.authentication.getStrategies()
       for (let idx in enabledStrategies) {
         const stg = enabledStrategies[idx]
+        if (!_.some(WIKI.data.authentication, ['key', stg.strategyKey])) {
+          WIKI.logger.warn(`Authentication Strategy ${stg.displayName} (${stg.key}): module ${stg.strategyKey} no longer exists [ SKIPPED ]`)
+          continue
+        }
         try {
           const strategy = require(`../modules/authentication/${stg.strategyKey}/authentication.js`)
 

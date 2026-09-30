@@ -125,7 +125,7 @@
             :label-idle='$t(`admin:assets.uploadHint`, { defaultValue: `Drag & drop files here or click to browse...` })'
             allow-multiple='true'
             :files='files'
-            max-files='10'
+            :max-files='uploadMaxFiles'
             :server='filePondServerOpts'
             :instant-upload='false'
             :allow-revert='false'
@@ -323,6 +323,9 @@ export default {
     }
   },
   computed: {
+    uploadMaxFiles () {
+      return siteConfig.uploadMaxFiles || 10
+    },
     currentFolderId () {
       return _.head(this.selectedFolders) || 0
     },

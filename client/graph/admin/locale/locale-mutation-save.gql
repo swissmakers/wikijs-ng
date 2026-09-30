@@ -1,6 +1,6 @@
-mutation($locale: String!, $autoUpdate: Boolean!, $namespacing: Boolean!, $namespaces: [String]!) {
+mutation($locale: String!, $namespacing: Boolean!, $namespaces: [String]!) {
   localization {
-    updateLocale(locale: $locale, autoUpdate: $autoUpdate, namespacing: $namespacing, namespaces: $namespaces) {
+    updateLocale(locale: $locale, namespacing: $namespacing, namespaces: $namespaces) {
       responseResult {
         succeeded
         errorCode

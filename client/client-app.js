@@ -124,7 +124,7 @@ window.graphQL = new ApolloClient({
     return kind === 'OperationDefinition' && operation === 'subscription'
   }, graphQLWSLink, graphQLLink),
   cache: new InMemoryCache(),
-  connectToDevTools: (process.env.node_env === 'development')
+  connectToDevTools: (process.env.NODE_ENV === 'development')
 })
 
 // ====================================

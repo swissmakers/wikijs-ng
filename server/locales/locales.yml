@@ -1,0 +1,18 @@
+# Bundled locales shipped with Wiki.js NG.
+# Each entry needs a matching <code>.yml file in this folder.
+- code: en
+  name: English
+  nativeName: English
+  isRTL: false
+- code: de
+  name: German
+  nativeName: Deutsch
+  isRTL: false
+- code: fr
+  name: French
+  nativeName: Français
+  isRTL: false
+- code: it
+  name: Italian
+  nativeName: Italiano
+  isRTL: false

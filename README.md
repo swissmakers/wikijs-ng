@@ -36,6 +36,28 @@ For end-user and administration documentation, the upstream [Wiki.js 2.x documen
 
 See the [CHANGELOG](CHANGELOG.md) for the complete list of changes since the fork.
 
+## A quick look
+
+**Browsable folder views** -> navigating to a path without a page of its own no longer dead-ends. You also get a proper folder page listing all subfolders and child pages.
+
+![Folder view](docs/screenshots/folder-view.png)
+
+**Refreshed page design** -> tags in the page header, table of contents with active-section highlighting, and an author footer under the content.
+
+![Page view](docs/screenshots/page-view.png)
+
+**Full-text search with scoping** -> MariaDB/MySQL search engine indexes actual page content with relevance ranking, and results can be restricted to the current locale or path subtree.
+
+![Search](docs/screenshots/search.png)
+
+**Asset management** -> full admin file manager with folder rename/move/delete, bulk operations and drag & drop, backed by proper storage-sync events (Git sees moves as moves).
+
+![Assets admin](docs/screenshots/admin-assets.png)
+
+**Enterprise-style login** -> clean credentials card on the brand gradient, with all configured authentication strategies.
+
+![Login](docs/screenshots/login.jpg)
+
 ## Getting started
 
 ### Prebuilt container images (recommended)
@@ -101,11 +123,11 @@ Wiki.js NG is intended to be a direct replacement for Wiki.js. It uses the same 
 
 ## Running fully offline
 
-For air-gapped environments set `offline: true` in `config.yml`. This disables
-all outbound calls to the upstream translation service. To install or update
-interface translations offline, place the sideload files (`locales.json` plus
-one `<code>.json` per language) into `data/sideload/` and restart — they are
-imported at startup.
+Wiki.js NG does not depend on any upstream service. The interface translations
+for English, German, French and Italian are bundled in `server/locales/`; there
+is no download or sync of language packs anymore. Additional languages or
+custom wording can be sideloaded as YAML files into `data/sideload/locales/`
+(see [`server/locales/README.md`](server/locales/README.md)).
 
 ## Security
 

@@ -1,8 +1,5 @@
 const Model = require('objection').Model
-const path = require('path')
-const fs = require('fs-extra')
 const _ = require('lodash')
-const yaml = require('js-yaml')
 const commonHelper = require('../helpers/common')
 const configHelper = require('../helpers/config')
 
@@ -37,79 +34,22 @@ module.exports = class Storage extends Model {
   }
 
   static async refreshTargetsFromDisk() {
-    let trx
-    try {
-      const dbTargets = await WIKI.models.storage.query()
-
-      // -> Fetch definitions from disk
-      const storageDirs = await fs.readdir(path.join(WIKI.SERVERPATH, 'modules/storage'))
-      let diskTargets = []
-      for (let dir of storageDirs) {
-        const def = await fs.readFile(path.join(WIKI.SERVERPATH, 'modules/storage', dir, 'definition.yml'), 'utf8')
-        diskTargets.push(yaml.load(def))
-      }
-      WIKI.data.storage = diskTargets.map(target => ({
-        ...target,
-        isAvailable: _.get(target, 'isAvailable', false),
-        props: commonHelper.parseModuleProps(target.props)
-      }))
-
-      // -> Insert new targets
-      let newTargets = []
-      for (let target of WIKI.data.storage) {
-        if (!_.some(dbTargets, ['key', target.key])) {
-          newTargets.push({
-            key: target.key,
-            isEnabled: false,
-            mode: target.defaultMode || 'push',
-            syncInterval: target.schedule || 'P0D',
-            config: _.transform(target.props, (result, value, key) => {
-              _.set(result, key, value.default)
-              return result
-            }, {}),
-            state: {
-              status: 'pending',
-              message: '',
-              lastAttempt: null
-            }
-          })
-        } else {
-          const targetConfig = _.get(_.find(dbTargets, ['key', target.key]), 'config', {})
-          await WIKI.models.storage.query().patch({
-            config: _.transform(target.props, (result, value, key) => {
-              if (!_.has(result, key)) {
-                _.set(result, key, value.default)
-              }
-              return result
-            }, targetConfig)
-          }).where('key', target.key)
+    return commonHelper.refreshModulesFromDisk({
+      dirName: 'storage',
+      dataKey: 'storage',
+      model: 'storage',
+      label: 'storage targets',
+      mapDefinition: def => ({ isAvailable: _.get(def, 'isAvailable', false) }),
+      buildInsert: def => ({
+        mode: def.defaultMode || 'push',
+        syncInterval: def.schedule || 'P0D',
+        state: {
+          status: 'pending',
+          message: '',
+          lastAttempt: null
         }
-      }
-      if (newTargets.length > 0) {
-        trx = await WIKI.models.Objection.transaction.start(WIKI.models.knex)
-        for (let target of newTargets) {
-          await WIKI.models.storage.query(trx).insert(target)
-        }
-        await trx.commit()
-        WIKI.logger.info(`Loaded ${newTargets.length} new storage targets: [ OK ]`)
-      } else {
-        WIKI.logger.info(`No new storage targets found: [ SKIPPED ]`)
-      }
-
-      // -> Delete removed targets
-      for (const target of dbTargets) {
-        if (!_.some(WIKI.data.storage, ['key', target.key])) {
-          await WIKI.models.storage.query().where('key', target.key).del()
-          WIKI.logger.info(`Removed target ${target.key} because it is no longer present in the modules folder: [ OK ]`)
-        }
-      }
-    } catch (err) {
-      WIKI.logger.error(`Failed to scan or load new storage providers: [ FAILED ]`)
-      WIKI.logger.error(err)
-      if (trx) {
-        trx.rollback()
-      }
-    }
+      })
+    })
   }
 
   /**

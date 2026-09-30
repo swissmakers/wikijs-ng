@@ -31,10 +31,8 @@ defaults:
     # DB defaults
     api:
       isEnabled: false
-    graphEndpoint: 'https://graph.requarks.io'
     lang:
       code: en
-      autoUpdate: true
       namespaces: []
       namespacing: false
       rtl: false
@@ -55,7 +53,7 @@ defaults:
       mode: 'MIXED'
     theming:
       theme: 'default'
-      iconset: 'md'
+      iconset: 'mdi'
       darkMode: false
       tocPosition: 'left'
     auth:
@@ -110,20 +108,11 @@ defaults:
     search:
       maxHits: 100
     maintainerEmail: security@swissmakers.ch
-localeNamespaces:
-  - admin
-  - auth
-  - common
 jobs:
   purgeUploads:
     onInit: true
     schedule: PT15M
     offlineSkip: false
-    repeat: true
-  syncGraphLocales:
-    onInit: true
-    schedule: P1D
-    offlineSkip: true
     repeat: true
   rebuildTree:
     onInit: true

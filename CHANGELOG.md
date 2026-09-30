@@ -4,6 +4,30 @@ All notable changes to **wikijs-ng** (fork of [Requarks/wiki](https://github.com
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.8.0] - Unreleased
+
+### Changed — localization is fully offline
+
+- **Translations are bundled and never downloaded anymore.** English, German, French and Italian ship in `server/locales/` (listed in `server/locales/locales.yml`); the upstream locale service (`graph.requarks.io`) is no longer contacted at all. Removed: the daily locale sync job, the on-demand locale download (`downloadLocale` mutation, `fetch-graph-locale` job, GraphQL fetch helper), the `graphEndpoint` setting and the *Update Automatically* locale option.
+- **Bundled strings always win.** Previously the daily sync wrote upstream strings into the database, and database strings overrode the bundled files, so upstream text replaced the vendored English/German wording. Bundled locales now ignore database strings (they are cleared at startup); only language packs downloaded by older versions for *other* languages are still read from the database.
+- The bundled `en.yml` / `de.yml` were excluded by `.gitignore` and therefore missing from images built from a fresh checkout; they are now tracked, together with the new `fr.yml` / `it.yml`.
+- **Sideloading** works without offline mode: YAML locale files in `<dataPath>/sideload/locales/` add languages or override single strings (format documented in `server/locales/README.md`). The old `sideload/*.json` import is gone.
+- English is always loaded as the fallback language on the server and in the browser; clients refresh cached translations as soon as the strings change instead of after 24 hours.
+- Admin → Locale lists the available languages with their source (bundled, sideloaded, legacy database pack) and shows the sideload folder instead of the download table and the "coming soon" upload card.
+
+### Fixed
+
+- **Deleting a page ignored locale-restricted page rules** (the access check read a non-existent `page.locale` field).
+- Admin → Pages → Visualize: clicking, zooming and hovering threw errors since the d3 v7 upgrade.
+- Removing a module (e.g. an editor or authentication strategy) from disk no longer deletes its database row while pages or users still reference it — the row is disabled instead. Pages saved with an editor that no longer exists open in the code editor.
+- `pages.list` applied its limit before the permission filter (lists came back short) and listed unpublished pages and templates to users who can only read them.
+- Comment authors can edit and delete their own comments (moderators with `manage:comments` still manage all); deleting a comment also deletes its replies.
+- Rerendering a page now also clears the cached copy on other instances in HA setups.
+- The welcome email of a new user can no longer fail the (already created) account; the error is logged instead.
+- Disabling 2FA from the model crashed; `/_userav` sent two responses; a missing user during session restore threw a `TypeError` instead of a proper error; the unauthenticated no-op `resetPassword` mutation was removed.
+- The media manager shows and enforces the configured upload limits instead of a hard-coded "Max 10 files, 5 MB each".
+- Smaller fixes: the footer link used `ref` instead of `rel`, the sharing menu's default URL was undefined, the Apollo devtools flag never matched, the default page description read a non-existent setting, Let's Encrypt ignored the development flag, the default icon set was the invalid value `md`, and the dev container config used a different database password than the compose file.
+
 ## [2.7.0] - Unreleased
 
 ### Added — navigation & content discovery
@@ -49,6 +73,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `assetFolders` model: the `parent` relation joined on the wrong column and `getAllPaths()` could crash on a missing parent — both fixed (required for the new folder operations).
 - Tag browsing: multi-tag selection duplicates removed; sort parameter comparison bug fixed.
+- **Leaving Admin → Theme no longer overrides the user's appearance.** The page live-previews the site-level dark mode; on navigating away it restored that site value instead of the user's personal light/dark preference, flipping the UI until the next reload.
+- Search overlay restyled to the brand: the keyboard highlight is a primary-tinted bar (was a white→orange gradient), suggestion highlight and close button follow the theme, and result rows have a hover state.
+- **Print output overhauled**: proper page margins, no page breaks inside code blocks/tables/images where avoidable, headings no longer stranded at page bottoms, scroll containers can't clip content anymore, footer/breadcrumbs/speed-dial hidden, clean white title header, bordered code blocks, and external links print their target URL.
 
 ### Removed — dead weight ("coming soon" stubs)
 

@@ -199,8 +199,11 @@ export default {
     this.darkModeInitial = this.darkMode
   },
   beforeDestroy() {
+    // Restore the saved site-level setting in the store, but apply the user's
+    // effective appearance to the UI (personal preference wins over site default)
     this.darkMode = this.darkModeInitial
-    this.$vuetify.theme.dark = this.darkModeInitial
+    const userAppearance = this.$store.get('user/appearance')
+    this.$vuetify.theme.dark = userAppearance === 'dark' || (userAppearance !== 'light' && this.darkModeInitial)
   },
   methods: {
     async save () {

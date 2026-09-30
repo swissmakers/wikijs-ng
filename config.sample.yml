@@ -118,8 +118,8 @@ logFormat: default
 # ---------------------------------------------------------------------
 # Offline Mode
 # ---------------------------------------------------------------------
-# If your server cannot access the internet. Set to true and manually
-# download the offline files for sideloading.
+# Skips scheduled jobs flagged as requiring internet access. Wiki.js NG
+# needs no upstream service; translations are bundled (server/locales).
 
 offline: false
 

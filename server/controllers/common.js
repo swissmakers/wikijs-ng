@@ -409,7 +409,7 @@ router.get('/_userav/:uid', async (req, res, next) => {
   const av = await WIKI.models.users.getUserAvatarData(req.params.uid)
   if (av) {
     res.set('Content-Type', 'image/jpeg')
-    res.send(av)
+    return res.send(av)
   }
 
   return res.sendStatus(404)

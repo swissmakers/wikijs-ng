@@ -125,26 +125,40 @@ module.exports = class Comment extends Model {
   }
 
   /**
-   * Update an Existing Comment
+   * Load the page of a comment and check that the user may change the comment:
+   * moderators (manage:comments) may change any comment, authors their own.
    */
-  static async updateComment ({ id, content, user, ip }) {
-    // -> Load Page
+  static async getPageForCommentChange ({ id, user }) {
     const pageId = await WIKI.data.commentProvider.getPageIdFromCommentId(id)
     if (!pageId) {
       throw new WIKI.Error.CommentNotFound()
     }
     const page = await WIKI.models.pages.getPageFromDb(pageId)
-    if (page) {
-      if (!WIKI.auth.checkAccess(user, ['manage:comments'], {
-        path: page.path,
-        locale: page.localeCode,
-        tags: page.tags
-      })) {
-        throw new WIKI.Error.CommentManageForbidden()
-      }
-    } else {
+    if (!page) {
       throw new WIKI.Error.PageNotFound()
     }
+    const pageCtx = {
+      path: page.path,
+      locale: page.localeCode,
+      tags: page.tags
+    }
+    if (WIKI.auth.checkAccess(user, ['manage:comments'], pageCtx)) {
+      return page
+    }
+    if (user && user.id !== 2 && WIKI.auth.checkAccess(user, ['write:comments'], pageCtx)) {
+      const comment = await WIKI.data.commentProvider.getCommentById(id)
+      if (comment && comment.authorId === user.id) {
+        return page
+      }
+    }
+    throw new WIKI.Error.CommentManageForbidden()
+  }
+
+  /**
+   * Update an Existing Comment
+   */
+  static async updateComment ({ id, content, user, ip }) {
+    const page = await WIKI.models.comments.getPageForCommentChange({ id, user })
 
     // -> Process by comment provider
     return WIKI.data.commentProvider.update({
@@ -162,23 +176,7 @@ module.exports = class Comment extends Model {
    * Delete an Existing Comment
    */
   static async deleteComment ({ id, user, ip }) {
-    // -> Load Page
-    const pageId = await WIKI.data.commentProvider.getPageIdFromCommentId(id)
-    if (!pageId) {
-      throw new WIKI.Error.CommentNotFound()
-    }
-    const page = await WIKI.models.pages.getPageFromDb(pageId)
-    if (page) {
-      if (!WIKI.auth.checkAccess(user, ['manage:comments'], {
-        path: page.path,
-        locale: page.localeCode,
-        tags: page.tags
-      })) {
-        throw new WIKI.Error.CommentManageForbidden()
-      }
-    } else {
-      throw new WIKI.Error.PageNotFound()
-    }
+    const page = await WIKI.models.comments.getPageForCommentChange({ id, user })
 
     // -> Process by comment provider
     await WIKI.data.commentProvider.remove({

@@ -18,7 +18,7 @@ module.exports = async () => {
   // ----------------------------------------
 
   WIKI.auth = require('./core/auth').init()
-  WIKI.lang = require('./core/localization').init()
+  WIKI.lang = await require('./core/localization').init()
   WIKI.mail = require('./core/mail').init()
   WIKI.system = require('./core/system').init()
 
@@ -126,7 +126,7 @@ module.exports = async () => {
   app.locals.config = WIKI.config
   app.locals.pageMeta = {
     title: '',
-    description: WIKI.config.description,
+    description: WIKI.config.seo.description,
     image: '',
     url: '/'
   }
@@ -156,7 +156,10 @@ module.exports = async () => {
       company: WIKI.config.company,
       contentLicense: WIKI.config.contentLicense,
       footerOverride: WIKI.config.footerOverride,
-      logoUrl: WIKI.config.logoUrl
+      logoUrl: WIKI.config.logoUrl,
+      localeVersion: WIKI.lang.version,
+      uploadMaxFiles: WIKI.config.uploads.maxFiles,
+      uploadMaxFileSize: WIKI.config.uploads.maxFileSize
     }
     res.locals.langs = await WIKI.models.locales.getNavLocales({ cache: true })
     res.locals.analyticsCode = await WIKI.models.analytics.getCode({ cache: true })

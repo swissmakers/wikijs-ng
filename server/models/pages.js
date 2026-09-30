@@ -804,7 +804,7 @@ module.exports = class Page extends Model {
 
     // -> Check for page access
     if (!WIKI.auth.checkAccess(opts.user, ['delete:pages'], {
-      locale: page.locale,
+      locale: page.localeCode,
       path: page.path
     })) {
       throw new WIKI.Error.PageDeleteForbidden()

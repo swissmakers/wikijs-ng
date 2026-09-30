@@ -65,7 +65,7 @@
                 v-list-item-title(v-text='term')
             v-divider(v-if='idx < suggestions.length - 1')
       .text-xs-center.pt-5(v-if='search && search.length > 1')
-        v-btn.mx-2(outlined, color='pink', @click='search = ``')
+        v-btn.mx-2(outlined, color='white', @click='search = ``')
           v-icon(left) mdi-close
           span {{$t('common:header.searchClose')}}
 </template>
@@ -257,18 +257,28 @@ export default {
   &-items {
     text-align: left;
 
-    .highlighted {
-      background: #FFF linear-gradient(to bottom, #FFF, mc('orange', '100'));
+    .v-list-item:hover {
+      background-color: rgba(mc('theme', 'primary'), .04);
 
       @at-root .theme--dark & {
-        background: mc('grey', '900') linear-gradient(to bottom, mc('orange', '900'), darken(mc('orange', '900'), 15%));
+        background-color: rgba(mc('theme', 'accent'), .08);
+      }
+    }
+
+    .highlighted {
+      background: rgba(mc('theme', 'primary'), .08);
+      box-shadow: inset 3px 0 0 mc('theme', 'primary');
+
+      @at-root .theme--dark & {
+        background: rgba(mc('theme', 'accent'), .18);
+        box-shadow: inset 3px 0 0 mc('theme', 'accent');
       }
     }
   }
 
   &-suggestions {
     .highlighted {
-      background: transparent linear-gradient(to bottom, mc('blue', '500'), mc('blue', '700'));
+      background: mc('theme', 'primary');
     }
   }
 }

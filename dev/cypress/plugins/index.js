@@ -18,4 +18,13 @@
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+
+  // Enlarge the headless Electron window so screenshots aren't capped at 1280x720
+  on('before:browser:launch', (browser = {}, launchOptions) => {
+    if (browser.name === 'electron' && browser.isHeadless) {
+      launchOptions.preferences.width = 1600
+      launchOptions.preferences.height = 960
+    }
+    return launchOptions
+  })
 }

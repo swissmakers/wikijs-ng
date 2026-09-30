@@ -594,6 +594,11 @@
             border-left: 1px solid mc('grey', '300');
             margin-left: .5rem;
 
+            @at-root .theme--dark & {
+              color: #B0B0B0;
+              border-left-color: mc('grey', '700');
+            }
+
             &.is-block {
               display: block;
               padding-left: 0;
@@ -1242,12 +1247,24 @@
 // PRINT OVERRIDES
 // ---------------
 
+@page {
+  margin: 10mm;
+}
+
 @media print {
   .nav-header,
   .v-navigation-drawer,
   .v-btn--fab,
+  .v-speed-dial,
+  .v-footer,
   .page-col-sd,
-  .v-tooltip__content
+  .v-tooltip__content,
+  .v-main__wrap > .v-toolbar,
+  .v-main__wrap > .v-divider,
+  .page-col-content > .v-expansion-panels,
+  .page-edit-shortcuts,
+  .comments-container,
+  .status-indicator
   {
     display: none !important;
   }
@@ -1256,59 +1273,157 @@
     display: block !important;
   }
 
+  // -> Nothing may be clipped by scroll containers
+  .v-application--wrap,
+  .v-main,
+  .v-main__wrap,
+  .contents,
+  .contents div[style*='overflow'] {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+  }
+
   .page-col-content {
     flex-basis: 100% !important;
     flex-grow: 1 !important;
     max-width: 100% !important;
     margin-left: 0 !important;
+  }
 
-    > .v-toolbar {
-      border: 1px solid mc('grey', '300') !important;
-      border-radius: 7px !important;
+  // -> Page title header: clean white, no grey band
+  .page-header-section {
+    background-color: #FFF !important;
 
-      & + .v-divider {
-        display: none !important;
-      }
+    .page-header-title {
+      color: #000 !important;
     }
+  }
+  .v-main .container.grey {
+    background-color: #FFF !important;
   }
 
   .v-main {
     padding: 0 !important;
-    font-size: 14px;
+    font-size: 12pt;
     background-color: #FFF;
   }
 
   .v-main .contents {
     color: #000;
     background-color: #FFF;
+    max-width: none !important;
 
     @at-root .theme--dark & {
       color: #000;
     }
 
+    // -> Avoid page breaks inside block elements and right after headings
+    pre, table, blockquote, img, figure, .prismjs, .mermaid, .katex-display {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    h1, h2, h3, h4 {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    // -> Tables: no horizontal scroll clipping, allow cell wrapping
+    table {
+      max-width: 100% !important;
+
+      td, th {
+        overflow-wrap: break-word;
+      }
+    }
+
+    // -> Force light rendering even when printing from dark mode
+    // (the .theme--dark class stays on the DOM during printing)
+    blockquote {
+      background-color: #FFF !important;
+      color: #000 !important;
+      border-color: mc('grey', '400') !important;
+
+      * {
+        color: #000 !important;
+      }
+
+      &::before {
+        color: mc('grey', '500') !important;
+      }
+    }
+
+    ol.links-list li, ul.links-list li {
+      background-color: #FFF !important;
+      background-image: none !important;
+      border-color: mc('grey', '300') !important;
+      box-shadow: none !important;
+
+      > a {
+        color: #000 !important;
+
+        > em {
+          color: mc('grey', '700') !important;
+          border-left-color: mc('grey', '300') !important;
+        }
+      }
+    }
+
+    code:not([class^="language-"]) {
+      background-color: mc('grey', '100') !important;
+      color: #000 !important;
+    }
+
+    // -> Print the target of external links instead of the icon
+    a.is-external-link {
+      &::after {
+        font-family: inherit;
+        content: ' (' attr(href) ')';
+        font-size: .8em;
+        color: mc('grey', '600');
+        word-break: break-all;
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: #000;
+    }
+
     .prismjs{
       box-shadow: none;
-      background-color: #FFF;
+      background-color: #FFF !important;
+      border: 1px solid mc('grey', '400');
+      color: #000 !important;
+      text-shadow: none !important;
 
-      @at-root .theme--dark & {
-        background-color: #FFF;
+      // -> Monochrome code: dark-theme token colors would be unreadable on paper
+      * {
+        color: #000 !important;
+        background: transparent !important;
+        text-shadow: none !important;
       }
 
       > code {
-        color: #000;
         box-shadow: none;
-        text-shadow: none;
         white-space: pre-wrap !important;
         overflow-wrap: break-word !important;
       }
     }
   }
 
-  .comments-container {
-    display: none;
-  }
+  // -> Author footer: compact, no avatar circle color waste
+  .page-author-footer {
+    border-top: 1px solid mc('grey', '400');
 
-  .page-edit-shortcuts {
-    display: none;
+    .v-avatar {
+      display: none;
+    }
+
+    .v-btn {
+      display: none;
+    }
   }
 }

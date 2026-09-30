@@ -10,7 +10,7 @@ const punycode = require('punycode')
 /* global WIKI */
 
 module.exports = {
-  apiDirectory: WIKI.dev ? 'https://acme-staging-v02.api.letsencrypt.org/directory' : 'https://acme-v02.api.letsencrypt.org/directory',
+  apiDirectory: WIKI.devMode ? 'https://acme-staging-v02.api.letsencrypt.org/directory' : 'https://acme-v02.api.letsencrypt.org/directory',
   acme: null,
   async init () {
     if (!_.get(WIKI.config, 'letsencrypt.payload', false)) {

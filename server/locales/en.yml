@@ -1,0 +1,1075 @@
+admin:
+  adminArea: Administration Area
+  analytics:
+    providerConfiguration: Provider Configuration
+    providerNoConfiguration: This provider has no configuration options you can modify.
+    providers: Providers
+    refreshSuccess: List of providers refreshed successfully.
+    saveSuccess: Analytics configuration saved successfully
+    subtitle: Add analytics and tracking tools to your wiki
+    title: Analytics
+  api:
+    disableButton: Disable API
+    disabled: API Disabled
+    enableButton: Enable API
+    enabled: API Enabled
+    expiration180d: 180 days
+    expiration1y: 1 year
+    expiration30d: 30 days
+    expiration3y: 3 years
+    expiration90d: 90 days
+    headerCreated: Created
+    headerExpiration: Expiration
+    headerKeyEnding: Key Ending
+    headerLastUpdated: Last Updated
+    headerName: Name
+    headerRevoke: Revoke
+    newKeyButton: New API Key
+    newKeyCopyWarn: Copy the key shown below as {{bold}}
+    newKeyCopyWarnBold: it will NOT be shown again
+    newKeyExpiration: Expiration
+    newKeyExpirationHint: You can still revoke a key anytime regardless of the expiration.
+    newKeyFullAccess: Full Access
+    newKeyGroup: Group
+    newKeyGroupError: You must select a group.
+    newKeyGroupHint: The API key will have the same permissions as the selected group.
+    newKeyGroupPermissions: or use group permissions...
+    newKeyGuestGroupError: The guests group cannot be used for API keys.
+    newKeyName: Name
+    newKeyNameError: Name is missing or invalid.
+    newKeyNameHint: Purpose of this key
+    newKeyPermissionScopes: Permission Scopes
+    newKeySuccess: API key created successfully.
+    newKeyTitle: New API Key
+    noKeyInfo: No API keys have been generated yet.
+    refreshSuccess: List of API keys has been refreshed.
+    revoke: Revoke
+    revokeConfirm: Revoke API Key?
+    revokeConfirmText: Are you sure you want to revoke key {{name}}? This action cannot be undone!
+    revokeSuccess: The key has been revoked successfully.
+    subtitle: Manage keys to access the API
+    title: API Access
+    toggleStateDisabledSuccess: API has been disabled successfully.
+    toggleStateEnabledSuccess: API has been enabled successfully.
+  auth:
+    activeStrategies: Active Strategies
+    addStrategy: Add Strategy
+    allowedWebOrigins: Allowed Web Origins
+    autoEnrollGroups: Assign to group
+    autoEnrollGroupsHint: Automatically assign new users to these groups.
+    callbackUrl: Callback URL / Redirect URI
+    configReference: Configuration Reference
+    configReferenceSubtitle: Some strategies may require some configuration values to be set on your provider. These are provided for reference only and may not be needed by the current strategy.
+    displayName: Display Name
+    displayNameHint: The title shown to the end user for this authentication strategy.
+    domainsWhitelist: Limit to specific email domains
+    domainsWhitelistHint: A list of domains authorized to register. The user email address domain must match one of these to gain access.
+    force2fa: Force all users to use Two-Factor Authentication (2FA)
+    force2faHint: Users will be required to setup 2FA the first time they login and cannot be disabled by the user.
+    globalAdvSettings: Global Advanced Settings
+    jwtAudience: JWT Audience
+    jwtAudienceHint: Audience URN used in JWT issued upon login. Usually your domain name. (e.g. urn:your.domain.com)
+    loginUrl: Login URL
+    logoutUrl: Logout URL
+    refreshSuccess: List of strategies has been refreshed.
+    registration: Registration
+    saveSuccess: Authentication configuration saved successfully.
+    security: Security
+    selfRegistration: Allow self-registration
+    selfRegistrationHint: Allow any user successfully authorized by the strategy to access the wiki.
+    siteUrlNotSetup: You must set a valid {{siteUrl}} first! Click on {{general}} in the left sidebar.
+    strategies: Strategies
+    strategyConfiguration: Strategy Configuration
+    strategyIsEnabled: Active
+    strategyIsEnabledHint: Are users able to login using this strategy?
+    strategyNoConfiguration: This strategy has no configuration options you can modify.
+    strategyState: This strategy is {{state}} {{locked}}
+    strategyStateActive: active
+    strategyStateInactive: not active
+    strategyStateLocked: and cannot be disabled.
+    subtitle: Configure the authentication settings of your wiki
+    title: Authentication
+    tokenEndpointAuthMethod: Token Endpoint Authentication Method
+    tokenExpiration: Token Expiration
+    tokenExpirationHint: 'The expiration period of a token until it must be renewed. (default: 30m)'
+    tokenRenewalPeriod: Token Renewal Period
+    tokenRenewalPeriodHint: 'The maximum period a token can be renewed when expired. (default: 14d)'
+  comments:
+    configSaveSuccess: Comments configuration saved successfully.
+    provider: Provider
+    providerConfig: Provider Configuration
+    providerNoConfig: This provider has no configuration options you can modify.
+    subtitle: Add discussions to your wiki pages
+    title: Comments
+  contribute:
+    becomeAPatron: Become a Patron
+    becomeASponsor: Become a Sponsor
+    contribute: Contribute
+    ethereum: 'We accept donations using Ethereum:'
+    followUsOnTwitter: Follow us on {{0}}.
+    foundABug: Found a bug? Submit an issue on {{0}}.
+    fundOurWork: Fund our work
+    github: Become a sponsor via GitHub Sponsors (goes directly into supporting lead developer Nicolas Giard's goal of working full-time on Wiki.js)
+    helpTranslate: Help translate Wiki.js in your language. Let us know on {{0}}.
+    makeADonation: Make a donation
+    needYourHelp: We need your help to keep improving the software and run the various associated services (e.g. hosting and networking).
+    openCollective: 'Wiki.js is also part of the Open Collective initiative, a transparent fund that goes toward community resources. You can contribute financially by making a monthly or one-time donation:'
+    openSource: Wiki.js is a free and open-source software brought to you with {{0}} by {{1}} and {{2}}.
+    openSourceContributors: contributors
+    patreon: Become a backer or sponsor via Patreon (goes directly into supporting lead developer Nicolas Giard's goal of working full-time on Wiki.js)
+    paypal: 'Make a one-time or recurring donation via Paypal:'
+    shop: Wiki.js Shop
+    spreadTheWord: Spread the word
+    submitAnIdea: Submit an idea or vote on a proposed one on the {{0}}.
+    submitAnIdeaLink: feature requests board
+    subtitle: Help support Wiki.js development and operations
+    talkToFriends: Talk to your friends and colleagues about how awesome Wiki.js is!
+    title: Contribute to Wiki.js
+    tshirts: 'You can also buy Wiki.js t-shirts to support the project financially:'
+  dashboard:
+    contributeHelp: We need your help!
+    contributeLearnMore: Learn More
+    contributeSubtitle: Wiki.js is a free and open source project. There are several ways you can contribute to the project.
+    groups: Groups
+    lastLogins: Last Logins
+    mostPopularPages: Most Popular Pages
+    pages: Pages
+    recentPages: Recent Pages
+    subtitle: Wiki.js
+    title: Dashboard
+    users: Users
+    versionLatest: You are running the latest version.
+    versionNew: 'A new version is available: {{version}}'
+  dev:
+    flags:
+      title: Flags
+    graphiql:
+      title: GraphiQL
+    title: Developer Tools
+    voyager:
+      title: Voyager
+  editor:
+    title: Editor
+  extensions:
+    subtitle: Install extensions for extra functionality
+    title: Extensions
+  general:
+    companyName: Company / Organization Name
+    companyNameHint: Name to use when displaying copyright notice in the footer. Leave empty to hide.
+    contentLicense: Content License
+    contentLicenseHint: License shown in the footer of all content pages.
+    displayEditMenuBar: Display Edit Menu Bar
+    displayEditMenuBarHint: Display the edit menu bar in the page header.
+    displayEditMenuBtn: Display Edit Button
+    displayEditMenuBtnHint: Display a button to edit the current page.
+    displayEditMenuExternalBtn: Display External Edit Button
+    displayEditMenuExternalBtnHint: Display a button linking to an external repository (e.g. GitHub) where users can edit or submit a PR for the current page.
+    editFab: FAB Quick Edit Menu
+    editFabHint: Display the edit floating action button (FAB) with a speed-dial menu in the bottom right corner of the screen.
+    editMenuBar: Edit Menu Bar
+    editMenuExternalIcon: Button Icon
+    editMenuExternalIconHint: The icon to display on the edit button. For example, mdi-github to display the GitHub icon.
+    editMenuExternalName: Button Site Name
+    editMenuExternalNameHint: The name of the external site to display on the edit button. Do not include the "Edit on" prefix.
+    editMenuExternalUrl: Button URL
+    editMenuExternalUrlHint: Url to the page on the external repository. Use the {filename} placeholder where the filename should be included. (e.g. https://github.com/foo/bar/blob/main/{filename} )
+    editShortcuts: Edit Shortcuts
+    footerCopyright: Footer Copyright
+    footerOverride: Footer Text Override
+    footerOverrideHint: Optionally override the footer text with a custom message. Useful if none of the above licenses are appropriate.
+    general: General
+    logo: Logo
+    logoUrl: Logo URL
+    logoUrlHint: Specify an image to use as the logo. SVG, PNG, JPG are supported, in a square ratio, 34x34 pixels or larger. Click the button on the right to upload a new image.
+    metaRobots: Meta Robots
+    metaRobotsHint: 'Default: Index, Follow. Can also be set on a per-page basis.'
+    pageExtensions: Page Extensions
+    pageExtensionsHint: A comma-separated list of URL extensions that will be treated as pages. For example, adding md will treat /foobar.md the same as /foobar.
+    saveSuccess: Site configuration saved successfully.
+    siteBranding: Site Branding
+    siteDescription: Site Description
+    siteDescriptionHint: Default description when none is provided for a page.
+    siteInfo: Site Info
+    siteTitle: Site Title
+    siteTitleHint: Displayed in the top bar and appended to all pages meta title.
+    siteTitleInvalidChars: Site Title contains invalid characters.
+    siteUrl: Site URL
+    siteUrlHint: Full URL to your wiki, without the trailing slash. (e.g. https://wiki.example.com)
+    subtitle: Main settings of your wiki
+    title: General
+    uploadClear: Clear
+    uploadLogo: Upload Logo
+    uploadSizeHint: An image of {{size}} pixels is recommended for best results.
+    uploadTypesHint: '{{typeList}} or {{lastType}} files only'
+  groups:
+    title: Groups
+  locale:
+    activeNamespaces:
+      hint: List of locales enabled for multilingual namespacing. The base locale defined above will always be included regardless of this selection.
+      label: Active Namespaces
+    base:
+      hint: All UI text elements will be displayed in selected language.
+      label: Site Locale
+      labelWithNS: Base Locale
+    code: Code
+    name: Name
+    namespaces:
+      hint: Enables multiple language versions of the same page.
+      label: Multilingual Namespaces
+    namespacing: Multilingual Namespacing
+    namespacingPrefixWarning:
+      subtitle: Paths without a locale code will be automatically redirected to the base locale defined above.
+      title: The locale code will be prefixed to all paths. (e.g. /{{langCode}}/page-name)
+    nativeName: Native Name
+    rtl: RTL
+    settings: Locale Settings
+    sideload: Custom & Additional Languages
+    sideloadHelp: English, German, French and Italian are bundled with Wiki.js NG. To add another language or override single strings, place YAML locale files into the folder below and restart Wiki.js.
+    subtitle: Set localization options for your wiki
+    title: Locale
+    availableTitle: Available Languages
+    source: Source
+    sourceBundled: Bundled
+    sourceSideloaded: Sideloaded
+    sourceDatabase: Database (legacy pack)
+    sideloadFolder: Sideload folder
+  logging:
+    title: Logging
+  mail:
+    configuration: Configuration
+    dkim: DKIM (optional)
+    dkimDomainName: Domain Name
+    dkimHint: DKIM (DomainKeys Identified Mail) provides a layer of security on all emails sent from Wiki.js by providing the means for recipients to validate the domain name and ensure the message authenticity.
+    dkimKeySelector: Key Selector
+    dkimPrivateKey: Private Key
+    dkimPrivateKeyHint: Private key for the selector in PEM format
+    dkimUse: Use DKIM
+    saveSuccess: Configuration saved successfully.
+    sendTestSuccess: A test email was sent successfully.
+    sender: Sender
+    senderEmail: Sender Email
+    senderName: Sender Name
+    smtp: SMTP Settings
+    smtpHost: Host
+    smtpName: Client Identifying Hostname
+    smtpNameHint: An optional name to send to the SMTP server to identify your mailer. Leave empty to use server hostname. For Google Workspace customers, this should be your main domain name.
+    smtpPort: Port
+    smtpPortHint: Usually 465 (recommended), 587 or 25.
+    smtpPwd: Password
+    smtpTLS: Secure (TLS)
+    smtpTLSHint: Should be enabled when using port 465, otherwise turned off (587 or 25).
+    smtpUser: Username
+    smtpVerifySSL: Verify SSL Certificate
+    smtpVerifySSLHint: Some hosts requires SSL certificate checking to be disabled. Leave enabled for proper security.
+    subtitle: Configure mail settings
+    test: Send a test email
+    testHint: Send a test email to ensure your SMTP configuration is working.
+    testRecipient: Recipient Email Address
+    testSend: Send Email
+    title: Mail
+  nav:
+    modules: Modules
+    site: Site
+    system: System
+    users: Users
+  navigation:
+    copyFromLocale: Copy from locale...
+    copyFromLocaleInfoText: Select the locale from which items will be copied from. Items will be appended to the current list of items in the active locale.
+    delete: Delete {{kind}}
+    divider: Divider
+    edit: Edit {{kind}}
+    emptyList: Navigation is empty
+    header: Header
+    icon: Icon
+    label: Label
+    link: Link
+    mode: Navigation Mode
+    modeCustom:
+      description: Static Navigation Menu + Site Tree Button
+      title: Custom Navigation
+    modeNone:
+      description: Disable Site Navigation
+      title: None
+    modeSiteTree:
+      description: Classic Tree-based Navigation
+      title: Site Tree
+    modeStatic:
+      description: Static Navigation Menu Only
+      title: Static Navigation
+    navType:
+      external: External Link
+      externalblank: External Link (New Window)
+      home: Home
+      page: Page
+      searchQuery: Search Query
+    noItemsText: Click the Add button to add your first navigation item.
+    noSelectionText: Select a navigation item on the left.
+    saveSuccess: Navigation saved successfully.
+    selectPageButton: Select Page...
+    sourceLocale: Source Locale
+    sourceLocaleHint: The locale from which navigation items will be copied from.
+    subtitle: Manage the site navigation
+    target: Target
+    targetType: Target Type
+    title: Navigation
+    untitled: Untitled {{kind}}
+    visibilityMode:
+      all: Visible to everyone
+      restricted: Visible to select groups...
+  pages:
+    title: Pages
+  rendering:
+    subtitle: Configure the page rendering pipeline
+    title: Rendering
+  search:
+    configSaveSuccess: Search engine configuration saved successfully.
+    engineConfig: Engine Configuration
+    engineNoConfig: This engine has no configuration options you can modify.
+    indexRebuildSuccess: Index rebuilt successfully.
+    listRefreshSuccess: List of search engines has been refreshed.
+    rebuildIndex: Rebuild Index
+    searchEngine: Search Engine
+    subtitle: Configure the search capabilities of your wiki
+    title: Search Engine
+  security:
+    bypassLogin: Bypass Login Screen
+    bypassLoginHint: Should the user be redirected automatically to the first authentication provider.
+    enforce2fa: Enforce 2FA
+    enforce2faHint: Force all users to use Two-Factor Authentication when using an authentication provider with a user / password form.
+    hideLocalLogin: Hide Local Authentication Provider
+    hideLocalLoginHint: Don't show the local authentication provider on the login screen. Add ?all to the URL to temporarily use it.
+    jwt: JWT Configuration
+    login: Login
+    loginBgUrl: Login Background Image URL
+    loginBgUrlHint: Specify an image to use as the login background. PNG and JPG are supported, 1920x1080 recommended. Leave empty for default. Click the button on the right to upload a new image. Note that the Guests group must have read-access to the selected image!
+    loginScreen: Login Screen
+    loginSecurity: Security
+    maxUploadBatch: Max Files per Upload
+    maxUploadBatchHint: How many files can be uploaded in a single batch?
+    maxUploadBatchSuffix: files
+    maxUploadSize: Max Upload Size
+    maxUploadSizeHint: The maximum size for a single file.
+    maxUploadSizeSuffix: bytes
+    subtitle: Configure security settings
+    title: Security
+    uploads: Uploads
+    uploadsInfo: These settings only affect Wiki.js. If you're using a reverse-proxy (e.g. nginx, apache, Cloudflare), you must also change its settings to match.
+  ssl:
+    currentState: Current State
+    domain: Domain
+    domainHint: Enter the fully qualified domain pointing to your wiki. (e.g. wiki.example.com)
+    expiration: Certificate Expiration
+    httpPort: HTTP Port
+    httpPortHint: Non-SSL port the server will listen to for HTTP requests. Usually 80 or 3000.
+    httpPortRedirect: Redirect HTTP requests to HTTPS
+    httpPortRedirectHint: Will automatically redirect any requests on the HTTP port to HTTPS.
+    httpPortRedirectSaveSuccess: HTTP Redirection changed successfully.
+    httpPortRedirectTurnOff: Turn Off
+    httpPortRedirectTurnOn: Turn On
+    httpsPort: HTTPS Port
+    httpsPortHint: SSL port the server will listen to for HTTPS requests. Usually 443.
+    ports: Ports
+    provider: Provider
+    providerCustomCertificate: Custom Certificate
+    providerDisabled: Disabled
+    providerHint: Select Custom Certificate if you have your own certificate already.
+    providerLetsEncrypt: Let's Encrypt
+    providerOptions: Provider Options
+    renewCertificate: Renew Certificate
+    renewCertificateLoadingSubtitle: Do not leave this page.
+    renewCertificateLoadingTitle: Renewing Certificate...
+    renewCertificateSuccess: Certificate renewed successfully.
+    status: Certificate Status
+    subscriberEmail: Subscriber Email
+    subtitle: Manage SSL configuration
+    title: SSL
+    writableConfigFileWarning: Note that your config file must be writable in order to persist ports configuration.
+  stats:
+    title: Statistics
+  storage:
+    actionRun: Run
+    actions: Actions
+    actionsInactiveWarn: You must enable this storage target and apply changes before you can run actions.
+    errorMsg: Error Message
+    lastSync: Last synchronization {{time}}
+    lastSyncAttempt: Last attempt was {{time}}
+    noConfigOption: This storage target has no configuration options you can modify.
+    noTarget: You don't have any active storage target.
+    status: Status
+    subtitle: Set backup and sync targets for your content
+    syncDirBi: Bi-directional
+    syncDirBiHint: In bi-directional mode, content is first pulled from the storage target. Any newer content overwrites local content. New content since last sync is then pushed to the storage target, overwriting any content on target if present.
+    syncDirPull: Pull from target
+    syncDirPullHint: Content is always pulled from the storage target, overwriting any local content which already exists. This choice is usually reserved for single-use content import. Caution with this option as any local content will always be overwritten!
+    syncDirPush: Push to target
+    syncDirPushHint: Content is always pushed to the storage target, overwriting any existing content. This is safest choice for backup scenarios.
+    syncDirection: Sync Direction
+    syncDirectionSubtitle: Choose how content synchronization is handled for this storage target.
+    syncSchedule: Sync Schedule
+    syncScheduleCurrent: Currently set to every {{schedule}}.
+    syncScheduleDefault: The default is every {{schedule}}.
+    syncScheduleHint: For performance reasons, this storage target synchronize changes on an interval-based schedule, instead of on every change. Define at which interval should the synchronization occur.
+    targetConfig: Target Configuration
+    targetState: This storage target is {{state}}
+    targetStateActive: active
+    targetStateInactive: inactive
+    targets: Targets
+    title: Storage
+    unsupported: Unsupported
+  system:
+    configFile: Configuration File
+    cpuCores: CPU Cores
+    currentVersion: Current Version
+    dbPartialSupport: Your database version is not fully supported. Some functionality may be limited or not work as expected.
+    hostInfo: Host Information
+    hostname: Hostname
+    latestVersion: Latest Version
+    os: Operating System
+    published: Published
+    ramUsage: 'RAM Usage: {{used}} / {{total}}'
+    refreshSuccess: System Info has been refreshed.
+    subtitle: Information about your system
+    title: System Info
+    totalRAM: Total RAM
+    workingDirectory: Working Directory
+  tags:
+    date: Created {{created}} and last updated {{updated}}.
+    delete: Delete this tag
+    deleteConfirm: Delete Tag?
+    deleteConfirmText: Are you sure you want to delete tag {{tag}}? The tag will also be unlinked from all pages.
+    deleteSuccess: Tag deleted successfully.
+    edit: Edit Tag
+    emptyList: No tags to display.
+    filter: Filter...
+    label: Label
+    noItemsText: Add a tag to a page to get started.
+    noSelectionText: Select a tag from the list on the left.
+    refreshSuccess: Tags have been refreshed.
+    saveSuccess: Tag has been saved successfully.
+    subtitle: Manage page tags
+    tag: Tag
+    title: Tags
+    viewLinkedPages: View Linked Pages
+  theme:
+    bodyHtmlInjection: Body HTML Injection
+    bodyHtmlInjectionHint: HTML code to be injected just before the closing body tag.
+    codeInjection: Code Injection
+    cssOverride: CSS Override
+    cssOverrideHint: CSS code to inject after system default CSS. Consider using custom themes if you have a large amount of css code. Injecting too much CSS code will result in poor page load performance! CSS will automatically be minified.
+    cssOverrideWarning: '{{caution}} When adding styles for page content, you must scope them to the {{cssClass}} class. Omitting this could break the layout of the editor!'
+    cssOverrideWarningCaution: 'CAUTION:'
+    darkMode: Dark Mode
+    darkModeHint: Not recommended for accessibility. May not be supported by all themes.
+    downloadAuthor: Author
+    downloadDownload: Download
+    downloadName: Name
+    downloadThemes: Download Themes
+    headHtmlInjection: Head HTML Injection
+    headHtmlInjectionHint: HTML code to be injected just before the closing head tag. Usually for script tags.
+    iconset: Icon Set
+    iconsetHint: Set of icons to use for the sidebar navigation.
+    options: Theme Options
+    siteTheme: Site Theme
+    siteThemeHint: Themes affect how content pages are displayed. Other site sections (such as the editor or admin area) are not affected.
+    subtitle: Modify the look & feel of your wiki
+    title: Theme
+    tocHeadingLevels: Default TOC Heading Levels
+    tocHeadingLevelsHint: The table of contents will show headings from and up to the selected levels by default.
+  users:
+    active: Active
+    authProvider: Provider
+    authProviderId: Provider Id
+    authentication: Authentication
+    basicInfo: Basic Info
+    changePassword: Change Password
+    deleteConfirmForeignNotice: Note that you cannot delete a user that already created content. You must instead either deactivate the user or delete all content that was created by that user.
+    deleteConfirmReplaceWarn: Any content (pages, uploads, comments, etc.) that was created by this user will be reassigned to the user selected below. It is recommended to create a dummy target user (e.g. Deleted User) if you don't want the content to be reassigned to any current active user.
+    deleteConfirmText: Are you sure you want to delete user {{username}}?
+    deleteConfirmTitle: Delete User?
+    displayName: Display Name
+    edit: Edit User
+    email: Email
+    extendedMetadata: Extended Metadata
+    groupAssign: Assign
+    groupAssignNotice: Note that you cannot assign users to the Administrators or Guests groups from this panel.
+    groups: User Groups
+    id: ID {{id}}
+    inactive: Inactive
+    jobTitle: Job Title
+    location: Location
+    newPassword: New Password
+    noGroupAssigned: This user is not assigned to any group yet. You must assign at least 1 group to a user.
+    password: Password
+    selectGroup: Select Group...
+    tfa: Two Factor Authentication (2FA)
+    timezone: Timezone
+    title: Users
+    toggle2FA: Toggle 2FA
+    unverified: Unverified
+    updateUser: Update User
+    userActivateSuccess: User has been activated successfully.
+    userAlreadyAssignedToGroup: User is already assigned to this group!
+    userDeactivateSuccess: User deactivated successfully.
+    userTFADisableSuccess: 2FA was disabled successfully.
+    userTFAEnableSuccess: 2FA was enabled successfully.
+    userUpdateSuccess: User updated successfully.
+    userVerifySuccess: User has been verified successfully.
+    verified: Verified
+  utilities:
+    authSubtitle: Various tools for authentication / users
+    authTitle: Authentication
+    cacheSubtitle: Flush cache of various components
+    cacheTitle: Flush Cache
+    contentSubtitle: Various tools for pages
+    contentTitle: Content
+    exportSubtitle: Save content to tarball for backup / migration
+    exportTitle: Export to Disk
+    graphEndpointSubtitle: Change the GraphQL endpoint for Wiki.js
+    graphEndpointTitle: GraphQL Endpoint
+    importv1Subtitle: Migrate data from a previous 1.x installation
+    importv1Title: Import from Wiki.js 1.x
+    subtitle: Maintenance and miscellaneous tools
+    telemetrySubtitle: Enable/Disable telemetry or reset the client ID
+    telemetryTitle: Telemetry
+    title: Utilities
+    tools: Tools
+  webhooks:
+    subtitle: Manage webhooks to external services
+    title: Webhooks
+  assets:
+    title: Assets
+    subtitle: Manage uploaded files and folders
+    folders: Folders
+    newFolder: New Folder
+    folderName: Folder name
+    folderEmpty: This folder is empty.
+    uploadHint: Drag & drop files here or click to browse...
+    headerFilename: Filename
+    headerType: Type
+    headerFileSize: Size
+    headerUpdated: Updated
+    moveFolderTarget: 'Select the destination folder:'
+    moveAssetTarget: 'Select the destination folder:'
+    deleteFolderConfirm: Are you sure you want to delete this folder?
+    deleteFolderContents: Also delete all files and subfolders it contains
+    deleteFolderContentsWarn: All contained files will be permanently deleted!
+    deleteAssetConfirm: Are you sure you want to delete the following file(s)?
+    refreshSuccess: List of assets refreshed successfully.
+    folderCreateSuccess: Folder created successfully.
+    folderRenameSuccess: Folder renamed successfully.
+    folderMoveSuccess: Folder moved successfully.
+    folderDeleteSuccess: Folder deleted successfully.
+    renameSuccess: Asset renamed successfully.
+    moveSuccess: Asset moved successfully.
+    deleteSuccess: Asset deleted successfully.
+    noUploadError: You must choose a file to upload first!
+    uploadFailed: Upload failed
+auth:
+  actions:
+    login: Log In
+    register: Register
+  changePwd:
+    instructions: 'You must choose a new password:'
+    loading: Changing password...
+    newPasswordPlaceholder: New Password
+    newPasswordVerifyPlaceholder: Verify New Password
+    proceed: Change Password
+    subtitle: Choose a new password
+  enterCredentials: Enter your credentials
+  errors:
+    invalidLogin: Invalid Login
+    invalidLoginMsg: The email or password is invalid.
+    invalidUserEmail: Invalid User Email
+    loginError: Login error
+    notYetAuthorized: You have not been authorized to login to this site yet.
+    tooManyAttempts: Too many attempts!
+    tooManyAttemptsMsg: You've made too many failed attempts in a short period of time, please try again {{time}}.
+    userNotFound: User not found
+  fields:
+    email: Email Address
+    emailUser: Email / Username
+    name: Name
+    password: Password
+    username: Username
+    verifyPassword: Verify Password
+  forgotPasswordCancel: Cancel
+  forgotPasswordLink: Forgot your password?
+  forgotPasswordLoading: Requesting password reset...
+  forgotPasswordSubtitle: 'Enter your email address to receive the instructions to reset your password:'
+  forgotPasswordSuccess: Check your emails for password reset instructions!
+  forgotPasswordTitle: Forgot your password
+  genericError: Authentication is unavailable.
+  invalidEmail: Email address is invalid.
+  invalidEmailUsername: Enter a valid email / username.
+  invalidPassword: Enter a valid password.
+  loginRequired: Login required
+  loginSuccess: Login Successful! Redirecting...
+  loginUsingStrategy: Login using {{strategy}}
+  missingEmail: Missing email address.
+  missingName: Name is missing.
+  missingPassword: Missing password.
+  nameTooLong: Name is too long.
+  nameTooShort: Name is too short.
+  orLoginUsingStrategy: or login using...
+  passwordNotMatch: Both passwords do not match.
+  passwordTooShort: Password is too short.
+  pleaseWait: Please wait
+  providers:
+    azure: Azure Active Directory
+    facebook: Facebook
+    github: GitHub
+    google: Google ID
+    ldap: LDAP / Active Directory
+    local: Local
+    slack: Slack
+    windowslive: Microsoft Account
+  registerCheckEmail: Check your emails to activate your account.
+  registerSubTitle: Fill-in the form below to create your account.
+  registerSuccess: Account created successfully!
+  registerTitle: Create an account
+  registering: Creating account...
+  selectAuthProvider: Select Authentication Provider
+  sendResetPassword: Reset Password
+  signingIn: Signing In...
+  switchToLogin:
+    link: Login instead
+    text: Already have an account? {{link}}
+  switchToRegister:
+    link: Create an account
+    text: Don't have an account yet? {{link}}
+  tfa:
+    placeholder: XXXXXX
+    subtitle: 'Security code required:'
+    title: Two Factor Authentication
+    verifyToken: Verify
+  tfaFormTitle: 'Enter the security code generated from your trusted device:'
+  tfaSetupInstrFirst: '1) Scan the QR code below from your mobile 2FA application:'
+  tfaSetupInstrSecond: '2) Enter the security code generated from your trusted device:'
+  tfaSetupTitle: Your administrator has required Two-Factor Authentication (2FA) to be enabled on your account.
+common:
+  actions:
+    add: Add
+    apply: Apply
+    browse: Browse...
+    cancel: Cancel
+    clear: Clear
+    close: Close
+    confirm: Confirm
+    convert: Convert
+    copy: Copy
+    create: Create
+    delete: Delete
+    discard: Discard
+    discardChanges: Discard Changes
+    download: Download
+    edit: Edit
+    exit: Exit
+    fetch: Fetch
+    generate: Generate
+    insert: Insert
+    move: Move
+    ok: OK
+    optimize: Optimize
+    page: Page
+    preview: Preview
+    proceed: Proceed
+    properties: Properties
+    refresh: Refresh
+    rename: Rename
+    returnToTop: Return to top
+    save: Save
+    saveChanges: Save Changes
+    select: Select
+    upload: Upload
+    goBack: Go Back
+  comments:
+    beFirst: Be the first to comment.
+    contentMissingError: Comment is empty or too short!
+    deleteConfirmTitle: Confirm Delete
+    deletePermanentWarn: This action cannot be undone!
+    deleteSuccess: Comment was deleted successfully.
+    deleteWarn: Are you sure you want to permanently delete this comment?
+    fieldContent: Comment Content
+    fieldEmail: Your Email Address
+    fieldName: Your Name
+    loading: Loading comments...
+    markdownFormat: Markdown Format
+    modified: modified {{reldate}}
+    newComment: New Comment
+    newPlaceholder: Write a new comment...
+    none: No comments yet.
+    postComment: Post Comment
+    postSuccess: New comment posted successfully.
+    postingAs: Posting as {{name}}
+    sdTitle: Talk
+    title: Comments
+    updateComment: Update Comment
+    updateSuccess: Comment was updated successfully.
+    viewDiscussion: View Discussion
+  duration:
+    days: Day(s)
+    every: Every
+    hours: Hour(s)
+    minutes: Minute(s)
+    months: Month(s)
+    years: Year(s)
+  error:
+    unexpected: An unexpected error occurred.
+  footer:
+    copyright: © {{year}} {{company}}. All rights reserved.
+    license: Content is available under the {{license}}, by {{company}}.
+    poweredBy: Powered by
+  header:
+    account: Account
+    admin: Administration
+    assets: Assets
+    browseTags: Browse by Tags
+    convert: Convert
+    currentPage: Current Page
+    delete: Delete
+    duplicate: Duplicate
+    edit: Edit
+    history: History
+    home: Home
+    imagesFiles: Images & Files
+    language: Language
+    login: Login
+    logout: Logout
+    move: Move / Rename
+    myWiki: My Wiki
+    newPage: New Page
+    pageActions: Page Actions
+    profile: Profile
+    search: Search...
+    searchClose: Close
+    searchCopyLink: Copy Search Link
+    searchDidYouMean: Did you mean...
+    searchHint: Type at least 2 characters to start searching...
+    searchLoading: Searching...
+    searchNoResult: No pages matching your query.
+    searchResultsCount: Found {{total}} results
+    siteMap: Site Map
+    view: View
+    viewSource: View Source
+    searchRestrictLocale: Only {{locale}}
+    searchRestrictPath: Only under /{{path}}
+  license:
+    alr: All Rights Reserved
+    cc0: Public Domain
+    ccby: ' Creative Commons Attribution License'
+    ccbync: Creative Commons Attribution-NonCommercial License
+    ccbyncnd: Creative Commons Attribution-NonCommercial-NoDerivs License
+    ccbyncsa: Creative Commons Attribution-NonCommercial-ShareAlike License
+    ccbynd: Creative Commons Attribution-NoDerivs License
+    ccbysa: Creative Commons Attribution-ShareAlike License
+    none: None
+  modernBrowser: modern browser
+  newpage:
+    create: Create Page
+    goback: Go back
+    subtitle: Would you like to create it now?
+    title: This page does not exist yet.
+  notfound:
+    gohome: Home
+    subtitle: This page does not exist.
+    title: Not Found
+    searchHint: 'Tip: use the search bar on the home page to find what you were looking for.'
+  outdatedBrowserWarning: Your browser is outdated. Upgrade to a {{modernBrowser}}.
+  page:
+    bookmark: Bookmark
+    convert: Convert Page
+    convertSubtitle: The page content will be converted into the format of the newly selected editor. Note that some formatting or non-rendered content may be lost as a result of the conversion. A snapshot will be added to the page history and can be restored at any time.
+    convertTitle: 'Select the editor you want to use going forward for the page {{title}}:'
+    delete: Delete Page
+    deleteSubtitle: The page can be restored from the administration area.
+    deleteTitle: Are you sure you want to delete page {{title}}?
+    editExternal: Edit on {{name}}
+    editPage: Edit Page
+    global: Global
+    id: ID {{id}}
+    lastEditedBy: Last edited by
+    loading: Loading Page...
+    printFormat: Print Format
+    private: Private
+    published: Published
+    returnNormalView: Return to Normal View
+    share: Share
+    tags: Tags
+    tagsMatching: Pages matching tags
+    toc: Page Contents
+    unpublished: Unpublished
+    unpublishedWarning: This page is not published.
+    versionId: Version ID {{id}}
+    viewingSource: Viewing source of page {{path}}
+    viewingSourceVersion: Viewing source as of {{date}} of page {{path}}
+  pageSelector:
+    createTitle: Select New Page Location
+    folderEmptyWarning: This folder is empty.
+    moveTitle: Move / Rename Page Location
+    pages: Pages
+    selectTitle: Select a Page
+    virtualFolders: Virtual Folders
+  password:
+    average: Average
+    strong: Strong
+    veryStrong: Very Strong
+    veryWeak: Very Weak
+    weak: Weak
+  sidebar:
+    browse: Browse
+    currentDirectory: Current Directory
+    mainMenu: Main Menu
+    root: (root)
+  unauthorized:
+    action:
+      create: You cannot create the page.
+      download: You cannot download the page content.
+      downloadVersion: You cannot download the content for this page version.
+      edit: You cannot edit the page.
+      history: You cannot view the page history.
+      source: You cannot view the page source.
+      sourceVersion: You cannot view the source of this version of the page.
+      view: You cannot view this page.
+    goback: Go Back
+    login: Login As...
+    title: Unauthorized
+  user:
+    search: Search User
+    searchPlaceholder: Search Users...
+  welcome:
+    createhome: Create Home Page
+    goadmin: Administration
+    subtitle: Let's get started and create the home page.
+    title: Welcome to your wiki!
+  folderView:
+    createPage: Create this page
+    folders: Folders
+    pages: Pages
+    empty: This folder has no pages you can view.
+editor:
+  assets:
+    deleteAsset: Delete Asset
+    deleteAssetConfirm: Are you sure you want to delete asset
+    deleteAssetWarn: This action cannot be undone!
+    deleteSuccess: Asset deleted successfully.
+    fetchImage: Fetch Remote Image
+    fileCount: '{{count}} files'
+    folderCreateSuccess: Asset folder created successfully.
+    folderEmpty: This asset folder is empty.
+    folderName: Folder Name
+    folderNameNamingRules: Must follow the asset folder {{namingRules}}.
+    folderNameNamingRulesLink: naming rules
+    headerActions: Actions
+    headerAdded: Added
+    headerFileSize: File Size
+    headerFilename: Filename
+    headerId: ID
+    headerType: Type
+    imageAlign: Image Alignment
+    newFolder: New Folder
+    noUploadError: You must choose a file to upload first!
+    refreshSuccess: List of assets refreshed successfully.
+    renameAsset: Rename Asset
+    renameAssetSubtitle: 'Enter the new name for this asset:'
+    renameSuccess: Asset renamed successfully.
+    title: Assets
+    uploadAssets: Upload Assets
+    uploadAssetsDropZone: Browse or Drop files here...
+    uploadFailed: File upload failed.
+    uploadLimits: Max {{maxFiles}} files, {{maxSize}} each
+  backToEditor: Back to Editor
+  ckeditor:
+    stats: '{{chars}} chars, {{words}} words'
+  conflict:
+    editable: (editable)
+    infoGeneric: A more recent version of this page was saved by {{authorName}}, {{date}}
+    leftPanelInfo: Your current edit, based on page version from {{date}}
+    localVersion: Local Version {{refEditable}}
+    overwrite:
+      description: Are you sure you want to replace your current version with the latest remote content? {{refEditsLost}}
+      editsLost: Your current edits will be lost.
+      title: Overwrite with Remote Version?
+    pageDescription: 'Description:'
+    pageTitle: 'Title:'
+    readonly: (read-only)
+    remoteVersion: Remote Version {{refReadOnly}}
+    rightPanelInfo: Last edited by {{authorName}}, {{date}}
+    title: Resolve Save Conflict
+    useLocal: Use Local
+    useLocalHint: Use content in the left panel
+    useRemote: Use Remote
+    useRemoteHint: Discard local changes and use latest version
+    viewLatestVersion: View Latest Version
+    warning: Save conflict! Another user has already modified this page.
+    whatToDo: What do you want to do?
+    whatToDoLocal: Use your current local version and ignore the latest changes.
+    whatToDoRemote: Use the remote version (latest) and discard your changes.
+  markup:
+    blockquote: Blockquote
+    blockquoteError: Error Blockquote
+    blockquoteInfo: Info Blockquote
+    blockquoteSuccess: Success Blockquote
+    blockquoteWarning: Warning Blockquote
+    bold: Bold
+    distractionFreeMode: Distraction Free Mode
+    heading: Heading {{level}}
+    horizontalBar: Horizontal Bar
+    inlineCode: Inline Code
+    insertAssets: Insert Assets
+    insertBlock: Insert Block
+    insertCodeBlock: Insert Code Block
+    insertDiagram: Insert Diagram
+    insertLink: Insert Link
+    insertMathExpression: Insert Math Expression
+    insertVideoAudio: Insert Video / Audio
+    italic: Italic
+    keyboardKey: Keyboard Key
+    markdownFormattingHelp: Markdown Formatting Help
+    noSelectionError: Text must be selected first!
+    orderedList: Ordered List
+    strikethrough: Strikethrough
+    subscript: Subscript
+    superscript: Superscript
+    tableHelper: Table Helper
+    togglePreviewPane: Hide / Show Preview Pane
+    toggleSpellcheck: Toggle Spellcheck
+    unorderedList: Unordered List
+  page: Page
+  props:
+    allowComments: Allow Comments
+    allowCommentsHint: Enable commenting abilities on this page.
+    allowRatings: Allow Ratings
+    allowRatingsHint: Enable rating capabilities on this page.
+    categorization: Categorization
+    css: CSS
+    cssHint: CSS will automatically be minified upon saving. Do not include surrounding style tags, only the actual CSS code.
+    displayAuthor: Display Author Info
+    displayAuthorHint: Show the page author along with the last edition time.
+    displaySharingBar: Display Sharing Toolbar
+    displaySharingBarHint: Show a toolbar with buttons to share and print this page
+    html: HTML
+    htmlHint: You must surround your javascript code with HTML script tags.
+    info: Info
+    locale: Locale
+    pageInfo: Page Info
+    pageProperties: Page Properties
+    path: Path
+    pathCategorization: Path & Categorization
+    pathHint: Do not include any leading or trailing slashes.
+    publishEnd: Publish ending on...
+    publishEndHint: Leave empty for no end date
+    publishStart: Publish starting on...
+    publishStartHint: Leave empty for no start date
+    publishState: Publishing State
+    publishToggle: Published
+    publishToggleHint: Unpublished pages are still visible to users with write permissions on this page.
+    scheduling: Scheduling
+    scripts: Scripts
+    shortDescription: Short Description
+    shortDescriptionHint: Shown below the title
+    social: Social
+    socialFeatures: Social Features
+    styles: Styles
+    tags: Tags
+    tagsHint: Use tags to categorize your pages and make them easier to find.
+    title: Title
+    toc: TOC
+    tocHeadingLevels: TOC Heading Levels
+    tocHeadingLevelsHint: The table of contents will show headings from and up to the selected levels.
+    tocTitle: Table of Contents
+    tocUseDefault: Use Site Defaults
+    templateToggle: Use as Template
+    templateToggleHint: Offer this page as a starting template when creating new pages. Template pages are excluded from search results.
+  save:
+    createSuccess: Page created successfully.
+    error: An error occurred while creating the page
+    pleaseWait: Please wait...
+    processing: Rendering
+    saved: Saved
+    updateSuccess: Page updated successfully.
+  select:
+    cannotChange: This cannot be changed once the page is created.
+    customView: or create a custom view?
+    title: Which editor do you want to use for this page?
+    templates: Templates
+  unsaved:
+    body: You have unsaved changes. Are you sure you want to leave the editor and discard any modifications you made since the last save?
+    title: Discard Unsaved Changes?
+  unsavedWarning: You have unsaved edits. Are you sure you want to leave the editor?
+  draft:
+    found: An unsaved draft of this page was found.
+    restore: Restore
+    discard: Discard
+history:
+  restore:
+    confirmButton: Restore
+    confirmText: Are you sure you want to restore this page content as it was on {{date}}? This version will be copied on top of the current history. As such, newer versions will still be preserved.
+    confirmTitle: Restore page version?
+    success: Page version restored succesfully!
+profile:
+  activity:
+    commentsPosted: Comments posted
+    joinedOn: Joined on
+    lastLoginOn: Last login on
+    lastUpdatedOn: Profile last updated on
+    pagesCreated: Pages created
+    title: Activity
+  appearance: Appearance
+  appearanceDark: Dark
+  appearanceDefault: Site Default
+  appearanceLight: Light
+  auth:
+    changePassSuccess: Password changed successfully.
+    changePassword: Change Password
+    currentPassword: Current Password
+    newPassword: New Password
+    provider: Provider
+    title: Authentication
+    verifyPassword: Confirm New Password
+  comments:
+    title: Comments
+  dateFormat: Date Format
+  displayName: Display Name
+  groups:
+    title: Groups
+  jobTitle: Job Title
+  localeDefault: Locale Default
+  location: Location
+  myInfo: My Info
+  pages:
+    emptyList: No pages to display.
+    headerCreatedAt: Created
+    headerPath: Path
+    headerTitle: Title
+    headerUpdatedAt: Last Updated
+    refreshSuccess: Page list has been refreshed.
+    subtitle: List of pages I created or last modified
+    title: Pages
+    filterPlaceholder: Filter my pages...
+  preferences: Preferences
+  save:
+    success: Profile saved successfully.
+  subtitle: My personal info
+  timezone: Timezone
+  title: Profile
+  viewPublicProfile: View Public Profile
+tags:
+  clearSelection: Clear Selection
+  currentSelection: Current Selection
+  locale: Locale
+  localeAny: Any
+  noResults: Couldn't find any page with the selected tags.
+  noResultsWithFilter: Couldn't find any page matching the current filtering options.
+  orderBy: Order By
+  orderByField:
+    ID: ID
+    creationDate: Creation Date
+    lastModified: Last Modified
+    path: Path
+    title: Title
+  pageLastUpdated: Last Updated {{date}}
+  retrievingResultsLoading: Retrieving page results...
+  searchWithinResultsPlaceholder: Search within results...
+  selectOneMoreTags: Select one or more tags
+  selectOneMoreTagsHint: Select one or more tags on the left.
+  filterTagsPlaceholder: Filter tags...

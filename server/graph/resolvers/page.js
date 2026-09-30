@@ -81,6 +81,7 @@ module.exports = {
         'title',
         'description',
         'isPublished',
+        'isTemplate',
         'isPrivate',
         'privateNS',
         'contentType',
@@ -92,9 +93,6 @@ module.exports = {
           builder.select('tag')
         })
         .modify(queryBuilder => {
-          if (args.limit) {
-            queryBuilder.limit(args.limit)
-          }
           if (args.locale) {
             queryBuilder.where('localeCode', args.locale)
           }
@@ -133,16 +131,28 @@ module.exports = {
           }
         })
       results = _.filter(results, r => {
-        return WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
+        const pageCtx = {
           path: r.path,
           locale: r.locale
-        })
+        }
+        if (!WIKI.auth.checkAccess(context.req.user, ['read:pages'], pageCtx)) {
+          return false
+        }
+        // -> Unpublished pages and templates are only listed for users who can edit them
+        if (!r.isPublished || r.isTemplate) {
+          return WIKI.auth.checkAccess(context.req.user, ['write:pages'], pageCtx) || WIKI.auth.checkAccess(context.req.user, ['manage:pages'], pageCtx)
+        }
+        return true
       }).map(r => ({
         ...r,
         tags: _.map(r.tags, 'tag')
       }))
       if (args.tags && args.tags.length > 0) {
         results = _.filter(results, r => _.every(args.tags, t => _.includes(r.tags, t)))
+      }
+      // -> Limit after permission filtering, otherwise hidden pages reduce the result size
+      if (args.limit) {
+        results = _.take(results, args.limit)
       }
       return results
     },
@@ -697,6 +707,8 @@ module.exports = {
           throw new WIKI.Error.PageNotFound()
         }
         await WIKI.models.pages.renderPage(page)
+        // -> Other instances (HA) must drop their cached copy as well
+        WIKI.events.outbound.emit('deletePageFromCache', page.hash)
         return {
           responseResult: graphHelper.generateSuccess('Page rendered successfully.')
         }

@@ -5,6 +5,6 @@ db:
   host: db
   port: 5432
   user: wikijs
-  pass: swissmakers
+  pass: changeme
   db: wiki
 logLevel: info

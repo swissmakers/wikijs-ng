@@ -51,7 +51,7 @@ type CommentMutation {
 
   delete(
     id: Int!
-  ): DefaultResponse @auth(requires: ["manage:comments", "manage:system"])
+  ): DefaultResponse @auth(requires: ["write:comments", "manage:comments", "manage:system"])
 }
 
 # -----------------------------------------------

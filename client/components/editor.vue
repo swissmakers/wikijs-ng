@@ -263,7 +263,9 @@ export default {
         this.dialogEditorSelector = true
       }, 500)
     } else {
-      this.currentEditor = `editor${_.startCase(this.initEditor || 'markdown')}`
+      // -> Fall back to the code editor for editors that no longer exist
+      const editorName = `editor${_.startCase(this.initEditor || 'markdown')}`
+      this.currentEditor = this.$options.components[editorName] ? editorName : 'editorCode'
     }
 
     window.onbeforeunload = () => {

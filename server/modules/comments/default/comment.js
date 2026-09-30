@@ -132,10 +132,10 @@ module.exports = {
     return renderedContent
   },
   /**
-   * Delete an existing comment by ID
+   * Delete an existing comment by ID, including its replies
    */
   async remove ({ id, user }) {
-    return WIKI.models.comments.query().findById(id).delete()
+    return WIKI.models.comments.query().delete().where('id', id).orWhere('replyTo', id)
   },
   /**
    * Get the page ID from a comment ID
