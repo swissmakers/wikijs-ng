@@ -249,9 +249,7 @@ export default {
         footerOverride: '',
         logoUrl: '',
         featureAnalytics: false,
-        featurePageRatings: false,
         featurePageComments: false,
-        featurePersonalWikis: false,
         featureTinyPNG: false,
         pageExtensions: '',
         editFab: false,
@@ -317,9 +315,7 @@ export default {
               $footerOverride: String
               $logoUrl: String
               $pageExtensions: String
-              $featurePageRatings: Boolean
               $featurePageComments: Boolean
-              $featurePersonalWikis: Boolean
               $editFab: Boolean
               $editMenuBar: Boolean
               $editMenuBtn: Boolean
@@ -341,9 +337,7 @@ export default {
                   footerOverride: $footerOverride
                   logoUrl: $logoUrl
                   pageExtensions: $pageExtensions
-                  featurePageRatings: $featurePageRatings
                   featurePageComments: $featurePageComments
-                  featurePersonalWikis: $featurePersonalWikis
                   editFab: $editFab
                   editMenuBar: $editMenuBar
                   editMenuBtn: $editMenuBtn
@@ -374,9 +368,7 @@ export default {
             footerOverride: _.get(this.config, 'footerOverride', ''),
             logoUrl: _.get(this.config, 'logoUrl', ''),
             pageExtensions: _.get(this.config, 'pageExtensions', ''),
-            featurePageRatings: _.get(this.config, 'featurePageRatings', false),
             featurePageComments: _.get(this.config, 'featurePageComments', false),
-            featurePersonalWikis: _.get(this.config, 'featurePersonalWikis', false),
             editFab: _.get(this.config, 'editFab', false),
             editMenuBar: _.get(this.config, 'editMenuBar', false),
             editMenuBtn: _.get(this.config, 'editMenuBtn', false),
@@ -436,9 +428,7 @@ export default {
               footerOverride
               logoUrl
               pageExtensions
-              featurePageRatings
               featurePageComments
-              featurePersonalWikis
               editFab
               editMenuBar
               editMenuBtn

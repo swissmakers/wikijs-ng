@@ -2,7 +2,7 @@ key: disqus
 title: Disqus
 description: Disqus help publishers power online discussions with comments.
 author: requarks.io
-logo: https://static.requarks.io/logo/disqus.svg
+logo: /_assets/svg/modules/disqus.svg
 website: https://disqus.com/
 codeTemplate: true
 isAvailable: true

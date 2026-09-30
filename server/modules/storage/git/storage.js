@@ -18,12 +18,6 @@ module.exports = {
   git: null,
   repoPath: path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, 'repo'),
   mutex: new Mutex(),
-  async activated() {
-    // not used
-  },
-  async deactivated() {
-    // not used
-  },
   /**
    * INIT
    */

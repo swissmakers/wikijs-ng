@@ -29,8 +29,7 @@
                         @keyup.esc='newFolderDialog = false'
                         ref='folderNameIpt'
                         )
-                      i18next.caption.grey--text.text--darken-1.pl-5(path='editor:assets.folderNameNamingRules', tag='div')
-                        a(place='namingRules', href='https://docs.requarks.io/guide/assets#naming-restrictions', target='_blank') {{$t('editor:assets.folderNameNamingRulesLink')}}
+                      .caption.grey--text.text--darken-1.pl-5 {{$t('editor:assets.folderNameRulesHint', { defaultValue: 'Lowercase letters, numbers, dashes and underscores only, at least 2 characters. Must not look like a locale code (e.g. en or de-ch).' })}}
                     v-card-chin
                       v-spacer
                       v-btn(text, @click='newFolderDialog = false') {{$t('common:actions.cancel')}}

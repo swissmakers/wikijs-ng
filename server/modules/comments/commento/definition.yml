@@ -2,7 +2,7 @@ key: commento
 title: Commento
 description: A fast, privacy-focused commenting platform.
 author: requarks.io
-logo: https://static.requarks.io/logo/commento.svg
+logo: /_assets/svg/modules/commento.svg
 website: https://commento.io/
 codeTemplate: true
 isAvailable: true

@@ -2,7 +2,7 @@ key: artalk
 title: Artalk
 description: A light-weight self-hosted comment system.
 author: CDN18
-logo: https://static.requarks.io/logo/artalk.png
+logo: /_assets/svg/modules/artalk.png
 website: https://artalk.js.org
 codeTemplate: true
 isAvailable: true

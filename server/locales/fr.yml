@@ -564,6 +564,8 @@ admin:
     deleteSuccess: Fichier supprimé avec succès.
     noUploadError: Vous devez d'abord choisir un fichier à téléverser !
     uploadFailed: Échec du téléversement
+  about:
+    title: À propos
 auth:
   actions:
     login: S'identifier
@@ -802,6 +804,10 @@ common:
     versionId: ID de version {{id}}
     viewingSource: Affichage de la source de la page {{path}}
     viewingSourceVersion: Affichage de la source (version {{date}}) de la page {{path}}
+    copyLink: Copier le lien
+    shareByEmail: Envoyer par e-mail
+    linkCopied: Lien copié dans le presse-papiers.
+    linkCopyFailed: Échec de la copie dans le presse-papiers.
   pageSelector:
     createTitle: Sélectionnez l'emplacement de la nouvelle page
     folderEmptyWarning: Ce dossier est vide.
@@ -857,8 +863,6 @@ editor:
     folderCreateSuccess: Dossier créé avec succès.
     folderEmpty: Ce dossier est vide.
     folderName: Nom du dossier
-    folderNameNamingRules: Doit respecter les {{namingRules}} pour les dossiers de ressources.
-    folderNameNamingRulesLink: règles de nommage
     headerActions: Actions
     headerAdded: Ajouté
     headerFileSize: Taille du fichier
@@ -877,6 +881,7 @@ editor:
     uploadAssetsDropZone: Parcourir ou déposer des fichiers ici…
     uploadFailed: Le téléversement du fichier a échoué.
     uploadLimits: '{{maxFiles}} fichiers max., {{maxSize}} chacun'
+    folderNameRulesHint: Uniquement des lettres minuscules, des chiffres, des tirets et des traits de soulignement, au moins 2 caractères. Ne doit pas ressembler à un code de langue (p. ex. en ou de-ch).
   backToEditor: Retour à l'éditeur
   ckeditor:
     stats: '{{chars}} caractères, {{words}} mots'

@@ -13,12 +13,6 @@ const getFilePath = (page, pathKey) => {
 }
 
 module.exports = {
-  async activated() {
-
-  },
-  async deactivated() {
-
-  },
   async init() {
     WIKI.logger.info(`(STORAGE/AZURE) Initializing...`)
     const { accountName, accountKey, containerName } = this.config

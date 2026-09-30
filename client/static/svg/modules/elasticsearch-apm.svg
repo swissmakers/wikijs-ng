@@ -1,0 +1,12 @@
+<svg width="80px" height="80px" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>icon-apm-bb</title>
+    <desc>Created with Sketch.</desc>
+    <g id="icon-apm-bb" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(15.000000, 14.000000)">
+            <polygon id="Fill-1" fill="#F04E98" points="0 16.625 37.5 16.625 37.5 0.999 0 0.999"></polygon>
+            <path d="M15.625,16.625 C15.625,25.255 22.62,32.25 31.25,32.25 L50,32.25 L50,16.625 L15.625,16.625 Z" id="Fill-2" fill="#343741"></path>
+            <polygon id="Fill-4" fill="#0077CC" points="29.687 51 49.999 51 49.999 36.937 29.687 36.937"></polygon>
+        </g>
+    </g>
+</svg>

@@ -564,6 +564,8 @@ admin:
     deleteSuccess: Asset deleted successfully.
     noUploadError: You must choose a file to upload first!
     uploadFailed: Upload failed
+  about:
+    title: About
 auth:
   actions:
     login: Log In
@@ -802,6 +804,10 @@ common:
     versionId: Version ID {{id}}
     viewingSource: Viewing source of page {{path}}
     viewingSourceVersion: Viewing source as of {{date}} of page {{path}}
+    copyLink: Copy link
+    shareByEmail: Send by email
+    linkCopied: Link copied to clipboard.
+    linkCopyFailed: Failed to copy to clipboard.
   pageSelector:
     createTitle: Select New Page Location
     folderEmptyWarning: This folder is empty.
@@ -857,8 +863,6 @@ editor:
     folderCreateSuccess: Asset folder created successfully.
     folderEmpty: This asset folder is empty.
     folderName: Folder Name
-    folderNameNamingRules: Must follow the asset folder {{namingRules}}.
-    folderNameNamingRulesLink: naming rules
     headerActions: Actions
     headerAdded: Added
     headerFileSize: File Size
@@ -877,6 +881,7 @@ editor:
     uploadAssetsDropZone: Browse or Drop files here...
     uploadFailed: File upload failed.
     uploadLimits: Max {{maxFiles}} files, {{maxSize}} each
+    folderNameRulesHint: Lowercase letters, numbers, dashes and underscores only, at least 2 characters. Must not look like a locale code (e.g. en or de-ch).
   backToEditor: Back to Editor
   ckeditor:
     stats: '{{chars}} chars, {{words}} words'

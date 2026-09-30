@@ -13,12 +13,6 @@ const commonDisk = require('./common')
 /* global WIKI */
 
 module.exports = {
-  async activated() {
-    // not used
-  },
-  async deactivated() {
-    // not used
-  },
   async init() {
     WIKI.logger.info('(STORAGE/DISK) Initializing...')
     await fs.ensureDir(this.config.path)

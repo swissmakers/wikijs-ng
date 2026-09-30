@@ -15,7 +15,6 @@ extend type Mutation {
 # -----------------------------------------------
 
 type ThemingQuery {
-  themes: [ThemingTheme] @auth(requires: ["manage:theme", "manage:system"])
   config: ThemingConfig @auth(requires: ["manage:theme", "manage:system"])
 }
 
@@ -47,10 +46,4 @@ type ThemingConfig {
   injectCSS: String
   injectHead: String
   injectBody: String
-}
-
-type ThemingTheme {
-  key: String
-  title: String
-  author: String
 }

@@ -2,7 +2,7 @@ key: azureinsights
 title: Azure Application Insights
 description: Application Insights is an extensible Application Performance Management (APM) service for web developers on multiple platforms.
 author: requarks.io
-logo: https://static.requarks.io/logo/azure.svg
+logo: /_assets/svg/modules/azure.svg
 website: https://azure.microsoft.com/en-us/services/monitor/
 isAvailable: true
 props:

@@ -12,13 +12,6 @@ module.exports = {
     async theming() { return {} }
   },
   ThemingQuery: {
-    async themes(obj, args, context, info) {
-      return [{ // TODO
-        key: 'default',
-        title: 'Default',
-        author: 'requarks.io'
-      }]
-    },
     async config(obj, args, context, info) {
       return {
         theme: WIKI.config.theming.theme,

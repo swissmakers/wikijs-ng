@@ -59,17 +59,6 @@
                     hint='Should be enabled when using a reverse-proxy like nginx, apache, CloudFlare, etc in front of Wiki.js NG. Turn off otherwise.'
                     )
 
-                  //- v-divider.mt-3
-                  //- v-switch(
-                  //-   inset
-                  //-   label='Subresource Integrity (SRI)'
-                  //-   color='red darken-2'
-                  //-   v-model='config.securitySRI'
-                  //-   persistent-hint
-                  //-   hint='This ensure that resources such as CSS and JS files are not altered during delivery.'
-                  //-   disabled
-                  //-   )
-
                   v-divider.mt-3
                   v-switch(
                     inset
@@ -266,7 +255,6 @@ export default {
         securityIframe: true,
         securityReferrerPolicy: true,
         securityTrustProxy: false,
-        securitySRI: true,
         securityHSTS: false,
         securityHSTSDuration: 0,
         securityCSP: false,
@@ -312,7 +300,6 @@ export default {
               $securityIframe: Boolean
               $securityReferrerPolicy: Boolean
               $securityTrustProxy: Boolean
-              $securitySRI: Boolean
               $securityHSTS: Boolean
               $securityHSTSDuration: Int
               $securityCSP: Boolean
@@ -335,7 +322,6 @@ export default {
                   securityIframe: $securityIframe,
                   securityReferrerPolicy: $securityReferrerPolicy,
                   securityTrustProxy: $securityTrustProxy,
-                  securitySRI: $securitySRI,
                   securityHSTS: $securityHSTS,
                   securityHSTSDuration: $securityHSTSDuration,
                   securityCSP: $securityCSP,
@@ -367,7 +353,6 @@ export default {
             securityIframe: _.get(this.config, 'securityIframe', false),
             securityReferrerPolicy: _.get(this.config, 'securityReferrerPolicy', false),
             securityTrustProxy: _.get(this.config, 'securityTrustProxy', false),
-            securitySRI: _.get(this.config, 'securitySRI', false),
             securityHSTS: _.get(this.config, 'securityHSTS', false),
             securityHSTSDuration: _.get(this.config, 'securityHSTSDuration', 0),
             securityCSP: _.get(this.config, 'securityCSP', false),
@@ -420,7 +405,6 @@ export default {
               securityIframe
               securityReferrerPolicy
               securityTrustProxy
-              securitySRI
               securityHSTS
               securityHSTSDuration
               securityCSP

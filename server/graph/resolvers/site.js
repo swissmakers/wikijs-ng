@@ -101,9 +101,7 @@ module.exports = {
         }
 
         WIKI.config.features = {
-          featurePageRatings: _.get(args, 'featurePageRatings', WIKI.config.features.featurePageRatings),
-          featurePageComments: _.get(args, 'featurePageComments', WIKI.config.features.featurePageComments),
-          featurePersonalWikis: _.get(args, 'featurePersonalWikis', WIKI.config.features.featurePersonalWikis)
+          featurePageComments: _.get(args, 'featurePageComments', WIKI.config.features.featurePageComments)
         }
 
         WIKI.config.security = {
@@ -111,7 +109,6 @@ module.exports = {
           securityIframe: _.get(args, 'securityIframe', WIKI.config.security.securityIframe),
           securityReferrerPolicy: _.get(args, 'securityReferrerPolicy', WIKI.config.security.securityReferrerPolicy),
           securityTrustProxy: _.get(args, 'securityTrustProxy', WIKI.config.security.securityTrustProxy),
-          securitySRI: _.get(args, 'securitySRI', WIKI.config.security.securitySRI),
           securityHSTS: _.get(args, 'securityHSTS', WIKI.config.security.securityHSTS),
           securityHSTSDuration: _.get(args, 'securityHSTSDuration', WIKI.config.security.securityHSTSDuration),
           securityCSP: _.get(args, 'securityCSP', WIKI.config.security.securityCSP),

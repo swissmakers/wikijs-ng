@@ -3,12 +3,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueClipboards from 'vue-clipboards'
-import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client/core'
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
 import { BatchHttpLink } from '@apollo/client/link/batch-http'
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { onError } from '@apollo/client/link/error'
-import { getMainDefinition } from '@apollo/client/utilities'
-import { createClient as createWsClient } from 'graphql-ws'
 import VueApollo from 'vue-apollo'
 import Vuetify from 'vuetify/lib'
 import Velocity from 'velocity-animate'
@@ -49,7 +46,6 @@ store.commit('user/REFRESH_AUTH')
 // ====================================
 
 const graphQLEndpoint = window.location.protocol + '//' + window.location.host + '/graphql'
-const graphQLWSEndpoint = ((window.location.protocol === 'https:') ? 'wss:' : 'ws:') + '//' + window.location.host + '/graphql-subscriptions'
 
 const graphQLLink = ApolloLink.from([
   onError(({ graphQLErrors, networkError }) => {
@@ -109,20 +105,8 @@ const graphQLLink = ApolloLink.from([
   })
 ])
 
-const graphQLWSLink = new GraphQLWsLink(createWsClient({
-  url: graphQLWSEndpoint,
-  lazy: true,
-  connectionParams: () => {
-    const token = Cookies.get('jwt')
-    return token ? { token } : {}
-  }
-}))
-
 window.graphQL = new ApolloClient({
-  link: split(({ query }) => {
-    const { kind, operation } = getMainDefinition(query)
-    return kind === 'OperationDefinition' && operation === 'subscription'
-  }, graphQLWSLink, graphQLLink),
+  link: graphQLLink,
   cache: new InMemoryCache(),
   connectToDevTools: (process.env.NODE_ENV === 'development')
 })

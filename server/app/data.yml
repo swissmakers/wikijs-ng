@@ -40,7 +40,7 @@ defaults:
     company: ''
     contentLicense: ''
     footerOverride: ''
-    logoUrl: /_assets/svg/logo-wikijs-full.svg
+    logoUrl: /_assets/svg/logo-swissmakers.svg
     pageExtensions:
       - md
       - html
@@ -73,15 +73,12 @@ defaults:
       editMenuExternalIcon: 'mdi-github'
       editMenuExternalUrl: 'https://github.com/org/repo/blob/main/{filename}'
     features:
-      featurePageRatings: true
       featurePageComments: true
-      featurePersonalWikis: true
     security:
       securityOpenRedirect: true
       securityIframe: true
       securityReferrerPolicy: true
       securityTrustProxy: false
-      securitySRI: true
       securityHSTS: false
       securityHSTSDuration: 300
       securityCSP: false
@@ -97,14 +94,8 @@ defaults:
       ldapdebug: false
       sqllog: false
     # System defaults
-    channel: STABLE
     setup: false
     dataPath: ./data
-    cors:
-      credentials: true
-      maxAge: 600
-      methods: 'GET,POST'
-      origin: true
     search:
       maxHits: 100
     maintainerEmail: security@swissmakers.ch

@@ -2,7 +2,7 @@ key: elasticsearch
 title: Elasticsearch
 description: Elasticsearch is a distributed, RESTful search and analytics engine capable of solving a growing number of use cases.
 author: requarks.io
-logo: https://static.requarks.io/logo/elasticsearch.svg
+logo: /_assets/svg/modules/elasticsearch.svg
 website: https://www.elastic.co/products/elasticsearch
 isAvailable: true
 props:

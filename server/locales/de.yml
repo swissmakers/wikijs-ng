@@ -564,6 +564,8 @@ admin:
     deleteSuccess: Datei erfolgreich gelöscht.
     noUploadError: Es muss zuerst eine Datei zum Hochladen ausgewählt werden!
     uploadFailed: Hochladen fehlgeschlagen
+  about:
+    title: Über
 auth:
   actions:
     login: Anmeldung
@@ -802,6 +804,10 @@ common:
     versionId: Versions-ID {{id}}
     viewingSource: Quelltext der Seite {{path}}
     viewingSourceVersion: Betrachte Quellcode vom {{date}} der Seite {{path}}
+    copyLink: Link kopieren
+    shareByEmail: Per E-Mail senden
+    linkCopied: Link in die Zwischenablage kopiert.
+    linkCopyFailed: Kopieren in die Zwischenablage fehlgeschlagen.
   pageSelector:
     createTitle: Neuen Seitenpfad auswählen
     folderEmptyWarning: Dieser Order ist leer.
@@ -857,8 +863,6 @@ editor:
     folderCreateSuccess: Datei-Ordner erfolgreich erstellt.
     folderEmpty: Dieser Ordner ist leer
     folderName: Ordnername
-    folderNameNamingRules: Es muss den Datei-Ordner {{namingRules}} gefolgt werden.
-    folderNameNamingRulesLink: Namensregeln
     headerActions: Aktionen
     headerAdded: Hinzugefügt
     headerFileSize: Dateigröße
@@ -877,6 +881,7 @@ editor:
     uploadAssetsDropZone: Dateien durchsuchen oder hier ablegen ...
     uploadFailed: Datei-Upload fehlgeschlagen.
     uploadLimits: Max. {{maxFiles}} Dateien, je {{maxSize}}
+    folderNameRulesHint: Nur Kleinbuchstaben, Zahlen, Binde- und Unterstriche, mindestens 2 Zeichen. Darf nicht wie ein Sprachcode aussehen (z. B. en oder de-ch).
   backToEditor: Zurück zum Editor
   ckeditor:
     stats: '{{chars}} Zeichen, {{words}} Wörter'

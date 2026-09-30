@@ -23,12 +23,6 @@ module.exports = class S3CompatibleStorage {
     this.storageName = storageName
     this.bucketName = ''
   }
-  async activated() {
-    // not used
-  }
-  async deactivated() {
-    // not used
-  }
   async init() {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Initializing...`)
     const { accessKeyId, secretAccessKey, bucket } = this.config

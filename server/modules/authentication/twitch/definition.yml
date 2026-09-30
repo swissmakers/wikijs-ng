@@ -2,7 +2,7 @@ key: twitch
 title: Twitch
 description: Twitch is a live streaming video platform.
 author: requarks.io
-logo: https://static.requarks.io/logo/twitch.svg
+logo: /_assets/svg/modules/twitch.svg
 color: indigo darken-2
 website: https://dev.twitch.tv/docs/authentication/
 isAvailable: true

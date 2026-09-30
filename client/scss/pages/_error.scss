@@ -10,11 +10,11 @@
   font-family: Roboto, Arial, sans-serif;
 
   img {
-    width: 200px;
+    width: 120px;
     margin-bottom: 2rem;
 
     @include until($tablet) {
-      width: 150px;
+      width: 96px;
     }
   }
 

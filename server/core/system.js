@@ -1,5 +1,4 @@
 const _ = require('lodash')
-const cfgHelper = require('../helpers/config')
 const fs = require('fs-extra')
 const path = require('path')
 const zlib = require('zlib')
@@ -20,55 +19,6 @@ module.exports = {
     fs.emptyDir(path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, 'cache'))
 
     return this
-  },
-  /**
-   * Upgrade from WIKI.js 1.x - MongoDB database
-   *
-   * @param {Object} opts Options object
-   */
-  async upgradeFromMongo (opts) {
-    WIKI.logger.info('Upgrading from MongoDB...')
-
-    const { MongoClient } = require('mongodb')
-    let parsedMongoConStr = cfgHelper.parseConfigValue(opts.mongoCnStr)
-
-    // Connect to MongoDB
-
-    const client = await MongoClient.connect(parsedMongoConStr, {
-      connectTimeoutMS: 5000,
-      socketTimeoutMS: 5000
-    })
-    try {
-      let users = client.db().collection('users')
-
-      // Check if users table is populated
-      let userCount = await users.countDocuments()
-      if (userCount < 2) {
-        throw new Error('MongoDB Upgrade: Users table is empty!')
-      }
-
-      // Import all users
-      let userData = await users.find({
-        email: {
-          $not: 'guest'
-        }
-      }).toArray()
-      await WIKI.models.User.bulkCreate(_.map(userData, usr => {
-        return {
-          email: usr.email,
-          name: usr.name || 'Imported User',
-          password: usr.password || '',
-          provider: usr.provider || 'local',
-          providerId: usr.providerId || '',
-          role: 'user',
-          createdAt: usr.createdAt
-        }
-      }))
-
-      return true
-    } finally {
-      await client.close()
-    }
   },
   /**
    * Export Wiki to Disk

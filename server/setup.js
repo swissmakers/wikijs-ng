@@ -83,19 +83,13 @@ module.exports = () => {
       })
       _.set(WIKI.config, 'company', '')
       _.set(WIKI.config, 'features', {
-        featurePageRatings: true,
-        featurePageComments: true,
-        featurePersonalWikis: true
+        featurePageComments: true
       })
       _.set(WIKI.config, 'host', req.body.siteUrl)
       _.set(WIKI.config, 'lang', {
         code: 'en',
         namespacing: false,
         namespaces: []
-      })
-      _.set(WIKI.config, 'logo', {
-        hasLogo: false,
-        logoIsSquare: false
       })
       _.set(WIKI.config, 'mail', {
         senderName: '',
@@ -171,7 +165,6 @@ module.exports = () => {
         'features',
         'host',
         'lang',
-        'logo',
         'mail',
         'seo',
         'sessionSecret',
@@ -253,9 +246,6 @@ module.exports = () => {
       // Load editors + enable default
       await WIKI.models.editors.refreshEditorsFromDisk()
       await WIKI.models.editors.query().patch({ isEnabled: true }).where('key', 'markdown')
-
-      // Load loggers
-      await WIKI.models.loggers.refreshLoggersFromDisk()
 
       // Load renderers
       await WIKI.models.renderers.refreshRenderersFromDisk()

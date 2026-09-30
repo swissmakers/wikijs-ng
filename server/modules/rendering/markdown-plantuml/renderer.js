@@ -12,7 +12,7 @@ module.exports = {
       const closeMarker = opts.closeMarker || '```'
       const closeChar = closeMarker.charCodeAt(0)
       const imageFormat = opts.imageFormat || 'svg'
-      const server = opts.server || 'https://plantuml.requarks.io'
+      const server = opts.server || 'https://www.plantuml.com/plantuml'
 
       md.block.ruler.before('fence', 'uml_diagram', (state, startLine, endLine, silent) => {
         let nextLine

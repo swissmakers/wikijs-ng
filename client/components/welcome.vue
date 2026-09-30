@@ -2,7 +2,7 @@
   v-app
     .system-page
       .system-page-card.animated.fadeIn
-        img.system-page-logo(src='/_assets/svg/logo-wikijs.svg', alt='Wiki.js NG')
+        img.system-page-logo(src='/_assets/svg/logo-swissmakers.svg', alt='Wiki.js NG')
         .system-page-title {{ $t('welcome.title') }}
         .system-page-subtitle {{ $t('welcome.subtitle') }}
         .system-page-actions

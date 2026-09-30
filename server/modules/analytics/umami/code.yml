@@ -1,2 +1,0 @@
-head: |
-  <script async defer data-website-id="{{websiteID}}" src="{{url}}/umami.js"></script>

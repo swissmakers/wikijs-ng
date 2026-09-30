@@ -30,10 +30,6 @@ module.exports = class CommentProvider extends Model {
     return ['config']
   }
 
-  static async getProvider(key) {
-    return WIKI.models.commentProviders.query().findOne({ key })
-  }
-
   static async getProviders(isEnabled) {
     const providers = await WIKI.models.commentProviders.query().where(_.isBoolean(isEnabled) ? { isEnabled } : {})
     return _.sortBy(providers, ['key'])

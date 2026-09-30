@@ -2,7 +2,7 @@ key: facebook
 title: Facebook
 description: Facebook is an online social media and social networking service company.
 author: requarks.io
-logo: https://static.requarks.io/logo/facebook.svg
+logo: /_assets/svg/modules/facebook.svg
 color: indigo
 website: https://facebook.com/
 isAvailable: true

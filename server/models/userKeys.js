@@ -69,8 +69,4 @@ module.exports = class UserKey extends Model {
       throw new WIKI.Error.AuthValidationTokenInvalid()
     }
   }
-
-  static async destroyToken ({ token }) {
-    return WIKI.models.userKeys.query().findOne({ token }).delete()
-  }
 }

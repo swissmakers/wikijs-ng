@@ -14,11 +14,6 @@
           span {{$t('editor:markup.insertAssets')}}
         v-tooltip(right, color='teal')
           template(v-slot:activator='{ on }')
-            v-btn.mt-3.animated.fadeInLeft.wait-p2s(icon, tile, v-on='on', dark, @click='toggleModal(`editorModalBlocks`)', disabled).mx-0
-              v-icon(:color='activeModal === `editorModalBlocks` ? `teal` : ``') mdi-view-dashboard-outline
-          span {{$t('editor:markup.insertBlock')}}
-        v-tooltip(right, color='teal')
-          template(v-slot:activator='{ on }')
             v-btn.mt-3.animated.fadeInLeft.wait-p3s(icon, tile, v-on='on', dark, disabled).mx-0
               v-icon mdi-code-braces
           span {{$t('editor:markup.insertCodeBlock')}}

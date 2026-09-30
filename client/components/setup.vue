@@ -9,7 +9,7 @@
                 .body-2 You are running an unstable, unreleased development build. This build is #[strong NOT] for production use!
                 .body-2.mt-3 Use an official release image from the #[a(href='https://github.com/swissmakers/wikijs-ng', style='color: #FFF;') Wiki.js NG repository] for production deployments.
               .text-center
-                img.setup-logo.animated.fadeInUp.wait-p2s(src='/_assets/svg/logo-wikijs-full.svg', alt='Wiki.js NG Logo')
+                img.setup-logo.animated.fadeInUp.wait-p2s(src='/_assets/svg/logo-swissmakers.svg', alt='Wiki.js NG Logo')
               v-alert(v-model='error', type='error', icon='mdi-alert', tile, dismissible) {{ errorMessage }}
               v-alert(v-if='!error', tile, color='blue lighten-5', :value='true')
                 v-icon.mr-3(color='blue') mdi-package-variant
@@ -253,7 +253,7 @@ export default {
   }
 
   &-logo {
-    width: 400px;
+    height: 120px;
     margin: 2rem 0 2rem 0;
   }
 }

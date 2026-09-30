@@ -14,8 +14,7 @@ module.exports = {
   init() {
     let confPaths = {
       config: path.join(WIKI.ROOTPATH, 'config.yml'),
-      data: path.join(WIKI.SERVERPATH, 'app/data.yml'),
-      dataRegex: path.join(WIKI.SERVERPATH, 'app/regex.js')
+      data: path.join(WIKI.SERVERPATH, 'app/data.yml')
     }
 
     if (process.env.dockerdev) {
@@ -26,6 +25,7 @@ module.exports = {
       confPaths.config = path.resolve(WIKI.ROOTPATH, process.env.CONFIG_FILE)
     }
 
+    WIKI.CONFIGPATH = confPaths.config
     process.stdout.write(chalk.blue(`Loading configuration from ${confPaths.config}... `))
 
     let appconfig = {}
@@ -38,7 +38,6 @@ module.exports = {
         )
       )
       appdata = yaml.load(fs.readFileSync(confPaths.data, 'utf8'))
-      appdata.regex = require(confPaths.dataRegex)
       console.info(chalk.green.bold(`OK`))
     } catch (err) {
       console.error(chalk.red.bold(`FAILED`))

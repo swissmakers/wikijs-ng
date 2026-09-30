@@ -6,6 +6,4 @@ require('regenerator-runtime/runtime')
 require('./scss/app.scss')
 import(/* webpackChunkName: "mdi" */ '@mdi/font/css/materialdesignicons.css')
 
-require('./helpers/compatibility.js')
-
 require('./client-setup.js')

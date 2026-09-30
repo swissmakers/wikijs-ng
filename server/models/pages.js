@@ -176,15 +176,6 @@ module.exports = class Page extends Model {
   }
 
   /**
-   * Get the page's file extension based on content type
-   *
-   * @returns {string} File Extension
-   */
-  getFileExtension() {
-    return pageHelper.getFileExtension(this.contentType)
-  }
-
-  /**
    * Parse injected page metadata from raw content
    *
    * @param {String} raw Raw file contents

@@ -564,6 +564,8 @@ admin:
     deleteSuccess: File eliminato con successo.
     noUploadError: Devi prima scegliere un file da caricare!
     uploadFailed: Caricamento non riuscito
+  about:
+    title: Informazioni
 auth:
   actions:
     login: Accedi
@@ -802,6 +804,10 @@ common:
     versionId: ID versione {{id}}
     viewingSource: Visualizza sorgente della pagina {{path}}
     viewingSourceVersion: Visualizzazione della fonte a partire da {{date}} della pagina {{path}}
+    copyLink: Copia link
+    shareByEmail: Invia per e-mail
+    linkCopied: Link copiato negli appunti.
+    linkCopyFailed: Copia negli appunti non riuscita.
   pageSelector:
     createTitle: Seleziona una nuova posizione della pagina
     folderEmptyWarning: Questa cartella è vuota.
@@ -857,8 +863,6 @@ editor:
     folderCreateSuccess: Cartella delle risorse creata correttamente.
     folderEmpty: Questa cartella di risorse è vuota.
     folderName: Nome della cartella
-    folderNameNamingRules: Deve rispettare le {{namingRules}} delle cartelle per le risorse.
-    folderNameNamingRulesLink: regole per i nomi
     headerActions: Azioni
     headerAdded: Aggiunto
     headerFileSize: Dimensione del file
@@ -877,6 +881,7 @@ editor:
     uploadAssetsDropZone: Sfoglia o trascina i file qui ...
     uploadFailed: Caricamento del file non riuscito.
     uploadLimits: Max {{maxFiles}} file, {{maxSize}} ciascuno
+    folderNameRulesHint: Solo lettere minuscole, numeri, trattini e trattini bassi, almeno 2 caratteri. Non deve somigliare a un codice lingua (ad es. en o de-ch).
   backToEditor: Torna all'editor
   ckeditor:
     stats: '{{chars}} caratteri, {{words}} parole'

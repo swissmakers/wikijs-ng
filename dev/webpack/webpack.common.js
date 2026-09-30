@@ -28,7 +28,6 @@ const sassLoader = (indentedSyntax) => ({
 module.exports = {
   entries: {
     app: './client/index-app.js',
-    legacy: './client/index-legacy.js',
     setup: './client/index-setup.js'
   },
   outputBase: {
@@ -161,21 +160,14 @@ module.exports = {
       filename: '../server/views/master.pug',
       hash: false,
       inject: false,
-      excludeChunks: ['setup', 'legacy']
-    }),
-    new HtmlWebpackPlugin({
-      template: 'dev/templates/legacy.pug',
-      filename: '../server/views/legacy/master.pug',
-      hash: false,
-      inject: false,
-      excludeChunks: ['setup', 'app']
+      excludeChunks: ['setup']
     }),
     new HtmlWebpackPlugin({
       template: 'dev/templates/setup.pug',
       filename: '../server/views/setup.pug',
       hash: false,
       inject: false,
-      excludeChunks: ['app', 'legacy']
+      excludeChunks: ['app']
     }),
     new HtmlWebpackPugPlugin(),
     new WebpackBarPlugin({

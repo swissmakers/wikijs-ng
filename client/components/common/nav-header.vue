@@ -21,7 +21,7 @@
       v-flex(xs5, md4)
         v-toolbar.nav-header-inner(color='header', dark, flat, :class='$vuetify.rtl ? `pr-3` : `pl-3`')
           v-avatar(tile, size='34', @click='goHome')
-            v-img.org-logo(:src='logoUrl')
+            v-img.org-logo(:src='headerLogoUrl')
           v-toolbar-title(:class='{ "mx-3": $vuetify.breakpoint.mdAndUp, "mx-1": $vuetify.breakpoint.smAndDown }')
             span.subheading {{title}}
       v-flex(md4, v-if='$vuetify.breakpoint.mdAndUp')
@@ -278,6 +278,10 @@ export default {
     isLoading: get('isLoading'),
     title: get('site/title'),
     logoUrl: get('site/logoUrl'),
+    headerLogoUrl () {
+      // -> The bundled logo is brand blue; use its white variant on the navy header
+      return this.logoUrl === '/_assets/svg/logo-swissmakers.svg' ? '/_assets/svg/logo-swissmakers-white.svg' : this.logoUrl
+    },
     path: get('page/path'),
     locale: get('page/locale'),
     mode: get('page/mode'),

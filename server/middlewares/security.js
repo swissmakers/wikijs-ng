@@ -24,7 +24,6 @@ module.exports = function (req, res, next) {
   res.set('X-Content-Type-Options', 'nosniff')
 
   // -> Disable IE Compatibility Mode
-  res.set('X-UA-Compatible', 'IE=edge')
 
   // -> Disables referrer header when navigating to a different origin
   if (WIKI.config.security.securityReferrerPolicy) {

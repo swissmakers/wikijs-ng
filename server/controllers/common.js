@@ -511,57 +511,42 @@ router.get('/*', async (req, res, next) => {
           injectCode.body = `${injectCode.body}\n${page.extra.js}`
         }
 
-        if (req.query.legacy || (req.get('user-agent') && req.get('user-agent').indexOf('Trident') >= 0)) {
-          // -> Convert page TOC
-          if (_.isString(page.toc)) {
-            page.toc = JSON.parse(page.toc)
-          }
+        // -> Convert page TOC
+        if (!_.isString(page.toc)) {
+          page.toc = JSON.stringify(page.toc)
+        }
 
-          // -> Render legacy view
-          res.render('legacy/page', {
-            page,
-            sidebar,
-            injectCode,
-            isAuthenticated: req.user && req.user.id !== 2
-          })
-        } else {
-          // -> Convert page TOC
-          if (!_.isString(page.toc)) {
-            page.toc = JSON.stringify(page.toc)
-          }
-
-          // -> Inject comments variables
-          const commentTmpl = {
-            codeTemplate: WIKI.data.commentProvider.codeTemplate,
-            head: WIKI.data.commentProvider.head,
-            body: WIKI.data.commentProvider.body,
-            main: WIKI.data.commentProvider.main
-          }
-          if (WIKI.config.features.featurePageComments && WIKI.data.commentProvider.codeTemplate) {
-            [
-              { key: 'pageUrl', value: `${WIKI.config.host}/i/${page.id}` },
-              { key: 'pageId', value: page.id }
-            ].forEach((cfg) => {
-              commentTmpl.head = _.replace(commentTmpl.head, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-              commentTmpl.body = _.replace(commentTmpl.body, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-              commentTmpl.main = _.replace(commentTmpl.main, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-            })
-          }
-
-          // -> Page Filename (for edit on external repo button)
-          let pageFilename = WIKI.config.lang.namespacing ? `${pageArgs.locale}/${page.path}` : page.path
-          pageFilename += page.contentType === 'markdown' ? '.md' : '.html'
-
-          // -> Render view
-          res.render('page', {
-            page,
-            sidebar,
-            injectCode,
-            comments: commentTmpl,
-            effectivePermissions,
-            pageFilename
+        // -> Inject comments variables
+        const commentTmpl = {
+          codeTemplate: WIKI.data.commentProvider.codeTemplate,
+          head: WIKI.data.commentProvider.head,
+          body: WIKI.data.commentProvider.body,
+          main: WIKI.data.commentProvider.main
+        }
+        if (WIKI.config.features.featurePageComments && WIKI.data.commentProvider.codeTemplate) {
+          [
+            { key: 'pageUrl', value: `${WIKI.config.host}/i/${page.id}` },
+            { key: 'pageId', value: page.id }
+          ].forEach((cfg) => {
+            commentTmpl.head = _.replace(commentTmpl.head, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
+            commentTmpl.body = _.replace(commentTmpl.body, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
+            commentTmpl.main = _.replace(commentTmpl.main, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
           })
         }
+
+        // -> Page Filename (for edit on external repo button)
+        let pageFilename = WIKI.config.lang.namespacing ? `${pageArgs.locale}/${page.path}` : page.path
+        pageFilename += page.contentType === 'markdown' ? '.md' : '.html'
+
+        // -> Render view
+        res.render('page', {
+          page,
+          sidebar,
+          injectCode,
+          comments: commentTmpl,
+          effectivePermissions,
+          pageFilename
+        })
       } else if (pageArgs.path === 'home') {
         _.set(res.locals, 'pageMeta.title', 'Welcome')
         res.render('welcome', { locale: pageArgs.locale })

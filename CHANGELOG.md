@@ -15,6 +15,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - English is always loaded as the fallback language on the server and in the browser; clients refresh cached translations as soon as the strings change instead of after 24 hours.
 - Admin → Locale lists the available languages with their source (bundled, sideloaded, legacy database pack) and shows the sideload folder instead of the download table and the "coming soon" upload card.
 
+### Changed — no upstream services or branding left
+
+- **Module logos are bundled.** The 46 logos of the analytics, authentication, comment, search and storage modules were hotlinked from the upstream CDN (`static.requarks.io`, `cdn.js.wiki`); they are now shipped (sanitized) in `client/static/svg/modules/` and work offline.
+- **New default logo and favicons** (Swissmakers mark): brand blue on light surfaces, white on the navy header and error screen; favicons, PWA icons and a new SVG favicon are generated from it. Existing installations that still use the old upstream default logo are switched automatically; custom logos are kept.
+- PlantUML diagrams now default to the public `www.plantuml.com` server instead of upstream's `plantuml.requarks.io` — also for existing installations that still had the old default.
+- The upstream cover image was removed from all e-mails, the documentation links pointing to `docs.requarks.io` were replaced, and built-in modules link to the Wiki.js NG repository.
+- Admin → About (formerly *Contribute*, `/a/contribute` redirects) and the *Developer Tools* entries (*Flags*, *GraphQL*) now sit directly in the System section.
+- The page share menu offers *Copy link* and *Send by email* only (Facebook, LinkedIn, Reddit, Telegram, Twitter, Viber, Weibo and WhatsApp were removed).
+- Admin → System shows the configuration file that is actually loaded (`CONFIG_FILE` was ignored).
+
+### Removed — dead subsystems and legacy code
+
+- **Logging modules** (Airbrake, Bugsnag, Disk, Eventlog, Loggly, Logstash, New Relic, Papertrail, Raygun, Rollbar, Sentry, Syslog): their loader had been commented out, so none of them ever ran. Removed with the `loggers` table, the logging GraphQL API, the live-trail log stream and the whole GraphQL **WebSocket subscription endpoint** (`/graphql-subscriptions`), which only existed for it — plus the `@sentry/node`, `@opentelemetry/core`, `graphql-ws`, `graphql-subscriptions` and `ws` dependencies.
+- **Empty storage modules** Box, Dropbox, Google Drive and OneDrive (every method was empty), the unused optional-extension check (git/pandoc/sharp), and the unused `activated`/`deactivated` storage hooks.
+- **Editor mock-ups** *API Docs*, *Redirection* and *WYSIWYG* (never selectable) and the always-disabled *Insert Block* dialog. Pages that were saved with one of these editors open in the code editor.
+- **Renderers that did nothing**: Asciinema, Blockquotes, Media Players, Twemoji (HTML) and OpenAPI.
+- The Microsoft login module (it was disabled and could not be enabled — use *Azure AD* or *OpenID Connect*) and the Umami v1 analytics module (*Umami* v2 remains).
+- **Internet Explorer 11 support**: the separate legacy login and page views, bundle and polyfills (the build already excluded IE).
+- **Wiki.js 1.x user import** (Admin → Utilities) and its `mongodb` dependency, the unused MongoDB upgrade code, and the Wiki.js 2.0-beta schema migrator — a database still on a 2.0 beta schema now gets a clear error instead.
+- Settings that were saved but never used: page ratings, personal wikis, subresource integrity (SRI), the update channel, CORS options, the logo flags; the single-entry theme picker; the unauthenticated upstream sponsor images.
+
 ### Fixed
 
 - **Deleting a page ignored locale-restricted page rules** (the access check read a non-existent `page.locale` field).
@@ -27,6 +48,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Disabling 2FA from the model crashed; `/_userav` sent two responses; a missing user during session restore threw a `TypeError` instead of a proper error; the unauthenticated no-op `resetPassword` mutation was removed.
 - The media manager shows and enforces the configured upload limits instead of a hard-coded "Max 10 files, 5 MB each".
 - Smaller fixes: the footer link used `ref` instead of `rel`, the sharing menu's default URL was undefined, the Apollo devtools flag never matched, the default page description read a non-existent setting, Let's Encrypt ignored the development flag, the default icon set was the invalid value `md`, and the dev container config used a different database password than the compose file.
+
+### Database
+
+- New migration `2.8.0`: drops the unused `loggers` table and the `graphEndpoint` setting, moves a PlantUML renderer still configured for `plantuml.requarks.io` to `www.plantuml.com`, and replaces the upstream default logo setting with the bundled one. Applied automatically on first start.
 
 ## [2.7.0] - Unreleased
 

@@ -2,7 +2,7 @@ key: google
 title: Google Analytics
 description: Google Analytics is a web analytics service offered by Google that tracks and reports website traffic.
 author: requarks.io
-logo: https://static.requarks.io/logo/google-analytics.svg
+logo: /_assets/svg/modules/google-analytics.svg
 website: https://analytics.google.com/
 isAvailable: true
 props:

@@ -39,7 +39,6 @@ module.exports = {
         inbound: new EventEmitter(),
         outbound: new EventEmitter()
       }
-      WIKI.extensions = require('./extensions')
       WIKI.asar = require('./asar')
     } catch (err) {
       WIKI.logger.error(err)
@@ -72,12 +71,9 @@ module.exports = {
     await WIKI.models.authentication.refreshStrategiesFromDisk()
     await WIKI.models.commentProviders.refreshProvidersFromDisk()
     await WIKI.models.editors.refreshEditorsFromDisk()
-    await WIKI.models.loggers.refreshLoggersFromDisk()
     await WIKI.models.renderers.refreshRenderersFromDisk()
     await WIKI.models.searchEngines.refreshSearchEnginesFromDisk()
     await WIKI.models.storage.refreshTargetsFromDisk()
-
-    await WIKI.extensions.init()
 
     await WIKI.auth.activateStrategies()
     await WIKI.models.commentProviders.initProvider()

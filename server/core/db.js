@@ -7,7 +7,6 @@ const fs = require('fs')
 const Objection = require('objection')
 
 const migrationSource = require('../db/migrator-source')
-const migrateFromBeta = require('../db/beta')
 
 /* global WIKI */
 
@@ -200,15 +199,21 @@ module.exports = {
           migrationSource
         })
       },
-      // -> Migrate DB Schemas from beta
-      async migrateFromBeta () {
-        return migrateFromBeta.migrate(self.knex)
+      // -> Refuse databases still on a 2.0 beta/rc schema
+      async checkBetaSchema () {
+        if (!await self.knex.schema.hasTable('migrations')) {
+          return
+        }
+        const betaMigration = await self.knex('migrations').where('name', 'like', '2.0.0-beta%').first()
+        if (betaMigration) {
+          throw new Error('This database uses a Wiki.js 2.0 beta schema. Upgrade it with upstream Wiki.js 2.5 first, then switch to Wiki.js NG.')
+        }
       }
     }
 
     let initTasksQueue = (WIKI.IS_MASTER) ? [
       initTasks.connect,
-      initTasks.migrateFromBeta,
+      initTasks.checkBetaSchema,
       initTasks.syncSchemas
     ] : [
       () => { return Promise.resolve() }
