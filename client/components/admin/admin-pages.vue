@@ -79,7 +79,7 @@
 
 <script>
 import _ from 'lodash'
-import pagesQuery from 'gql/admin/pages/pages-query-list.gql'
+import pagesQuery from 'gql/common/common-pages-query-list.gql'
 
 export default {
   data() {

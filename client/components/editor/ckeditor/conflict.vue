@@ -49,26 +49,14 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import gql from 'graphql-tag'
+import conflictLatestMixin from '../common/conflict-latest'
 
 export default {
+  mixins: [conflictLatestMixin],
   props: {
     value: {
       type: Boolean,
       default: false
-    }
-  },
-  data() {
-    return {
-      latest: {
-        updatedAt: '',
-        authorName: '',
-        content: '',
-        locale: '',
-        path: ''
-      },
-      isRemoteConfirmDiagShown: false
     }
   },
   computed: {
@@ -94,36 +82,8 @@ export default {
       this.close()
     }
   },
-  async mounted () {
-    let resp = await this.$apollo.query({
-      query: gql`
-        query ($id: Int!) {
-          pages {
-            conflictLatest(id: $id) {
-              authorName
-              locale
-              path
-              content
-              updatedAt
-            }
-          }
-        }
-      `,
-      fetchPolicy: 'network-only',
-      variables: {
-        id: this.$store.get('page/id')
-      }
-    })
-    resp = _.get(resp, 'data.pages.conflictLatest', false)
-
-    if (!resp) {
-      return this.$store.commit('showNotification', {
-        message: 'Failed to fetch latest version.',
-        style: 'warning',
-        icon: 'warning'
-      })
-    }
-    this.latest = resp
+  mounted () {
+    this.fetchLatest()
   }
 }
 </script>

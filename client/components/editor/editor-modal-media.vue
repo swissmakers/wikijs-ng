@@ -73,7 +73,7 @@
                     td.text-xs-center(v-if='$vuetify.breakpoint.lgAndUp')
                       v-chip.ma-0(x-small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`')
                         .overline {{props.item.ext.toUpperCase().substring(1)}}
-                    td.caption(v-if='$vuetify.breakpoint.mdAndUp') {{ props.item.fileSize | prettyBytes }}
+                    td.caption(v-if='$vuetify.breakpoint.mdAndUp') {{ props.item.fileSize | bytes }}
                     td.caption(v-if='$vuetify.breakpoint.mdAndUp') {{ props.item.createdAt | moment('from') }}
                     td(v-if='$vuetify.breakpoint.smAndUp')
                       v-menu(offset-x, min-width='200')
@@ -85,11 +85,6 @@
                           //-   v-list-item-avatar(size='24')
                           //-     v-icon(color='teal') mdi-text-short
                           //-   v-list-item-content {{$t('common:actions.properties')}}
-                          //- template(v-if='props.item.kind === `IMAGE`')
-                          //-   v-list-item(@click='previewDialog = true', disabled)
-                          //-     v-list-item-avatar(size='24')
-                          //-       v-icon(color='green') mdi-image-search-outline
-                          //-     v-list-item-content {{$t('common:actions.preview')}}
                           //-   v-list-item(@click='', disabled)
                           //-     v-list-item-avatar(size='24')
                           //-       v-icon(color='indigo') mdi-crop-rotate
@@ -151,26 +146,6 @@
               .caption.grey--text.text-darken-2 {{ uploadLimitsLabel }}
               v-spacer
               v-btn.px-4(color='teal', dark, @click='upload') {{$t('common:actions.upload')}}
-
-          //- v-card.mt-3.radius-7.animated.fadeInRight.wait-p4s(:light='!$vuetify.theme.dark', :dark='$vuetify.theme.dark')
-          //-   v-card-text.pb-0
-          //-     v-toolbar.radius-7(:color='$vuetify.theme.dark ? `teal` : `teal lighten-5`', dense, flat)
-          //-       v-icon.mr-3(:color='$vuetify.theme.dark ? `white` : `teal`') mdi-cloud-download
-          //-       .body-2(:class='$vuetify.theme.dark ? `white--text` : `teal--text`') {{$t('editor:assets.fetchImage')}}
-          //-       v-spacer
-          //-       v-chip(label, color='white', small).teal--text coming soon
-          //-     v-text-field.mt-3(
-          //-       v-model='remoteImageUrl'
-          //-       outlined
-          //-       color='teal'
-          //-       single-line
-          //-       placeholder='https://example.com/image.jpg'
-          //-     )
-          //-   v-divider
-          //-   v-card-actions.pa-3
-          //-     .caption.grey--text.text-darken-2 Max 5 MB
-          //-     v-spacer
-          //-     v-btn.px-4(color='teal', disabled) {{$t('common:actions.fetch')}}
 
           v-card.mt-3.radius-7.animated.fadeInRight.wait-p4s(:light='!$vuetify.theme.dark', :dark='$vuetify.theme.dark')
             v-card-text.pb-0
@@ -263,6 +238,7 @@ import renameAssetMutation from 'gql/editor/editor-media-mutation-asset-rename.g
 import deleteAssetMutation from 'gql/editor/editor-media-mutation-asset-delete.gql'
 import moveAssetMutation from 'gql/editor/editor-media-mutation-asset-move.gql'
 import folderTreeQuery from 'gql/editor/editor-media-query-folder-tree.gql'
+import { bytes } from '@/helpers'
 
 const FilePond = vueFilePond()
 const localeSegmentRegex = /^[A-Z]{2}(-[A-Z]{2})?$/i
@@ -284,7 +260,6 @@ export default {
       files: [],
       assets: [],
       pagination: 1,
-      remoteImageUrl: '',
       imageAlignments: [
         { text: 'None', value: '' },
         { text: 'Left', value: 'left' },
@@ -297,7 +272,6 @@ export default {
       newFolderDialog: false,
       newFolderName: '',
       newFolderLoading: false,
-      previewDialog: false,
       renameDialog: false,
       renameAssetName: '',
       renameAssetLoading: false,
@@ -316,7 +290,7 @@ export default {
     uploadLimitsLabel () {
       return this.$t('editor:assets.uploadLimits', {
         maxFiles: this.uploadMaxFiles,
-        maxSize: this.$options.filters.prettyBytes(siteConfig.uploadMaxFileSize || 5242880),
+        maxSize: bytes(siteConfig.uploadMaxFileSize || 5242880),
         defaultValue: 'Max {{maxFiles}} files, {{maxSize}} each'
       })
     },
@@ -385,30 +359,6 @@ export default {
           this.$refs.folderNameIpt.focus()
         })
       }
-    }
-  },
-  filters: {
-    prettyBytes(num) {
-      if (typeof num !== 'number' || isNaN(num)) {
-        throw new TypeError('Expected a number')
-      }
-
-      let exponent
-      let unit
-      let neg = num < 0
-      let units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-      if (neg) {
-        num = -num
-      }
-      if (num < 1) {
-        return (neg ? '-' : '') + num + ' B'
-      }
-      exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
-      num = (num / Math.pow(1000, exponent)).toFixed(2) * 1
-      unit = units[exponent]
-
-      return (neg ? '-' : '') + num + ' ' + unit
     }
   },
   methods: {

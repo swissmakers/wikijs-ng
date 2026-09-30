@@ -25,6 +25,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The page share menu offers *Copy link* and *Send by email* only (Facebook, LinkedIn, Reddit, Telegram, Twitter, Viber, Weibo and WhatsApp were removed).
 - Admin → System shows the configuration file that is actually loaded (`CONFIG_FILE` was ignored).
 
+### Changed — less duplicated code
+
+- **Storage export**: the disk, Git, Azure and S3 targets now share one export routine. Azure Blob Storage and S3 exports previously wrote pages without their tags and editor in the front matter; they now produce the same files as the disk and Git targets.
+- **Analytics code**: every `{{placeholder}}` in a provider's body snippets is now replaced (only the first occurrence was before), and values containing `$` are inserted literally.
+- The time zone pickers (profile and Admin → Users) list every time zone known to the browser with its current UTC offset instead of a hard-coded, partly outdated list.
+- The PlantUML/Kroki diagram fences, the KaTeX/MathJax math parser, the module configuration forms of six admin pages, the page action menus (header and edit button) and the conflict dialogs of the editors each share one implementation now.
+- New unit tests for page permission rules, diagram and math rendering, and the shared helpers (`yarn test`).
+
 ### Removed — dead subsystems and legacy code
 
 - **Logging modules** (Airbrake, Bugsnag, Disk, Eventlog, Loggly, Logstash, New Relic, Papertrail, Raygun, Rollbar, Sentry, Syslog): their loader had been commented out, so none of them ever ran. Removed with the `loggers` table, the logging GraphQL API, the live-trail log stream and the whole GraphQL **WebSocket subscription endpoint** (`/graphql-subscriptions`), which only existed for it — plus the `@sentry/node`, `@opentelemetry/core`, `graphql-ws`, `graphql-subscriptions` and `ws` dependencies.

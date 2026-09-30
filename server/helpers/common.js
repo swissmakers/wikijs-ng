@@ -52,6 +52,36 @@ module.exports = {
     }
   },
   /**
+   * Replace all {{key}} placeholders in the string fields of a code template
+   *
+   * @param {Object} template Object whose string values contain placeholders
+   * @param {Object} vars Placeholder values, by key
+   * @returns {Object} New object with the placeholders replaced
+   */
+  renderCodeTemplate (template, vars) {
+    return _.mapValues(template, str => {
+      if (!_.isString(str)) {
+        return str
+      }
+      return _.reduce(vars, (result, value, key) => result.split(`{{${key}}}`).join(_.toString(value)), str)
+    })
+  },
+  /**
+   * Read the code.yml template of a module (analytics, comments)
+   *
+   * @param {Object} opts Options
+   * @param {string} opts.dirName Directory under server/modules
+   * @param {string} opts.key Module key
+   * @param {Array<string>} opts.fields Template fields, missing ones default to ''
+   * @returns {Promise<Object>} Template fields
+   */
+  async readModuleCodeTemplate ({ dirName, key, fields }) {
+    const code = yaml.load(await fs.readFile(path.join(WIKI.SERVERPATH, `modules/${dirName}`, key, 'code.yml'), 'utf8')) || {}
+    return _.transform(fields, (result, field) => {
+      result[field] = _.defaultTo(code[field], '')
+    }, {})
+  },
+  /**
    * Load module definitions from disk into WIKI.data[dataKey]
    *
    * @param {Object} opts Options

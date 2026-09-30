@@ -264,27 +264,8 @@ module.exports = class Page extends Model {
       throw new WIKI.Error.PageEmptyContent()
     }
 
-    // -> Format CSS Scripts
-    let scriptCss = ''
-    if (WIKI.auth.checkAccess(opts.user, ['write:styles'], {
-      locale: opts.locale,
-      path: opts.path
-    })) {
-      if (!_.isEmpty(opts.scriptCss)) {
-        scriptCss = new CleanCSS({ inline: false }).minify(opts.scriptCss).styles
-      } else {
-        scriptCss = ''
-      }
-    }
-
-    // -> Format JS Scripts
-    let scriptJs = ''
-    if (WIKI.auth.checkAccess(opts.user, ['write:scripts'], {
-      locale: opts.locale,
-      path: opts.path
-    })) {
-      scriptJs = opts.scriptJs || ''
-    }
+    // -> Format CSS / JS Scripts
+    const { scriptCss, scriptJs } = WIKI.models.pages.formatPageScripts(opts)
 
     // -> Create page
     await WIKI.models.pages.query().insert({
@@ -294,7 +275,7 @@ module.exports = class Page extends Model {
       contentType: _.get(_.find(WIKI.data.editors, ['key', opts.editor]), `contentType`, 'text'),
       description: opts.description,
       editorKey: opts.editor,
-      hash: pageHelper.generateHash({ path: opts.path, locale: opts.locale, privateNS: opts.isPrivate ? 'TODO' : '' }),
+      hash: WIKI.models.pages.getPageHash(opts),
       isPrivate: opts.isPrivate,
       isPublished: opts.isPublished,
       isTemplate: opts.isTemplate === true,
@@ -329,8 +310,7 @@ module.exports = class Page extends Model {
 
     // -> Add to Search Index (templates are excluded)
     if (!page.isTemplate) {
-      const pageContents = await WIKI.models.pages.query().findById(page.id).select('render')
-      page.safeContent = WIKI.models.pages.cleanHTML(pageContents.render)
+      page.safeContent = await WIKI.models.pages.getSafeContent(page.id)
       await WIKI.data.searchEngine.created(page)
     }
 
@@ -394,27 +374,8 @@ module.exports = class Page extends Model {
       ogPage.extra = {}
     }
 
-    // -> Format CSS Scripts
-    let scriptCss = _.get(ogPage, 'extra.css', '')
-    if (WIKI.auth.checkAccess(opts.user, ['write:styles'], {
-      locale: opts.locale,
-      path: opts.path
-    })) {
-      if (!_.isEmpty(opts.scriptCss)) {
-        scriptCss = new CleanCSS({ inline: false }).minify(opts.scriptCss).styles
-      } else {
-        scriptCss = ''
-      }
-    }
-
-    // -> Format JS Scripts
-    let scriptJs = _.get(ogPage, 'extra.js', '')
-    if (WIKI.auth.checkAccess(opts.user, ['write:scripts'], {
-      locale: opts.locale,
-      path: opts.path
-    })) {
-      scriptJs = opts.scriptJs || ''
-    }
+    // -> Format CSS / JS Scripts (kept unchanged without the permission)
+    const { scriptCss, scriptJs } = WIKI.models.pages.formatPageScripts(opts, _.get(ogPage, 'extra', {}))
 
     // -> Update page
     await WIKI.models.pages.query().patch({
@@ -445,8 +406,7 @@ module.exports = class Page extends Model {
     if (page.isTemplate) {
       await WIKI.data.searchEngine.deleted(page)
     } else {
-      const pageContents = await WIKI.models.pages.query().findById(page.id).select('render')
-      page.safeContent = WIKI.models.pages.cleanHTML(pageContents.render)
+      page.safeContent = await WIKI.models.pages.getSafeContent(page.id)
       await WIKI.data.searchEngine.updated(page)
     }
 
@@ -721,7 +681,7 @@ module.exports = class Page extends Model {
       versionDate: page.updatedAt
     })
 
-    const destinationHash = pageHelper.generateHash({ path: opts.destinationPath, locale: opts.destinationLocale, privateNS: opts.isPrivate ? 'TODO' : '' })
+    const destinationHash = WIKI.models.pages.getPageHash({ path: opts.destinationPath, locale: opts.destinationLocale, isPrivate: opts.isPrivate })
 
     // -> Move page
     const destinationTitle = (page.title === _.last(page.path.split('/')) ? _.last(opts.destinationPath.split('/')) : page.title)
@@ -738,8 +698,7 @@ module.exports = class Page extends Model {
     await WIKI.models.pages.rebuildTree()
 
     // -> Rename in Search Index
-    const pageContents = await WIKI.models.pages.query().findById(page.id).select('render')
-    page.safeContent = WIKI.models.pages.cleanHTML(pageContents.render)
+    page.safeContent = await WIKI.models.pages.getSafeContent(page.id)
     await WIKI.data.searchEngine.renamed({
       ...page,
       destinationPath: opts.destinationPath,
@@ -1084,7 +1043,7 @@ module.exports = class Page extends Model {
    * @returns {Promise} Promise of the Page Model Instance
    */
   static async getPageFromCache(opts) {
-    const pageHash = pageHelper.generateHash({ path: opts.path, locale: opts.locale, privateNS: opts.isPrivate ? 'TODO' : '' })
+    const pageHash = WIKI.models.pages.getPageHash(opts)
     const cachePath = path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, `cache/${pageHash}.bin`)
 
     try {
@@ -1141,6 +1100,50 @@ module.exports = class Page extends Model {
       .whereNotExists(function() {
         this.select('id').from('pages AS pagesm').where('pagesm.localeCode', targetLocale).andWhereRaw('pagesm.path = pages.path')
       })
+  }
+
+  /**
+   * Compute the page hash (cache / storage key)
+   *
+   * Private namespaces were never implemented; the placeholder namespace is
+   * kept so that hashes of existing pages flagged as private stay stable.
+   *
+   * @param {Object} opts Page path, locale and isPrivate flag
+   * @returns {string} SHA1 hash
+   */
+  static getPageHash ({ path, locale, isPrivate = false }) {
+    return pageHelper.generateHash({ path, locale, privateNS: isPrivate ? 'TODO' : '' })
+  }
+
+  /**
+   * Format the page CSS / JS scripts, applying them only if the user may write them
+   *
+   * @param {Object} opts Page create / update options (user, locale, path, scriptCss, scriptJs)
+   * @param {Object} current Current scripts ({ css, js }) kept without permission
+   * @returns {Object} { scriptCss, scriptJs }
+   */
+  static formatPageScripts (opts, current = {}) {
+    const pageCtx = { locale: opts.locale, path: opts.path }
+    let scriptCss = _.get(current, 'css', '')
+    if (WIKI.auth.checkAccess(opts.user, ['write:styles'], pageCtx)) {
+      scriptCss = _.isEmpty(opts.scriptCss) ? '' : new CleanCSS({ inline: false }).minify(opts.scriptCss).styles
+    }
+    let scriptJs = _.get(current, 'js', '')
+    if (WIKI.auth.checkAccess(opts.user, ['write:scripts'], pageCtx)) {
+      scriptJs = opts.scriptJs || ''
+    }
+    return { scriptCss, scriptJs }
+  }
+
+  /**
+   * Get the sanitized rendered HTML of a page (for the search index)
+   *
+   * @param {number} pageId Page ID
+   * @returns {Promise<string>} Sanitized HTML
+   */
+  static async getSafeContent (pageId) {
+    const pageContents = await WIKI.models.pages.query().findById(pageId).select('render')
+    return WIKI.models.pages.cleanHTML(pageContents.render)
   }
 
   /**

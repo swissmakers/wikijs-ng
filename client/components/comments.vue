@@ -138,6 +138,7 @@ import gql from 'graphql-tag'
 import { get } from 'vuex-pathify'
 import validate from 'validate.js'
 import _ from 'lodash'
+import { initials } from '@/helpers'
 
 export default {
   data () {
@@ -203,15 +204,10 @@ export default {
           },
           fetchPolicy: 'network-only'
         })
-        this.comments = _.get(results, 'data.comments.list', []).map(c => {
-          const nameParts = c.authorName.toUpperCase().split(' ')
-          let initials = _.head(nameParts).charAt(0)
-          if (nameParts.length > 1) {
-            initials += _.last(nameParts).charAt(0)
-          }
-          c.initials = initials
-          return c
-        })
+        this.comments = _.get(results, 'data.comments.list', []).map(c => ({
+          ...c,
+          initials: initials(c.authorName)
+        }))
       } catch (err) {
         console.warn(err)
         if (!silent) {

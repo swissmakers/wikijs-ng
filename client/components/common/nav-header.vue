@@ -127,26 +127,9 @@
                 v-list-item.pl-4(@click='pageEdit', v-if='mode !== `edit` && hasWritePagesPermission')
                   v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-file-document-edit-outline
                   v-list-item-title.body-2 {{$t('common:header.edit')}}
-                v-list-item.pl-4(@click='pageHistory', v-if='mode !== `history` && hasReadHistoryPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-history
-                  v-list-item-content
-                    v-list-item-title.body-2 {{$t('common:header.history')}}
-                v-list-item.pl-4(@click='pageSource', v-if='mode !== `source` && hasReadSourcePermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-code-tags
-                  v-list-item-title.body-2 {{$t('common:header.viewSource')}}
-                v-list-item.pl-4(@click='pageConvert', v-if='hasWritePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-lightning-bolt
-                  v-list-item-title.body-2 {{$t('common:header.convert')}}
-                v-list-item.pl-4(@click='pageDuplicate', v-if='hasWritePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-content-duplicate
-                  v-list-item-title.body-2 {{$t('common:header.duplicate')}}
-                v-list-item.pl-4(@click='pageMove', v-if='hasManagePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-content-save-move-outline
-                  v-list-item-content
-                    v-list-item-title.body-2 {{$t('common:header.move')}}
-                v-list-item.pl-4(@click='pageDelete', v-if='hasDeletePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='red darken-2') mdi-trash-can-outline
-                  v-list-item-title.body-2 {{$t('common:header.delete')}}
+                v-list-item.pl-4(v-for='action of pageActions', :key='action.key', @click='runPageAction(action.key)')
+                  v-list-item-avatar(size='24', tile): v-icon(:color='action.isDanger ? `red darken-2` : `primary`') {{ action.icon }}
+                  v-list-item-title.body-2 {{ action.label }}
             v-divider(vertical)
 
           //- NEW PAGE
@@ -233,10 +216,13 @@ import { get, sync } from 'vuex-pathify'
 import _ from 'lodash'
 
 import movePageMutation from 'gql/common/common-pages-mutation-move.gql'
+import pageActionsMixin from '@/helpers/page-actions'
+import { initials } from '@/helpers'
 
 /* global siteConfig, siteLangs */
 
 export default {
+  mixins: [pageActionsMixin],
   components: {
     PageDelete: () => import('./page-delete.vue'),
     PageConvert: () => import('./page-convert.vue')
@@ -297,14 +283,9 @@ export default {
           url: (this.pictureUrl === 'internal') ? `/_userav/${this.$store.get('user/id')}` : this.pictureUrl
         }
       } else {
-        const nameParts = this.name.toUpperCase().split(' ')
-        let initials = _.head(nameParts).charAt(0)
-        if (nameParts.length > 1) {
-          initials += _.last(nameParts).charAt(0)
-        }
         return {
           kind: 'initials',
-          initials
+          initials: initials(this.name)
         }
       }
     },
@@ -316,16 +297,6 @@ export default {
     },
     hasNewPagePermission () {
       return this.hasAdminPermission || _.intersection(this.permissions, ['write:pages']).length > 0
-    },
-    hasAdminPermission: get('page/effectivePermissions@system.manage'),
-    hasWritePagesPermission: get('page/effectivePermissions@pages.write'),
-    hasManagePagesPermission: get('page/effectivePermissions@pages.manage'),
-    hasDeletePagesPermission: get('page/effectivePermissions@pages.delete'),
-    hasReadSourcePermission: get('page/effectivePermissions@source.read'),
-    hasReadHistoryPermission: get('page/effectivePermissions@history.read'),
-    hasAnyPagePermissions () {
-      return this.hasAdminPermission || this.hasWritePagesPermission || this.hasManagePagesPermission ||
-        this.hasDeletePagesPermission || this.hasReadSourcePermission || this.hasReadHistoryPermission
     }
   },
   created () {
@@ -387,6 +358,9 @@ export default {
     },
     pageNewCreate ({ path, locale }) {
       window.location.assign(`/e/${locale}/${path}`)
+    },
+    runPageAction (key) {
+      this[key]()
     },
     pageView () {
       window.location.assign(`/${this.locale}/${this.path}`)

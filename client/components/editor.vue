@@ -71,10 +71,13 @@ import { Base64 } from 'js-base64'
 import { StatusIndicator } from 'vue-status-indicator'
 
 import editorStore from '../store/editor'
+import { decodePermissions } from '@/helpers'
 
 /* global WIKI */
 
-WIKI.$store.registerModule('editor', editorStore)
+if (!WIKI.$store.hasModule('editor')) {
+  WIKI.$store.registerModule('editor', editorStore)
+}
 
 export default {
   i18nOptions: { namespaces: 'editor' },
@@ -247,7 +250,7 @@ export default {
     this.checkoutDateActive = this.checkoutDate
 
     if (this.effectivePermissions) {
-      this.$store.set('page/effectivePermissions', JSON.parse(Buffer.from(this.effectivePermissions, 'base64').toString()))
+      this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
   },
   mounted() {

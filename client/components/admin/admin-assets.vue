@@ -87,7 +87,7 @@
                 v-icon.mr-2(v-else, color='grey darken-1') mdi-file
                 .body-2 {{ item.filename }}
             template(v-slot:item.fileSize='{ item }')
-              span.caption {{ item.fileSize | prettyBytes }}
+              span.caption {{ item.fileSize | bytes }}
             template(v-slot:item.updatedAt='{ item }')
               span.caption {{ item.updatedAt | moment('calendar') }}
             template(v-slot:item.actions='{ item }')
@@ -378,27 +378,6 @@ export default {
   watch: {
     currentFolderId () {
       this.selectedAssets = []
-    }
-  },
-  filters: {
-    prettyBytes (num) {
-      if (typeof num !== 'number' || isNaN(num)) {
-        return '0 B'
-      }
-      let exponent
-      let unit
-      let neg = num < 0
-      let units = ['B', 'kB', 'MB', 'GB', 'TB']
-      if (neg) {
-        num = -num
-      }
-      if (num < 1) {
-        return (neg ? '-' : '') + num + ' B'
-      }
-      exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
-      num = (num / Math.pow(1000, exponent)).toFixed(2) * 1
-      unit = units[exponent]
-      return (neg ? '-' : '') + num + ' ' + unit
     }
   },
   methods: {

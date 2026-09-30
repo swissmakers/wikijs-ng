@@ -21,8 +21,7 @@ import DecoupledEditor from '@requarks/ckeditor5'
 // import DecoupledEditor from '../../../../wiki-ckeditor5/build/ckeditor'
 import EditorConflict from './ckeditor/conflict.vue'
 import { html as beautify } from 'js-beautify/js/lib/beautifier.min.js'
-
-/* global siteLangs */
+import { pagePath } from '@/helpers'
 
 export default {
   components: {
@@ -59,7 +58,7 @@ export default {
       this.insertLinkDialog = true
     },
     insertLinkHandler ({ locale, path }) {
-      this.editor.execute('link', siteLangs.length > 0 ? `/${locale}/${path}` : `/${path}`)
+      this.editor.execute('link', pagePath(locale, path))
     }
   },
   async mounted () {

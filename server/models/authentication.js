@@ -1,8 +1,5 @@
 const Model = require('objection').Model
-const fs = require('fs-extra')
-const path = require('path')
 const _ = require('lodash')
-const yaml = require('js-yaml')
 const commonHelper = require('../helpers/common')
 
 /* global WIKI */
@@ -48,16 +45,7 @@ module.exports = class Authentication extends Model {
       const dbStrategies = await WIKI.models.authentication.query()
 
       // -> Fetch definitions from disk
-      const authDirs = await fs.readdir(path.join(WIKI.SERVERPATH, 'modules/authentication'))
-      WIKI.data.authentication = []
-      for (let dir of authDirs) {
-        const defRaw = await fs.readFile(path.join(WIKI.SERVERPATH, 'modules/authentication', dir, 'definition.yml'), 'utf8')
-        const def = yaml.load(defRaw)
-        WIKI.data.authentication.push({
-          ...def,
-          props: commonHelper.parseModuleProps(def.props)
-        })
-      }
+      await commonHelper.loadModuleDefinitions({ dirName: 'authentication', dataKey: 'authentication' })
 
       // -> Remove strategies whose module is gone (disabled only while users still reference them)
       await commonHelper.removeMissingModules({

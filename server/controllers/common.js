@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const pageHelper = require('../helpers/page')
+const commonHelper = require('../helpers/common')
 const _ = require('lodash')
 const CleanCSS = require('clean-css')
 const moment = require('moment')
@@ -517,20 +518,16 @@ router.get('/*', async (req, res, next) => {
         }
 
         // -> Inject comments variables
-        const commentTmpl = {
+        let commentTmpl = {
           codeTemplate: WIKI.data.commentProvider.codeTemplate,
           head: WIKI.data.commentProvider.head,
           body: WIKI.data.commentProvider.body,
           main: WIKI.data.commentProvider.main
         }
         if (WIKI.config.features.featurePageComments && WIKI.data.commentProvider.codeTemplate) {
-          [
-            { key: 'pageUrl', value: `${WIKI.config.host}/i/${page.id}` },
-            { key: 'pageId', value: page.id }
-          ].forEach((cfg) => {
-            commentTmpl.head = _.replace(commentTmpl.head, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-            commentTmpl.body = _.replace(commentTmpl.body, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-            commentTmpl.main = _.replace(commentTmpl.main, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
+          commentTmpl = commonHelper.renderCodeTemplate(commentTmpl, {
+            pageUrl: `${WIKI.config.host}/i/${page.id}`,
+            pageId: page.id
           })
         }
 

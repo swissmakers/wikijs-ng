@@ -42,7 +42,6 @@ const state = {
       manage: false
     }
   },
-  commentsCount: 0,
   editShortcuts: {
     editFab: false,
     editMenuBar: false,

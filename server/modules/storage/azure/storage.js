@@ -1,8 +1,6 @@
 const { BlobServiceClient, StorageSharedKeyCredential } = require('@azure/storage-blob')
-const { pipeline } = require('node:stream/promises')
-const { Transform } = require('node:stream')
 const pageHelper = require('../../../helpers/page.js')
-const _ = require('lodash')
+const storageExport = require('../../../helpers/storage-export')
 
 /* global WIKI */
 
@@ -117,40 +115,20 @@ module.exports = {
   async exportAll() {
     WIKI.logger.info(`(STORAGE/AZURE) Exporting all content to Azure Blob Storage...`)
 
-    // -> Pages
-    await pipeline(
-      WIKI.models.knex.column('path', 'localeCode', 'title', 'description', 'contentType', 'content', 'isPublished', 'updatedAt', 'createdAt').select().from('pages').where({
-        isPrivate: false
-      }).stream(),
-      new Transform({
-        objectMode: true,
-        transform: async (page, enc, cb) => {
-          const filePath = getFilePath(page, 'path')
-          WIKI.logger.info(`(STORAGE/AZURE) Adding page ${filePath}...`)
-          const pageContent = pageHelper.injectPageMetadata(page)
-          const blockBlobClient = this.container.getBlockBlobClient(filePath)
-          await blockBlobClient.upload(pageContent, pageContent.length, { tier: this.config.storageTier })
-          cb()
-        }
-      })
-    )
-
-    // -> Assets
-    const assetFolders = await WIKI.models.assetFolders.getAllPaths()
-
-    await pipeline(
-      WIKI.models.knex.column('filename', 'folderId', 'data').select().from('assets').join('assetData', 'assets.id', '=', 'assetData.id').stream(),
-      new Transform({
-        objectMode: true,
-        transform: async (asset, enc, cb) => {
-          const filename = (asset.folderId && asset.folderId > 0) ? `${_.get(assetFolders, asset.folderId)}/${asset.filename}` : asset.filename
-          WIKI.logger.info(`(STORAGE/AZURE) Adding asset ${filename}...`)
-          const blockBlobClient = this.container.getBlockBlobClient(filename)
-          await blockBlobClient.upload(asset.data, asset.data.length, { tier: this.config.storageTier })
-          cb()
-        }
-      })
-    )
+    await storageExport.exportAll({
+      onPage: async page => {
+        const filePath = getFilePath(page, 'path')
+        WIKI.logger.info(`(STORAGE/AZURE) Adding page ${filePath}...`)
+        const pageContent = pageHelper.injectPageMetadata(page)
+        const blockBlobClient = this.container.getBlockBlobClient(filePath)
+        await blockBlobClient.upload(pageContent, pageContent.length, { tier: this.config.storageTier })
+      },
+      onAsset: async ({ filename, data }) => {
+        WIKI.logger.info(`(STORAGE/AZURE) Adding asset ${filename}...`)
+        const blockBlobClient = this.container.getBlockBlobClient(filename)
+        await blockBlobClient.upload(data, data.length, { tier: this.config.storageTier })
+      }
+    })
 
     WIKI.logger.info('(STORAGE/AZURE) All content has been pushed to Azure Blob Storage.')
   }

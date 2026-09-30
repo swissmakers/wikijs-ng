@@ -20,18 +20,7 @@ module.exports = {
         return {
           ...searchEngineInfo,
           ...searchEngine,
-          config: _.sortBy(_.transform(searchEngine.config, (res, value, key) => {
-            const configData = _.get(searchEngineInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(searchEngine.config, searchEngineInfo.props)
         }
       })
       // if (args.filter) { searchEngines = graphHelper.filter(searchEngines, args.filter) }
@@ -49,10 +38,7 @@ module.exports = {
           }
           await WIKI.models.searchEngines.query().patch({
             isEnabled: searchEngine.isEnabled,
-            config: _.reduce(searchEngine.config, (result, value, key) => {
-              _.set(result, `${value.key}`, _.get(JSON.parse(value.value), 'v', null))
-              return result
-            }, {})
+            config: graphHelper.kvToModuleConfig(searchEngine.config)
           }).where('key', searchEngine.key)
         }
         if (newActiveEngine !== WIKI.data.searchEngine.key) {

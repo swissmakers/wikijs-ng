@@ -21,18 +21,9 @@ module.exports = {
           hasSchedule: (targetInfo.schedule !== false),
           syncInterval: tgt.syncInterval || targetInfo.schedule || 'P0D',
           syncIntervalDefault: targetInfo.schedule,
-          config: _.sortBy(_.transform(tgt.config, (res, value, key) => {
-            const configData = _.get(targetInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value: (configData.sensitive && value.length > 0) ? '********' : value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(tgt.config, targetInfo.props, {
+            transformValue: (configData, value) => (configData.sensitive && value.length > 0) ? '********' : value
+          })
         }
       }), ['title', 'key'])
       return targets
@@ -64,14 +55,10 @@ module.exports = {
             isEnabled: tgt.isEnabled,
             mode: tgt.mode,
             syncInterval: tgt.syncInterval,
-            config: _.reduce(tgt.config, (result, value, key) => {
-              let configValue = _.get(JSON.parse(value.value), 'v', null)
-              if (configValue === '********') {
-                configValue = _.get(currentDbTarget.config, value.key, '')
-              }
-              _.set(result, `${value.key}`, configValue)
-              return result
-            }, {}),
+            config: graphHelper.kvToModuleConfig(tgt.config, (key, value) => {
+              // -> Masked secrets are sent back unchanged: keep the stored value
+              return value === '********' ? _.get(currentDbTarget.config, key, '') : value
+            }),
             state: {
               status: 'pending',
               message: 'Initializing...',

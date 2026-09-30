@@ -95,6 +95,7 @@ import _ from 'lodash'
 import AnimatedNumber from 'animated-number-vue'
 import { get } from 'vuex-pathify'
 import gql from 'graphql-tag'
+import pagesListQuery from 'gql/common/common-pages-query-list.gql'
 
 export default {
   components: {
@@ -135,25 +136,12 @@ export default {
   },
   apollo: {
     recentPages: {
-      query: gql`
-        query {
-          pages {
-            list(limit: 10, orderBy: UPDATED, orderByDirection: DESC) {
-              id
-              locale
-              path
-              title
-              description
-              contentType
-              isPublished
-              isPrivate
-              privateNS
-              createdAt
-              updatedAt
-            }
-          }
-        }
-      `,
+      query: pagesListQuery,
+      variables: {
+        limit: 10,
+        orderBy: 'UPDATED',
+        orderByDirection: 'DESC'
+      },
       update: (data) => data.pages.list,
       watchLoading (isLoading) {
         this.recentPagesLoading = isLoading

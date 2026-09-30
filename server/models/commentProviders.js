@@ -1,8 +1,5 @@
 const Model = require('objection').Model
-const fs = require('fs-extra')
-const path = require('path')
 const _ = require('lodash')
-const yaml = require('js-yaml')
 const commonHelper = require('../helpers/common')
 
 /* global WIKI */
@@ -57,17 +54,8 @@ module.exports = class CommentProvider extends Model {
       }
 
       if (WIKI.data.commentProvider.codeTemplate) {
-        const def = await fs.readFile(path.join(WIKI.SERVERPATH, 'modules/comments', commentProvider.key, 'code.yml'), 'utf8')
-        let code = yaml.load(def)
-        code.head = _.defaultTo(code.head, '')
-        code.body = _.defaultTo(code.body, '')
-        code.main = _.defaultTo(code.main, '')
-
-        _.forOwn(commentProvider.config, (value, key) => {
-          code.head = _.replace(code.head, new RegExp(`{{${key}}}`, 'g'), value)
-          code.body = _.replace(code.body, new RegExp(`{{${key}}}`, 'g'), value)
-          code.main = _.replace(code.main, new RegExp(`{{${key}}}`, 'g'), value)
-        })
+        const template = await commonHelper.readModuleCodeTemplate({ dirName: 'comments', key: commentProvider.key, fields: ['head', 'body', 'main'] })
+        const code = commonHelper.renderCodeTemplate(template, commentProvider.config)
 
         WIKI.data.commentProvider.head = code.head
         WIKI.data.commentProvider.body = code.body

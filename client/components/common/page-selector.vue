@@ -138,7 +138,8 @@
 
 <script>
 import _ from 'lodash'
-import gql from 'graphql-tag'
+import pagesSearchQuery from 'gql/common/common-pages-query-search.gql'
+import pagesTreeQuery from 'gql/common/common-pages-query-tree.gql'
 
 const localeSegmentRegex = /^[A-Z]{2}(-[A-Z]{2})?$/i
 
@@ -271,21 +272,7 @@ export default {
       this.searchLoading = true
       try {
         const resp = await this.$apollo.query({
-          query: gql`
-            query ($query: String!, $locale: String) {
-              pages {
-                search(query: $query, locale: $locale) {
-                  results {
-                    id
-                    title
-                    description
-                    path
-                    locale
-                  }
-                }
-              }
-            }
-          `,
+          query: pagesSearchQuery,
           fetchPolicy: 'network-only',
           variables: {
             query: newValue,
@@ -415,20 +402,7 @@ export default {
     async fetchFolders (item) {
       this.searchLoading = true
       const resp = await this.$apollo.query({
-        query: gql`
-          query ($parent: Int!, $mode: PageTreeMode!, $locale: String!) {
-            pages {
-              tree(parent: $parent, mode: $mode, locale: $locale) {
-                id
-                path
-                title
-                isFolder
-                pageId
-                parent
-              }
-            }
-          }
-        `,
+        query: pagesTreeQuery,
         fetchPolicy: 'network-only',
         variables: {
           parent: item.id,

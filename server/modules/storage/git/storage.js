@@ -8,6 +8,7 @@ const klaw = require('klaw')
 const os = require('os')
 
 const pageHelper = require('../../../helpers/page')
+const storageExport = require('../../../helpers/storage-export')
 const assetHelper = require('../../../helpers/asset')
 const Mutex = require('../../../helpers/mutex')
 const commonDisk = require('../disk/common')
@@ -615,54 +616,22 @@ module.exports = {
     return this.mutex.runExclusive(async () => {
       WIKI.logger.info(`(STORAGE/GIT) Adding all untracked content...`)
 
-      // -> Pages
-      await pipeline(
-        WIKI.models.knex.column('id', 'path', 'localeCode', 'title', 'description', 'contentType', 'content', 'isPublished', 'updatedAt', 'createdAt', 'editorKey').select().from('pages').where({
-          isPrivate: false
-        }).stream(),
-        new Transform({
-          objectMode: true,
-          transform: async (page, enc, cb) => {
-            try {
-              const pageObject = await WIKI.models.pages.query().findById(page.id)
-              page.tags = await pageObject.$relatedQuery('tags')
-
-              let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
-              if (this.config.alwaysNamespace || (WIKI.config.lang.namespacing && WIKI.config.lang.code !== page.localeCode)) {
-                fileName = `${page.localeCode}/${fileName}`
-              }
-              WIKI.logger.info(`(STORAGE/GIT) Adding page ${fileName}...`)
-              const filePath = path.join(this.repoPath, fileName)
-              await fs.outputFile(filePath, pageHelper.injectPageMetadata(page), 'utf8')
-              await this.git.add(`./${fileName}`)
-              cb()
-            } catch (err) {
-              cb(err)
-            }
+      await storageExport.exportAll({
+        onPage: async page => {
+          let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
+          if (this.config.alwaysNamespace || (WIKI.config.lang.namespacing && WIKI.config.lang.code !== page.localeCode)) {
+            fileName = `${page.localeCode}/${fileName}`
           }
-        })
-      )
-
-      // -> Assets
-      const assetFolders = await WIKI.models.assetFolders.getAllPaths()
-
-      await pipeline(
-        WIKI.models.knex.column('filename', 'folderId', 'data').select().from('assets').join('assetData', 'assets.id', '=', 'assetData.id').stream(),
-        new Transform({
-          objectMode: true,
-          transform: async (asset, enc, cb) => {
-            try {
-              const filename = (asset.folderId && asset.folderId > 0) ? `${_.get(assetFolders, asset.folderId)}/${asset.filename}` : asset.filename
-              WIKI.logger.info(`(STORAGE/GIT) Adding asset ${filename}...`)
-              await fs.outputFile(path.join(this.repoPath, filename), asset.data)
-              await this.git.add(`./${filename}`)
-              cb()
-            } catch (err) {
-              cb(err)
-            }
-          }
-        })
-      )
+          WIKI.logger.info(`(STORAGE/GIT) Adding page ${fileName}...`)
+          await fs.outputFile(path.join(this.repoPath, fileName), pageHelper.injectPageMetadata(page), 'utf8')
+          await this.git.add(`./${fileName}`)
+        },
+        onAsset: async ({ filename, data }) => {
+          WIKI.logger.info(`(STORAGE/GIT) Adding asset ${filename}...`)
+          await fs.outputFile(path.join(this.repoPath, filename), data)
+          await this.git.add(`./${filename}`)
+        }
+      })
 
       await this.git.commit(`docs: add all untracked content`)
       WIKI.logger.info('(STORAGE/GIT) All content is now tracked.')

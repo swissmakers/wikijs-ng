@@ -53,11 +53,6 @@ import _ from 'lodash'
 import gql from 'graphql-tag'
 
 export default {
-  filters: {
-    initials(val) {
-      return val.split(' ').map(v => v.substring(0, 1)).join('')
-    }
-  },
   props: {
     multiple: {
       type: Boolean,

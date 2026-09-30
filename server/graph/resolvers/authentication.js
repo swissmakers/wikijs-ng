@@ -58,18 +58,7 @@ module.exports = {
         return {
           ...stg,
           strategy: strategyInfo,
-          config: _.sortBy(_.transform(stg.config, (res, value, key) => {
-            const configData = _.get(strategyInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(stg.config, strategyInfo.props)
         }
       })
       return args.enabledOnly ? _.filter(strategies, 'isEnabled') : strategies
@@ -207,10 +196,7 @@ module.exports = {
             displayName: str.displayName,
             order: str.order,
             isEnabled: str.isEnabled,
-            config: _.reduce(str.config, (result, value, key) => {
-              _.set(result, `${value.key}`, _.get(JSON.parse(value.value), 'v', null))
-              return result
-            }, {}),
+            config: graphHelper.kvToModuleConfig(str.config),
             selfRegistration: str.selfRegistration,
             domainWhitelist: { v: str.domainWhitelist },
             autoEnrollGroups: { v: str.autoEnrollGroups }

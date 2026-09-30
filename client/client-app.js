@@ -27,7 +27,7 @@ import localization from './modules/localization'
 // Load Helpers
 // ====================================
 
-import helpers from './helpers'
+import { initials, bytes } from './helpers'
 
 // ====================================
 // Initialize Global Vars
@@ -121,12 +121,14 @@ Vue.use(VueRouter)
 Vue.use(VueApollo)
 Vue.use(VueClipboards)
 Vue.use(localization.VueI18Next)
-Vue.use(helpers)
 Vue.use(Vuetify)
 Vue.use(VueMoment, { moment })
 Vue.use(Vuescroll)
 
 Vue.prototype.Velocity = Velocity
+
+Vue.filter('initials', initials)
+Vue.filter('bytes', bytes)
 
 // ====================================
 // Register Vue Components
@@ -185,7 +187,6 @@ let bootstrap = () => {
   window.WIKI = new Vue({
     el: '#root',
     components: {},
-    mixins: [helpers],
     apolloProvider,
     store,
     i18n,

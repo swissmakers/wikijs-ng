@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import pagesListQuery from 'gql/common/common-pages-query-list.gql'
 
 export default {
   data() {
@@ -96,25 +96,7 @@ export default {
   },
   apollo: {
     pages: {
-      query: gql`
-        query($creatorId: Int, $authorId: Int) {
-          pages {
-            list(creatorId: $creatorId, authorId: $authorId) {
-              id
-              locale
-              path
-              title
-              description
-              contentType
-              isPublished
-              isPrivate
-              privateNS
-              createdAt
-              updatedAt
-            }
-          }
-        }
-      `,
+      query: pagesListQuery,
       variables () {
         return {
           creatorId: this.$store.get('user/id'),

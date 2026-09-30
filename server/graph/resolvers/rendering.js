@@ -18,18 +18,7 @@ module.exports = {
         return {
           ...rendererInfo,
           ...rdr,
-          config: _.sortBy(_.transform(rdr.config, (res, value, key) => {
-            const configData = _.get(rendererInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(rdr.config, rendererInfo.props)
         }
       })
       // if (args.filter) { renderers = graphHelper.filter(renderers, args.filter) }
@@ -43,10 +32,7 @@ module.exports = {
         for (let rdr of args.renderers) {
           await WIKI.models.renderers.query().patch({
             isEnabled: rdr.isEnabled,
-            config: _.reduce(rdr.config, (result, value, key) => {
-              _.set(result, `${value.key}`, _.get(JSON.parse(value.value), 'v', null))
-              return result
-            }, {})
+            config: graphHelper.kvToModuleConfig(rdr.config)
           }).where('key', rdr.key)
         }
         return {

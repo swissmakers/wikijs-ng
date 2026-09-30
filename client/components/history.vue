@@ -134,6 +134,7 @@ import * as Diff2Html from 'diff2html'
 import { createPatch } from 'diff'
 import _ from 'lodash'
 import gql from 'graphql-tag'
+import { decodePermissions } from '@/helpers'
 
 export default {
   i18nOptions: { namespaces: 'history' },
@@ -322,7 +323,7 @@ export default {
     this.target = this.cache[0]
 
     if (this.effectivePermissions) {
-      this.$store.set('page/effectivePermissions', JSON.parse(Buffer.from(this.effectivePermissions, 'base64').toString()))
+      this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
   },
   methods: {

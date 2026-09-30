@@ -237,7 +237,9 @@ import editorStore from '../../store/editor'
 
 /* global WIKI */
 
-WIKI.$store.registerModule('editor', editorStore)
+if (!WIKI.$store.hasModule('editor')) {
+  WIKI.$store.registerModule('editor', editorStore)
+}
 
 export default {
   i18nOptions: { namespaces: 'editor' },

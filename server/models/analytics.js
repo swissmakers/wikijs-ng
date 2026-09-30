@@ -1,8 +1,5 @@
 const Model = require('objection').Model
-const fs = require('fs-extra')
-const path = require('path')
 const _ = require('lodash')
-const yaml = require('js-yaml')
 const commonHelper = require('../helpers/common')
 
 /* global WIKI */
@@ -60,17 +57,8 @@ module.exports = class Analytics extends Model {
       const providers = await WIKI.models.analytics.getProviders(true)
 
       for (let provider of providers) {
-        const def = await fs.readFile(path.join(WIKI.SERVERPATH, 'modules/analytics', provider.key, 'code.yml'), 'utf8')
-        let code = yaml.load(def)
-        code.head = _.defaultTo(code.head, '')
-        code.bodyStart = _.defaultTo(code.bodyStart, '')
-        code.bodyEnd = _.defaultTo(code.bodyEnd, '')
-
-        _.forOwn(provider.config, (value, key) => {
-          code.head = _.replace(code.head, new RegExp(`{{${key}}}`, 'g'), value)
-          code.bodyStart = _.replace(code.bodyStart, `{{${key}}}`, value)
-          code.bodyEnd = _.replace(code.bodyEnd, `{{${key}}}`, value)
-        })
+        const template = await commonHelper.readModuleCodeTemplate({ dirName: 'analytics', key: provider.key, fields: ['head', 'bodyStart', 'bodyEnd'] })
+        const code = commonHelper.renderCodeTemplate(template, provider.config)
 
         analyticsCode.head += code.head
         analyticsCode.bodyStart += code.bodyStart

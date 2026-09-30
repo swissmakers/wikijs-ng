@@ -21,18 +21,7 @@ module.exports = {
         return {
           ...providerInfo,
           ...provider,
-          config: _.sortBy(_.transform(provider.config, (res, value, key) => {
-            const configData = _.get(providerInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(provider.config, providerInfo.props)
         }
       })
     },
@@ -157,10 +146,7 @@ module.exports = {
         for (let provider of args.providers) {
           await WIKI.models.commentProviders.query().patch({
             isEnabled: provider.isEnabled,
-            config: _.reduce(provider.config, (result, value, key) => {
-              _.set(result, `${value.key}`, _.get(JSON.parse(value.value), 'v', null))
-              return result
-            }, {})
+            config: graphHelper.kvToModuleConfig(provider.config)
           }).where('key', provider.key)
         }
         await WIKI.models.commentProviders.initProvider()

@@ -95,6 +95,7 @@ import NavSidebar from '@/themes/default/components/nav-sidebar.vue'
 import PageBreadcrumbs from '@/components/common/page-breadcrumbs.vue'
 
 import treeByPathQuery from 'gql/common/common-pages-query-tree-by-path.gql'
+import { decodePermissions } from '@/helpers'
 
 /* global siteLangs */
 
@@ -176,7 +177,7 @@ export default {
     this.$store.set('page/title', this.folderTitle)
     this.$store.set('page/mode', 'view')
     if (this.effectivePermissions) {
-      this.$store.set('page/effectivePermissions', JSON.parse(Buffer.from(this.effectivePermissions, 'base64').toString()))
+      this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
   },
   mounted () {

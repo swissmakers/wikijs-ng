@@ -228,7 +228,9 @@ import editorStore from '../../store/editor'
 
 const titleRegex = /[<>"]/i
 
-WIKI.$store.registerModule('editor', editorStore)
+if (!WIKI.$store.hasModule('editor')) {
+  WIKI.$store.registerModule('editor', editorStore)
+}
 
 export default {
   i18nOptions: { namespaces: 'editor' },

@@ -75,9 +75,8 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import gql from 'graphql-tag'
 import { sync, get } from 'vuex-pathify'
+import conflictLatestMixin from './common/conflict-latest'
 
 /* global siteConfig */
 
@@ -101,16 +100,10 @@ import 'codemirror/addon/merge/merge.js'
 import 'codemirror/addon/merge/merge.css'
 
 export default {
+  mixins: [conflictLatestMixin],
   data() {
     return {
-      cm: null,
-      latest: {
-        title: '',
-        description: '',
-        updatedAt: '',
-        authorName: ''
-      },
-      isRemoteConfirmDiagShown: false
+      cm: null
     }
   },
   computed: {
@@ -151,42 +144,10 @@ export default {
         break
     }
 
-    let resp = await this.$apollo.query({
-      query: gql`
-        query ($id: Int!) {
-          pages {
-            conflictLatest(id: $id) {
-              id
-              authorId
-              authorName
-              content
-              createdAt
-              description
-              isPublished
-              locale
-              path
-              tags
-              title
-              updatedAt
-            }
-          }
-        }
-      `,
-      fetchPolicy: 'network-only',
-      variables: {
-        id: this.$store.get('page/id')
-      }
-    })
-    resp = _.get(resp, 'data.pages.conflictLatest', false)
-
+    const resp = await this.fetchLatest()
     if (!resp) {
-      return this.$store.commit('showNotification', {
-        message: 'Failed to fetch latest version.',
-        style: 'warning',
-        icon: 'warning'
-      })
+      return
     }
-    this.latest = resp
 
     this.cm = CodeMirror.MergeView(this.$refs.cm, {
       value: this.$store.get('editor/content'),

@@ -69,8 +69,9 @@
 
 <script>
 import _ from 'lodash'
-import gql from 'graphql-tag'
 import { get } from 'vuex-pathify'
+import { pagePath } from '@/helpers'
+import pagesTreeQuery from 'gql/common/common-pages-query-tree.gql'
 
 /* global siteLangs */
 
@@ -143,24 +144,11 @@ export default {
       this.currentParent = item
 
       const resp = await this.$apollo.query({
-        query: gql`
-          query ($parent: Int, $locale: String!) {
-            pages {
-              tree(parent: $parent, mode: ALL, locale: $locale) {
-                id
-                path
-                title
-                isFolder
-                pageId
-                parent
-                locale
-              }
-            }
-          }
-        `,
+        query: pagesTreeQuery,
         fetchPolicy: 'cache-first',
         variables: {
           parent: item.id,
+          mode: 'ALL',
           locale: this.locale
         }
       })
@@ -171,25 +159,13 @@ export default {
     async loadFromCurrentPath() {
       this.$store.commit(`loadingStart`, 'browse-load')
       const resp = await this.$apollo.query({
-        query: gql`
-          query ($path: String, $locale: String!) {
-            pages {
-              tree(path: $path, mode: ALL, locale: $locale, includeAncestors: true) {
-                id
-                path
-                title
-                isFolder
-                pageId
-                parent
-                locale
-              }
-            }
-          }
-        `,
+        query: pagesTreeQuery,
         fetchPolicy: 'cache-first',
         variables: {
           path: this.path,
-          locale: this.locale
+          mode: 'ALL',
+          locale: this.locale,
+          includeAncestors: true
         }
       })
       const items = _.get(resp, 'data.pages.tree', [])
@@ -237,7 +213,7 @@ export default {
       this.$store.commit(`loadingStop`, 'browse-load')
     },
     goHome () {
-      window.location.assign(siteLangs.length > 0 ? `/${this.locale}/home` : '/')
+      window.location.assign(siteLangs.length > 0 ? pagePath(this.locale, 'home') : '/')
     }
   },
   mounted () {

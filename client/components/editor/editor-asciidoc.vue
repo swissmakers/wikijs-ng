@@ -152,6 +152,7 @@ import 'codemirror/addon/fold/foldcode.js'
 import 'codemirror/addon/fold/foldgutter.js'
 import 'codemirror/addon/fold/foldgutter.css'
 import cmFold from './common/cmFold'
+import { pagePath } from '@/helpers'
 
 // ========================================
 // INIT
@@ -317,7 +318,7 @@ export default {
     insertLinkHandler ({ locale, path, title }) {
       const linkText = title || _.last(path.split('/'))
       this.insertAtCursor({
-        content: siteLangs.length > 0 ? `link:/${locale}/${path}[${linkText}]` : `link:/${path}[${linkText}]`
+        content: `link:${pagePath(locale, path)}[${linkText}]`
       })
     },
     processMarkers (from, to) {

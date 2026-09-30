@@ -169,10 +169,9 @@
 import _ from 'lodash'
 import { get, sync } from 'vuex-pathify'
 import markdownHelp from './markdown/help.vue'
-import gql from 'graphql-tag'
 import DOMPurify from 'dompurify'
 
-/* global siteConfig, siteLangs */
+/* global siteConfig */
 
 // ========================================
 // IMPORTS
@@ -226,6 +225,8 @@ import mermaid from 'mermaid'
 import katexHelper from './common/katex'
 import tabsetHelper from './markdown/tabset'
 import cmFold from './common/cmFold'
+import { pagePath } from '@/helpers'
+import pagesSearchQuery from 'gql/common/common-pages-query-search.gql'
 
 // ========================================
 // INIT
@@ -616,20 +617,7 @@ export default {
               const token = cm.getTokenAt(cur)
               try {
                 const respRaw = await this.$apollo.query({
-                  query: gql`
-                    query ($query: String!, $locale: String) {
-                      pages {
-                        search(query:$query, locale:$locale) {
-                          results {
-                            title
-                            path
-                            locale
-                          }
-                          totalHits
-                        }
-                      }
-                    }
-                  `,
+                  query: pagesSearchQuery,
                   variables: {
                     query: queryString,
                     locale: this.locale
@@ -640,8 +628,8 @@ export default {
                 if (resp && resp.totalHits > 0) {
                   return {
                     list: resp.results.map(r => ({
-                      text: '(' + (siteLangs.length > 0 ? `/${r.locale}/${r.path}` : `/${r.path}`) + ')',
-                      displayText: siteLangs.length > 0 ? `/${r.locale}/${r.path} - ${r.title}` : `/${r.path} - ${r.title}`
+                      text: '(' + pagePath(r.locale, r.path) + ')',
+                      displayText: `${pagePath(r.locale, r.path)} - ${r.title}`
                     })),
                     from: CodeMirror.Pos(cur.line, token.start),
                     to: CodeMirror.Pos(cur.line, token.end)
@@ -664,7 +652,7 @@ export default {
     insertLinkHandler ({ locale, path, title }) {
       const linkText = title || _.last(path.split('/'))
       this.insertAtCursor({
-        content: siteLangs.length > 0 ? `[${linkText}](/${locale}/${path})` : `[${linkText}](/${path})`
+        content: `[${linkText}](${pagePath(locale, path)})`
       })
     },
     processMarkers (from, to) {

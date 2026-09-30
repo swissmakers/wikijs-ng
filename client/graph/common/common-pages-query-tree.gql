@@ -1,0 +1,13 @@
+query ($path: String, $parent: Int, $mode: PageTreeMode!, $locale: String!, $includeAncestors: Boolean) {
+  pages {
+    tree(path: $path, parent: $parent, mode: $mode, locale: $locale, includeAncestors: $includeAncestors) {
+      id
+      path
+      title
+      isFolder
+      pageId
+      parent
+      locale
+    }
+  }
+}
