@@ -234,9 +234,9 @@ export default {
     LoopingRhombusesSpinner
   },
   filters: {
-    startCase(val) { return _.startCase(val) }
+    startCase (val) { return _.startCase(val) }
   },
-  data() {
+  data () {
     return {
       runningAction: false,
       runningActionHandler: '',
@@ -249,20 +249,20 @@ export default {
     }
   },
   computed: {
-    activeTargets() {
+    activeTargets () {
       return _.filter(this.targets, 'isEnabled')
     }
   },
   watch: {
-    selectedTarget(newValue, oldValue) {
+    selectedTarget (newValue, oldValue) {
       this.target = _.find(this.targets, ['key', newValue]) || {}
     },
-    targets(newValue, oldValue) {
+    targets (newValue, oldValue) {
       this.selectedTarget = _.get(_.find(this.targets, ['isEnabled', true]), 'key', 'disk')
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.targets.refetch()
       this.$store.commit('showNotification', {
         message: 'List of storage targets has been refreshed.',
@@ -270,8 +270,8 @@ export default {
         icon: 'cached'
       })
     },
-    async save() {
-      this.$store.commit(`loadingStart`, 'admin-storage-savetargets')
+    async save () {
+      this.$store.commit('loadingStart', 'admin-storage-savetargets')
       await this.$apollo.mutate({
         mutation: targetsSaveMutation,
         variables: {
@@ -281,7 +281,7 @@ export default {
             'config',
             'mode',
             'syncInterval'
-          ])).map(str => ({...str, config: str.config.map(cfg => ({...cfg, value: JSON.stringify({ v: cfg.value.value })}))}))
+          ])).map(str => ({ ...str, config: str.config.map(cfg => ({ ...cfg, value: JSON.stringify({ v: cfg.value.value }) })) }))
         }
       })
       this.$store.commit('showNotification', {
@@ -289,14 +289,14 @@ export default {
         style: 'success',
         icon: 'check'
       })
-      this.$store.commit(`loadingStop`, 'admin-storage-savetargets')
+      this.$store.commit('loadingStop', 'admin-storage-savetargets')
     },
-    getDefaultSchedule(val) {
+    getDefaultSchedule (val) {
       if (!val) { return 'N/A' }
       return datetime.humanizeDuration(val)
     },
-    async executeAction(targetKey, handler) {
-      this.$store.commit(`loadingStart`, 'admin-storage-executeaction')
+    async executeAction (targetKey, handler) {
+      this.$store.commit('loadingStart', 'admin-storage-executeaction')
       this.runningAction = true
       this.runningActionHandler = handler
       try {
@@ -317,7 +317,7 @@ export default {
       }
       this.runningAction = false
       this.runningActionHandler = ''
-      this.$store.commit(`loadingStop`, 'admin-storage-executeaction')
+      this.$store.commit('loadingStop', 'admin-storage-executeaction')
     }
   },
   apollo: {

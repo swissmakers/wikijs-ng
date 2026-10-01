@@ -1,14 +1,12 @@
 // Test if potential opening or closing delimieter
 // Assumes that there is a "$" at state.src[pos]
 function isValidDelim (state, pos) {
-  let prevChar
-  let nextChar
-  let max = state.posMax
+  const max = state.posMax
   let canOpen = true
   let canClose = true
 
-  prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1
-  nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1
+  const prevChar = pos > 0 ? state.src.charCodeAt(pos - 1) : -1
+  const nextChar = pos + 1 <= max ? state.src.charCodeAt(pos + 1) : -1
 
   // Check non-whitespace conditions for opening and closing, and
   // check that closing delimeter isn't followed by a number
@@ -21,14 +19,14 @@ function isValidDelim (state, pos) {
   }
 
   return {
-    canOpen: canOpen,
-    canClose: canClose
+    canOpen,
+    canClose
   }
 }
 
 export default {
   katexInline (state, silent) {
-    let start, match, token, res, pos
+    let match, token, res, pos
 
     if (state.src[state.pos] !== '$') { return false }
 
@@ -43,7 +41,7 @@ export default {
     // This loop will assume that the first leading backtick can not
     // be the first character in state.src, which is known since
     // we have found an opening delimieter already.
-    start = state.pos + 1
+    const start = state.pos + 1
     match = start
     while ((match = state.src.indexOf('$', match)) !== -1) {
       // Found potential $, look for escapes, pos will point to
@@ -87,8 +85,8 @@ export default {
         // Escape the curly braces since they will be interpreted as
         // attributes by markdown-it-attrs (the "curly_attributes"
         // core rule)
-        .replaceAll("{", "{{")
-        .replaceAll("}", "}}")
+        .replaceAll('{', '{{')
+        .replaceAll('}', '}}')
     }
 
     state.pos = match + 1
@@ -96,7 +94,7 @@ export default {
   },
 
   katexBlock (state, start, end, silent) {
-    let firstLine; let lastLine; let next; let lastPos; let found = false; let token
+    let firstLine; let lastLine; let next; let lastPos; let found = false
     let pos = state.bMarks[start] + state.tShift[start]
     let max = state.eMarks[start]
 
@@ -135,12 +133,12 @@ export default {
 
     state.line = next + 1
 
-    token = state.push('katex_block', 'math', 0)
+    const token = state.push('katex_block', 'math', 0)
     token.block = true
     token.content = (firstLine && firstLine.trim() ? firstLine + '\n' : '') +
     state.getLines(start + 1, next, state.tShift[start], true) +
     (lastLine && lastLine.trim() ? lastLine : '')
-    token.map = [ start, state.line ]
+    token.map = [start, state.line]
     token.markup = '$$'
     return true
   }

@@ -9,7 +9,7 @@ const _ = require('lodash')
 const chalk = require('chalk')
 
 const init = {
-  dev() {
+  dev () {
     const webpack = require('webpack')
     const chokidar = require('chokidar')
 
@@ -59,7 +59,7 @@ const init = {
       })
     })
   },
-  async reload() {
+  async reload () {
     console.warn(chalk.yellow('--- Gracefully stopping server...'))
     await global.WIKI.kernel.shutdown(true)
 

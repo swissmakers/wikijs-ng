@@ -87,7 +87,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       templateDialogIsShown: false,
       templates: []
@@ -95,8 +95,8 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
     currentEditor: sync('editor/editor'),
     locale: get('page/locale'),

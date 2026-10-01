@@ -5,13 +5,13 @@ const graphHelper = require('../../helpers/graph')
 
 module.exports = {
   Query: {
-    async rendering() { return {} }
+    async rendering () { return {} }
   },
   Mutation: {
-    async rendering() { return {} }
+    async rendering () { return {} }
   },
   RenderingQuery: {
-    async renderers(obj, args, context, info) {
+    async renderers (obj, args, context, info) {
       let renderers = await WIKI.models.renderers.getRenderers()
       renderers = renderers.map(rdr => {
         const rendererInfo = _.find(WIKI.data.renderers, ['key', rdr.key]) || {}
@@ -27,9 +27,9 @@ module.exports = {
     }
   },
   RenderingMutation: {
-    async updateRenderers(obj, args, context) {
+    async updateRenderers (obj, args, context) {
       try {
-        for (let rdr of args.renderers) {
+        for (const rdr of args.renderers) {
           await WIKI.models.renderers.query().patch({
             isEnabled: rdr.isEnabled,
             config: graphHelper.kvToModuleConfig(rdr.config)

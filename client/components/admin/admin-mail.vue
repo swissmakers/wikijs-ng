@@ -184,7 +184,7 @@ import mailUpdateConfigMutation from 'gql/admin/mail/mail-mutation-save-config.g
 import mailTestMutation from 'gql/admin/mail/mail-mutation-sendtest.gql'
 
 export default {
-  data() {
+  data () {
     return {
       config: {
         senderName: '',

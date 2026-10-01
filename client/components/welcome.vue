@@ -23,7 +23,7 @@ export default {
       default: 'en'
     }
   },
-  data() {
+  data () {
     return { }
   }
 }

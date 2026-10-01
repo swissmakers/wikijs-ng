@@ -39,7 +39,7 @@ export default {
     UtilityCache: () => import(/* webpackChunkName: "admin" */ './admin-utilities-cache.vue'),
     UtilityExport: () => import(/* webpackChunkName: "admin" */ './admin-utilities-export.vue')
   },
-  data() {
+  data () {
     return {
       selectedTool: 'UtilityAuth',
       tools: [

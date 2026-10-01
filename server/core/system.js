@@ -14,7 +14,7 @@ module.exports = {
     message: '',
     updatedAt: null
   },
-  init() {
+  init () {
     // Clear content cache
     fs.emptyDir(path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, 'cache'))
 

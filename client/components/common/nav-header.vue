@@ -252,7 +252,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       menuIsShown: true,
       searchIsShown: true,
@@ -430,7 +430,7 @@ export default {
     searchEnter () {
       this.$root.$emit('searchEnter', true)
     },
-    searchMove(dir) {
+    searchMove (dir) {
       this.$root.$emit('searchMove', dir)
     },
     pageNew () {
@@ -462,7 +462,7 @@ export default {
       const pathParts = this.path.split('/')
       this.duplicateOpts = {
         locale: this.locale,
-        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + `/new-page` : `new-page`,
+        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + '/new-page' : 'new-page',
         modal: true
       }
     },
@@ -476,7 +476,7 @@ export default {
       this.movePageModal = true
     },
     async pageMoveRename ({ path, locale }) {
-      this.$store.commit(`loadingStart`, 'page-move')
+      this.$store.commit('loadingStart', 'page-move')
       try {
         const resp = await this.$apollo.mutate({
           mutation: movePageMutation,
@@ -493,7 +493,7 @@ export default {
         }
       } catch (err) {
         this.$store.commit('pushGraphError', err)
-        this.$store.commit(`loadingStop`, 'page-move')
+        this.$store.commit('loadingStop', 'page-move')
       }
     },
     pageDelete () {

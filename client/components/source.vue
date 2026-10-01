@@ -56,7 +56,7 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {}
   },
   created () {
@@ -71,7 +71,7 @@ export default {
     }
   },
   methods: {
-    goLive() {
+    goLive () {
       window.location.assign(`/${this.locale}/${this.path}`)
     },
     goHistory () {

@@ -50,7 +50,7 @@ module.exports = {
     })
 
     this.servers.http.on('connection', conn => {
-      let connKey = `http:${conn.remoteAddress}:${conn.remotePort}`
+      const connKey = `http:${conn.remoteAddress}:${conn.remotePort}`
       this.connections.set(connKey, conn)
       conn.on('close', () => {
         this.connections.delete(connKey)
@@ -111,7 +111,7 @@ module.exports = {
     })
 
     this.servers.https.on('connection', conn => {
-      let connKey = `https:${conn.remoteAddress}:${conn.remotePort}`
+      const connKey = `https:${conn.remoteAddress}:${conn.remotePort}`
       this.connections.set(connKey, conn)
       conn.on('close', () => {
         this.connections.delete(connKey)
@@ -140,7 +140,7 @@ module.exports = {
    */
   closeConnections (mode = 'all') {
     for (const [key, conn] of this.connections) {
-      if (mode !== `all` && key.indexOf(`${mode}:`) !== 0) {
+      if (mode !== 'all' && key.indexOf(`${mode}:`) !== 0) {
         continue
       }
       conn.destroy()

@@ -37,15 +37,15 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       loading: false
     }
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
     pageTitle: get('page/title'),
     pagePath: get('page/path'),
@@ -53,20 +53,20 @@ export default {
     pageId: get('page/id')
   },
   watch: {
-    isShown(newValue, oldValue) {
+    isShown (newValue, oldValue) {
       if (newValue) {
         document.body.classList.add('page-deleted-pending')
       }
     }
   },
   methods: {
-    discard() {
+    discard () {
       document.body.classList.remove('page-deleted-pending')
       this.isShown = false
     },
-    async deletePage() {
+    async deletePage () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'page-delete')
+      this.$store.commit('loadingStart', 'page-delete')
       this.$nextTick(async () => {
         try {
           const resp = await this.$apollo.mutate({
@@ -89,7 +89,7 @@ export default {
         } catch (err) {
           this.$store.commit('pushGraphError', err)
         }
-        this.$store.commit(`loadingStop`, 'page-delete')
+        this.$store.commit('loadingStop', 'page-delete')
         this.loading = false
       })
     }

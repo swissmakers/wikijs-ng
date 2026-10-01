@@ -305,7 +305,7 @@ export default {
      * Validate and post a comment or reply, returns the new comment ID
      */
     async submitComment ({ content, replyTo }) {
-      let rules = {
+      const rules = {
         comment: {
           presence: {
             allowEmpty: false
@@ -439,7 +439,7 @@ export default {
      * Show Comment Editing Form
      */
     async editComment (cm) {
-      this.$store.commit(`loadingStart`, 'comments-edit')
+      this.$store.commit('loadingStart', 'comments-edit')
       this.isBusy = true
       try {
         const results = await this.$apollo.query({
@@ -471,7 +471,7 @@ export default {
       }
       this.commentEditId = cm.id
       this.isBusy = false
-      this.$store.commit(`loadingStop`, 'comments-edit')
+      this.$store.commit('loadingStop', 'comments-edit')
     },
     /**
      * Cancel Comment Edit
@@ -484,7 +484,7 @@ export default {
      * Update Comment with new content
      */
     async updateComment () {
-      this.$store.commit(`loadingStart`, 'comments-edit')
+      this.$store.commit('loadingStart', 'comments-edit')
       this.isBusy = true
       try {
         if (this.commentEditContent.length < 2) {
@@ -542,7 +542,7 @@ export default {
         })
       }
       this.isBusy = false
-      this.$store.commit(`loadingStop`, 'comments-edit')
+      this.$store.commit('loadingStop', 'comments-edit')
     },
     /**
      * Show Delete Comment Confirmation Dialog
@@ -555,7 +555,7 @@ export default {
      * Delete Comment
      */
     async deleteComment () {
-      this.$store.commit(`loadingStart`, 'comments-delete')
+      this.$store.commit('loadingStart', 'comments-delete')
       this.isBusy = true
       this.deleteCommentDialogShown = false
 
@@ -603,7 +603,7 @@ export default {
         })
       }
       this.isBusy = false
-      this.$store.commit(`loadingStop`, 'comments-delete')
+      this.$store.commit('loadingStop', 'comments-delete')
     }
   }
 }

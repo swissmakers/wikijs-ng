@@ -14,16 +14,16 @@ const PAGE_PERMISSIONS = [
 
 module.exports = {
   Query: {
-    async pages() { return {} }
+    async pages () { return {} }
   },
   Mutation: {
-    async pages() { return {} }
+    async pages () { return {} }
   },
   PageQuery: {
     /**
      * PAGE HISTORY
      */
-    async history(obj, args, context, info) {
+    async history (obj, args, context, info) {
       const page = await WIKI.models.pages.query().select('path', 'localeCode').findById(args.id)
       if (WIKI.auth.checkAccess(context.req.user, ['read:history'], {
         path: page.path,
@@ -41,7 +41,7 @@ module.exports = {
     /**
      * PAGE VERSION
      */
-    async version(obj, args, context, info) {
+    async version (obj, args, context, info) {
       const page = await WIKI.models.pages.query().select('path', 'localeCode').findById(args.pageId)
       if (WIKI.auth.checkAccess(context.req.user, ['read:history'], {
         path: page.path,
@@ -169,7 +169,7 @@ module.exports = {
      * FETCH SINGLE PAGE
      */
     async single (obj, args, context, info) {
-      let page = await WIKI.models.pages.getPageFromDb(args.id)
+      const page = await WIKI.models.pages.getPageFromDb(args.id)
       if (page) {
         if (WIKI.auth.checkAccess(context.req.user, ['manage:pages', 'delete:pages'], {
           path: page.path,
@@ -189,8 +189,8 @@ module.exports = {
         throw new WIKI.Error.PageNotFound()
       }
     },
-    async singleByPath(obj, args, context, info) {
-      let page = await WIKI.models.pages.getPageFromDb({
+    async singleByPath (obj, args, context, info) {
+      const page = await WIKI.models.pages.getPageFromDb({
         path: args.path,
         locale: args.locale
       })
@@ -349,7 +349,9 @@ module.exports = {
         folder: WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
           path: folder.path,
           locale: folder.localeCode
-        }) ? mapItem(folder) : null,
+        })
+          ? mapItem(folder)
+          : null,
         children: results.filter(r => {
           return WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
             path: r.path,
@@ -587,7 +589,7 @@ module.exports = {
      * CHECK FOR EDITING CONFLICT
      */
     async checkConflicts (obj, args, context, info) {
-      let page = await WIKI.models.pages.query().select('path', 'localeCode', 'updatedAt').findById(args.id)
+      const page = await WIKI.models.pages.query().select('path', 'localeCode', 'updatedAt').findById(args.id)
       if (page) {
         if (WIKI.auth.checkAccess(context.req.user, ['write:pages', 'manage:pages'], {
           path: page.path,
@@ -605,7 +607,7 @@ module.exports = {
      * FETCH LATEST VERSION FOR CONFLICT COMPARISON
      */
     async conflictLatest (obj, args, context, info) {
-      let page = await WIKI.models.pages.getPageFromDb(args.id)
+      const page = await WIKI.models.pages.getPageFromDb(args.id)
       if (page) {
         if (WIKI.auth.checkAccess(context.req.user, ['write:pages', 'manage:pages'], {
           path: page.path,
@@ -628,7 +630,7 @@ module.exports = {
     /**
      * CREATE PAGE
      */
-    async create(obj, args, context) {
+    async create (obj, args, context) {
       try {
         const page = await WIKI.models.pages.createPage({
           ...args,
@@ -645,7 +647,7 @@ module.exports = {
     /**
      * UPDATE PAGE
      */
-    async update(obj, args, context) {
+    async update (obj, args, context) {
       try {
         const page = await WIKI.models.pages.updatePage({
           ...args,
@@ -662,7 +664,7 @@ module.exports = {
     /**
      * SAVE DRAFT
      */
-    async saveDraft(obj, args, context) {
+    async saveDraft (obj, args, context) {
       try {
         if (!WIKI.auth.checkAccess(context.req.user, ['write:pages'], {
           locale: args.locale,
@@ -690,7 +692,7 @@ module.exports = {
     /**
      * DISCARD DRAFT
      */
-    async discardDraft(obj, args, context) {
+    async discardDraft (obj, args, context) {
       try {
         await WIKI.models.pageDrafts.query().delete().where({
           authorId: context.req.user.id,
@@ -707,7 +709,7 @@ module.exports = {
     /**
      * CONVERT PAGE
      */
-    async convert(obj, args, context) {
+    async convert (obj, args, context) {
       try {
         await WIKI.models.pages.convertPage({
           ...args,
@@ -723,7 +725,7 @@ module.exports = {
     /**
      * MOVE PAGE
      */
-    async move(obj, args, context) {
+    async move (obj, args, context) {
       try {
         await WIKI.models.pages.movePage({
           ...args,
@@ -739,7 +741,7 @@ module.exports = {
     /**
      * DELETE PAGE
      */
-    async delete(obj, args, context) {
+    async delete (obj, args, context) {
       try {
         await WIKI.models.pages.deletePage({
           ...args,
@@ -795,7 +797,7 @@ module.exports = {
     /**
      * FLUSH PAGE CACHE
      */
-    async flushCache(obj, args, context) {
+    async flushCache (obj, args, context) {
       try {
         await WIKI.models.pages.flushCache()
         WIKI.events.outbound.emit('flushCache')
@@ -809,7 +811,7 @@ module.exports = {
     /**
      * MIGRATE ALL PAGES FROM SOURCE LOCALE TO TARGET LOCALE
      */
-    async migrateToLocale(obj, args, context) {
+    async migrateToLocale (obj, args, context) {
       try {
         const count = await WIKI.models.pages.migrateToLocale(args)
         return {
@@ -823,7 +825,7 @@ module.exports = {
     /**
      * REBUILD TREE
      */
-    async rebuildTree(obj, args, context) {
+    async rebuildTree (obj, args, context) {
       try {
         await WIKI.models.pages.rebuildTree()
         return {

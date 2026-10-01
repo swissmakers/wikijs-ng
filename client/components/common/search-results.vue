@@ -83,7 +83,7 @@ export default {
   components: {
     OrbitSpinner
   },
-  data() {
+  data () {
     return {
       cursor: 0,
       pagination: 1,
@@ -110,22 +110,22 @@ export default {
     restrictPathLabel () {
       return this.$t('common:header.searchRestrictPath', { path: this.currentPath, defaultValue: 'Only under /{{path}}' })
     },
-    results() {
+    results () {
       const currentIndex = (this.pagination - 1) * this.perPage
       return this.response.results ? _.slice(this.response.results, currentIndex, currentIndex + this.perPage) : []
     },
-    hits() {
+    hits () {
       return this.response.totalHits ? this.response.totalHits : 0
     },
-    suggestions() {
+    suggestions () {
       return this.response.suggestions ? this.response.suggestions : []
     },
-    paginationLength() {
+    paginationLength () {
       return (this.response.totalHits > 0) ? Math.ceil(this.response.totalHits / this.perPage) : 0
     }
   },
   watch: {
-    search(newValue, oldValue) {
+    search (newValue, oldValue) {
       this.cursor = 0
       if (!newValue || (newValue && newValue.length < 2)) {
         this.searchIsLoading = false
@@ -133,11 +133,11 @@ export default {
         this.searchIsLoading = true
       }
     },
-    results() {
+    results () {
       this.cursor = 0
     }
   },
-  mounted() {
+  mounted () {
     this.$root.$on('searchMove', (dir) => {
       this.cursor += ((dir === 'up') ? -1 : 1)
       if (this.cursor < -1) {
@@ -159,20 +159,20 @@ export default {
     })
   },
   methods: {
-    setSearchTerm(term) {
+    setSearchTerm (term) {
       this.search = term
     },
-    goToPage(item) {
+    goToPage (item) {
       window.location.assign(`/${item.locale}/${item.path}`)
     },
-    goToPageInNewTab(item) {
+    goToPageInNewTab (item) {
       window.open(`/${item.locale}/${item.path}`, '_blank')
     }
   },
   apollo: {
     response: {
       query: searchPagesQuery,
-      variables() {
+      variables () {
         return {
           query: this.search,
           path: (this.searchRestrictPath && this.currentPath) ? this.currentPath : null,
@@ -182,10 +182,10 @@ export default {
       fetchPolicy: 'network-only',
       debounce: 300,
       throttle: 1000,
-      skip() {
+      skip () {
         return !this.search || this.search.length < 2
       },
-      result() {
+      result () {
         this.pagination = 1
       },
       update: (data) => _.get(data, 'pages.search', {}),

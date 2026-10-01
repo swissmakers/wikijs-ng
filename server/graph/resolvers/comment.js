@@ -15,16 +15,16 @@ const isVisibleComment = (cm, user, isModerator) => {
 
 module.exports = {
   Query: {
-    async comments() { return {} }
+    async comments () { return {} }
   },
   Mutation: {
-    async comments() { return {} }
+    async comments () { return {} }
   },
   CommentQuery: {
     /**
      * Fetch list of Comments Providers
      */
-    async providers(obj, args, context, info) {
+    async providers (obj, args, context, info) {
       const providers = await WIKI.models.commentProviders.getProviders()
       return providers.map(provider => {
         const providerInfo = _.find(WIKI.data.commentProviders, ['key', provider.key]) || {}
@@ -212,9 +212,9 @@ module.exports = {
     /**
      * Update Comments Providers
      */
-    async updateProviders(obj, args, context) {
+    async updateProviders (obj, args, context) {
       try {
-        for (let provider of args.providers) {
+        for (const provider of args.providers) {
           await WIKI.models.commentProviders.query().patch({
             isEnabled: provider.isEnabled,
             config: graphHelper.kvToModuleConfig(provider.config)

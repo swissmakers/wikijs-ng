@@ -8,8 +8,8 @@ const commonHelper = require('../helpers/common')
  * Analytics model
  */
 module.exports = class Analytics extends Model {
-  static get tableName() { return 'analytics' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'analytics' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -17,22 +17,22 @@ module.exports = class Analytics extends Model {
       required: ['key', 'isEnabled'],
 
       properties: {
-        key: {type: 'string'},
-        isEnabled: {type: 'boolean'}
+        key: { type: 'string' },
+        isEnabled: { type: 'boolean' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config']
   }
 
-  static async getProviders(isEnabled) {
+  static async getProviders (isEnabled) {
     const providers = await WIKI.models.analytics.query().where(_.isBoolean(isEnabled) ? { isEnabled } : {})
     return _.sortBy(providers, ['key'])
   }
 
-  static async refreshProvidersFromDisk() {
+  static async refreshProvidersFromDisk () {
     return commonHelper.refreshModulesFromDisk({
       dirName: 'analytics',
       dataKey: 'analytics',
@@ -56,7 +56,7 @@ module.exports = class Analytics extends Model {
       }
       const providers = await WIKI.models.analytics.getProviders(true)
 
-      for (let provider of providers) {
+      for (const provider of providers) {
         const template = await commonHelper.readModuleCodeTemplate({ dirName: 'analytics', key: provider.key, fields: ['head', 'bodyStart', 'bodyEnd'] })
         const code = commonHelper.renderCodeTemplate(template, provider.config)
 

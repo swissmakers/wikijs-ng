@@ -238,7 +238,8 @@ import 'codemirror/mode/htmlmixed/htmlmixed.js'
 import 'codemirror/mode/css/css.js'
 
 /* global siteLangs, siteConfig */
-const filenamePattern = /^(?![\#\/\.\$\^\=\*\;\:\&\?\(\)\[\]\{\}\"\'\>\<\,\@\!\%\`\~\s])(?!.*[\#\/\.\$\^\=\*\;\:\&\?\(\)\[\]\{\}\"\'\>\<\,\@\!\%\`\~\s]$)[^\#\.\$\^\=\*\;\:\&\?\(\)\[\]\{\}\"\'\>\<\,\@\!\%\`\~\s]*$/
+// -> No special characters; "/" separates folders but must not start or end the path
+const filenamePattern = /^(?![#/.$^=*;:&?()[\]{}"'><,@!%`~\s])(?!.*[#/.$^=*;:&?()[\]{}"'><,@!%`~\s]$)[^#.$^=*;:&?()[\]{}"'><,@!%`~\s]*$/
 
 export default {
   props: {
@@ -268,8 +269,8 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
     mode: get('editor/mode'),
     title: sync('page/title'),
@@ -332,17 +333,17 @@ export default {
     removeTag (tag) {
       this.tags = _.without(this.tags, tag)
     },
-    close() {
+    close () {
       this.isShown = false
     },
-    showPathSelector() {
+    showPathSelector () {
       this.pageSelectorShown = true
     },
-    setPath({ path, locale }) {
+    setPath ({ path, locale }) {
       this.locale = locale
       this.path = path
     },
-    loadEditor(ref, mode) {
+    loadEditor (ref, mode) {
       this.cm = CodeMirror.fromTextArea(ref, {
         tabSize: 2,
         mode: `text/${mode}`,

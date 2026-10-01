@@ -8,8 +8,8 @@ const commonHelper = require('../helpers/common')
  * Authentication model
  */
 module.exports = class Authentication extends Model {
-  static get tableName() { return 'authentication' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'authentication' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -17,21 +17,21 @@ module.exports = class Authentication extends Model {
       required: ['key'],
 
       properties: {
-        key: {type: 'string'},
-        selfRegistration: {type: 'boolean'}
+        key: { type: 'string' },
+        selfRegistration: { type: 'boolean' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config', 'domainWhitelist', 'autoEnrollGroups']
   }
 
-  static async getStrategy(key) {
+  static async getStrategy (key) {
     return WIKI.models.authentication.query().findOne({ key })
   }
 
-  static async getStrategies() {
+  static async getStrategies () {
     const strategies = await WIKI.models.authentication.query().orderBy('order')
     return strategies.map(str => ({
       ...str,
@@ -40,7 +40,7 @@ module.exports = class Authentication extends Model {
     }))
   }
 
-  static async refreshStrategiesFromDisk() {
+  static async refreshStrategiesFromDisk () {
     try {
       const dbStrategies = await WIKI.models.authentication.query()
 
@@ -87,7 +87,7 @@ module.exports = class Authentication extends Model {
 
       WIKI.logger.info(`Loaded ${WIKI.data.authentication.length} authentication strategies: [ OK ]`)
     } catch (err) {
-      WIKI.logger.error(`Failed to scan or load new authentication providers: [ FAILED ]`)
+      WIKI.logger.error('Failed to scan or load new authentication providers: [ FAILED ]')
       WIKI.logger.error(err)
     }
   }

@@ -43,7 +43,7 @@ import flagsQuery from 'gql/admin/dev/dev-query-flags.gql'
 import flagsMutation from 'gql/admin/dev/dev-mutation-save-flags.gql'
 
 export default {
-  data() {
+  data () {
     return {
       flags: {
         sqllog: false
@@ -51,7 +51,7 @@ export default {
     }
   },
   methods: {
-    async save() {
+    async save () {
       try {
         await this.$apollo.mutate({
           mutation: flagsMutation,

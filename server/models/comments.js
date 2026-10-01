@@ -8,7 +8,7 @@ const _ = require('lodash')
  * Comments model
  */
 module.exports = class Comment extends Model {
-  static get tableName() { return 'comments' }
+  static get tableName () { return 'comments' }
 
   static get jsonSchema () {
     return {
@@ -16,20 +16,20 @@ module.exports = class Comment extends Model {
       required: [],
 
       properties: {
-        id: {type: 'integer'},
-        content: {type: 'string'},
-        render: {type: 'string'},
-        name: {type: 'string'},
-        email: {type: 'string'},
-        ip: {type: 'string'},
-        isApproved: {type: 'boolean'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        id: { type: 'integer' },
+        content: { type: 'string' },
+        render: { type: 'string' },
+        name: { type: 'string' },
+        email: { type: 'string' },
+        ip: { type: 'string' },
+        isApproved: { type: 'boolean' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       author: {
         relation: Model.BelongsToOneRelation,
@@ -50,10 +50,11 @@ module.exports = class Comment extends Model {
     }
   }
 
-  $beforeUpdate() {
+  $beforeUpdate () {
     this.updatedAt = new Date().toISOString()
   }
-  $beforeInsert() {
+
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
     this.updatedAt = new Date().toISOString()
   }
@@ -131,10 +132,12 @@ module.exports = class Comment extends Model {
       content,
       user: {
         ...user,
-        ...(user.id === 2) ? {
-          name: guestName,
-          email: guestEmail
-        } : {},
+        ...(user.id === 2)
+          ? {
+              name: guestName,
+              email: guestEmail
+            }
+          : {},
         ip
       }
     })

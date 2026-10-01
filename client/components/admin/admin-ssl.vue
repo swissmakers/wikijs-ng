@@ -132,7 +132,7 @@ export default {
   components: {
     SemipolarSpinner
   },
-  data() {
+  data () {
     return {
       loadingRenew: false,
       loadingRedir: false,

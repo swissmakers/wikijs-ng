@@ -9,8 +9,8 @@ const configHelper = require('../helpers/config')
  * Storage model
  */
 module.exports = class Storage extends Model {
-  static get tableName() { return 'storage' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'storage' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -18,22 +18,22 @@ module.exports = class Storage extends Model {
       required: ['key', 'isEnabled'],
 
       properties: {
-        key: {type: 'string'},
-        isEnabled: {type: 'boolean'},
-        mode: {type: 'string'}
+        key: { type: 'string' },
+        isEnabled: { type: 'boolean' },
+        mode: { type: 'string' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config', 'state']
   }
 
-  static async getTargets() {
+  static async getTargets () {
     return WIKI.models.storage.query()
   }
 
-  static async refreshTargetsFromDisk() {
+  static async refreshTargetsFromDisk () {
     return commonHelper.refreshModulesFromDisk({
       dirName: 'storage',
       dataKey: 'storage',
@@ -55,18 +55,18 @@ module.exports = class Storage extends Model {
   /**
    * Initialize active storage targets
    */
-  static async initTargets() {
+  static async initTargets () {
     this.targets = await WIKI.models.storage.query().where('isEnabled', true).orderBy('key')
     try {
       // -> Stop and delete existing jobs
-      const prevjobs = _.remove(WIKI.scheduler.jobs, job => job.name === `sync-storage`)
+      const prevjobs = _.remove(WIKI.scheduler.jobs, job => job.name === 'sync-storage')
       if (prevjobs.length > 0) {
         prevjobs.forEach(job => { job.stop().catch(() => {}) })
       }
 
       // -> Initialize targets
       const failedTargets = []
-      for (let target of this.targets) {
+      for (const target of this.targets) {
         const targetDef = _.find(WIKI.data.storage, ['key', target.key])
         target.fn = require(`../modules/storage/${target.key}/storage`)
         target.fn.config = target.config
@@ -84,14 +84,14 @@ module.exports = class Storage extends Model {
           }).where('key', target.key)
 
           // -> Set recurring sync job
-          if (targetDef.schedule && target.syncInterval !== `P0D`) {
+          if (targetDef.schedule && target.syncInterval !== 'P0D') {
             let syncInterval = target.syncInterval
             if (!configHelper.isValidDurationString(syncInterval)) {
               WIKI.logger.warn(`Invalid sync interval '${syncInterval}' for storage target ${target.key}. Falling back to default (${targetDef.schedule}).`)
               syncInterval = targetDef.schedule
             }
             WIKI.scheduler.registerJob({
-              name: `sync-storage`,
+              name: 'sync-storage',
               immediate: false,
               schedule: syncInterval,
               repeat: true
@@ -99,9 +99,9 @@ module.exports = class Storage extends Model {
           }
 
           // -> Set internal recurring sync job
-          if (targetDef.internalSchedule && targetDef.internalSchedule !== `P0D` && configHelper.isValidDurationString(targetDef.internalSchedule)) {
+          if (targetDef.internalSchedule && targetDef.internalSchedule !== 'P0D' && configHelper.isValidDurationString(targetDef.internalSchedule)) {
             WIKI.scheduler.registerJob({
-              name: `sync-storage`,
+              name: 'sync-storage',
               immediate: false,
               schedule: targetDef.internalSchedule,
               repeat: true
@@ -132,9 +132,9 @@ module.exports = class Storage extends Model {
     }
   }
 
-  static async pageEvent({ event, page }) {
+  static async pageEvent ({ event, page }) {
     try {
-      for (let target of this.targets) {
+      for (const target of this.targets) {
         await target.fn[event](page)
       }
     } catch (err) {
@@ -143,9 +143,9 @@ module.exports = class Storage extends Model {
     }
   }
 
-  static async assetEvent({ event, asset }) {
+  static async assetEvent ({ event, asset }) {
     try {
-      for (let target of this.targets) {
+      for (const target of this.targets) {
         await target.fn[`asset${_.capitalize(event)}`](asset)
       }
     } catch (err) {
@@ -154,7 +154,7 @@ module.exports = class Storage extends Model {
     }
   }
 
-  static async getLocalLocations({ asset }) {
+  static async getLocalLocations ({ asset }) {
     const locations = []
     const promises = this.targets.map(async (target) => {
       try {
@@ -171,7 +171,7 @@ module.exports = class Storage extends Model {
     return locations
   }
 
-  static async executeAction(targetKey, handler) {
+  static async executeAction (targetKey, handler) {
     try {
       const target = _.find(this.targets, ['key', targetKey])
       if (target) {

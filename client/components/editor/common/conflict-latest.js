@@ -6,7 +6,7 @@ import conflictLatestQuery from 'gql/editor/editor-query-conflict-latest.gql'
  * Loads the latest saved version of the page for the conflict resolution dialogs
  */
 export default {
-  data() {
+  data () {
     return {
       latest: {
         title: '',

@@ -25,7 +25,7 @@ module.exports = {
   /**
    * Initialize the authentication module
    */
-  init() {
+  init () {
     this.passport = passport
 
     passport.serializeUser((user, done) => {
@@ -77,7 +77,7 @@ module.exports = {
 
       // Load enabled strategies
       const enabledStrategies = await WIKI.models.authentication.getStrategies()
-      for (let idx in enabledStrategies) {
+      for (const idx in enabledStrategies) {
         const stg = enabledStrategies[idx]
         if (!_.some(WIKI.data.authentication, ['key', stg.strategyKey])) {
           WIKI.logger.warn(`Authentication Strategy ${stg.displayName} (${stg.key}): module ${stg.strategyKey} no longer exists [ SKIPPED ]`)
@@ -102,7 +102,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      WIKI.logger.error(`Failed to initialize Authentication Strategies: [ ERROR ]`)
+      WIKI.logger.error('Failed to initialize Authentication Strategies: [ ERROR ]')
       WIKI.logger.error(err)
     }
   },
@@ -115,7 +115,7 @@ module.exports = {
    * @param {Express Next Callback} next
    */
   authenticate (req, res, next) {
-    WIKI.auth.passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+    WIKI.auth.passport.authenticate('jwt', { session: false }, async (err, user, info) => {
       if (err) { return next() }
       let mustRevalidate = false
 
@@ -222,7 +222,7 @@ module.exports = {
    * @param {Array<String>} permissions
    * @param {String|Boolean} path
    */
-  checkAccess(user, permissions = [], page = false) {
+  checkAccess (user, permissions = [], page = false) {
     const userPermissions = user.permissions ? user.permissions : user.getGlobalPermissions()
 
     // System Admin
@@ -279,12 +279,13 @@ module.exports = {
                 checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['REGEX', 'EXACT', 'TAG'] })
               }
               break
-            case 'REGEX':
+            case 'REGEX': {
               const reg = new RegExp(rule.path)
               if (reg.test(page.path)) {
                 checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['EXACT', 'TAG'] })
               }
               break
+            }
             case 'TAG':
               _.get(page, 'tags', []).forEach(tag => {
                 if (tag.tag === rule.path) {
@@ -339,7 +340,7 @@ module.exports = {
    * @param {Array<String>} includePermissions
    * @param {Array<String>} excludePermissions
    */
-  checkExclusiveAccess(user, includePermissions = [], excludePermissions = []) {
+  checkExclusiveAccess (user, includePermissions = [], excludePermissions = []) {
     const userPermissions = user.permissions ? user.permissions : user.getGlobalPermissions()
 
     // Check Inclusion Permissions
@@ -362,7 +363,7 @@ module.exports = {
    * @param {Array<Number>} groupIds List of group IDs to be assigned
    * @returns {Boolean}
    */
-  async checkAssignUserToGroupAccess(requester, groupIds = []) {
+  async checkAssignUserToGroupAccess (requester, groupIds = []) {
     if (!groupIds || groupIds.length < 1) {
       return true
     }
@@ -485,7 +486,7 @@ module.exports = {
   /**
    * Reset Guest User
    */
-  async resetGuestUser() {
+  async resetGuestUser () {
     WIKI.logger.info('Resetting guest account...')
     const guestGroup = await WIKI.models.groups.query().where('id', 2).first()
 
@@ -515,7 +516,7 @@ module.exports = {
   /**
    * Subscribe to HA propagation events
    */
-  subscribeToEvents() {
+  subscribeToEvents () {
     WIKI.events.inbound.on('reloadGroups', () => {
       WIKI.auth.reloadGroups()
     })

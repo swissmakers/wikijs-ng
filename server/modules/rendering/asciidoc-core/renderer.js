@@ -2,7 +2,7 @@ const asciidoctor = require('asciidoctor')()
 const cheerio = require('cheerio')
 
 module.exports = {
-  async render() {
+  async render () {
     const html = asciidoctor.convert(this.input, {
       standalone: false,
       safe: this.config.safeMode,

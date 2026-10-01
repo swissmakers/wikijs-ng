@@ -8,8 +8,8 @@ const commonHelper = require('../helpers/common')
  * CommentProvider model
  */
 module.exports = class CommentProvider extends Model {
-  static get tableName() { return 'commentProviders' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'commentProviders' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -17,22 +17,22 @@ module.exports = class CommentProvider extends Model {
       required: ['key', 'isEnabled'],
 
       properties: {
-        key: {type: 'string'},
-        isEnabled: {type: 'boolean'}
+        key: { type: 'string' },
+        isEnabled: { type: 'boolean' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config']
   }
 
-  static async getProviders(isEnabled) {
+  static async getProviders (isEnabled) {
     const providers = await WIKI.models.commentProviders.query().where(_.isBoolean(isEnabled) ? { isEnabled } : {})
     return _.sortBy(providers, ['key'])
   }
 
-  static async refreshProvidersFromDisk() {
+  static async refreshProvidersFromDisk () {
     return commonHelper.refreshModulesFromDisk({
       dirName: 'comments',
       dataKey: 'commentProviders',
@@ -42,7 +42,7 @@ module.exports = class CommentProvider extends Model {
     })
   }
 
-  static async initProvider() {
+  static async initProvider () {
     const commentProvider = await WIKI.models.commentProviders.query().findOne('isEnabled', true)
     if (commentProvider) {
       WIKI.data.commentProvider = {

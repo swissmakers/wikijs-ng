@@ -61,8 +61,8 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     }
   },
   methods: {

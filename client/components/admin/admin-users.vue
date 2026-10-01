@@ -90,7 +90,7 @@ export default {
     StatusIndicator,
     UserCreate
   },
-  data() {
+  data () {
     return {
       selected: [],
       pagination: 1,
@@ -119,10 +119,10 @@ export default {
     }
   },
   methods: {
-    createUser() {
+    createUser () {
       this.isCreateDialogShown = true
     },
-    async refresh(notify = true) {
+    async refresh (notify = true) {
       await this.$apollo.queries.users.refetch()
       if (notify) {
         this.$store.commit('showNotification', {
@@ -132,7 +132,7 @@ export default {
         })
       }
     },
-    getStrategyName(key) {
+    getStrategyName (key) {
       return (_.find(this.strategies, ['key', key]) || {}).displayName || key
     }
   },

@@ -328,7 +328,7 @@ export default {
   },
   methods: {
     async loadVersion (versionId) {
-      this.$store.commit(`loadingStart`, 'history-version-' + versionId)
+      this.$store.commit('loadingStart', 'history-version-' + versionId)
       const resp = await this.$apollo.query({
         query: gql`
           query ($pageId: Int!, $versionId: Int!) {
@@ -362,7 +362,7 @@ export default {
           pageId: this.pageId
         }
       })
-      this.$store.commit(`loadingStop`, 'history-version-' + versionId)
+      this.$store.commit('loadingStop', 'history-version-' + versionId)
       const page = _.get(resp, 'data.pages.version', null)
       if (page) {
         this.cache.push(page)
@@ -386,7 +386,7 @@ export default {
     },
     async restoreConfirm () {
       this.restoreLoading = true
-      this.$store.commit(`loadingStart`, 'history-restore')
+      this.$store.commit('loadingStart', 'history-restore')
       try {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -428,15 +428,15 @@ export default {
           icon: 'alert'
         })
       }
-      this.$store.commit(`loadingStop`, 'history-restore')
+      this.$store.commit('loadingStop', 'history-restore')
       this.restoreLoading = false
     },
     branchOff (versionId) {
       const pathParts = this.path.split('/')
       this.branchOffOpts = {
-        versionId: versionId,
+        versionId,
         locale: this.locale,
-        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + `/new-page` : `new-page`,
+        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + '/new-page' : 'new-page',
         modal: true
       }
     },

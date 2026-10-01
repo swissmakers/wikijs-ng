@@ -30,13 +30,13 @@ module.exports = {
     }
     if (conf.useBlocks) {
       mdinst.block.ruler.after('blockquote', 'katex_block', mathHelper.blockRule('katex_block'), {
-        alt: [ 'paragraph', 'reference', 'blockquote', 'list' ]
+        alt: ['paragraph', 'reference', 'blockquote', 'list']
       })
       mdinst.renderer.rules.katex_block = (tokens, idx) => {
         try {
-          return `<p>` + katex.renderToString(tokens[idx].content, {
+          return '<p>' + katex.renderToString(tokens[idx].content, {
             displayMode: true, macros
-          }) + `</p>`
+          }) + '</p>'
         } catch (err) {
           WIKI.logger.warn(err)
           return tokens[idx].content

@@ -24,7 +24,7 @@ module.exports = {
    * Hash of all loaded strings, lets clients invalidate their cache
    */
   version: '',
-  async init() {
+  async init () {
     this.bundled = await WIKI.models.locales.getBundledLocales()
     this.namespaces = await this.getBundleNamespaces('en')
 
@@ -57,16 +57,16 @@ module.exports = {
   /**
    * Path of the sideload folder for custom / overriding locales
    */
-  getSideloadPath() {
+  getSideloadPath () {
     return path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, 'sideload/locales')
   },
-  isBundled(code) {
+  isBundled (code) {
     return _.some(this.bundled, ['code', code])
   },
   /**
    * Read the sideload manifest (optional) and register the sideloaded locales
    */
-  async loadSideloadManifest() {
+  async loadSideloadManifest () {
     this.sideloaded = []
     const sideloadPath = this.getSideloadPath()
     if (!await fs.pathExists(sideloadPath)) {
@@ -101,7 +101,7 @@ module.exports = {
    * @param {String} filePath Path to the YAML file
    * @returns {Promise<Object|null>} Namespaces or null if the file doesn't exist
    */
-  async readLocaleFile(filePath) {
+  async readLocaleFile (filePath) {
     if (!await fs.pathExists(filePath)) {
       return null
     }
@@ -113,7 +113,7 @@ module.exports = {
    *
    * @param {String} code Locale code
    */
-  async getBundleNamespaces(code) {
+  async getBundleNamespaces (code) {
     const entries = await this.readLocaleFile(path.join(WIKI.SERVERPATH, `locales/${code}.yml`))
     return entries ? _.keys(entries) : ['common']
   },
@@ -123,7 +123,7 @@ module.exports = {
    * @param {String} locale Locale code
    * @param {String} namespace Namespace
    */
-  async getByNamespace(locale, namespace) {
+  async getByNamespace (locale, namespace) {
     if (!this.engine.hasResourceBundle(locale, namespace)) {
       return []
     }
@@ -142,7 +142,7 @@ module.exports = {
    * @param {String} locale Locale code
    * @param {*} opts Additional options
    */
-  async loadLocale(locale, opts = { silent: false }) {
+  async loadLocale (locale, opts = { silent: false }) {
     const layers = []
 
     // -> Bundled locale file (base strings, always available offline)
@@ -203,7 +203,7 @@ module.exports = {
    *
    * @param {String} locale Locale code
    */
-  async setCurrentLocale(locale) {
+  async setCurrentLocale (locale) {
     await this.engine.changeLanguage(locale)
   }
 }

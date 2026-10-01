@@ -87,9 +87,6 @@ module.exports = {
 
     md.block.ruler.before('fence', name, (state, startLine, endLine, silent) => {
       let nextLine
-      let markup
-      let params
-      let token
       let i
       let autoClosed = false
       let start = state.bMarks[startLine] + state.tShift[startLine]
@@ -106,8 +103,8 @@ module.exports = {
         if (openMarker[i] !== state.src[start + i]) { return false }
       }
 
-      markup = state.src.slice(start, start + i)
-      params = state.src.slice(start + i, max)
+      const markup = state.src.slice(start, start + i)
+      const params = state.src.slice(start + i, max)
 
       // Since start is found, we can report success here in validation mode
       //
@@ -173,9 +170,9 @@ module.exports = {
         .join('\n')
 
       // We generate a token list for the alt property, to mimic what the image parser does.
-      let altToken = []
+      const altToken = []
       // Remove leading space if any.
-      let alt = params ? params.slice(1) : 'uml diagram'
+      const alt = params ? params.slice(1) : 'uml diagram'
       state.md.inline.parse(
         alt,
         state.md,
@@ -183,20 +180,20 @@ module.exports = {
         altToken
       )
 
-      token = state.push(name, 'img', 0)
+      const token = state.push(name, 'img', 0)
       // alt is constructed from children. No point in populating it here.
-      token.attrs = [ [ 'src', getImageSrc(contents) ], [ 'alt', '' ], ['class', 'uml-diagram prefetch-candidate'] ]
+      token.attrs = [['src', getImageSrc(contents)], ['alt', ''], ['class', 'uml-diagram prefetch-candidate']]
       token.block = true
       token.children = altToken
       token.info = params
-      token.map = [ startLine, nextLine ]
+      token.map = [startLine, nextLine]
       token.markup = markup
 
       state.line = nextLine + (autoClosed ? 1 : 0)
 
       return true
     }, {
-      alt: [ 'paragraph', 'reference', 'blockquote', 'list' ]
+      alt: ['paragraph', 'reference', 'blockquote', 'list']
     })
     md.renderer.rules[name] = md.renderer.rules.image
   }

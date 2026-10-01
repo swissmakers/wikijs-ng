@@ -4,7 +4,7 @@ const EventEmitter = require('eventemitter2').EventEmitter2
 /* global WIKI */
 
 module.exports = {
-  async init() {
+  async init () {
     WIKI.logger.info('=======================================')
     WIKI.logger.info(`= Wiki.js NG ${_.padEnd(WIKI.version + ' ', 26, '=')}`)
     WIKI.logger.info('=======================================')
@@ -29,7 +29,7 @@ module.exports = {
   /**
    * Pre-Master Boot Sequence
    */
-  async preBootMaster() {
+  async preBootMaster () {
     try {
       this.initProcessHandlers()
       WIKI.cache = require('./cache').init()
@@ -48,7 +48,7 @@ module.exports = {
   /**
    * Boot Master Process
    */
-  async bootMaster() {
+  async bootMaster () {
     try {
       if (WIKI.config.setup) {
         WIKI.logger.info('Starting setup wizard...')
@@ -66,7 +66,7 @@ module.exports = {
   /**
    * Post-Master Boot Sequence
    */
-  async postBootMaster() {
+  async postBootMaster () {
     await WIKI.models.analytics.refreshProvidersFromDisk()
     await WIKI.models.authentication.refreshStrategiesFromDisk()
     await WIKI.models.commentProviders.refreshProvidersFromDisk()
@@ -86,7 +86,7 @@ module.exports = {
   /**
    * Init global process error handlers
    */
-  initProcessHandlers() {
+  initProcessHandlers () {
     process.on('unhandledRejection', (err) => {
       WIKI.logger.warn(err)
     })

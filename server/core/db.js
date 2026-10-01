@@ -21,19 +21,21 @@ module.exports = {
    *
    * @return     {Object}  DB instance
    */
-  init() {
-    let self = this
+  init () {
+    const self = this
 
     // Fetch DB Config
 
     let dbClient = null
-    let dbConfig = (!_.isEmpty(process.env.DATABASE_URL)) ? process.env.DATABASE_URL : {
-      host: WIKI.config.db.host.toString(),
-      user: WIKI.config.db.user.toString(),
-      password: WIKI.config.db.pass.toString(),
-      database: WIKI.config.db.db.toString(),
-      port: WIKI.config.db.port
-    }
+    let dbConfig = (!_.isEmpty(process.env.DATABASE_URL))
+      ? process.env.DATABASE_URL
+      : {
+          host: WIKI.config.db.host.toString(),
+          user: WIKI.config.db.user.toString(),
+          password: WIKI.config.db.pass.toString(),
+          database: WIKI.config.db.db.toString(),
+          port: WIKI.config.db.port
+        }
 
     // Handle SSL Options
 
@@ -99,7 +101,7 @@ module.exports = {
         // Fix mysql boolean handling...
         dbConfig.typeCast = (field, next) => {
           if (field.type === 'TINY' && field.length === 1) {
-            let value = field.string()
+            const value = field.string()
             return value ? (value === '1') : null
           }
           return next()
@@ -137,20 +139,20 @@ module.exports = {
       connection: dbConfig,
       pool: {
         ...WIKI.config.pool,
-        afterCreate(conn, done) {
+        afterCreate (conn, done) {
           // -> Callback style: knex promisifies this hook, errors must reach done()
           const setup = async () => {
             switch (WIKI.config.db.type) {
               case 'postgres':
                 // -> Set Connection App Name
-                await conn.query(`set application_name = 'Wiki.js NG'`)
+                await conn.query('set application_name = \'Wiki.js NG\'')
                 // -> Set schema if it's not public
                 if (WIKI.config.db.schema && WIKI.config.db.schema !== 'public') {
                   await conn.query(`set search_path TO ${WIKI.config.db.schema}, public;`)
                 }
                 break
               case 'mysql':
-                await conn.promise().query(`set autocommit = 1`)
+                await conn.promise().query('set autocommit = 1')
                 break
             }
           }
@@ -168,7 +170,7 @@ module.exports = {
 
     // Set init tasks
     let conAttempts = 0
-    let initTasks = {
+    const initTasks = {
       // -> Attempt initial connection
       async connect () {
         try {
@@ -209,13 +211,15 @@ module.exports = {
       }
     }
 
-    let initTasksQueue = (WIKI.IS_MASTER) ? [
-      initTasks.connect,
-      initTasks.checkBetaSchema,
-      initTasks.syncSchemas
-    ] : [
-      () => { return Promise.resolve() }
-    ]
+    const initTasksQueue = (WIKI.IS_MASTER)
+      ? [
+          initTasks.connect,
+          initTasks.checkBetaSchema,
+          initTasks.syncSchemas
+        ]
+      : [
+          () => { return Promise.resolve() }
+        ]
 
     // Perform init tasks
 
@@ -240,7 +244,7 @@ module.exports = {
     if (!useHA) {
       return
     } else if (WIKI.config.db.type !== 'postgres') {
-      WIKI.logger.warn(`Database engine doesn't support pub/sub. Will not handle concurrent instances: [ DISABLED ]`)
+      WIKI.logger.warn('Database engine doesn\'t support pub/sub. Will not handle concurrent instances: [ DISABLED ]')
       return
     }
 
@@ -268,7 +272,7 @@ module.exports = {
     WIKI.configSvc.subscribeToEvents()
     WIKI.models.pages.subscribeToEvents()
 
-    WIKI.logger.info(`High-Availability Listener initialized successfully: [ OK ]`)
+    WIKI.logger.info('High-Availability Listener initialized successfully: [ OK ]')
   },
   /**
    * Unsubscribe from database LISTEN / NOTIFY

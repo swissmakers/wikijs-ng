@@ -37,7 +37,7 @@ describe('README screenshots', () => {
   it('search overlay', () => {
     cy.visit('/home')
     cy.get('.contents', { timeout: 20000 }).should('be.visible')
-    cy.get('header input[type=text]').first().click().type('installation')
+    cy.get('header input[type=text]').first().type('installation')
     cy.get('.search-results-items', { timeout: 15000 }).should('be.visible')
     cy.wait(750)
     cy.screenshot('search', { capture: 'viewport', overwrite: true })

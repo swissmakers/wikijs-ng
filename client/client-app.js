@@ -46,15 +46,15 @@ const graphQLLink = ApolloLink.from([
   onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       let isAuthError = false
-      graphQLErrors.map(({ message, locations, path }) => {
-        if (message === `Forbidden`) {
+      graphQLErrors.forEach(({ message, locations, path }) => {
+        if (message === 'Forbidden') {
           isAuthError = true
         }
         console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
       })
       store.commit('showNotification', {
         style: 'red',
-        message: isAuthError ? `You are not authorized to access this resource.` : `An unexpected error occurred.`,
+        message: isAuthError ? 'You are not authorized to access this resource.' : 'An unexpected error occurred.',
         icon: 'alert'
       })
     }
@@ -158,7 +158,7 @@ Vue.component('Welcome', () => import(/* webpackChunkName: "welcome" */ './compo
 Vue.component('NavFooter', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/nav-footer.vue'))
 Vue.component('Page', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/page.vue'))
 
-let bootstrap = () => {
+const bootstrap = () => {
   // ====================================
   // Notifications
   // ====================================

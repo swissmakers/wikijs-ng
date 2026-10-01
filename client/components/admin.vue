@@ -172,7 +172,7 @@ const router = new VueRouter({
 
 export default {
   i18nOptions: { namespaces: 'admin' },
-  data() {
+  data () {
     return {
       adminDrawerShown: true,
       scrollStyle: {
@@ -183,7 +183,7 @@ export default {
           scrollingX: false,
           easing: 'easeOutQuad',
           speed: 1000,
-          verticalNativeBarPos: this.$vuetify.rtl ? `left` : `right`
+          verticalNativeBarPos: this.$vuetify.rtl ? 'left' : 'right'
         },
         rail: {
           gutterOfEnds: '2px'
@@ -203,11 +203,11 @@ export default {
     permissions: get('user/permissions')
   },
   router,
-  created() {
+  created () {
     this.$store.commit('page/SET_MODE', 'admin')
   },
   methods: {
-    hasPermission(prm) {
+    hasPermission (prm) {
       if (_.isArray(prm)) {
         return _.some(prm, p => {
           return _.includes(this.permissions, p)
@@ -222,7 +222,7 @@ export default {
       query: statsQuery,
       fetchPolicy: 'network-only',
       manual: true,
-      result({ data, loading, networkStatus }) {
+      result ({ data, loading, networkStatus }) {
         this.info = data.system.info
       },
       watchLoading (isLoading) {

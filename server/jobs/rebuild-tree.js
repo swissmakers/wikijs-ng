@@ -3,7 +3,7 @@ const _ = require('lodash')
 /* global WIKI */
 
 module.exports = async (pageId) => {
-  WIKI.logger.info(`Rebuilding page tree...`)
+  WIKI.logger.info('Rebuilding page tree...')
 
   try {
     WIKI.models = require('../core/db').init()
@@ -11,7 +11,7 @@ module.exports = async (pageId) => {
     await WIKI.configSvc.applyFlags()
 
     const pages = await WIKI.models.pages.query().select('id', 'path', 'localeCode', 'title', 'isPrivate', 'privateNS').orderBy(['localeCode', 'path'])
-    let tree = []
+    const tree = []
     let pik = 0
 
     for (const page of pages) {
@@ -19,7 +19,7 @@ module.exports = async (pageId) => {
       let currentPath = ''
       let depth = 0
       let parentId = null
-      let ancestors = []
+      const ancestors = []
       for (const part of pagePaths) {
         depth++
         const isFolder = (depth < pagePaths.length)
@@ -34,9 +34,9 @@ module.exports = async (pageId) => {
             id: pik,
             localeCode: page.localeCode,
             path: currentPath,
-            depth: depth,
+            depth,
             title: isFolder ? part : page.title,
-            isFolder: isFolder,
+            isFolder,
             isPrivate: !isFolder && page.isPrivate,
             privateNS: !isFolder ? page.privateNS : null,
             parent: parentId,
@@ -70,9 +70,9 @@ module.exports = async (pageId) => {
 
     await WIKI.models.knex.destroy()
 
-    WIKI.logger.info(`Rebuilding page tree: [ COMPLETED ]`)
+    WIKI.logger.info('Rebuilding page tree: [ COMPLETED ]')
   } catch (err) {
-    WIKI.logger.error(`Rebuilding page tree: [ FAILED ]`)
+    WIKI.logger.error('Rebuilding page tree: [ FAILED ]')
     WIKI.logger.error(err.message)
     // exit process with error code
     throw err

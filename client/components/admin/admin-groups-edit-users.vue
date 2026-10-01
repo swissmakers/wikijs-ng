@@ -64,7 +64,7 @@ export default {
   components: {
     UserSearch
   },
-  data() {
+  data () {
     return {
       headers: [
         { text: 'ID', value: 'id', width: 70 },
@@ -80,8 +80,8 @@ export default {
   },
   computed: {
     group: {
-      get() { return this.value },
-      set(val) { this.$set('input', val) }
+      get () { return this.value },
+      set (val) { this.$set('input', val) }
     },
     pages () {
       if (this.pagination.rowsPerPage == null || this.pagination.totalItems == null) {
@@ -92,7 +92,7 @@ export default {
     }
   },
   methods: {
-    async assignUser({ id, email, name }) {
+    async assignUser ({ id, email, name }) {
       try {
         await this.$apollo.mutate({
           mutation: assignUserMutation,
@@ -118,7 +118,7 @@ export default {
         })
       }
     },
-    async unassignUser(id) {
+    async unassignUser (id) {
       try {
         await this.$apollo.mutate({
           mutation: unassignUserMutation,

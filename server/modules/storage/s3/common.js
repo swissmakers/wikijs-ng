@@ -18,11 +18,12 @@ const getFilePath = (page, pathKey) => {
  * Can be used with S3 compatible storage.
  */
 module.exports = class S3CompatibleStorage {
-  constructor(storageName) {
+  constructor (storageName) {
     this.storageName = storageName
     this.bucketName = ''
   }
-  async init() {
+
+  async init () {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Initializing...`)
     const { accessKeyId, secretAccessKey, bucket } = this.config
     const s3Config = {
@@ -54,22 +55,26 @@ module.exports = class S3CompatibleStorage {
 
     WIKI.logger.info(`(STORAGE/${this.storageName}) Initialization completed.`)
   }
-  async created(page) {
+
+  async created (page) {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Creating file ${page.path}...`)
     const filePath = getFilePath(page, 'path')
     await this.s3.send(new PutObjectCommand({ Bucket: this.bucketName, Key: filePath, Body: page.injectMetadata() }))
   }
-  async updated(page) {
+
+  async updated (page) {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Updating file ${page.path}...`)
     const filePath = getFilePath(page, 'path')
     await this.s3.send(new PutObjectCommand({ Bucket: this.bucketName, Key: filePath, Body: page.injectMetadata() }))
   }
-  async deleted(page) {
+
+  async deleted (page) {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Deleting file ${page.path}...`)
     const filePath = getFilePath(page, 'path')
     await this.s3.send(new DeleteObjectCommand({ Bucket: this.bucketName, Key: filePath }))
   }
-  async renamed(page) {
+
+  async renamed (page) {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Renaming file ${page.path} to ${page.destinationPath}...`)
     let sourceFilePath = getFilePath(page, 'path')
     let destinationFilePath = getFilePath(page, 'destinationPath')
@@ -84,6 +89,7 @@ module.exports = class S3CompatibleStorage {
     await this.s3.send(new CopyObjectCommand({ Bucket: this.bucketName, CopySource: `${this.bucketName}/${sourceFilePath}`, Key: destinationFilePath }))
     await this.s3.send(new DeleteObjectCommand({ Bucket: this.bucketName, Key: sourceFilePath }))
   }
+
   /**
    * ASSET UPLOAD
    *
@@ -93,6 +99,7 @@ module.exports = class S3CompatibleStorage {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Creating new file ${asset.path}...`)
     await this.s3.send(new PutObjectCommand({ Bucket: this.bucketName, Key: asset.path, Body: asset.data }))
   }
+
   /**
    * ASSET DELETE
    *
@@ -102,6 +109,7 @@ module.exports = class S3CompatibleStorage {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Deleting file ${asset.path}...`)
     await this.s3.send(new DeleteObjectCommand({ Bucket: this.bucketName, Key: asset.path }))
   }
+
   /**
    * ASSET RENAME
    *
@@ -112,13 +120,15 @@ module.exports = class S3CompatibleStorage {
     await this.s3.send(new CopyObjectCommand({ Bucket: this.bucketName, CopySource: `${this.bucketName}/${asset.path}`, Key: asset.destinationPath }))
     await this.s3.send(new DeleteObjectCommand({ Bucket: this.bucketName, Key: asset.path }))
   }
+
   async getLocalLocation () {
 
   }
+
   /**
    * HANDLERS
    */
-  async exportAll() {
+  async exportAll () {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Exporting all content to the cloud provider...`)
 
     await storageExport.exportAll({

@@ -37,10 +37,10 @@ module.exports = {
               try {
                 await this.processPage({
                   user: rootUser,
-                  relPath: relPath,
-                  fullPath: fullPath,
-                  contentType: contentType,
-                  moduleName: moduleName
+                  relPath,
+                  fullPath,
+                  contentType,
+                  moduleName
                 })
               } catch (err) {
                 WIKI.logger.warn(`(STORAGE/${moduleName}) Failed to process page ${relPath}`)
@@ -52,10 +52,10 @@ module.exports = {
               try {
                 await this.processAsset({
                   user: rootUser,
-                  relPath: relPath,
-                  file: file,
-                  contentType: contentType,
-                  moduleName: moduleName
+                  relPath,
+                  file,
+                  contentType,
+                  moduleName
                 })
               } catch (err) {
                 WIKI.logger.warn(`(STORAGE/${moduleName}) Failed to process asset ${relPath}`)
@@ -91,7 +91,7 @@ module.exports = {
         isPublished: _.get(pageData, 'isPublished', currentPage.isPublished),
         isPrivate: false,
         content: pageData.content,
-        user: user,
+        user,
         skipStorage: true
       })
     } else {
@@ -107,7 +107,7 @@ module.exports = {
         isPublished: _.get(pageData, 'isPublished', true),
         isPrivate: false,
         content: pageData.content,
-        user: user,
+        user,
         editor: pageEditor,
         skipStorage: true
       })
@@ -130,7 +130,7 @@ module.exports = {
     // -> Create missing folder structure
     if (!folderId && folderPath !== '.') {
       const folderParts = folderPath.split('/')
-      let currentFolderPath = []
+      const currentFolderPath = []
       let currentFolderParentId = null
       for (const folderPart of folderParts) {
         currentFolderPath.push(folderPart)
@@ -157,10 +157,10 @@ module.exports = {
       ext: filePathInfo.ext,
       mimetype: mime(filePathInfo.base) || 'application/octet-stream',
       size: file.stats.size,
-      folderId: folderId,
+      folderId,
       path: file.path,
       assetPath: relPath,
-      user: user,
+      user,
       skipStorage: true
     })
   },

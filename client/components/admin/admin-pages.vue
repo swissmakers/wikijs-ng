@@ -82,7 +82,7 @@ import _ from 'lodash'
 import pagesQuery from 'gql/common/common-pages-query-list.gql'
 
 export default {
-  data() {
+  data () {
     return {
       selectedPage: {},
       pagination: 1,
@@ -129,7 +129,7 @@ export default {
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.pages.refetch()
       this.$store.commit('showNotification', {
         message: 'Page list has been refreshed.',
@@ -137,7 +137,7 @@ export default {
         icon: 'cached'
       })
     },
-    newpage() {
+    newpage () {
       this.pageSelectorShown = true
     }
   },

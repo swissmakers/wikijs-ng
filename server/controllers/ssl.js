@@ -12,10 +12,10 @@ router.get('/.well-known/acme-challenge/:token', (req, res, next) => {
   if (_.get(WIKI.config, 'letsencrypt.challenge', false)) {
     if (WIKI.config.letsencrypt.challenge.token === req.params.token) {
       res.send(WIKI.config.letsencrypt.challenge.keyAuthorization)
-      WIKI.logger.info(`(LETSENCRYPT) Received valid challenge request. [ ACCEPTED ]`)
+      WIKI.logger.info('(LETSENCRYPT) Received valid challenge request. [ ACCEPTED ]')
     } else {
       res.status(406).send('Invalid Challenge Token!')
-      WIKI.logger.warn(`(LETSENCRYPT) Received invalid challenge request. [ REJECTED ]`)
+      WIKI.logger.warn('(LETSENCRYPT) Received invalid challenge request. [ REJECTED ]')
     }
   } else {
     res.status(418).end()

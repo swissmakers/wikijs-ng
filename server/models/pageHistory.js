@@ -8,7 +8,7 @@ const { DateTime, Duration } = require('luxon')
  * Page History model
  */
 module.exports = class PageHistory extends Model {
-  static get tableName() { return 'pageHistory' }
+  static get tableName () { return 'pageHistory' }
 
   static get jsonSchema () {
     return {
@@ -16,23 +16,23 @@ module.exports = class PageHistory extends Model {
       required: ['path', 'title'],
 
       properties: {
-        id: {type: 'integer'},
-        path: {type: 'string'},
-        hash: {type: 'string'},
-        title: {type: 'string'},
-        description: {type: 'string'},
-        isPublished: {type: 'boolean'},
-        publishStartDate: {type: 'string'},
-        publishEndDate: {type: 'string'},
-        content: {type: 'string'},
-        contentType: {type: 'string'},
+        id: { type: 'integer' },
+        path: { type: 'string' },
+        hash: { type: 'string' },
+        title: { type: 'string' },
+        description: { type: 'string' },
+        isPublished: { type: 'boolean' },
+        publishStartDate: { type: 'string' },
+        publishEndDate: { type: 'string' },
+        content: { type: 'string' },
+        contentType: { type: 'string' },
 
-        createdAt: {type: 'string'}
+        createdAt: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       tags: {
         relation: Model.ManyToManyRelation,
@@ -81,14 +81,14 @@ module.exports = class PageHistory extends Model {
     }
   }
 
-  $beforeInsert() {
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
   }
 
   /**
    * Create Page Version
    */
-  static async addVersion(opts) {
+  static async addVersion (opts) {
     await WIKI.models.pageHistory.query().insert({
       pageId: opts.id,
       authorId: opts.authorId,
@@ -112,7 +112,7 @@ module.exports = class PageHistory extends Model {
   /**
    * Get Page Version
    */
-  static async getVersion({ pageId, versionId }) {
+  static async getVersion ({ pageId, versionId }) {
     const version = await WIKI.models.pageHistory.query()
       .column([
         'pageHistory.path',
@@ -155,7 +155,7 @@ module.exports = class PageHistory extends Model {
   /**
    * Get History Trail of a Page
    */
-  static async getHistory({ pageId, offsetPage = 0, offsetSize = 100 }) {
+  static async getHistory ({ pageId, offsetPage = 0, offsetSize = 100 }) {
     const history = await WIKI.models.pageHistory.query()
       .column([
         'pageHistory.id',

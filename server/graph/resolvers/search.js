@@ -5,13 +5,13 @@ const graphHelper = require('../../helpers/graph')
 
 module.exports = {
   Query: {
-    async search() { return {} }
+    async search () { return {} }
   },
   Mutation: {
-    async search() { return {} }
+    async search () { return {} }
   },
   SearchQuery: {
-    async searchEngines(obj, args, context, info) {
+    async searchEngines (obj, args, context, info) {
       let searchEngines = await WIKI.models.searchEngines.getSearchEngines()
       // -> Skip engines that have no definition on disk (stale rows would fail the whole query)
       searchEngines = searchEngines.filter(searchEngine => _.some(WIKI.data.searchEngines, ['key', searchEngine.key]))
@@ -29,10 +29,10 @@ module.exports = {
     }
   },
   SearchMutation: {
-    async updateSearchEngines(obj, args, context) {
+    async updateSearchEngines (obj, args, context) {
       try {
         let newActiveEngine = ''
-        for (let searchEngine of args.engines) {
+        for (const searchEngine of args.engines) {
           if (searchEngine.isEnabled) {
             newActiveEngine = searchEngine.key
           }

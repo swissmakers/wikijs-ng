@@ -101,7 +101,7 @@ import 'codemirror/addon/merge/merge.css'
 
 export default {
   mixins: [conflictLatestMixin],
-  data() {
+  data () {
     return {
       cm: null
     }
@@ -120,7 +120,7 @@ export default {
       this.isRemoteConfirmDiagShown = false
       this.activeModal = ''
     },
-    overwriteAndClose() {
+    overwriteAndClose () {
       this.checkoutDateActive = this.latest.updatedAt
       this.$root.$emit('overwriteEditorContent')
       this.$root.$emit('resetEditorConflict')

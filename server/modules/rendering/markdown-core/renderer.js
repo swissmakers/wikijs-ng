@@ -20,16 +20,16 @@ const quoteStyles = {
 }
 
 module.exports = {
-  async render() {
+  async render () {
     const mkdown = md({
       html: this.config.allowHTML,
       breaks: this.config.linebreaks,
       linkify: this.config.linkify,
       typographer: this.config.typographer,
       quotes: _.get(quoteStyles, this.config.quotes, quoteStyles.English),
-      highlight(str, lang) {
+      highlight (str, lang) {
         if (lang === 'diagram') {
-          return `<pre class="diagram">` + Buffer.from(str, 'base64').toString() + `</pre>`
+          return '<pre class="diagram">' + Buffer.from(str, 'base64').toString() + '</pre>'
         } else {
           return `<pre><code class="language-${lang}">${_.escape(str)}</code></pre>`
         }
@@ -45,7 +45,7 @@ module.exports = {
     })
     mkdown.use(mdDecorate)
 
-    for (let child of this.children) {
+    for (const child of this.children) {
       const renderer = require(`../${_.kebabCase(child.key)}/renderer.js`)
       await renderer.init(mkdown, child.config)
     }

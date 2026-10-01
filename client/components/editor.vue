@@ -168,7 +168,7 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {
       isSaving: false,
       isConflict: false,
@@ -200,7 +200,7 @@ export default {
     currentEditor: sync('editor/editor'),
     activeModal: sync('editor/activeModal'),
     mode: get('editor/mode'),
-    welcomeMode() { return this.mode === `create` && this.path === `home` },
+    welcomeMode () { return this.mode === 'create' && this.path === 'home' },
     currentPageTitle: sync('page/title'),
     checkoutDateActive: sync('editor/checkoutDateActive'),
     currentStyling: get('page/scriptCss'),
@@ -223,18 +223,18 @@ export default {
     }
   },
   watch: {
-    currentEditor(newValue, oldValue) {
+    currentEditor (newValue, oldValue) {
       if (newValue !== '' && this.mode === 'create') {
         _.delay(() => {
           this.dialogProps = true
         }, 500)
       }
     },
-    currentStyling(newValue) {
+    currentStyling (newValue) {
       this.injectCustomCss(newValue)
     }
   },
-  created() {
+  created () {
     this.$store.set('page/id', this.pageId)
     this.$store.set('page/description', this.description)
     this.$store.set('page/isPublished', this.isPublished)
@@ -259,7 +259,7 @@ export default {
       this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
   },
-  mounted() {
+  mounted () {
     this.$store.set('editor/mode', this.initMode || 'create')
 
     this.initContentParsed = this.initContent ? Buffer.from(this.initContent, 'base64').toString('utf8') : ''
@@ -299,19 +299,19 @@ export default {
     }
   },
   methods: {
-    openPropsModal(name) {
+    openPropsModal (name) {
       this.dialogProps = true
     },
-    showProgressDialog(textKey) {
+    showProgressDialog (textKey) {
       this.dialogProgress = true
     },
-    hideProgressDialog() {
+    hideProgressDialog () {
       this.dialogProgress = false
     },
-    openConflict() {
+    openConflict () {
       this.$root.$emit('saveConflict')
     },
-    async save({ rethrow = false, overwrite = false } = {}) {
+    async save ({ rethrow = false, overwrite = false } = {}) {
       this.showProgressDialog('saving')
       this.isSaving = true
 
@@ -546,7 +546,7 @@ export default {
       this.isSaving = false
       this.hideProgressDialog()
     },
-    async saveAndClose() {
+    async saveAndClose () {
       try {
         if (this.$store.get('editor/mode') === 'create') {
           await this.save()
@@ -558,20 +558,20 @@ export default {
         // Error is already handled
       }
     },
-    async exit() {
+    async exit () {
       if (this.isDirty) {
         this.dialogUnsaved = true
       } else {
         this.exitGo()
       }
     },
-    exitGo() {
-      this.$store.commit(`loadingStart`, 'editor-close')
+    exitGo () {
+      this.$store.commit('loadingStart', 'editor-close')
       this.currentEditor = ''
       this.exitConfirmed = true
       _.delay(() => {
         if (this.$store.get('editor/mode') === 'create') {
-          window.location.assign(`/`)
+          window.location.assign('/')
         } else {
           window.location.assign(`/${this.$store.get('page/locale')}/${this.$store.get('page/path')}`)
         }

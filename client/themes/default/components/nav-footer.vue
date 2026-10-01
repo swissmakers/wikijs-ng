@@ -30,7 +30,7 @@ export default {
       default: 'grey darken-3'
     }
   },
-  data() {
+  data () {
     return {
       currentYear: (new Date()).getFullYear()
     }
@@ -43,7 +43,7 @@ export default {
       if (!this.footerOverride) { return '' }
       return md.renderInline(this.footerOverride)
     },
-    bgColor() {
+    bgColor () {
       if (!this.$vuetify.theme.dark) {
         return this.color
       } else {

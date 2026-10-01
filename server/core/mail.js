@@ -8,7 +8,7 @@ const path = require('path')
 module.exports = {
   transport: null,
   templates: {},
-  init() {
+  init () {
     if (_.get(WIKI.config, 'mail.host', '').length > 2) {
       let conf = {
         host: WIKI.config.mail.host,
@@ -45,7 +45,7 @@ module.exports = {
     }
     return this
   },
-  async send(opts) {
+  async send (opts) {
     if (!this.transport) {
       WIKI.logger.warn('Cannot send email because mail is not setup in the administration area!')
       throw new WIKI.Error.MailNotConfigured()
@@ -71,11 +71,11 @@ module.exports = {
    * Absolute logo URL for e-mails. Most mail clients do not display SVG images,
    * so the bundled SVG logo is replaced by its PNG icon.
    */
-  getLogoUrl() {
+  getLogoUrl () {
     const logoUrl = WIKI.config.logoUrl === '/_assets/svg/logo-swissmakers.svg' ? '/_assets/favicons/android-chrome-256x256.png' : WIKI.config.logoUrl
     return (logoUrl.startsWith('http') ? '' : WIKI.config.host) + logoUrl
   },
-  async loadTemplate(key) {
+  async loadTemplate (key) {
     if (_.has(this.templates, key)) { return }
     const keyKebab = _.kebabCase(key)
     try {

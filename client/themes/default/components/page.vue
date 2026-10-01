@@ -309,7 +309,7 @@ Prism.plugins.NormalizeWhitespace.setDefaults({
   'tabs-to-spaces': 2
 })
 Prism.plugins.toolbar.registerButton('copy-to-clipboard', (env) => {
-  let linkCopy = document.createElement('button')
+  const linkCopy = document.createElement('button')
   linkCopy.textContent = 'Copy'
 
   const clip = new ClipboardJS(linkCopy, {
@@ -327,7 +327,7 @@ Prism.plugins.toolbar.registerButton('copy-to-clipboard', (env) => {
 
   return linkCopy
 
-  function resetClipboardText() {
+  function resetClipboardText () {
     setTimeout(() => {
       linkCopy.textContent = 'Copy'
     }, 5000)
@@ -425,7 +425,7 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {
       navShown: false,
       upBtnShown: false,
@@ -479,9 +479,9 @@ export default {
     },
     upBtnPosition () {
       if (this.$vuetify.breakpoint.mdAndUp) {
-        return this.$vuetify.rtl ? `right: 235px;` : `left: 235px;`
+        return this.$vuetify.rtl ? 'right: 235px;' : 'left: 235px;'
       } else {
-        return this.$vuetify.rtl ? `right: 65px;` : `left: 65px;`
+        return this.$vuetify.rtl ? 'right: 65px;' : 'left: 65px;'
       }
     },
     sidebarDecoded () {
@@ -500,7 +500,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.$store.set('page/authorId', this.authorId)
     this.$store.set('page/authorName', this.authorName)
     this.$store.set('page/createdAt', this.createdAt)
@@ -561,7 +561,7 @@ export default {
     // -> Render Mermaid diagrams
     mermaid.initialize({
       startOnLoad: false,
-      theme: this.$vuetify.theme.dark ? `dark` : `default`
+      theme: this.$vuetify.theme.dark ? 'dark' : 'default'
     })
     mermaid.run({ querySelector: '.mermaid' })
 

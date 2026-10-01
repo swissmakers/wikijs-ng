@@ -25,7 +25,7 @@ module.exports = () => {
   // Define Express App
   // ----------------------------------------
 
-  let app = express()
+  const app = express()
   app.use(compression())
 
   // ----------------------------------------
@@ -64,7 +64,7 @@ module.exports = () => {
   // ----------------------------------------
 
   app.get('*', async (req, res) => {
-    let packageObj = await fs.readJson(path.join(WIKI.ROOTPATH, 'package.json'))
+    const packageObj = await fs.readJson(path.join(WIKI.ROOTPATH, 'package.json'))
     res.render('setup', { packageObj })
   })
 
@@ -193,8 +193,8 @@ module.exports = () => {
         config: {},
         selfRegistration: false,
         isEnabled: true,
-        domainWhitelist: {v: []},
-        autoEnrollGroups: {v: []},
+        domainWhitelist: { v: [] },
+        autoEnrollGroups: { v: [] },
         order: 0,
         strategyKey: 'local',
         displayName: 'Local'
@@ -330,10 +330,10 @@ module.exports = () => {
   WIKI.server = http.createServer(app)
   WIKI.server.listen(WIKI.config.port, WIKI.config.bindIP)
 
-  var openConnections = []
+  const openConnections = []
 
   WIKI.server.on('connection', (conn) => {
-    let key = conn.remoteAddress + ':' + conn.remotePort
+    const key = conn.remoteAddress + ':' + conn.remotePort
     openConnections[key] = conn
     conn.on('close', () => {
       openConnections.splice(key, 1)
@@ -342,7 +342,7 @@ module.exports = () => {
 
   WIKI.server.destroy = (cb) => {
     WIKI.server.close(cb)
-    for (let key in openConnections) {
+    for (const key in openConnections) {
       openConnections[key].destroy()
     }
   }

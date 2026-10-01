@@ -161,7 +161,7 @@ export default {
     StatusIndicator,
     AdminPagesAccess: () => import(/* webpackChunkName: "admin" */ './admin-pages-access.vue')
   },
-  data() {
+  data () {
     return {
       deletePageDialog: false,
       page: {},
@@ -169,9 +169,9 @@ export default {
     }
   },
   methods: {
-    async deletePage() {
+    async deletePage () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'page-delete')
+      this.$store.commit('loadingStart', 'page-delete')
       try {
         const resp = await this.$apollo.mutate({
           mutation: deletePageMutation,
@@ -182,7 +182,7 @@ export default {
         if (_.get(resp, 'data.pages.delete.responseResult.succeeded', false)) {
           this.$store.commit('showNotification', {
             style: 'green',
-            message: `Page deleted successfully.`,
+            message: 'Page deleted successfully.',
             icon: 'check'
           })
           this.$router.replace('/pages')
@@ -192,11 +192,11 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'page-delete')
+      this.$store.commit('loadingStop', 'page-delete')
     },
-    async rerenderPage() {
+    async rerenderPage () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'page-render')
+      this.$store.commit('loadingStart', 'page-render')
       try {
         const resp = await this.$apollo.mutate({
           mutation: renderPageMutation,
@@ -217,14 +217,14 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'page-render')
+      this.$store.commit('loadingStop', 'page-render')
       this.loading = false
     }
   },
   apollo: {
     page: {
       query: pageQuery,
-      variables() {
+      variables () {
         return {
           id: _.toSafeInteger(this.$route.params.id)
         }

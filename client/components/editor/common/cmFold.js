@@ -8,7 +8,7 @@ const codeBlockStartMatch = /^`{3}[a-zA-Z0-9]+$/
 const codeBlockEndMatch = /^`{3}$/
 
 export default {
-  register(lang) {
+  register (lang) {
     CodeMirror.registerHelper('fold', lang, foldHandler)
   }
 }
@@ -18,12 +18,12 @@ function foldHandler (cm, start) {
   const lastLineNo = cm.lastLine()
   let end
 
-  function isHeader(lineNo) {
+  function isHeader (lineNo) {
     const tokentype = cm.getTokenTypeAt(CodeMirror.Pos(lineNo, 0))
     return tokentype && /\bheader\b/.test(tokentype)
   }
 
-  function headerLevel(lineNo, line, nextLine) {
+  function headerLevel (lineNo, line, nextLine) {
     let match = line && line.match(/^#+/)
     if (match && isHeader(lineNo)) return match[0].length
     match = nextLine && nextLine.match(/^[=-]+\s*$/)

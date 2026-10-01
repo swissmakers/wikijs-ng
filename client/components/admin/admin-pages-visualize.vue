@@ -41,7 +41,7 @@ import gql from 'graphql-tag'
 /* global siteConfig, siteLangs */
 
 export default {
-  data() {
+  data () {
     return {
       graphMode: 'htree',
       width: 800,
@@ -95,7 +95,7 @@ export default {
     hierarchy (pages) {
       const map = new Map(pages.map(p => [p.path, p]))
       const getPage = path => map.get(path) || {
-        path: path,
+        path,
         title: path.split('/').slice(-1)[0],
         links: []
       }
@@ -151,7 +151,7 @@ export default {
         .join('path')
         .style('mix-blend-mode', 'multiply')
         .attr('d', ([i, o]) => line(i.path(o)))
-        .each(function(d) { d.path = this })
+        .each(function (d) { d.path = this })
 
       g.append('g')
         .attr('font-family', 'sans-serif')
@@ -168,7 +168,7 @@ export default {
         .attr('fill', this.$vuetify.theme.dark ? 'white' : '')
         .attr('cursor', 'pointer')
         .text(d => d.data.title)
-        .each(function(d) { d.text = this })
+        .each(function (d) { d.text = this })
         .on('mouseover', overed)
         .on('mouseout', outed)
         .on('click', (event, d) => this.goToPage(event, d))
@@ -178,7 +178,7 @@ export default {
         .clone(true).lower()
         .attr('stroke', this.$vuetify.theme.dark ? '#222' : 'white')
 
-      function overed(event, d) {
+      function overed (event, d) {
         link.style('mix-blend-mode', null)
         d3.select(this).attr('font-weight', 'bold')
         d3.selectAll(d.incoming.map(d => d.path)).attr('stroke', '#2196F3').raise()
@@ -187,7 +187,7 @@ export default {
         d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr('fill', '#E91E63').attr('font-weight', 'bold')
       }
 
-      function outed(event, d) {
+      function outed (event, d) {
         link.style('mix-blend-mode', 'multiply')
         d3.select(this).attr('font-weight', null)
         d3.selectAll(d.incoming.map(d => d.path)).attr('stroke', null)
@@ -336,8 +336,8 @@ export default {
 
       this.$refs.svgContainer.appendChild(svg.node())
 
-      function autoBox() {
-        const {x, y, width, height} = this.getBBox()
+      function autoBox () {
+        const { x, y, width, height } = this.getBBox()
         return [x, y, width, height]
       }
 

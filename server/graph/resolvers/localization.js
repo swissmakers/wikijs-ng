@@ -5,13 +5,13 @@ const _ = require('lodash')
 
 module.exports = {
   Query: {
-    async localization() { return {} }
+    async localization () { return {} }
   },
   Mutation: {
-    async localization() { return {} }
+    async localization () { return {} }
   },
   LocalizationQuery: {
-    async locales(obj, args, context, info) {
+    async locales (obj, args, context, info) {
       const dbLocales = await WIKI.models.locales.query().select('code', 'isRTL', 'name', 'nativeName', 'strings')
       return _.sortBy(_.compact(_.map(dbLocales, lc => {
         const isBundled = WIKI.lang.isBundled(lc.code)
@@ -30,7 +30,7 @@ module.exports = {
         }
       })), 'name')
     },
-    async config(obj, args, context, info) {
+    async config (obj, args, context, info) {
       return {
         locale: WIKI.config.lang.code,
         namespacing: WIKI.config.lang.namespacing,
@@ -43,7 +43,7 @@ module.exports = {
     }
   },
   LocalizationMutation: {
-    async updateLocale(obj, args, context) {
+    async updateLocale (obj, args, context) {
       try {
         const newLocale = await WIKI.models.locales.query().select('isRTL').where('code', args.locale).first()
         if (!newLocale) {

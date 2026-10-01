@@ -10,8 +10,8 @@ const _ = require('lodash')
  * Locales model
  */
 module.exports = class Locale extends Model {
-  static get tableName() { return 'locales' }
-  static get idColumn() { return 'code' }
+  static get tableName () { return 'locales' }
+  static get idColumn () { return 'code' }
 
   static get jsonSchema () {
     return {
@@ -19,25 +19,26 @@ module.exports = class Locale extends Model {
       required: ['code', 'name'],
 
       properties: {
-        code: {type: 'string'},
-        isRTL: {type: 'boolean', default: false},
-        name: {type: 'string'},
-        nativeName: {type: 'string'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'},
-        availability: {type: 'integer'}
+        code: { type: 'string' },
+        isRTL: { type: 'boolean', default: false },
+        name: { type: 'string' },
+        nativeName: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' },
+        availability: { type: 'integer' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['strings']
   }
 
-  $beforeUpdate() {
+  $beforeUpdate () {
     this.updatedAt = new Date().toISOString()
   }
-  $beforeInsert() {
+
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
     this.updatedAt = new Date().toISOString()
   }
@@ -49,7 +50,7 @@ module.exports = class Locale extends Model {
    * @param {String} dir Folder containing locales.yml and the locale files
    * @returns {Promise<Array>} Manifest entries
    */
-  static async readManifest(dir) {
+  static async readManifest (dir) {
     const manifestPath = path.join(dir, 'locales.yml')
     if (!await fs.pathExists(manifestPath)) {
       return []
@@ -78,7 +79,7 @@ module.exports = class Locale extends Model {
   /**
    * Bundled locales shipped in server/locales
    */
-  static async getBundledLocales() {
+  static async getBundledLocales () {
     return WIKI.models.locales.readManifest(path.join(WIKI.SERVERPATH, 'locales'))
   }
 
@@ -90,7 +91,7 @@ module.exports = class Locale extends Model {
    * @param {Object} opts Options
    * @param {Boolean} opts.clearStrings Remove DB strings (bundled locales never read them)
    */
-  static async syncRows(entries, { clearStrings = false } = {}) {
+  static async syncRows (entries, { clearStrings = false } = {}) {
     if (entries.length < 1) {
       return
     }
@@ -117,7 +118,7 @@ module.exports = class Locale extends Model {
     }
   }
 
-  static async getNavLocales({ cache = false } = {}) {
+  static async getNavLocales ({ cache = false } = {}) {
     if (!WIKI.config.lang.namespacing) {
       return []
     }

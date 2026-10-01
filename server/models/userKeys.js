@@ -8,7 +8,7 @@ const { nanoid } = require('nanoid')
  * Users model
  */
 module.exports = class UserKey extends Model {
-  static get tableName() { return 'userKeys' }
+  static get tableName () { return 'userKeys' }
 
   static get jsonSchema () {
     return {
@@ -16,16 +16,16 @@ module.exports = class UserKey extends Model {
       required: ['kind', 'token', 'validUntil'],
 
       properties: {
-        id: {type: 'integer'},
-        kind: {type: 'string'},
-        token: {type: 'string'},
-        createdAt: {type: 'string'},
-        validUntil: {type: 'string'}
+        id: { type: 'integer' },
+        kind: { type: 'string' },
+        token: { type: 'string' },
+        createdAt: { type: 'string' },
+        validUntil: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       user: {
         relation: Model.BelongsToOneRelation,
@@ -38,7 +38,7 @@ module.exports = class UserKey extends Model {
     }
   }
 
-  async $beforeInsert(context) {
+  async $beforeInsert (context) {
     await super.$beforeInsert(context)
 
     this.createdAt = DateTime.utc().toISO()

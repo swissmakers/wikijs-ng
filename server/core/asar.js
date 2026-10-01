@@ -11,7 +11,7 @@ const fs = require('fs')
  */
 
 const packages = {
-  'twemoji': path.join(WIKI.ROOTPATH, `assets/svg/twemoji.asar`)
+  twemoji: path.join(WIKI.ROOTPATH, 'assets/svg/twemoji.asar')
 }
 
 module.exports = {
@@ -49,17 +49,14 @@ module.exports = {
     }
   },
   readArchiveHeaderSync (fd) {
-    let size
-    let headerBuf
-
     const sizeBuf = Buffer.alloc(8)
     if (fs.readSync(fd, sizeBuf, 0, 8, null) !== 8) {
       throw new Error('Unable to read header size')
     }
 
     const sizePickle = pickle.createFromBuffer(sizeBuf)
-    size = sizePickle.createIterator().readUInt32()
-    headerBuf = Buffer.alloc(size)
+    const size = sizePickle.createIterator().readUInt32()
+    const headerBuf = Buffer.alloc(size)
     if (fs.readSync(fd, headerBuf, 0, size, null) !== size) {
       throw new Error('Unable to read header')
     }
@@ -77,7 +74,7 @@ module.exports = {
       filesystem.headerSize = header.headerSize
       this.fdCache[archive] = {
         fd,
-        filesystem: filesystem
+        filesystem
       }
     }
 

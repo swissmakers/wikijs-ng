@@ -68,7 +68,7 @@ module.exports = {
       try {
         if (!WIKI.config.ssl.enabled) {
           throw new WIKI.Error.SystemSSLDisabled()
-        } else if (WIKI.config.ssl.provider !== `letsencrypt`) {
+        } else if (WIKI.config.ssl.provider !== 'letsencrypt') {
           throw new WIKI.Error.SystemSSLRenewInvalidProvider()
         } else if (!WIKI.servers.le) {
           throw new WIKI.Error.SystemSSLLEUnavailable()
@@ -134,14 +134,16 @@ module.exports = {
       let version = 'Unknown Version'
       switch (WIKI.config.db.type) {
         case 'mariadb':
-        case 'mysql':
+        case 'mysql': {
           const resultMYSQL = await WIKI.models.knex.raw('SELECT VERSION() as version;')
           version = _.get(resultMYSQL, '[0][0].version', 'Unknown Version')
           break
-        case 'mssql':
+        }
+        case 'mssql': {
           const resultMSSQL = await WIKI.models.knex.raw('SELECT @@VERSION as version;')
           version = _.get(resultMSSQL, '[0].version', 'Unknown Version')
           break
+        }
         case 'postgres':
           version = _.get(WIKI.models, 'knex.client.version', 'Unknown Version')
           break
@@ -192,10 +194,10 @@ module.exports = {
       return `${(os.totalmem() / Math.pow(1024, 3)).toFixed(2)} GB`
     },
     sslDomain () {
-      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? WIKI.config.ssl.domain : null
+      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === 'letsencrypt' ? WIKI.config.ssl.domain : null
     },
     sslExpirationDate () {
-      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? _.get(WIKI.config.letsencrypt, 'payload.expires', null) : null
+      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === 'letsencrypt' ? _.get(WIKI.config.letsencrypt, 'payload.expires', null) : null
     },
     sslProvider () {
       return WIKI.config.ssl.enabled ? WIKI.config.ssl.provider : null
@@ -204,7 +206,7 @@ module.exports = {
       return 'OK'
     },
     sslSubscriberEmail () {
-      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? WIKI.config.ssl.subscriberEmail : null
+      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === 'letsencrypt' ? WIKI.config.ssl.subscriberEmail : null
     },
     workingDirectory () {
       return process.cwd()

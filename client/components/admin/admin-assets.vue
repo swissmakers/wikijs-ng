@@ -294,7 +294,7 @@ export default {
   components: {
     FilePond
   },
-  data() {
+  data () {
     return {
       folderTree: [],
       assets: [],
@@ -369,7 +369,7 @@ export default {
         process: {
           url: '/u',
           headers: {
-            'Authorization': `Bearer ${jwtToken}`
+            Authorization: `Bearer ${jwtToken}`
           }
         }
       }
@@ -651,7 +651,7 @@ export default {
           icon: 'warning'
         })
       }
-      for (let file of files) {
+      for (const file of files) {
         file.setMetadata({
           folderId: this.currentFolderId
         })

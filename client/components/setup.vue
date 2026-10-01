@@ -106,7 +106,7 @@ export default {
       required: true
     }
   },
-  data() {
+  data () {
     return {
       loading: false,
       success: false,
@@ -123,7 +123,7 @@ export default {
       isDevMode: false
     }
   },
-  mounted() {
+  mounted () {
     _.delay(() => {
       this.$refs.adminEmailInput.focus()
     }, 500)

@@ -101,7 +101,7 @@ export default {
   components: {
     AnimatedNumber
   },
-  data() {
+  data () {
     return {
       recentPages: [],
       recentPagesLoading: false,
@@ -123,8 +123,8 @@ export default {
     permissions: get('user/permissions')
   },
   methods: {
-    round(val) { return Math.round(val) },
-    hasPermission(prm) {
+    round (val) { return Math.round(val) },
+    hasPermission (prm) {
       if (_.isArray(prm)) {
         return _.some(prm, p => {
           return _.includes(this.permissions, p)

@@ -24,25 +24,25 @@ const isTFAAvailable = (usr) => {
 
 module.exports = {
   Query: {
-    async users() { return {} }
+    async users () { return {} }
   },
   Mutation: {
-    async users() { return {} }
+    async users () { return {} }
   },
   UserQuery: {
-    async list(obj, args, context, info) {
+    async list (obj, args, context, info) {
       return WIKI.models.users.query()
         .select('id', 'email', 'name', 'providerKey', 'isSystem', 'isActive', 'createdAt', 'lastLoginAt')
     },
-    async search(obj, args, context, info) {
+    async search (obj, args, context, info) {
       return WIKI.models.users.query()
         .where('email', 'like', `%${args.query}%`)
         .orWhere('name', 'like', `%${args.query}%`)
         .limit(10)
         .select('id', 'email', 'name', 'providerKey', 'createdAt')
     },
-    async single(obj, args, context, info) {
-      let usr = await WIKI.models.users.query().findById(args.id)
+    async single (obj, args, context, info) {
+      const usr = await WIKI.models.users.query().findById(args.id)
       usr.password = ''
       usr.tfaSecret = ''
 

@@ -12,16 +12,16 @@ function tokenize (q) {
 
 module.exports = {
   tokenize,
-  activate() {
+  activate () {
     // not used
   },
-  deactivate() {
+  deactivate () {
     // not used
   },
   /**
    * INIT
    */
-  init() {
+  init () {
     // not used
   },
   /**
@@ -30,7 +30,7 @@ module.exports = {
    * @param {String} q Query
    * @param {Object} opts Additional options
    */
-  async query(q, opts) {
+  async query (q, opts) {
     const likeOperator = WIKI.config.db.type === 'postgres' ? 'ILIKE' : 'LIKE'
     const tokens = tokenize(q)
     const applyFilters = builder => {
@@ -84,7 +84,7 @@ module.exports = {
    *
    * @param {Object} page Page to create
    */
-  async created(page) {
+  async created (page) {
     // not used
   },
   /**
@@ -92,7 +92,7 @@ module.exports = {
    *
    * @param {Object} page Page to update
    */
-  async updated(page) {
+  async updated (page) {
     // not used
   },
   /**
@@ -100,7 +100,7 @@ module.exports = {
    *
    * @param {Object} page Page to delete
    */
-  async deleted(page) {
+  async deleted (page) {
     // not used
   },
   /**
@@ -108,13 +108,13 @@ module.exports = {
    *
    * @param {Object} page Page to rename
    */
-  async renamed(page) {
+  async renamed (page) {
     // not used
   },
   /**
    * REBUILD INDEX
    */
-  async rebuild() {
+  async rebuild () {
     // not used
   }
 }

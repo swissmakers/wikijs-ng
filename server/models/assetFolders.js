@@ -7,21 +7,21 @@ const _ = require('lodash')
  * Users model
  */
 module.exports = class AssetFolder extends Model {
-  static get tableName() { return 'assetFolders' }
+  static get tableName () { return 'assetFolders' }
 
   static get jsonSchema () {
     return {
       type: 'object',
 
       properties: {
-        id: {type: 'integer'},
-        name: {type: 'string'},
-        slug: {type: 'string'}
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        slug: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       parent: {
         relation: Model.BelongsToOneRelation,
@@ -63,7 +63,7 @@ module.exports = class AssetFolder extends Model {
    */
   static async getAllPaths () {
     const all = await WIKI.models.assetFolders.query()
-    let folders = {}
+    const folders = {}
     all.forEach(fld => {
       _.set(folders, fld.id, fld.slug)
       let parentId = fld.parentId

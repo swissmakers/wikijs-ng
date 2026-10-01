@@ -16,7 +16,7 @@ import { sync, get } from 'vuex-pathify'
 const DEFAULT_DRAWIO_URL = 'https://embed.diagrams.net'
 
 export default {
-  data() {
+  data () {
     return {
       content: ''
     }
@@ -42,7 +42,7 @@ export default {
     close () {
       this.activeModal = ''
     },
-    overwriteAndClose() {
+    overwriteAndClose () {
       this.$root.$emit('overwriteEditorContent')
       this.$root.$emit('resetEditorConflict')
       this.close()

@@ -5,13 +5,13 @@ const graphHelper = require('../../helpers/graph')
 
 module.exports = {
   Query: {
-    async analytics() { return {} }
+    async analytics () { return {} }
   },
   Mutation: {
-    async analytics() { return {} }
+    async analytics () { return {} }
   },
   AnalyticsQuery: {
-    async providers(obj, args, context, info) {
+    async providers (obj, args, context, info) {
       let providers = await WIKI.models.analytics.getProviders(args.isEnabled)
       providers = providers.map(stg => {
         const providerInfo = _.find(WIKI.data.analytics, ['key', stg.key]) || {}
@@ -25,9 +25,9 @@ module.exports = {
     }
   },
   AnalyticsMutation: {
-    async updateProviders(obj, args, context) {
+    async updateProviders (obj, args, context) {
       try {
-        for (let str of args.providers) {
+        for (const str of args.providers) {
           await WIKI.models.analytics.query().patch({
             isEnabled: str.isEnabled,
             config: graphHelper.kvToModuleConfig(str.config)

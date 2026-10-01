@@ -280,8 +280,8 @@
 <script>
 export default {
   computed: {
-    ctrlKey() { return /Mac/.test(navigator.platform) ? 'Cmd' : 'Ctrl' },
-    altKey() { return /Mac/.test(navigator.platform) ? 'Option' : 'Alt' }
+    ctrlKey () { return /Mac/.test(navigator.platform) ? 'Cmd' : 'Ctrl' },
+    altKey () { return /Mac/.test(navigator.platform) ? 'Option' : 'Alt' }
   }
 }
 </script>

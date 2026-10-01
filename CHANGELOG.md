@@ -109,6 +109,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - **Automated tests**: unit tests now cover page permissions and the permission inspector, the page path helpers, brute-force protection, the git sync lock, search query building, comment posting rules, notifications, feeds, the CSP builder, configuration merging, the diagram renderers (including the editor preview) and the translation files (same keys and placeholders in every language, every key used in the code exists).
 - **CI runs lint and tests** for every push to `main` and `dev` and for pull requests; the container image is only built (from `main`) when they pass.
+- The code follows the `standard` ESLint style without the ~1900 exceptions parked during the 2.6 upgrade (mostly automatic formatting fixes); Cypress and Jest globals now only apply to their test folders.
 - Removed 51 unused images (fundraising buttons, splash photos, icons of removed features) and 135 unused translation keys of removed features, plus obsolete build files (an ARM Dockerfile for a GitHub workflow that no longer exists, an upstream CI script).
 - `config.sample.yml` lists the actually supported database versions and documents `db.socketPath` (MySQL / MariaDB); `.gitattributes` is reduced to the rules that apply to this repository; pages declare the Apple touch and Safari pinned-tab icons.
 

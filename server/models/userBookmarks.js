@@ -4,7 +4,7 @@ const Model = require('objection').Model
  * Pages bookmarked by users
  */
 module.exports = class UserBookmark extends Model {
-  static get tableName() { return 'userBookmarks' }
+  static get tableName () { return 'userBookmarks' }
 
   static get jsonSchema () {
     return {
@@ -12,15 +12,15 @@ module.exports = class UserBookmark extends Model {
       required: ['userId', 'pageId'],
 
       properties: {
-        id: {type: 'integer'},
-        userId: {type: 'integer'},
-        pageId: {type: 'integer'},
-        createdAt: {type: 'string'}
+        id: { type: 'integer' },
+        userId: { type: 'integer' },
+        pageId: { type: 'integer' },
+        createdAt: { type: 'string' }
       }
     }
   }
 
-  $beforeInsert() {
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
   }
 }

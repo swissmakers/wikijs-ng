@@ -130,7 +130,7 @@ import localesQuery from 'gql/admin/locale/locale-query-list.gql'
 import localesSaveMutation from 'gql/admin/locale/locale-mutation-save.gql'
 
 export default {
-  data() {
+  data () {
     return {
       loading: false,
       locales: [],
@@ -141,7 +141,7 @@ export default {
     }
   },
   computed: {
-    headers() {
+    headers () {
       return [
         {
           text: this.$t('admin:locale.code'),
@@ -176,7 +176,7 @@ export default {
     }
   },
   methods: {
-    sourceLabel(lc) {
+    sourceLabel (lc) {
       if (lc.isBundled) {
         return this.$t('admin:locale.sourceBundled', { defaultValue: 'Bundled' })
       } else if (lc.isSideloaded) {
@@ -185,7 +185,7 @@ export default {
         return this.$t('admin:locale.sourceDatabase', { defaultValue: 'Database (legacy pack)' })
       }
     },
-    async save() {
+    async save () {
       this.loading = true
       const respRaw = await this.$apollo.mutate({
         mutation: localesSaveMutation,

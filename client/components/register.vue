@@ -220,11 +220,11 @@ export default {
       } else {
         this.loaderColor = 'grey darken-4'
         this.loaderTitle = this.$t('auth:registering')
-        this.loaderSubtitle = this.$t(`auth:pleaseWait`)
+        this.loaderSubtitle = this.$t('auth:pleaseWait')
         this.loaderMode = 'loading'
         this.isLoading = true
         try {
-          let resp = await this.$apollo.mutate({
+          const resp = await this.$apollo.mutate({
             mutation: registerMutation,
             variables: {
               email: this.email,
@@ -233,11 +233,11 @@ export default {
             }
           })
           if (_.has(resp, 'data.authentication.register')) {
-            let respObj = _.get(resp, 'data.authentication.register', {})
+            const respObj = _.get(resp, 'data.authentication.register', {})
             if (respObj.responseResult.succeeded === true) {
               this.loaderColor = 'grey darken-4'
               this.loaderTitle = this.$t('auth:registerSuccess')
-              this.loaderSubtitle = this.$t(`auth:registerCheckEmail`)
+              this.loaderSubtitle = this.$t('auth:registerCheckEmail')
               this.loaderMode = 'icon'
               this.isShown = false
             } else {

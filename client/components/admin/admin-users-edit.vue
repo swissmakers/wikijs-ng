@@ -429,7 +429,7 @@ export default {
      * Activate a user (if previously deactivated)
      */
     async activateUser () {
-      this.$store.commit(`loadingStart`, 'admin-users-activate')
+      this.$store.commit('loadingStart', 'admin-users-activate')
       const resp = await this.$apollo.mutate({
         mutation: gql`
           mutation ($id: Int!) {
@@ -463,13 +463,13 @@ export default {
           icon: 'warning'
         })
       }
-      this.$store.commit(`loadingStop`, 'admin-users-activate')
+      this.$store.commit('loadingStop', 'admin-users-activate')
     },
     /**
      * Deactivate a currently active user
      */
     async deactivateUser () {
-      this.$store.commit(`loadingStart`, 'admin-users-deactivate')
+      this.$store.commit('loadingStart', 'admin-users-deactivate')
       const resp = await this.$apollo.mutate({
         mutation: gql`
           mutation ($id: Int!) {
@@ -503,7 +503,7 @@ export default {
           icon: 'warning'
         })
       }
-      this.$store.commit(`loadingStop`, 'admin-users-deactivate')
+      this.$store.commit('loadingStop', 'admin-users-deactivate')
     },
     /**
      * Delete a user
@@ -517,7 +517,7 @@ export default {
       }
     },
     async deleteUser () {
-      this.$store.commit(`loadingStart`, 'admin-users-delete')
+      this.$store.commit('loadingStart', 'admin-users-delete')
       const resp = await this.$apollo.mutate({
         mutation: gql`
           mutation ($id: Int!, $replaceId: Int!) {
@@ -553,7 +553,7 @@ export default {
         })
       }
       this.deleteUserDialog = false
-      this.$store.commit(`loadingStop`, 'admin-users-delete')
+      this.$store.commit('loadingStop', 'admin-users-delete')
     },
     assignDeleteUser (selUsr) {
       if (selUsr.id === this.user.id) {
@@ -575,8 +575,8 @@ export default {
     /**
      * Update a user
      */
-    async updateUser() {
-      this.$store.commit(`loadingStart`, 'admin-users-update')
+    async updateUser () {
+      this.$store.commit('loadingStart', 'admin-users-update')
       const resp = await this.$apollo.mutate({
         mutation: gql`
           mutation ($id: Int!, $email: String, $name: String, $newPassword: String, $groups: [Int], $location: String, $jobTitle: String, $timezone: String) {
@@ -618,7 +618,7 @@ export default {
           icon: 'warning'
         })
       }
-      this.$store.commit(`loadingStop`, 'admin-users-update')
+      this.$store.commit('loadingStop', 'admin-users-update')
     },
     /**
      * Focus an input after delay
@@ -633,7 +633,7 @@ export default {
     /**
      * Assign group to user
      */
-    assignGroup() {
+    assignGroup () {
       if (_.some(this.user.groups, ['id', this.newGroup])) {
         this.$store.commit('showNotification', {
           message: this.$t('admin:users.userAlreadyAssignedToGroup'),
@@ -648,14 +648,14 @@ export default {
     /**
      * Unassign group from user
      */
-    unassignGroup(gid) {
+    unassignGroup (gid) {
       this.user.groups = _.reject(this.user.groups, ['id', gid])
     },
     /**
      * Manually set user as verified
      */
     async verifyUser () {
-      this.$store.commit(`loadingStart`, 'admin-users-verify')
+      this.$store.commit('loadingStart', 'admin-users-verify')
       const resp = await this.$apollo.mutate({
         mutation: gql`
           mutation ($id: Int!) {
@@ -689,13 +689,13 @@ export default {
           icon: 'warning'
         })
       }
-      this.$store.commit(`loadingStop`, 'admin-users-verify')
+      this.$store.commit('loadingStop', 'admin-users-verify')
     },
     /**
      * Toggle 2FA State
      */
     async toggle2FA () {
-      this.$store.commit(`loadingStart`, 'admin-users-toggle2fa')
+      this.$store.commit('loadingStart', 'admin-users-toggle2fa')
       if (this.user.tfaIsActive) {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -765,7 +765,7 @@ export default {
           })
         }
       }
-      this.$store.commit(`loadingStop`, 'admin-users-toggle2fa')
+      this.$store.commit('loadingStop', 'admin-users-toggle2fa')
     }
   },
   apollo: {
@@ -799,7 +799,7 @@ export default {
           }
         }
       `,
-      variables() {
+      variables () {
         return {
           id: _.toSafeInteger(this.$route.params.id)
         }

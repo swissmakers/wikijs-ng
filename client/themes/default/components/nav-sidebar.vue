@@ -94,7 +94,7 @@ export default {
       default: 'MIXED'
     }
   },
-  data() {
+  data () {
     return {
       currentMode: 'custom',
       currentItems: [],
@@ -114,12 +114,12 @@ export default {
     switchMode (mode) {
       this.currentMode = mode
       window.localStorage.setItem('navPref', mode)
-      if (mode === `browse` && this.loadedCache.length < 1) {
+      if (mode === 'browse' && this.loadedCache.length < 1) {
         this.loadFromCurrentPath()
       }
     },
     async fetchBrowseItems (item) {
-      this.$store.commit(`loadingStart`, 'browse-load')
+      this.$store.commit('loadingStart', 'browse-load')
       if (!item) {
         item = this.currentParent
       }
@@ -154,10 +154,10 @@ export default {
       })
       this.loadedCache = _.union(this.loadedCache, [item.id])
       this.currentItems = _.get(resp, 'data.pages.tree', [])
-      this.$store.commit(`loadingStop`, 'browse-load')
+      this.$store.commit('loadingStop', 'browse-load')
     },
-    async loadFromCurrentPath() {
-      this.$store.commit(`loadingStart`, 'browse-load')
+    async loadFromCurrentPath () {
+      this.$store.commit('loadingStart', 'browse-load')
       const resp = await this.$apollo.query({
         query: pagesTreeQuery,
         fetchPolicy: 'cache-first',
@@ -186,16 +186,16 @@ export default {
           }
           this.parents = [this.currentParent, ...folderAncestors.reverse()]
           this.currentParent = _.last(this.parents)
-          this.$store.commit(`loadingStop`, 'browse-load')
+          this.$store.commit('loadingStop', 'browse-load')
           return this.fetchBrowseItems(curFolder)
         }
         console.warn('Could not find current page in page tree listing!')
-        this.$store.commit(`loadingStop`, 'browse-load')
+        this.$store.commit('loadingStop', 'browse-load')
         return
       }
 
       let curParentId = curPage.parent
-      let invertedAncestors = []
+      const invertedAncestors = []
       while (curParentId) {
         const curParent = _.find(items, ['id', curParentId])
         if (!curParent) {
@@ -210,7 +210,7 @@ export default {
 
       this.loadedCache = [curPage.parent]
       this.currentItems = _.filter(items, ['parent', curPage.parent])
-      this.$store.commit(`loadingStop`, 'browse-load')
+      this.$store.commit('loadingStop', 'browse-load')
     },
     goHome () {
       window.location.assign(siteLangs.length > 0 ? pagePath(this.locale, 'home') : '/')

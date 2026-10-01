@@ -16,7 +16,7 @@ const mkdown = md({
   html: false,
   breaks: true,
   linkify: true,
-  highlight(str, lang) {
+  highlight (str, lang) {
     return `<pre><code class="language-${lang}">${_.escape(str)}</code></pre>`
   }
 })

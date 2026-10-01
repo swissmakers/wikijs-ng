@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
  * Users model
  */
 module.exports = class ApiKey extends Model {
-  static get tableName() { return 'apiKeys' }
+  static get tableName () { return 'apiKeys' }
 
   static get jsonSchema () {
     return {
@@ -16,23 +16,24 @@ module.exports = class ApiKey extends Model {
       required: ['name', 'key'],
 
       properties: {
-        id: {type: 'integer'},
-        name: {type: 'string'},
-        key: {type: 'string'},
-        expiration: {type: 'string'},
-        isRevoked: {type: 'boolean'},
-        createdAt: {type: 'string'},
-        validUntil: {type: 'string'}
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        key: { type: 'string' },
+        expiration: { type: 'string' },
+        isRevoked: { type: 'boolean' },
+        createdAt: { type: 'string' },
+        validUntil: { type: 'string' }
       }
     }
   }
 
-  async $beforeUpdate(opt, context) {
+  async $beforeUpdate (opt, context) {
     await super.$beforeUpdate(opt, context)
 
     this.updatedAt = new Date().toISOString()
   }
-  async $beforeInsert(context) {
+
+  async $beforeInsert (context) {
     await super.$beforeInsert(context)
 
     this.createdAt = new Date().toISOString()

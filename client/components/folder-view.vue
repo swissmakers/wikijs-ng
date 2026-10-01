@@ -136,7 +136,7 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {
       navShown: false,
       winWidth: 0,

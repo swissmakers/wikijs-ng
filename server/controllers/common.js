@@ -262,7 +262,7 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
       return res.status(403).render('unauthorized', { action: 'create' })
     }
 
-    _.set(res.locals, 'pageMeta.title', `New Page`)
+    _.set(res.locals, 'pageMeta.title', 'New Page')
     page = {
       path: pageArgs.path,
       localeCode: pageArgs.locale,

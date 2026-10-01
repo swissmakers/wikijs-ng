@@ -30,9 +30,9 @@ export default {
     }
   },
   methods: {
-    async regenCerts() {
+    async regenCerts () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-auth-regencerts')
+      this.$store.commit('loadingStart', 'admin-utilities-auth-regencerts')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -56,12 +56,12 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-auth-regencerts')
+      this.$store.commit('loadingStop', 'admin-utilities-auth-regencerts')
       this.loading = false
     },
-    async resetGuest() {
+    async resetGuest () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-auth-resetguest')
+      this.$store.commit('loadingStart', 'admin-utilities-auth-resetguest')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -81,7 +81,7 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-auth-resetguest')
+      this.$store.commit('loadingStop', 'admin-utilities-auth-resetguest')
       this.loading = false
     }
   }

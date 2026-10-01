@@ -3,7 +3,7 @@ const winston = require('winston')
 /* global WIKI */
 
 module.exports = {
-  init(uid) {
+  init (uid) {
     const loggerFormats = [
       winston.format.label({ label: uid }),
       winston.format.timestamp()

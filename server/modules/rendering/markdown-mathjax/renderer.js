@@ -23,7 +23,7 @@ module.exports = {
   async init (mdinst, conf) {
     const MathJax = await mjax.init({
       loader: {
-        require: require,
+        require,
         paths: { mathjax: 'mathjax/es5' },
         load: [
           'input/tex',
@@ -32,7 +32,7 @@ module.exports = {
         ]
       },
       tex: {
-        packages: {'[+]': extensions}
+        packages: { '[+]': extensions }
       }
     })
     if (conf.useInline) {
@@ -51,14 +51,14 @@ module.exports = {
     }
     if (conf.useBlocks) {
       mdinst.block.ruler.after('blockquote', 'mathjax_block', mathHelper.blockRule('mathjax_block'), {
-        alt: [ 'paragraph', 'reference', 'blockquote', 'list' ]
+        alt: ['paragraph', 'reference', 'blockquote', 'list']
       })
       mdinst.renderer.rules.mathjax_block = (tokens, idx) => {
         try {
           const result = MathJax.tex2svg(tokens[idx].content, {
             display: true
           })
-          return `<p>` + MathJax.startup.adaptor.innerHTML(result) + `</p>`
+          return '<p>' + MathJax.startup.adaptor.innerHTML(result) + '</p>'
         } catch (err) {
           WIKI.logger.warn(err)
           return tokens[idx].content

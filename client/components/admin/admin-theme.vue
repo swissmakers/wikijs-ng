@@ -98,7 +98,7 @@ import themeSaveMutation from 'gql/admin/theme/theme-mutation-save.gql'
 /* global siteConfig */
 
 export default {
-  data() {
+  data () {
     return {
       loading: false,
       iconsets: [
@@ -133,10 +133,10 @@ export default {
       this.$vuetify.theme.dark = newValue
     }
   },
-  mounted() {
+  mounted () {
     this.darkModeInitial = this.darkMode
   },
-  beforeDestroy() {
+  beforeDestroy () {
     // Restore the saved site-level setting in the store, but apply the user's
     // effective appearance to the UI (personal preference wins over site default)
     this.darkMode = this.darkModeInitial
@@ -145,7 +145,7 @@ export default {
   methods: {
     async save () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-theme-save')
+      this.$store.commit('loadingStart', 'admin-theme-save')
       try {
         const respRaw = await this.$apollo.mutate({
           mutation: themeSaveMutation,
@@ -174,7 +174,7 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-theme-save')
+      this.$store.commit('loadingStop', 'admin-theme-save')
       this.loading = false
     }
   },

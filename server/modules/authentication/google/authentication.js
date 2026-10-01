@@ -49,7 +49,7 @@ module.exports = {
     })
 
     if (conf.hostedDomain) {
-      strategy.authorizationParams = function(options) {
+      strategy.authorizationParams = function (options) {
         return {
           hd: conf.hostedDomain
         }

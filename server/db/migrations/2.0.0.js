@@ -2,8 +2,8 @@
 
 exports.up = knex => {
   const dbCompat = {
-    blobLength: (WIKI.config.db.type === `mysql` || WIKI.config.db.type === `mariadb`),
-    charset: (WIKI.config.db.type === `mysql` || WIKI.config.db.type === `mariadb`),
+    blobLength: (WIKI.config.db.type === 'mysql' || WIKI.config.db.type === 'mariadb'),
+    charset: (WIKI.config.db.type === 'mysql' || WIKI.config.db.type === 'mariadb'),
     selfCascadeDelete: WIKI.config.db.type !== 'mssql'
   }
   return knex.schema

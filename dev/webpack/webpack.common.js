@@ -174,8 +174,8 @@ module.exports = {
     symlinks: true,
     alias: {
       '@': path.join(process.cwd(), 'client'),
-      'vue$': 'vue/dist/vue.esm.js',
-      'gql': path.join(process.cwd(), 'client/graph')
+      vue$: 'vue/dist/vue.esm.js',
+      gql: path.join(process.cwd(), 'client/graph')
     },
     extensions: [
       '.js',

@@ -1,7 +1,7 @@
 const NodeCache = require('node-cache')
 
 module.exports = {
-  init() {
+  init () {
     return new NodeCache()
   }
 }

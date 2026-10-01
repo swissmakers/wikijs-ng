@@ -254,7 +254,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       folders: [],
       files: [],
@@ -295,8 +295,8 @@ export default {
       })
     },
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
     editorKey: get('editor/editorKey'),
     activeModal: sync('editor/activeModal'),
@@ -310,7 +310,7 @@ export default {
 
       return Math.ceil(this.assets.length / 15)
     },
-    headers() {
+    headers () {
       return _.compact([
         this.$vuetify.breakpoint.smAndUp && { text: this.$t('editor:assets.headerId'), value: 'id', width: 80 },
         { text: this.$t('editor:assets.headerFilename'), value: 'filename' },
@@ -320,7 +320,7 @@ export default {
         this.$vuetify.breakpoint.smAndUp && { text: this.$t('editor:assets.headerActions'), value: '', width: 80, sortable: false, align: 'right' }
       ])
     },
-    isFolderNameValid() {
+    isFolderNameValid () {
       return this.newFolderName.length > 1 && !localeSegmentRegex.test(this.newFolderName) && !disallowedFolderChars.test(this.newFolderName)
     },
     currentAsset () {
@@ -346,14 +346,14 @@ export default {
         process: {
           url: '/u',
           headers: {
-            'Authorization': `Bearer ${jwtToken}`
+            Authorization: `Bearer ${jwtToken}`
           }
         }
       }
     }
   },
   watch: {
-    newFolderDialog(newValue, oldValue) {
+    newFolderDialog (newValue, oldValue) {
       if (newValue) {
         this.$nextTick(() => {
           this.$refs.folderNameIpt.focus()
@@ -362,7 +362,7 @@ export default {
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.assets.refetch()
       this.$store.commit('showNotification', {
         message: this.$t('editor:assets.refreshSuccess'),
@@ -393,7 +393,7 @@ export default {
           icon: 'warning'
         })
       }
-      for (let file of files) {
+      for (const file of files) {
         file.setMetadata({
           folderId: this.currentFolderId
         })
@@ -414,19 +414,19 @@ export default {
 
       await this.$apollo.queries.assets.refetch()
     },
-    downFolder(folder) {
+    downFolder (folder) {
       this.$store.commit('editor/pushMediaFolderTree', folder)
       this.currentFolderId = folder.id
       this.currentFileId = null
     },
-    upFolder() {
+    upFolder () {
       this.$store.commit('editor/popMediaFolderTree')
       const parentFolder = _.last(this.folderTree)
       this.currentFolderId = parentFolder ? parentFolder.id : 0
       this.currentFileId = null
     },
-    async createFolder() {
-      this.$store.commit(`loadingStart`, 'editor-media-createfolder')
+    async createFolder () {
+      this.$store.commit('loadingStart', 'editor-media-createfolder')
       this.newFolderLoading = true
       try {
         const resp = await this.$apollo.mutate({
@@ -452,14 +452,14 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
       this.newFolderLoading = false
-      this.$store.commit(`loadingStop`, 'editor-media-createfolder')
+      this.$store.commit('loadingStop', 'editor-media-createfolder')
     },
-    openRenameDialog() {
+    openRenameDialog () {
       this.renameAssetName = this.currentAsset.filename
       this.renameDialog = true
     },
-    async renameAsset() {
-      this.$store.commit(`loadingStart`, 'editor-media-renameasset')
+    async renameAsset () {
+      this.$store.commit('loadingStart', 'editor-media-renameasset')
       this.renameAssetLoading = true
       try {
         const resp = await this.$apollo.mutate({
@@ -485,14 +485,14 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
       this.renameAssetLoading = false
-      this.$store.commit(`loadingStop`, 'editor-media-renameasset')
+      this.$store.commit('loadingStop', 'editor-media-renameasset')
     },
-    openMoveDialog() {
+    openMoveDialog () {
       this.moveTargetFolders = []
       this.moveDialog = true
     },
-    async moveAsset() {
-      this.$store.commit(`loadingStart`, 'editor-media-moveasset')
+    async moveAsset () {
+      this.$store.commit('loadingStart', 'editor-media-moveasset')
       this.moveAssetLoading = true
       try {
         const resp = await this.$apollo.mutate({
@@ -518,10 +518,10 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
       this.moveAssetLoading = false
-      this.$store.commit(`loadingStop`, 'editor-media-moveasset')
+      this.$store.commit('loadingStop', 'editor-media-moveasset')
     },
-    async deleteAsset() {
-      this.$store.commit(`loadingStart`, 'editor-media-deleteasset')
+    async deleteAsset () {
+      this.$store.commit('loadingStart', 'editor-media-deleteasset')
       this.deleteAssetLoading = true
       try {
         const resp = await this.$apollo.mutate({
@@ -546,7 +546,7 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
       this.deleteAssetLoading = false
-      this.$store.commit(`loadingStop`, 'editor-media-deleteasset')
+      this.$store.commit('loadingStop', 'editor-media-deleteasset')
     },
     cancel () {
       this.activeModal = ''
@@ -557,13 +557,13 @@ export default {
       query: folderTreeQuery,
       fetchPolicy: 'network-only',
       update: (data) => data.assets.folderTree,
-      skip() {
+      skip () {
         return !this.moveDialog
       }
     },
     folders: {
       query: listFolderAssetQuery,
-      variables() {
+      variables () {
         return {
           parentFolderId: this.currentFolderId
         }
@@ -576,7 +576,7 @@ export default {
     },
     assets: {
       query: listAssetQuery,
-      variables() {
+      variables () {
         return {
           folderId: this.currentFolderId,
           kind: 'ALL'

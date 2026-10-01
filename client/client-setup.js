@@ -9,9 +9,9 @@ window.boot = boot
 
 Vue.use(Vuetify)
 
-Vue.component('setup', () => import(/* webpackMode: "eager" */ './components/setup.vue'))
+Vue.component('Setup', () => import(/* webpackMode: "eager" */ './components/setup.vue'))
 
-let bootstrap = () => {
+const bootstrap = () => {
   window.WIKI = new Vue({
     el: '#root',
     vuetify: new Vuetify({

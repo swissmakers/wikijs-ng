@@ -113,7 +113,7 @@ import providersQuery from 'gql/admin/analytics/analytics-query-providers.gql'
 import providersSaveMutation from 'gql/admin/analytics/analytics-mutation-save-providers.gql'
 
 export default {
-  data() {
+  data () {
     return {
       providers: [],
       selectedProvider: '',
@@ -121,15 +121,15 @@ export default {
     }
   },
   watch: {
-    selectedProvider(newValue, oldValue) {
+    selectedProvider (newValue, oldValue) {
       this.provider = _.find(this.providers, ['key', newValue]) || {}
     },
-    providers(newValue, oldValue) {
+    providers (newValue, oldValue) {
       this.selectedProvider = 'google'
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.providers.refetch()
       this.$store.commit('showNotification', {
         message: this.$t('admin:analytics.refreshSuccess'),
@@ -137,8 +137,8 @@ export default {
         icon: 'cached'
       })
     },
-    async save() {
-      this.$store.commit(`loadingStart`, 'admin-analytics-saveproviders')
+    async save () {
+      this.$store.commit('loadingStart', 'admin-analytics-saveproviders')
       try {
         await this.$apollo.mutate({
           mutation: providersSaveMutation,
@@ -147,7 +147,7 @@ export default {
               'isEnabled',
               'key',
               'config'
-            ])).map(str => ({...str, config: str.config.map(cfg => ({...cfg, value: JSON.stringify({ v: cfg.value.value })}))}))
+            ])).map(str => ({ ...str, config: str.config.map(cfg => ({ ...cfg, value: JSON.stringify({ v: cfg.value.value }) })) }))
           }
         })
         this.$store.commit('showNotification', {
@@ -158,7 +158,7 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-analytics-saveproviders')
+      this.$store.commit('loadingStop', 'admin-analytics-saveproviders')
     }
   },
   apollo: {

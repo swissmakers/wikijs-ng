@@ -7,8 +7,8 @@ const commonHelper = require('../helpers/common')
  * SearchEngine model
  */
 module.exports = class SearchEngine extends Model {
-  static get tableName() { return 'searchEngines' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'searchEngines' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -16,22 +16,22 @@ module.exports = class SearchEngine extends Model {
       required: ['key', 'isEnabled'],
 
       properties: {
-        key: {type: 'string'},
-        isEnabled: {type: 'boolean'},
-        level: {type: 'string'}
+        key: { type: 'string' },
+        isEnabled: { type: 'boolean' },
+        level: { type: 'string' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config']
   }
 
-  static async getSearchEngines() {
+  static async getSearchEngines () {
     return WIKI.models.searchEngines.query()
   }
 
-  static async refreshSearchEnginesFromDisk() {
+  static async refreshSearchEnginesFromDisk () {
     return commonHelper.refreshModulesFromDisk({
       dirName: 'search',
       dataKey: 'searchEngines',
@@ -40,7 +40,7 @@ module.exports = class SearchEngine extends Model {
     })
   }
 
-  static async initEngine({ activate = false } = {}) {
+  static async initEngine ({ activate = false } = {}) {
     let searchEngine = await WIKI.models.searchEngines.query().findOne('isEnabled', true)
     if (!searchEngine) {
       // -> No engine is enabled (e.g. the active module was removed from disk): revert to basic engine

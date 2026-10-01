@@ -33,7 +33,7 @@ export default {
       default: () => {}
     }
   },
-  data() {
+  data () {
     return {
       editor: null,
       stats: {
@@ -46,7 +46,7 @@ export default {
     }
   },
   computed: {
-    isMobile() {
+    isMobile () {
       return this.$vuetify.breakpoint.smAndDown
     },
     locale: get('page/locale'),

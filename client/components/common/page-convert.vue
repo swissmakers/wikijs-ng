@@ -43,7 +43,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       loading: false,
       newEditor: ''
@@ -51,8 +51,8 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
     pageTitle: get('page/title'),
     pagePath: get('page/path'),
@@ -64,12 +64,12 @@ export default {
     this.newEditor = this.pageEditor
   },
   methods: {
-    discard() {
+    discard () {
       this.isShown = false
     },
-    async convertPage() {
+    async convertPage () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'page-convert')
+      this.$store.commit('loadingStart', 'page-convert')
       this.$nextTick(async () => {
         try {
           const resp = await this.$apollo.mutate({
@@ -107,7 +107,7 @@ export default {
         } catch (err) {
           this.$store.commit('pushGraphError', err)
         }
-        this.$store.commit(`loadingStop`, 'page-convert')
+        this.$store.commit('loadingStop', 'page-convert')
         this.loading = false
       })
     }

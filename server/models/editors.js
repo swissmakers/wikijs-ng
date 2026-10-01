@@ -7,8 +7,8 @@ const commonHelper = require('../helpers/common')
  * Editor model
  */
 module.exports = class Editor extends Model {
-  static get tableName() { return 'editors' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'editors' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -16,21 +16,21 @@ module.exports = class Editor extends Model {
       required: ['key', 'isEnabled'],
 
       properties: {
-        key: {type: 'string'},
-        isEnabled: {type: 'boolean'}
+        key: { type: 'string' },
+        isEnabled: { type: 'boolean' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config']
   }
 
-  static async getEditors() {
+  static async getEditors () {
     return WIKI.models.editors.query()
   }
 
-  static async refreshEditorsFromDisk() {
+  static async refreshEditorsFromDisk () {
     return commonHelper.refreshModulesFromDisk({
       dirName: 'editor',
       dataKey: 'editors',
@@ -44,7 +44,7 @@ module.exports = class Editor extends Model {
     })
   }
 
-  static async getDefaultEditor(contentType) {
+  static async getDefaultEditor (contentType) {
     // TODO - hardcoded for now
     switch (contentType) {
       case 'markdown':

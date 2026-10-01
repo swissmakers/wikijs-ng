@@ -105,7 +105,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       loading: false,
       name: '',
@@ -119,10 +119,10 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
-    expirations() {
+    expirations () {
       return [
         { value: '30d', text: this.$t('admin:api.expiration30d') },
         { value: '90d', text: this.$t('admin:api.expiration90d') },

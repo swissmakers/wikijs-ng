@@ -10,7 +10,7 @@ const OAuth2Strategy = require('passport-oauth2').Strategy
 
 module.exports = {
   init (passport, conf) {
-    var client = new OAuth2Strategy({
+    const client = new OAuth2Strategy({
       authorizationURL: conf.authorizationURL,
       tokenURL: conf.tokenURL,
       clientID: conf.clientId,
@@ -30,7 +30,7 @@ module.exports = {
             id: _.get(profile, conf.userIdClaim),
             displayName: _.get(profile, conf.displayNameClaim, '???'),
             email: _.get(profile, conf.emailClaim),
-            picture: picture
+            picture
           }
         })
         if (conf.mapGroups) {

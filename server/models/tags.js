@@ -7,7 +7,7 @@ const _ = require('lodash')
  * Tags model
  */
 module.exports = class Tag extends Model {
-  static get tableName() { return 'tags' }
+  static get tableName () { return 'tags' }
 
   static get jsonSchema () {
     return {
@@ -15,17 +15,17 @@ module.exports = class Tag extends Model {
       required: ['tag'],
 
       properties: {
-        id: {type: 'integer'},
-        tag: {type: 'string'},
-        title: {type: 'string'},
+        id: { type: 'integer' },
+        tag: { type: 'string' },
+        title: { type: 'string' },
 
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       pages: {
         relation: Model.ManyToManyRelation,
@@ -42,10 +42,11 @@ module.exports = class Tag extends Model {
     }
   }
 
-  $beforeUpdate() {
+  $beforeUpdate () {
     this.updatedAt = new Date().toISOString()
   }
-  $beforeInsert() {
+
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
     this.updatedAt = new Date().toISOString()
   }

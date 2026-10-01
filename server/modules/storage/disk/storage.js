@@ -12,19 +12,19 @@ const commonDisk = require('./common')
 /* global WIKI */
 
 module.exports = {
-  async init() {
+  async init () {
     WIKI.logger.info('(STORAGE/DISK) Initializing...')
     await fs.ensureDir(this.config.path)
     WIKI.logger.info('(STORAGE/DISK) Initialization completed.')
   },
-  async sync({ manual } = { manual: false }) {
+  async sync ({ manual } = { manual: false }) {
     if (this.config.createDailyBackups || manual) {
       const dirPath = path.join(this.config.path, manual ? '_manual' : '_daily')
       await fs.ensureDir(dirPath)
 
       const dateFilename = DateTime.now().toFormat(manual ? 'yyyyMMdd-HHmmss' : 'dd')
 
-      WIKI.logger.info(`(STORAGE/DISK) Creating backup archive...`)
+      WIKI.logger.info('(STORAGE/DISK) Creating backup archive...')
       await pipeline(
         tar.pack(this.config.path, {
           ignore: (filePath) => {
@@ -37,7 +37,7 @@ module.exports = {
       WIKI.logger.info('(STORAGE/DISK) Backup archive created successfully.')
     }
   },
-  async created(page) {
+  async created (page) {
     WIKI.logger.info(`(STORAGE/DISK) Creating file [${page.localeCode}] ${page.path}...`)
     let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
     if (WIKI.config.lang.code !== page.localeCode) {
@@ -46,7 +46,7 @@ module.exports = {
     const filePath = path.join(this.config.path, fileName)
     await fs.outputFile(filePath, page.injectMetadata(), 'utf8')
   },
-  async updated(page) {
+  async updated (page) {
     WIKI.logger.info(`(STORAGE/DISK) Updating file [${page.localeCode}] ${page.path}...`)
     let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
     if (WIKI.config.lang.code !== page.localeCode) {
@@ -55,7 +55,7 @@ module.exports = {
     const filePath = path.join(this.config.path, fileName)
     await fs.outputFile(filePath, page.injectMetadata(), 'utf8')
   },
-  async deleted(page) {
+  async deleted (page) {
     WIKI.logger.info(`(STORAGE/DISK) Deleting file [${page.localeCode}] ${page.path}...`)
     let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
     if (WIKI.config.lang.code !== page.localeCode) {
@@ -64,7 +64,7 @@ module.exports = {
     const filePath = path.join(this.config.path, fileName)
     await fs.unlink(filePath)
   },
-  async renamed(page) {
+  async renamed (page) {
     WIKI.logger.info(`(STORAGE/DISK) Renaming file [${page.localeCode}] ${page.path} to [${page.destinationLocaleCode}] ${page.destinationPath}...`)
 
     let sourceFilePath = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
@@ -114,8 +114,8 @@ module.exports = {
   /**
    * HANDLERS
    */
-  async dump() {
-    WIKI.logger.info(`(STORAGE/DISK) Dumping all content to disk...`)
+  async dump () {
+    WIKI.logger.info('(STORAGE/DISK) Dumping all content to disk...')
 
     await storageExport.exportAll({
       onPage: async page => {
@@ -134,11 +134,11 @@ module.exports = {
 
     WIKI.logger.info('(STORAGE/DISK) All content was dumped to disk successfully.')
   },
-  async backup() {
+  async backup () {
     return this.sync({ manual: true })
   },
-  async importAll() {
-    WIKI.logger.info(`(STORAGE/DISK) Importing all content from local disk folder to the DB...`)
+  async importAll () {
+    WIKI.logger.info('(STORAGE/DISK) Importing all content from local disk folder to the DB...')
     await commonDisk.importFromDisk({
       fullPath: this.config.path,
       moduleName: 'DISK'

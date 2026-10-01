@@ -59,7 +59,7 @@
 import pagesListQuery from 'gql/common/common-pages-query-list.gql'
 
 export default {
-  data() {
+  data () {
     return {
       selectedPage: {},
       pagination: 1,
@@ -82,7 +82,7 @@ export default {
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.pages.refetch()
       this.$store.commit('showNotification', {
         message: this.$t('profile:pages.refreshSuccess'),
@@ -90,8 +90,8 @@ export default {
         icon: 'cached'
       })
     },
-    goToPage(id) {
-      window.location.assign(`/i/` + id)
+    goToPage (id) {
+      window.location.assign('/i/' + id)
     }
   },
   apollo: {

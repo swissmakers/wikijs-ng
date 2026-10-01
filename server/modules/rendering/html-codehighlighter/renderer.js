@@ -1,7 +1,7 @@
 const hljs = require('highlight.js')
 
 module.exports = {
-  async init($, config) {
+  async init ($, config) {
     $('pre > code').each((idx, elm) => {
       const codeClasses = $(elm).attr('class') || ''
       if (codeClasses.indexOf('language-') < 0) {

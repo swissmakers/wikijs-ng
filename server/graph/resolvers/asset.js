@@ -11,7 +11,7 @@ const assetHelper = require('../../helpers/asset')
 async function getFolderSubtreeIds (folderId) {
   const allFolders = await WIKI.models.assetFolders.query().select('id', 'parentId')
   const ids = [folderId]
-  let queue = [folderId]
+  const queue = [folderId]
   while (queue.length > 0) {
     const currentId = queue.shift()
     for (const fld of allFolders) {
@@ -61,14 +61,14 @@ async function relocateFolderAssets (oldFolderPaths, folderIds, user) {
 
 module.exports = {
   Query: {
-    async assets() { return {} }
+    async assets () { return {} }
   },
   Mutation: {
-    async assets() { return {} }
+    async assets () { return {} }
   },
   AssetQuery: {
-    async list(obj, args, context) {
-      let cond = {
+    async list (obj, args, context) {
+      const cond = {
         folderId: args.folderId === 0 ? null : args.folderId
       }
       if (args.kind !== 'ALL') {
@@ -92,7 +92,7 @@ module.exports = {
         kind: a.kind.toUpperCase()
       }))
     },
-    async folders(obj, args, context) {
+    async folders (obj, args, context) {
       const results = await WIKI.models.assetFolders.query().where({
         parentId: args.parentFolderId === 0 ? null : args.parentFolderId
       })
@@ -103,7 +103,7 @@ module.exports = {
         return WIKI.auth.checkAccess(context.req.user, ['read:assets'], { path })
       })
     },
-    async folderTree(obj, args, context) {
+    async folderTree (obj, args, context) {
       const folders = await WIKI.models.assetFolders.query()
       const folderPaths = await WIKI.models.assetFolders.getAllPaths()
       return _.filter(folders, f => {
@@ -121,7 +121,7 @@ module.exports = {
     /**
      * Create New Asset Folder
      */
-    async createFolder(obj, args, context) {
+    async createFolder (obj, args, context) {
       try {
         const folderSlug = sanitize(args.slug).toLowerCase()
         const parentFolderId = args.parentFolderId === 0 ? null : args.parentFolderId
@@ -148,7 +148,7 @@ module.exports = {
     /**
      * Rename an Asset Folder
      */
-    async renameFolder(obj, args, context) {
+    async renameFolder (obj, args, context) {
       try {
         const folder = await WIKI.models.assetFolders.query().findById(args.id)
         if (!folder) {
@@ -202,7 +202,7 @@ module.exports = {
     /**
      * Move an Asset Folder
      */
-    async moveFolder(obj, args, context) {
+    async moveFolder (obj, args, context) {
       try {
         const folder = await WIKI.models.assetFolders.query().findById(args.id)
         if (!folder) {
@@ -263,7 +263,7 @@ module.exports = {
     /**
      * Delete an Asset Folder
      */
-    async deleteFolder(obj, args, context) {
+    async deleteFolder (obj, args, context) {
       try {
         const folder = await WIKI.models.assetFolders.query().findById(args.id)
         if (!folder) {
@@ -332,7 +332,7 @@ module.exports = {
     /**
      * Rename an Asset
      */
-    async renameAsset(obj, args, context) {
+    async renameAsset (obj, args, context) {
       try {
         const filename = sanitize(args.filename).toLowerCase()
 
@@ -378,7 +378,7 @@ module.exports = {
           // Update filename + hash
           const fileHash = assetHelper.generateHash(assetTargetPath)
           await WIKI.models.assets.query().patch({
-            filename: filename,
+            filename,
             hash: fileHash
           }).findById(args.id)
 
@@ -411,7 +411,7 @@ module.exports = {
     /**
      * Move an Asset to another folder
      */
-    async moveAsset(obj, args, context) {
+    async moveAsset (obj, args, context) {
       try {
         const asset = await WIKI.models.assets.query().findById(args.id)
         if (!asset) {
@@ -485,7 +485,7 @@ module.exports = {
     /**
      * Delete an Asset
      */
-    async deleteAsset(obj, args, context) {
+    async deleteAsset (obj, args, context) {
       try {
         const asset = await WIKI.models.assets.query().findById(args.id)
         if (asset) {
@@ -524,7 +524,7 @@ module.exports = {
     /**
      * Flush Temporary Uploads
      */
-    async flushTempUploads(obj, args, context) {
+    async flushTempUploads (obj, args, context) {
       try {
         await WIKI.models.assets.flushTempUploads()
         return {

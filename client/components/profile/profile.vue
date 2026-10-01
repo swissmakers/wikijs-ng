@@ -418,7 +418,7 @@ export default {
   components: {
     PasswordStrength
   },
-  data() {
+  data () {
     return {
       saveLoading: false,
       changePassLoading: false,
@@ -479,13 +479,13 @@ export default {
     }
   },
   watch: {
-    'user.appearance': (newValue, oldValue) => {
+    'user.appearance' (newValue) {
       applyAppearance(newValue)
     },
-    'user.dateFormat': (newValue, oldValue) => {
+    'user.dateFormat' (newValue) {
       WIKI.$datetime.setDateFormat(newValue)
     },
-    'user.timezone': (newValue, oldValue) => {
+    'user.timezone' (newValue) {
       WIKI.$datetime.setZone(newValue)
     }
   },
@@ -582,7 +582,7 @@ export default {
      */
     async saveProfile () {
       this.saveLoading = true
-      this.$store.commit(`loadingStart`, 'profile-save')
+      this.$store.commit('loadingStart', 'profile-save')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -626,7 +626,7 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'profile-save')
+      this.$store.commit('loadingStop', 'profile-save')
       this.saveLoading = false
     },
     /**
@@ -691,7 +691,7 @@ export default {
         }
       } else {
         this.changePassLoading = true
-        this.$store.commit(`loadingStart`, 'profile-changepassword')
+        this.$store.commit('loadingStart', 'profile-changepassword')
 
         try {
           const respRaw = await this.$apollo.mutate({
@@ -733,7 +733,7 @@ export default {
           this.$store.commit('pushGraphError', err)
         }
 
-        this.$store.commit(`loadingStop`, 'profile-changepassword')
+        this.$store.commit('loadingStop', 'profile-changepassword')
         this.changePassLoading = false
       }
     }

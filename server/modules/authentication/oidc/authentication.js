@@ -33,7 +33,7 @@ module.exports = {
               ...profile,
               email: _.get(profile, '_json.' + conf.emailClaim),
               displayName: _.get(profile, '_json.' + conf.displayNameClaim, ''),
-              picture: picture
+              picture
             }
           })
           if (conf.mapGroups) {

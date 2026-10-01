@@ -11,28 +11,28 @@ const assetHelper = require('../helpers/asset')
  * Users model
  */
 module.exports = class Asset extends Model {
-  static get tableName() { return 'assets' }
+  static get tableName () { return 'assets' }
 
   static get jsonSchema () {
     return {
       type: 'object',
 
       properties: {
-        id: {type: 'integer'},
-        filename: {type: 'string'},
-        hash: {type: 'string'},
-        ext: {type: 'string'},
-        kind: {type: 'string'},
-        mime: {type: 'string'},
-        fileSize: {type: 'integer'},
-        metadata: {type: 'object'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        id: { type: 'integer' },
+        filename: { type: 'string' },
+        hash: { type: 'string' },
+        ext: { type: 'string' },
+        kind: { type: 'string' },
+        mime: { type: 'string' },
+        fileSize: { type: 'integer' },
+        metadata: { type: 'object' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       author: {
         relation: Model.BelongsToOneRelation,
@@ -53,19 +53,20 @@ module.exports = class Asset extends Model {
     }
   }
 
-  async $beforeUpdate(opt, context) {
+  async $beforeUpdate (opt, context) {
     await super.$beforeUpdate(opt, context)
 
     this.updatedAt = new Date().toISOString()
   }
-  async $beforeInsert(context) {
+
+  async $beforeInsert (context) {
     await super.$beforeInsert(context)
 
     this.createdAt = new Date().toISOString()
     this.updatedAt = new Date().toISOString()
   }
 
-  async getAssetPath() {
+  async getAssetPath () {
     let hierarchy = []
     if (this.folderId) {
       hierarchy = await WIKI.models.assetFolders.getHierarchy(this.folderId)
@@ -73,11 +74,11 @@ module.exports = class Asset extends Model {
     return (this.folderId) ? hierarchy.map(h => h.slug).join('/') + `/${this.filename}` : this.filename
   }
 
-  async deleteAssetCache() {
+  async deleteAssetCache () {
     await fs.remove(path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, `cache/${this.hash}.dat`))
   }
 
-  static async upload(opts) {
+  static async upload (opts) {
     const fileInfo = path.parse(opts.originalname)
     const fileHash = assetHelper.generateHash(opts.assetPath)
 
@@ -88,7 +89,7 @@ module.exports = class Asset extends Model {
     }).first()
 
     // Build Object
-    let assetRow = {
+    const assetRow = {
       filename: opts.originalname,
       hash: fileHash,
       ext: fileInfo.ext,
@@ -165,7 +166,7 @@ module.exports = class Asset extends Model {
     }
   }
 
-  static async getAsset(assetPath, res) {
+  static async getAsset (assetPath, res) {
     try {
       const fileInfo = assetHelper.getPathInfo(assetPath)
       const fileHash = assetHelper.generateHash(assetPath)
@@ -184,7 +185,7 @@ module.exports = class Asset extends Model {
       }
       await WIKI.models.assets.getAssetFromDb(assetPath, fileHash, cachePath, res)
     } catch (err) {
-      if (err.code === `ECONNABORTED` || err.code === `EPIPE`) {
+      if (err.code === 'ECONNABORTED' || err.code === 'EPIPE') {
         return
       }
       WIKI.logger.error(err)
@@ -192,7 +193,7 @@ module.exports = class Asset extends Model {
     }
   }
 
-  static async getAssetFromCache(assetPath, cachePath, res) {
+  static async getAssetFromCache (assetPath, cachePath, res) {
     try {
       await fs.access(cachePath, fs.constants.R_OK)
     } catch (err) {
@@ -204,13 +205,13 @@ module.exports = class Asset extends Model {
     return true
   }
 
-  static async getAssetFromStorage(assetPath, res) {
+  static async getAssetFromStorage (assetPath, res) {
     const localLocations = await WIKI.models.storage.getLocalLocations({
       asset: {
         path: assetPath
       }
     })
-    for (let location of _.filter(localLocations, location => Boolean(location.path))) {
+    for (const location of _.filter(localLocations, location => Boolean(location.path))) {
       const assetExists = await WIKI.models.assets.getAssetFromCache(assetPath, location.path, res)
       if (assetExists) {
         return true
@@ -219,7 +220,7 @@ module.exports = class Asset extends Model {
     return false
   }
 
-  static async getAssetFromDb(assetPath, fileHash, cachePath, res) {
+  static async getAssetFromDb (assetPath, fileHash, cachePath, res) {
     const asset = await WIKI.models.assets.query().where('hash', fileHash).first()
     if (asset) {
       const assetData = await WIKI.models.knex('assetData').where('id', asset.id).first()
@@ -231,7 +232,7 @@ module.exports = class Asset extends Model {
     }
   }
 
-  static async flushTempUploads() {
-    return fs.emptyDir(path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, `uploads`))
+  static async flushTempUploads () {
+    return fs.emptyDir(path.resolve(WIKI.ROOTPATH, WIKI.config.dataPath, 'uploads'))
   }
 }

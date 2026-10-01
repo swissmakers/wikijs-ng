@@ -74,7 +74,7 @@ export default {
     StatusIndicator,
     CreateApiKey
   },
-  data() {
+  data () {
     return {
       enabled: false,
       isToggleLoading: false,

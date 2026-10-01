@@ -5,11 +5,11 @@ module.exports = {
   /**
    * Generate unique hash from page
    */
-  generateHash(assetPath) {
+  generateHash (assetPath) {
     return crypto.createHash('sha1').update(assetPath).digest('hex')
   },
 
-  getPathInfo(assetPath) {
+  getPathInfo (assetPath) {
     return path.parse(assetPath.toLowerCase())
   }
 }

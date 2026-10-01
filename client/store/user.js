@@ -22,7 +22,7 @@ export default {
   state,
   mutations: {
     ...make.mutations(state),
-    REFRESH_AUTH(st) {
+    REFRESH_AUTH (st) {
       const jwtCookie = Cookies.get('jwt')
       if (jwtCookie) {
         try {

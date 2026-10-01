@@ -11,14 +11,14 @@ module.exports = {
   /**
    * Load root config from disk
    */
-  init() {
-    let confPaths = {
+  init () {
+    const confPaths = {
       config: path.join(WIKI.ROOTPATH, 'config.yml'),
       data: path.join(WIKI.SERVERPATH, 'app/data.yml')
     }
 
     if (process.env.dockerdev) {
-      confPaths.config = path.join(WIKI.ROOTPATH, `dev/containers/config.yml`)
+      confPaths.config = path.join(WIKI.ROOTPATH, 'dev/containers/config.yml')
     }
 
     if (process.env.CONFIG_FILE) {
@@ -38,12 +38,12 @@ module.exports = {
         )
       )
       appdata = yaml.load(fs.readFileSync(confPaths.data, 'utf8'))
-      console.info(chalk.green.bold(`OK`))
+      console.info(chalk.green.bold('OK'))
     } catch (err) {
-      console.error(chalk.red.bold(`FAILED`))
+      console.error(chalk.red.bold('FAILED'))
       console.error(err.message)
 
-      console.error(chalk.red.bold(`>>> Unable to read configuration file! Did you create the config.yml file?`))
+      console.error(chalk.red.bold('>>> Unable to read configuration file! Did you create the config.yml file?'))
       process.exit(1)
     }
 
@@ -59,11 +59,11 @@ module.exports = {
 
     // Load DB Password from Docker Secret File
     if (process.env.DB_PASS_FILE) {
-      console.info(chalk.blue(`DB_PASS_FILE is defined. Will use secret from file.`))
+      console.info(chalk.blue('DB_PASS_FILE is defined. Will use secret from file.'))
       try {
         appconfig.db.pass = fs.readFileSync(process.env.DB_PASS_FILE, 'utf8').trim()
       } catch (err) {
-        console.error(chalk.red.bold(`>>> Failed to read Docker Secret File using path defined in DB_PASS_FILE env variable!`))
+        console.error(chalk.red.bold('>>> Failed to read Docker Secret File using path defined in DB_PASS_FILE env variable!'))
         console.error(err.message)
         process.exit(1)
       }
@@ -79,8 +79,8 @@ module.exports = {
   /**
    * Load config from DB
    */
-  async loadFromDb() {
-    let conf = await WIKI.models.settings.getConfig()
+  async loadFromDb () {
+    const conf = await WIKI.models.settings.getConfig()
     if (conf) {
       WIKI.config = cfgHelper.withDefaults(conf, WIKI.config)
     } else {
@@ -94,14 +94,14 @@ module.exports = {
    * @param {Array} keys Array of keys to save
    * @returns Promise
    */
-  async saveToDb(keys, propagate = true) {
+  async saveToDb (keys, propagate = true) {
     try {
-      for (let key of keys) {
+      for (const key of keys) {
         let value = _.get(WIKI.config, key, null)
         if (!_.isPlainObject(value)) {
           value = { v: value }
         }
-        let affectedRows = await WIKI.models.settings.query().patch({ value }).where('key', key)
+        const affectedRows = await WIKI.models.settings.query().patch({ value }).where('key', key)
         if (affectedRows === 0 && value) {
           await WIKI.models.settings.query().insert({ key, value })
         }
@@ -119,14 +119,14 @@ module.exports = {
   /**
    * Apply Dev Flags
    */
-  async applyFlags() {
+  async applyFlags () {
     WIKI.models.knex.client.config.debug = WIKI.config.flags.sqllog
   },
 
   /**
    * Subscribe to HA propagation events
    */
-  subscribeToEvents() {
+  subscribeToEvents () {
     WIKI.events.inbound.on('reloadConfig', async () => {
       await WIKI.configSvc.loadFromDb()
       await WIKI.configSvc.applyFlags()

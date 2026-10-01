@@ -7,17 +7,17 @@ const { Transform } = require('node:stream')
 /* global WIKI */
 
 module.exports = {
-  async activate() {
+  async activate () {
     // not used
   },
-  async deactivate() {
+  async deactivate () {
     // not used
   },
   /**
    * INIT
    */
-  async init() {
-    WIKI.logger.info(`(SEARCH/AWS) Initializing...`)
+  async init () {
+    WIKI.logger.info('(SEARCH/AWS) Initializing...')
     this.client = new CloudSearchClient({
       credentials: {
         accessKeyId: this.config.accessKeyId,
@@ -42,7 +42,7 @@ module.exports = {
       AnalysisSchemeNames: ['default_anlscheme']
     }))
     if (_.get(schemes, 'AnalysisSchemes', []).length < 1) {
-      WIKI.logger.info(`(SEARCH/AWS) Defining Analysis Scheme...`)
+      WIKI.logger.info('(SEARCH/AWS) Defining Analysis Scheme...')
       await this.client.send(new DefineAnalysisSchemeCommand({
         DomainName: this.config.domain,
         AnalysisScheme: {
@@ -58,7 +58,7 @@ module.exports = {
       DomainName: this.config.domain
     }))
     if (_.get(fields, 'IndexFields', []).length < 1) {
-      WIKI.logger.info(`(SEARCH/AWS) Defining Index Fields...`)
+      WIKI.logger.info('(SEARCH/AWS) Defining Index Fields...')
       await this.client.send(new DefineIndexFieldCommand({
         DomainName: this.config.domain,
         IndexField: {
@@ -122,7 +122,7 @@ module.exports = {
       SuggesterNames: ['default_suggester']
     }))
     if (_.get(suggesters, 'Suggesters', []).length < 1) {
-      WIKI.logger.info(`(SEARCH/AWS) Defining Suggester...`)
+      WIKI.logger.info('(SEARCH/AWS) Defining Suggester...')
       await this.client.send(new DefineSuggesterCommand({
         DomainName: this.config.domain,
         Suggester: {
@@ -138,13 +138,13 @@ module.exports = {
 
     // -> Rebuild Index
     if (rebuildIndex) {
-      WIKI.logger.info(`(SEARCH/AWS) Requesting Index Rebuild...`)
+      WIKI.logger.info('(SEARCH/AWS) Requesting Index Rebuild...')
       await this.client.send(new IndexDocumentsCommand({
         DomainName: this.config.domain
       }))
     }
 
-    WIKI.logger.info(`(SEARCH/AWS) Initialization completed.`)
+    WIKI.logger.info('(SEARCH/AWS) Initialization completed.')
   },
   /**
    * QUERY
@@ -152,7 +152,7 @@ module.exports = {
    * @param {String} q Query
    * @param {Object} opts Additional options
    */
-  async query(q, opts) {
+  async query (q, opts) {
     try {
       let suggestions = []
       const results = await this.clientDomain.send(new SearchCommand({
@@ -176,7 +176,7 @@ module.exports = {
           title: _.head(r.fields.title) || '',
           description: _.head(r.fields.description) || ''
         })),
-        suggestions: suggestions,
+        suggestions,
         totalHits: results.hits.found
       }
     } catch (err) {
@@ -189,7 +189,7 @@ module.exports = {
    *
    * @param {Object} page Page to create
    */
-  async created(page) {
+  async created (page) {
     await this.clientDomain.send(new UploadDocumentsCommand({
       contentType: 'application/json',
       documents: JSON.stringify([
@@ -212,7 +212,7 @@ module.exports = {
    *
    * @param {Object} page Page to update
    */
-  async updated(page) {
+  async updated (page) {
     await this.clientDomain.send(new UploadDocumentsCommand({
       contentType: 'application/json',
       documents: JSON.stringify([
@@ -235,7 +235,7 @@ module.exports = {
    *
    * @param {Object} page Page to delete
    */
-  async deleted(page) {
+  async deleted (page) {
     await this.clientDomain.send(new UploadDocumentsCommand({
       contentType: 'application/json',
       documents: JSON.stringify([
@@ -251,7 +251,7 @@ module.exports = {
    *
    * @param {Object} page Page to rename
    */
-  async renamed(page) {
+  async renamed (page) {
     await this.clientDomain.send(new UploadDocumentsCommand({
       contentType: 'application/json',
       documents: JSON.stringify([
@@ -281,15 +281,15 @@ module.exports = {
   /**
    * REBUILD INDEX
    */
-  async rebuild() {
-    WIKI.logger.info(`(SEARCH/AWS) Rebuilding Index...`)
+  async rebuild () {
+    WIKI.logger.info('(SEARCH/AWS) Rebuilding Index...')
 
     const MAX_DOCUMENT_BYTES = Math.pow(2, 20)
     const MAX_INDEXING_BYTES = 5 * Math.pow(2, 20) - Buffer.from('[').byteLength - Buffer.from(']').byteLength
     const MAX_INDEXING_COUNT = 1000
     const COMMA_BYTES = Buffer.from(',').byteLength
 
-    let chunks = []
+    const chunks = []
     let bytes = 0
 
     const processDocument = async (cb, doc) => {
@@ -362,11 +362,11 @@ module.exports = {
       })
     )
 
-    WIKI.logger.info(`(SEARCH/AWS) Requesting Index Rebuild...`)
+    WIKI.logger.info('(SEARCH/AWS) Requesting Index Rebuild...')
     await this.client.send(new IndexDocumentsCommand({
       DomainName: this.config.domain
     }))
 
-    WIKI.logger.info(`(SEARCH/AWS) Index rebuilt successfully.`)
+    WIKI.logger.info('(SEARCH/AWS) Index rebuilt successfully.')
   }
 }

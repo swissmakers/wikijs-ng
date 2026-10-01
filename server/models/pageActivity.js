@@ -7,7 +7,7 @@ const _ = require('lodash')
  * Page activity log (recent changes, RSS feed, watch notifications)
  */
 module.exports = class PageActivity extends Model {
-  static get tableName() { return 'pageActivity' }
+  static get tableName () { return 'pageActivity' }
 
   static get jsonSchema () {
     return {
@@ -15,26 +15,26 @@ module.exports = class PageActivity extends Model {
       required: ['pageId', 'localeCode', 'path', 'action'],
 
       properties: {
-        id: {type: 'integer'},
-        pageId: {type: 'integer'},
-        localeCode: {type: 'string'},
-        path: {type: 'string'},
-        title: {type: 'string'},
-        action: {type: 'string'},
-        previousPath: {type: ['string', 'null']},
-        previousLocaleCode: {type: ['string', 'null']},
-        authorId: {type: ['integer', 'null']},
-        authorName: {type: 'string'},
-        isPublished: {type: 'boolean'},
-        isTemplate: {type: 'boolean'},
-        isSync: {type: 'boolean'},
-        notifyClaim: {type: ['string', 'null']},
-        createdAt: {type: 'string'}
+        id: { type: 'integer' },
+        pageId: { type: 'integer' },
+        localeCode: { type: 'string' },
+        path: { type: 'string' },
+        title: { type: 'string' },
+        action: { type: 'string' },
+        previousPath: { type: ['string', 'null'] },
+        previousLocaleCode: { type: ['string', 'null'] },
+        authorId: { type: ['integer', 'null'] },
+        authorName: { type: 'string' },
+        isPublished: { type: 'boolean' },
+        isTemplate: { type: 'boolean' },
+        isSync: { type: 'boolean' },
+        notifyClaim: { type: ['string', 'null'] },
+        createdAt: { type: 'string' }
       }
     }
   }
 
-  $beforeInsert() {
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
   }
 

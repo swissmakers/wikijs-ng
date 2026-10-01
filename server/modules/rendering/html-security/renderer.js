@@ -2,7 +2,7 @@ const { JSDOM } = require('jsdom')
 const createDOMPurify = require('dompurify')
 
 module.exports = {
-  async init(input, config) {
+  async init (input, config) {
     if (config.safeHTML) {
       const window = new JSDOM('').window
       const DOMPurify = createDOMPurify(window)

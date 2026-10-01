@@ -179,7 +179,7 @@ const router = new VueRouter({
 
 export default {
   i18nOptions: { namespaces: 'tags' },
-  data() {
+  data () {
     return {
       tags: [],
       selection: [],
@@ -207,7 +207,7 @@ export default {
           scrollingX: false,
           easing: 'easeOutQuad',
           speed: 1000,
-          verticalNativeBarPos: this.$vuetify.rtl ? `left` : `right`
+          verticalNativeBarPos: this.$vuetify.rtl ? 'left' : 'right'
         },
         rail: {
           gutterOfEnds: '2px'
@@ -263,7 +263,7 @@ export default {
   },
   mounted () {
     this.locales = _.concat(
-      [{name: this.$t('tags:localeAny'), code: 'any'}],
+      [{ name: this.$t('tags:localeAny'), code: 'any' }],
       (siteLangs.length > 0 ? siteLangs : [])
     )
     if (this.$route.query.lang) {
@@ -296,17 +296,17 @@ export default {
       return _.includes(this.selection, tag)
     },
     rebuildURL () {
-      let urlObj = {
+      const urlObj = {
         path: '/' + this.selection.join('/')
       }
-      if (this.locale !== `any`) {
+      if (this.locale !== 'any') {
         _.set(urlObj, 'query.lang', this.locale)
       }
-      if (this.orderBy !== `title`) {
+      if (this.orderBy !== 'title') {
         _.set(urlObj, 'query.sort', this.orderBy.toLowerCase())
       }
       if (this.orderByDirection !== 0) {
-        _.set(urlObj, 'query.dir', this.orderByDirection === 0 ? `asc` : `desc`)
+        _.set(urlObj, 'query.dir', this.orderByDirection === 0 ? 'asc' : 'desc')
       }
       this.$router.push(urlObj)
     },

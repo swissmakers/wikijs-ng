@@ -9,19 +9,19 @@ const { rateLimitDirectiveTypeDefs, rateLimitDirectiveTransformer } = require('.
 
 /* global WIKI */
 
-WIKI.logger.info(`Loading GraphQL Schema...`)
+WIKI.logger.info('Loading GraphQL Schema...')
 
 // Schemas
 
-let typeDefs = [rateLimitDirectiveTypeDefs]
-let schemas = fs.readdirSync(path.join(WIKI.SERVERPATH, 'graph/schemas'))
+const typeDefs = [rateLimitDirectiveTypeDefs]
+const schemas = fs.readdirSync(path.join(WIKI.SERVERPATH, 'graph/schemas'))
 schemas.forEach(schema => {
   typeDefs.push(fs.readFileSync(path.join(WIKI.SERVERPATH, `graph/schemas/${schema}`), 'utf8'))
 })
 
 // Resolvers
 
-let resolvers = {}
+const resolvers = {}
 const resolversObj = _.values(autoload(path.join(WIKI.SERVERPATH, 'graph/resolvers')))
 resolversObj.forEach(resolver => {
   _.merge(resolvers, resolver)
@@ -36,7 +36,7 @@ let schema = makeExecutableSchema({
 schema = authDirectiveTransformer(schema)
 schema = rateLimitDirectiveTransformer(schema)
 
-WIKI.logger.info(`GraphQL Schema: [ OK ]`)
+WIKI.logger.info('GraphQL Schema: [ OK ]')
 
 module.exports = {
   schema

@@ -11,8 +11,8 @@ const getFilePath = (page, pathKey) => {
 }
 
 module.exports = {
-  async init() {
-    WIKI.logger.info(`(STORAGE/AZURE) Initializing...`)
+  async init () {
+    WIKI.logger.info('(STORAGE/AZURE) Initializing...')
     const { accountName, accountKey, containerName } = this.config
     this.client = new BlobServiceClient(
       `https://${accountName}.blob.core.windows.net`,
@@ -27,7 +27,7 @@ module.exports = {
         throw err
       }
     }
-    WIKI.logger.info(`(STORAGE/AZURE) Initialization completed.`)
+    WIKI.logger.info('(STORAGE/AZURE) Initialization completed.')
   },
   async created (page) {
     WIKI.logger.info(`(STORAGE/AZURE) Creating file ${page.path}...`)
@@ -51,7 +51,7 @@ module.exports = {
       deleteSnapshots: 'include'
     })
   },
-  async renamed(page) {
+  async renamed (page) {
     WIKI.logger.info(`(STORAGE/${this.storageName}) Renaming file ${page.path} to ${page.destinationPath}...`)
     let sourceFilePath = getFilePath(page, 'path')
     let destinationFilePath = getFilePath(page, 'destinationPath')
@@ -112,8 +112,8 @@ module.exports = {
   /**
    * HANDLERS
    */
-  async exportAll() {
-    WIKI.logger.info(`(STORAGE/AZURE) Exporting all content to Azure Blob Storage...`)
+  async exportAll () {
+    WIKI.logger.info('(STORAGE/AZURE) Exporting all content to Azure Blob Storage...')
 
     await storageExport.exportAll({
       onPage: async page => {

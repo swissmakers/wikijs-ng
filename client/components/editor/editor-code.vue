@@ -85,14 +85,14 @@ import 'codemirror/addon/search/searchcursor.js'
 // ========================================
 
 export default {
-  data() {
+  data () {
     return {
       cm: null,
       cursorPos: { ch: 0, line: 1 }
     }
   },
   computed: {
-    isMobile() {
+    isMobile () {
       return this.$vuetify.breakpoint.smAndDown
     },
     locale: get('page/locale'),
@@ -101,25 +101,25 @@ export default {
     activeModal: sync('editor/activeModal')
   },
   methods: {
-    toggleModal(key) {
+    toggleModal (key) {
       this.activeModal = (this.activeModal === key) ? '' : key
       this.helpShown = false
     },
-    closeAllModal() {
+    closeAllModal () {
       this.activeModal = ''
       this.helpShown = false
     },
     /**
      * Insert content at cursor
      */
-    insertAtCursor({ content }) {
+    insertAtCursor ({ content }) {
       const cursor = this.cm.doc.getCursor('head')
       this.cm.doc.replaceRange(content, cursor)
     },
     /**
      * Insert content after current line
      */
-    insertAfter({ content, newLine }) {
+    insertAfter ({ content, newLine }) {
       const curLine = this.cm.doc.getCursor('to').line
       const lineLength = this.cm.doc.getLine(curLine).length
       this.cm.doc.replaceRange(newLine ? `\n${content}\n` : content, { line: curLine, ch: lineLength + 1 })
@@ -127,7 +127,7 @@ export default {
     /**
      * Insert content before current line
      */
-    insertBeforeEachLine({ content, after }) {
+    insertBeforeEachLine ({ content, after }) {
       let lines = []
       if (!this.cm.doc.somethingSelected()) {
         lines.push(this.cm.doc.getCursor('head').line)
@@ -155,19 +155,19 @@ export default {
     /**
      * Update cursor state
      */
-    positionSync(cm) {
+    positionSync (cm) {
       this.cursorPos = cm.getCursor('head')
     },
     toggleFullscreen () {
       this.cm.setOption('fullScreen', true)
     },
-    refresh() {
+    refresh () {
       this.$nextTick(() => {
         this.cm.refresh()
       })
     }
   },
-  mounted() {
+  mounted () {
     this.$store.set('editor/editorKey', 'code')
 
     if (this.mode === 'create') {
@@ -223,16 +223,17 @@ export default {
 
     this.$root.$on('editorInsert', opts => {
       switch (opts.kind) {
-        case 'IMAGE':
+        case 'IMAGE': {
           let img = `<img src="${opts.path}" alt="${opts.text}"`
           if (opts.align && opts.align !== '') {
             img += ` class="align-${opts.align}"`
           }
-          img += ` />`
+          img += ' />'
           this.insertAtCursor({
             content: img
           })
           break
+        }
         case 'BINARY':
           this.insertAtCursor({
             content: `<a href="${opts.path}" title="${opts.text}">${opts.text}</a>`
@@ -243,13 +244,13 @@ export default {
 
     // Handle save conflict
     this.$root.$on('saveConflict', () => {
-      this.toggleModal(`editorModalConflict`)
+      this.toggleModal('editorModalConflict')
     })
     this.$root.$on('overwriteEditorContent', () => {
       this.cm.setValue(this.$store.get('editor/content'))
     })
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.$root.$off('editorInsert')
   }
 }

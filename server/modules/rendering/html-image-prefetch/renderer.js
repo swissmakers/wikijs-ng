@@ -1,7 +1,7 @@
 /* global WIKI */
 
 const prefetch = async (element) => {
-  const url = element.attr(`src`)
+  const url = element.attr('src')
   let contentType = ''
   let image = ''
   try {
@@ -9,7 +9,7 @@ const prefetch = async (element) => {
     if (!response.ok) {
       throw new Error(`Unexpected response code ${response.status}`)
     }
-    contentType = response.headers.get(`content-type`)
+    contentType = response.headers.get('content-type')
     image = Buffer.from(await response.arrayBuffer()).toString('base64')
   } catch (err) {
     WIKI.logger.warn(`Failed to prefetch ${url}`)
@@ -21,7 +21,7 @@ const prefetch = async (element) => {
 }
 
 module.exports = {
-  async init($) {
+  async init ($) {
     const promises = $('img.prefetch-candidate').map((index, element) => {
       return prefetch($(element))
     }).toArray()

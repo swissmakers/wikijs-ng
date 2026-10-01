@@ -7,8 +7,8 @@ const _ = require('lodash')
  * Settings model
  */
 module.exports = class Setting extends Model {
-  static get tableName() { return 'settings' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'settings' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -16,25 +16,26 @@ module.exports = class Setting extends Model {
       required: ['key'],
 
       properties: {
-        key: {type: 'string'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        key: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['value']
   }
 
-  $beforeUpdate() {
-    this.updatedAt = new Date().toISOString()
-  }
-  $beforeInsert() {
+  $beforeUpdate () {
     this.updatedAt = new Date().toISOString()
   }
 
-  static async getConfig() {
+  $beforeInsert () {
+    this.updatedAt = new Date().toISOString()
+  }
+
+  static async getConfig () {
     const settings = await WIKI.models.settings.query()
     if (settings.length > 0) {
       return _.reduce(settings, (res, val, key) => {

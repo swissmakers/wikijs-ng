@@ -8,13 +8,13 @@ const DEFAULT_DRAWIO_URL = 'https://embed.diagrams.net'
 
 module.exports = {
   Query: {
-    async site() { return {} }
+    async site () { return {} }
   },
   Mutation: {
-    async site() { return {} }
+    async site () { return {} }
   },
   SiteQuery: {
-    async config(obj, args, context, info) {
+    async config (obj, args, context, info) {
       return {
         host: WIKI.config.host,
         title: WIKI.config.title,
@@ -48,15 +48,15 @@ module.exports = {
     }
   },
   SiteMutation: {
-    async updateConfig(obj, args, context) {
+    async updateConfig (obj, args, context) {
       try {
         // -> Validate before changing anything
-        const drawioUrl = args.hasOwnProperty('drawioUrl') ? (_.trimEnd(_.trim(args.drawioUrl), '/') || DEFAULT_DRAWIO_URL) : null
+        const drawioUrl = _.has(args, 'drawioUrl') ? (_.trimEnd(_.trim(args.drawioUrl), '/') || DEFAULT_DRAWIO_URL) : null
         if (drawioUrl && !cspHelper.httpOrigin(drawioUrl)) {
           throw new WIKI.Error.InputInvalid()
         }
 
-        if (args.hasOwnProperty('host')) {
+        if (_.has(args, 'host')) {
           let siteHost = _.trim(args.host)
           if (siteHost.endsWith('/')) {
             siteHost = siteHost.slice(0, -1)
@@ -64,27 +64,27 @@ module.exports = {
           WIKI.config.host = siteHost
         }
 
-        if (args.hasOwnProperty('title')) {
+        if (_.has(args, 'title')) {
           WIKI.config.title = _.trim(args.title)
         }
 
-        if (args.hasOwnProperty('company')) {
+        if (_.has(args, 'company')) {
           WIKI.config.company = _.trim(args.company)
         }
 
-        if (args.hasOwnProperty('contentLicense')) {
+        if (_.has(args, 'contentLicense')) {
           WIKI.config.contentLicense = args.contentLicense
         }
 
-        if (args.hasOwnProperty('footerOverride')) {
+        if (_.has(args, 'footerOverride')) {
           WIKI.config.footerOverride = args.footerOverride
         }
 
-        if (args.hasOwnProperty('logoUrl')) {
+        if (_.has(args, 'logoUrl')) {
           WIKI.config.logoUrl = _.trim(args.logoUrl)
         }
 
-        if (args.hasOwnProperty('pageExtensions')) {
+        if (_.has(args, 'pageExtensions')) {
           WIKI.config.pageExtensions = _.trim(args.pageExtensions).split(',').map(p => p.trim().toLowerCase()).filter(p => p !== '')
         }
 

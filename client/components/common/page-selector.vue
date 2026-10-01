@@ -172,7 +172,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       treeViewCacheId: 0,
       searchLoading: false,
@@ -217,8 +217,8 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
     isSearching () {
       return this.searchQuery && this.searchQuery.length >= 2
@@ -333,10 +333,10 @@ export default {
     }
   },
   methods: {
-    close() {
+    close () {
       this.isShown = false
     },
-    open() {
+    open () {
       this.pushRecent({
         locale: this.currentLocale,
         path: this.currentPath,
@@ -411,7 +411,7 @@ export default {
         }
       })
       const items = _.get(resp, 'data.pages.tree', [])
-      const itemFolders = _.filter(items, ['isFolder', true]).map(f => ({...f, children: []}))
+      const itemFolders = _.filter(items, ['isFolder', true]).map(f => ({ ...f, children: [] }))
       const itemPages = _.filter(items, i => i.pageId > 0)
       if (itemFolders.length > 0) {
         item.children = itemFolders

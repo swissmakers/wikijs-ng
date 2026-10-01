@@ -139,7 +139,7 @@ export default {
   methods: {
     async rebuildTree () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-content-rebuildtree')
+      this.$store.commit('loadingStart', 'admin-utilities-content-rebuildtree')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -159,13 +159,13 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-content-rebuildtree')
+      this.$store.commit('loadingStop', 'admin-utilities-content-rebuildtree')
       this.loading = false
     },
     async rerenderPages () {
       this.loading = true
       this.isRerendering = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-content-rerender')
+      this.$store.commit('loadingStart', 'admin-utilities-content-rerender')
 
       try {
         const pagesRaw = await this.$apollo.query({
@@ -221,13 +221,13 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-content-rerender')
+      this.$store.commit('loadingStop', 'admin-utilities-content-rerender')
       this.isRerendering = false
       this.loading = false
     },
     async migrateToLocale () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-content-migratelocale')
+      this.$store.commit('loadingStart', 'admin-utilities-content-migratelocale')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -251,12 +251,12 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-content-migratelocale')
+      this.$store.commit('loadingStop', 'admin-utilities-content-migratelocale')
       this.loading = false
     },
     async purgeHistory () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-content-purgehistory')
+      this.$store.commit('loadingStart', 'admin-utilities-content-purgehistory')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -283,7 +283,7 @@ export default {
         const resp = _.get(respRaw, 'data.pages.purgeHistory.responseResult', {})
         if (resp.succeeded) {
           this.$store.commit('showNotification', {
-            message: `Purged history successfully.`,
+            message: 'Purged history successfully.',
             style: 'success',
             icon: 'check'
           })
@@ -294,7 +294,7 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-content-purgehistory')
+      this.$store.commit('loadingStop', 'admin-utilities-content-purgehistory')
       this.loading = false
     }
   }

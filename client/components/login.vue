@@ -306,7 +306,7 @@ export default {
       }
     },
     isUsernameEmail () {
-      return this.selectedStrategy.strategy.usernameType === `email`
+      return this.selectedStrategy.strategy.usernameType === 'email'
     }
   },
   watch: {
@@ -460,7 +460,7 @@ export default {
             }
           })
           if (_.has(resp, 'data.authentication.loginTFA')) {
-            let respObj = _.get(resp, 'data.authentication.loginTFA', {})
+            const respObj = _.get(resp, 'data.authentication.loginTFA', {})
             if (respObj.responseResult.succeeded === true) {
               this.handleLoginResponse(respObj)
             } else {
@@ -521,7 +521,7 @@ export default {
           }
         })
         if (_.has(resp, 'data.authentication.loginChangePassword')) {
-          let respObj = _.get(resp, 'data.authentication.loginChangePassword', {})
+          const respObj = _.get(resp, 'data.authentication.loginChangePassword', {})
           if (respObj.responseResult.succeeded === true) {
             this.handleLoginResponse(respObj)
           } else {
@@ -581,7 +581,7 @@ export default {
           }
         })
         if (_.has(resp, 'data.authentication.forgotPassword.responseResult')) {
-          let respObj = _.get(resp, 'data.authentication.forgotPassword.responseResult', {})
+          const respObj = _.get(resp, 'data.authentication.forgotPassword.responseResult', {})
           if (respObj.succeeded === true) {
             this.$store.commit('showNotification', {
               style: 'success',

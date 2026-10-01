@@ -1,12 +1,12 @@
 const _ = require('lodash')
 
 module.exports = {
-  async init($, config) {
+  async init ($, config) {
     for (let i = 1; i < 6; i++) {
       $(`h${i}.tabset`).each((idx, elm) => {
-        let content = `<tabset>`
-        let tabs = []
-        let tabContents = []
+        let content = '<tabset>'
+        const tabs = []
+        const tabContents = []
         $(elm).nextUntil(_.times(i, t => `h${t + 1}`).join(', '), `h${i + 1}`).each((hidx, hd) => {
           tabs.push(`<li>${$(hd).html()}</li>`)
           let tabContent = ''
@@ -19,7 +19,7 @@ module.exports = {
         })
         content += `<template v-slot:tabs>${tabs.join('')}</template>`
         content += `<template v-slot:content>${tabContents.join('')}</template>`
-        content += `</tabset>`
+        content += '</tabset>'
         $(elm).replaceWith($(content))
       })
     }

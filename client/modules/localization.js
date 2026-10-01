@@ -36,7 +36,7 @@ const GraphQLBackend = {
 
 export default {
   VueI18Next,
-  init() {
+  init () {
     i18next
       .use(Backend)
       .init({

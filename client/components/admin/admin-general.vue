@@ -259,7 +259,7 @@ export default {
   components: {
     editorModalMedia: () => import(/* webpackChunkName: "editor", webpackMode: "lazy" */ '../editor/editor-modal-media.vue')
   },
-  data() {
+  data () {
     return {
       config: {
         host: '',
@@ -444,7 +444,7 @@ export default {
       this.config.logoUrl = opts.path
     })
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.$root.$off('editorInsert')
   },
   apollo: {

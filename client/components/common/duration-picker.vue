@@ -64,40 +64,40 @@ export default {
       default: 'PT5M'
     }
   },
-  data() {
+  data () {
     return {
       duration: datetime.parseDuration('PT0S')
     }
   },
   computed: {
     years: {
-      get() { return this.duration.years || 0 },
-      set(val) { this.rebuild(_.toNumber(val), 'years') }
+      get () { return this.duration.years || 0 },
+      set (val) { this.rebuild(_.toNumber(val), 'years') }
     },
     months: {
-      get() { return this.duration.months || 0 },
-      set(val) { this.rebuild(_.toNumber(val), 'months') }
+      get () { return this.duration.months || 0 },
+      set (val) { this.rebuild(_.toNumber(val), 'months') }
     },
     days: {
-      get() { return this.duration.days || 0 },
-      set(val) { this.rebuild(_.toNumber(val), 'days') }
+      get () { return this.duration.days || 0 },
+      set (val) { this.rebuild(_.toNumber(val), 'days') }
     },
     hours: {
-      get() { return this.duration.hours || 0 },
-      set(val) { this.rebuild(_.toNumber(val), 'hours') }
+      get () { return this.duration.hours || 0 },
+      set (val) { this.rebuild(_.toNumber(val), 'hours') }
     },
     minutes: {
-      get() { return this.duration.minutes || 0 },
-      set(val) { this.rebuild(_.toNumber(val), 'minutes') }
+      get () { return this.duration.minutes || 0 },
+      set (val) { this.rebuild(_.toNumber(val), 'minutes') }
     }
   },
   watch: {
-    value(newValue, oldValue) {
+    value (newValue, oldValue) {
       this.duration = datetime.parseDuration(newValue)
     }
   },
   methods: {
-    rebuild(val, unit) {
+    rebuild (val, unit) {
       if (!_.isFinite(val) || val < 0) {
         val = 0
       }
@@ -107,7 +107,7 @@ export default {
       this.$emit('input', this.duration.toISO())
     }
   },
-  mounted() {
+  mounted () {
     this.duration = datetime.parseDuration(this.value)
   }
 }
