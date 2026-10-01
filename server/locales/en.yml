@@ -64,9 +64,6 @@ admin:
     displayNameHint: The title shown to the end user for this authentication strategy.
     domainsWhitelist: Limit to specific email domains
     domainsWhitelistHint: A list of domains authorized to register. The user email address domain must match one of these to gain access.
-    force2fa: Force all users to use Two-Factor Authentication (2FA)
-    force2faHint: Users will be required to setup 2FA the first time they login and cannot be disabled by the user.
-    globalAdvSettings: Global Advanced Settings
     jwtAudience: JWT Audience
     jwtAudienceHint: Audience URN used in JWT issued upon login. Usually your domain name. (e.g. urn:your.domain.com)
     loginUrl: Login URL
@@ -74,19 +71,12 @@ admin:
     refreshSuccess: List of strategies has been refreshed.
     registration: Registration
     saveSuccess: Authentication configuration saved successfully.
-    security: Security
     selfRegistration: Allow self-registration
     selfRegistrationHint: Allow any user successfully authorized by the strategy to access the wiki.
     siteUrlNotSetup: You must set a valid {{siteUrl}} first! Click on {{general}} in the left sidebar.
-    strategies: Strategies
     strategyConfiguration: Strategy Configuration
     strategyIsEnabled: Active
     strategyIsEnabledHint: Are users able to login using this strategy?
-    strategyNoConfiguration: This strategy has no configuration options you can modify.
-    strategyState: This strategy is {{state}} {{locked}}
-    strategyStateActive: active
-    strategyStateInactive: not active
-    strategyStateLocked: and cannot be disabled.
     subtitle: Configure the authentication settings of your wiki
     title: Authentication
     tokenEndpointAuthMethod: Token Endpoint Authentication Method
@@ -105,58 +95,18 @@ admin:
     moderationSubtitle: Review comments held for approval
     pendingOnly: Pending only
     moderationEmpty: No comments to review.
-  contribute:
-    becomeAPatron: Become a Patron
-    becomeASponsor: Become a Sponsor
-    contribute: Contribute
-    ethereum: 'We accept donations using Ethereum:'
-    followUsOnTwitter: Follow us on {{0}}.
-    foundABug: Found a bug? Submit an issue on {{0}}.
-    fundOurWork: Fund our work
-    github: Become a sponsor via GitHub Sponsors (goes directly into supporting lead developer Nicolas Giard's goal of working full-time on Wiki.js)
-    helpTranslate: Help translate Wiki.js in your language. Let us know on {{0}}.
-    makeADonation: Make a donation
-    needYourHelp: We need your help to keep improving the software and run the various associated services (e.g. hosting and networking).
-    openCollective: 'Wiki.js is also part of the Open Collective initiative, a transparent fund that goes toward community resources. You can contribute financially by making a monthly or one-time donation:'
-    openSource: Wiki.js is a free and open-source software brought to you with {{0}} by {{1}} and {{2}}.
-    openSourceContributors: contributors
-    patreon: Become a backer or sponsor via Patreon (goes directly into supporting lead developer Nicolas Giard's goal of working full-time on Wiki.js)
-    paypal: 'Make a one-time or recurring donation via Paypal:'
-    shop: Wiki.js Shop
-    spreadTheWord: Spread the word
-    submitAnIdea: Submit an idea or vote on a proposed one on the {{0}}.
-    submitAnIdeaLink: feature requests board
-    subtitle: Help support Wiki.js development and operations
-    talkToFriends: Talk to your friends and colleagues about how awesome Wiki.js is!
-    title: Contribute to Wiki.js
-    tshirts: 'You can also buy Wiki.js t-shirts to support the project financially:'
+    listRefreshSuccess: List of comment providers has been refreshed.
   dashboard:
-    contributeHelp: We need your help!
-    contributeLearnMore: Learn More
-    contributeSubtitle: Wiki.js is a free and open source project. There are several ways you can contribute to the project.
     groups: Groups
     lastLogins: Last Logins
-    mostPopularPages: Most Popular Pages
     pages: Pages
     recentPages: Recent Pages
     subtitle: Wiki.js
     title: Dashboard
     users: Users
-    versionLatest: You are running the latest version.
-    versionNew: 'A new version is available: {{version}}'
   dev:
     flags:
       title: Flags
-    graphiql:
-      title: GraphiQL
-    title: Developer Tools
-    voyager:
-      title: Voyager
-  editor:
-    title: Editor
-  extensions:
-    subtitle: Install extensions for extra functionality
-    title: Extensions
   general:
     companyName: Company / Organization Name
     companyNameHint: Name to use when displaying copyright notice in the footer. Leave empty to hide.
@@ -190,7 +140,6 @@ admin:
     pageExtensions: Page Extensions
     pageExtensionsHint: A comma-separated list of URL extensions that will be treated as pages. For example, adding md will treat /foobar.md the same as /foobar.
     saveSuccess: Site configuration saved successfully.
-    siteBranding: Site Branding
     siteDescription: Site Description
     siteDescriptionHint: Default description when none is provided for a page.
     siteInfo: Site Info
@@ -201,10 +150,6 @@ admin:
     siteUrlHint: Full URL to your wiki, without the trailing slash. (e.g. https://wiki.example.com)
     subtitle: Main settings of your wiki
     title: General
-    uploadClear: Clear
-    uploadLogo: Upload Logo
-    uploadSizeHint: An image of {{size}} pixels is recommended for best results.
-    uploadTypesHint: '{{typeList}} or {{lastType}} files only'
     featureNotifications: Watch pages & e-mail notifications
     featureNotificationsHint: Users can watch pages and folders and receive an e-mail digest of the changes (requires a mail configuration).
     integrations: Integrations
@@ -242,8 +187,6 @@ admin:
     sourceSideloaded: Sideloaded
     sourceDatabase: Database (legacy pack)
     sideloadFolder: Sideload folder
-  logging:
-    title: Logging
   mail:
     configuration: Configuration
     dkim: DKIM (optional)
@@ -292,8 +235,6 @@ admin:
     edit: Edit {{kind}}
     emptyList: Navigation is empty
     header: Header
-    icon: Icon
-    label: Label
     link: Link
     mode: Navigation Mode
     modeCustom:
@@ -321,8 +262,6 @@ admin:
     sourceLocale: Source Locale
     sourceLocaleHint: The locale from which navigation items will be copied from.
     subtitle: Manage the site navigation
-    target: Target
-    targetType: Target Type
     title: Navigation
     untitled: Untitled {{kind}}
     visibilityMode:
@@ -389,24 +328,18 @@ admin:
   ssl:
     currentState: Current State
     domain: Domain
-    domainHint: Enter the fully qualified domain pointing to your wiki. (e.g. wiki.example.com)
     expiration: Certificate Expiration
     httpPort: HTTP Port
-    httpPortHint: Non-SSL port the server will listen to for HTTP requests. Usually 80 or 3000.
     httpPortRedirect: Redirect HTTP requests to HTTPS
-    httpPortRedirectHint: Will automatically redirect any requests on the HTTP port to HTTPS.
     httpPortRedirectSaveSuccess: HTTP Redirection changed successfully.
     httpPortRedirectTurnOff: Turn Off
     httpPortRedirectTurnOn: Turn On
     httpsPort: HTTPS Port
-    httpsPortHint: SSL port the server will listen to for HTTPS requests. Usually 443.
     ports: Ports
     provider: Provider
     providerCustomCertificate: Custom Certificate
     providerDisabled: Disabled
-    providerHint: Select Custom Certificate if you have your own certificate already.
     providerLetsEncrypt: Let's Encrypt
-    providerOptions: Provider Options
     renewCertificate: Renew Certificate
     renewCertificateLoadingSubtitle: Do not leave this page.
     renewCertificateLoadingTitle: Renewing Certificate...
@@ -415,9 +348,6 @@ admin:
     subscriberEmail: Subscriber Email
     subtitle: Manage SSL configuration
     title: SSL
-    writableConfigFileWarning: Note that your config file must be writable in order to persist ports configuration.
-  stats:
-    title: Statistics
   storage:
     actionRun: Run
     actions: Actions
@@ -455,10 +385,7 @@ admin:
     dbPartialSupport: Your database version is not fully supported. Some functionality may be limited or not work as expected.
     hostInfo: Host Information
     hostname: Hostname
-    latestVersion: Latest Version
     os: Operating System
-    published: Published
-    ramUsage: 'RAM Usage: {{used}} / {{total}}'
     refreshSuccess: System Info has been refreshed.
     subtitle: Information about your system
     title: System Info
@@ -473,7 +400,6 @@ admin:
     edit: Edit Tag
     emptyList: No tags to display.
     filter: Filter...
-    label: Label
     noItemsText: Add a tag to a page to get started.
     noSelectionText: Select a tag from the list on the left.
     refreshSuccess: Tags have been refreshed.
@@ -492,21 +418,13 @@ admin:
     cssOverrideWarningCaution: 'CAUTION:'
     darkMode: Dark Mode
     darkModeHint: Not recommended for accessibility. May not be supported by all themes.
-    downloadAuthor: Author
-    downloadDownload: Download
-    downloadName: Name
-    downloadThemes: Download Themes
     headHtmlInjection: Head HTML Injection
     headHtmlInjectionHint: HTML code to be injected just before the closing head tag. Usually for script tags.
     iconset: Icon Set
     iconsetHint: Set of icons to use for the sidebar navigation.
     options: Theme Options
-    siteTheme: Site Theme
-    siteThemeHint: Themes affect how content pages are displayed. Other site sections (such as the editor or admin area) are not affected.
     subtitle: Modify the look & feel of your wiki
     title: Theme
-    tocHeadingLevels: Default TOC Heading Levels
-    tocHeadingLevelsHint: The table of contents will show headings from and up to the selected levels by default.
   users:
     active: Active
     authProvider: Provider
@@ -514,7 +432,6 @@ admin:
     authentication: Authentication
     basicInfo: Basic Info
     changePassword: Change Password
-    deleteConfirmForeignNotice: Note that you cannot delete a user that already created content. You must instead either deactivate the user or delete all content that was created by that user.
     deleteConfirmReplaceWarn: Any content (pages, uploads, comments, etc.) that was created by this user will be reassigned to the user selected below. It is recommended to create a dummy target user (e.g. Deleted User) if you don't want the content to be reassigned to any current active user.
     deleteConfirmText: Are you sure you want to delete user {{username}}?
     deleteConfirmTitle: Delete User?
@@ -548,6 +465,7 @@ admin:
     userVerifySuccess: User has been verified successfully.
     verified: Verified
     sendWelcomeEmail: Send a welcome email
+    userDeleteSuccess: User deleted successfully.
   utilities:
     authSubtitle: Various tools for authentication / users
     authTitle: Authentication
@@ -557,18 +475,9 @@ admin:
     contentTitle: Content
     exportSubtitle: Save content to tarball for backup / migration
     exportTitle: Export to Disk
-    graphEndpointSubtitle: Change the GraphQL endpoint for Wiki.js
-    graphEndpointTitle: GraphQL Endpoint
-    importv1Subtitle: Migrate data from a previous 1.x installation
-    importv1Title: Import from Wiki.js 1.x
     subtitle: Maintenance and miscellaneous tools
-    telemetrySubtitle: Enable/Disable telemetry or reset the client ID
-    telemetryTitle: Telemetry
     title: Utilities
     tools: Tools
-  webhooks:
-    subtitle: Manage webhooks to external services
-    title: Webhooks
   assets:
     title: Assets
     subtitle: Manage uploaded files and folders
@@ -604,25 +513,14 @@ auth:
     login: Log In
     register: Register
   changePwd:
-    instructions: 'You must choose a new password:'
     loading: Changing password...
     newPasswordPlaceholder: New Password
     newPasswordVerifyPlaceholder: Verify New Password
     proceed: Change Password
     subtitle: Choose a new password
   enterCredentials: Enter your credentials
-  errors:
-    invalidLogin: Invalid Login
-    invalidLoginMsg: The email or password is invalid.
-    invalidUserEmail: Invalid User Email
-    loginError: Login error
-    notYetAuthorized: You have not been authorized to login to this site yet.
-    tooManyAttempts: Too many attempts!
-    tooManyAttemptsMsg: You've made too many failed attempts in a short period of time, please try again {{time}}.
-    userNotFound: User not found
   fields:
     email: Email Address
-    emailUser: Email / Username
     name: Name
     password: Password
     username: Username
@@ -637,27 +535,15 @@ auth:
   invalidEmail: Email address is invalid.
   invalidEmailUsername: Enter a valid email / username.
   invalidPassword: Enter a valid password.
-  loginRequired: Login required
   loginSuccess: Login Successful! Redirecting...
-  loginUsingStrategy: Login using {{strategy}}
   missingEmail: Missing email address.
   missingName: Name is missing.
   missingPassword: Missing password.
   nameTooLong: Name is too long.
   nameTooShort: Name is too short.
-  orLoginUsingStrategy: or login using...
   passwordNotMatch: Both passwords do not match.
   passwordTooShort: Password is too short.
   pleaseWait: Please wait
-  providers:
-    azure: Azure Active Directory
-    facebook: Facebook
-    github: GitHub
-    google: Google ID
-    ldap: LDAP / Active Directory
-    local: Local
-    slack: Slack
-    windowslive: Microsoft Account
   registerCheckEmail: Check your emails to activate your account.
   registerSubTitle: Fill-in the form below to create your account.
   registerSuccess: Account created successfully!
@@ -671,11 +557,8 @@ auth:
     text: Already have an account? {{link}}
   switchToRegister:
     link: Create an account
-    text: Don't have an account yet? {{link}}
   tfa:
     placeholder: XXXXXX
-    subtitle: 'Security code required:'
-    title: Two Factor Authentication
     verifyToken: Verify
   tfaFormTitle: 'Enter the security code generated from your trusted device:'
   tfaSetupInstrFirst: '1) Scan the QR code below from your mobile 2FA application:'
@@ -717,6 +600,7 @@ common:
     select: Select
     upload: Upload
     goBack: Go Back
+    view: View
   comments:
     beFirst: Be the first to comment.
     contentMissingError: Comment is empty or too short!
@@ -764,7 +648,6 @@ common:
   header:
     account: Account
     admin: Administration
-    assets: Assets
     browseTags: Browse by Tags
     convert: Convert
     currentPage: Current Page
@@ -778,19 +661,16 @@ common:
     login: Login
     logout: Logout
     move: Move / Rename
-    myWiki: My Wiki
     newPage: New Page
     pageActions: Page Actions
     profile: Profile
     search: Search...
     searchClose: Close
-    searchCopyLink: Copy Search Link
     searchDidYouMean: Did you mean...
     searchHint: Type at least 2 characters to start searching...
     searchLoading: Searching...
     searchNoResult: No pages matching your query.
     searchResultsCount: Found {{total}} results
-    siteMap: Site Map
     view: View
     viewSource: View Source
     searchRestrictLocale: Only {{locale}}
@@ -810,7 +690,6 @@ common:
     ccbynd: Creative Commons Attribution-NoDerivs License
     ccbysa: Creative Commons Attribution-ShareAlike License
     none: None
-  modernBrowser: modern browser
   newpage:
     create: Create Page
     goback: Go back
@@ -821,7 +700,6 @@ common:
     subtitle: This page does not exist.
     title: Not Found
     searchHint: 'Tip: use the search bar on the home page to find what you were looking for.'
-  outdatedBrowserWarning: Your browser is outdated. Upgrade to a {{modernBrowser}}.
   page:
     bookmark: Bookmark
     convert: Convert Page
@@ -869,6 +747,9 @@ common:
     pages: Pages
     selectTitle: Select a Page
     virtualFolders: Virtual Folders
+    searchPlaceholder: Search pages by title...
+    noResults: No matching pages found.
+    recent: Recent
   password:
     average: Average
     strong: Strong
@@ -941,7 +822,6 @@ editor:
     deleteAssetConfirm: Are you sure you want to delete asset
     deleteAssetWarn: This action cannot be undone!
     deleteSuccess: Asset deleted successfully.
-    fetchImage: Fetch Remote Image
     fileCount: '{{count}} files'
     folderCreateSuccess: Asset folder created successfully.
     folderEmpty: This asset folder is empty.
@@ -1004,7 +884,6 @@ editor:
     horizontalBar: Horizontal Bar
     inlineCode: Inline Code
     insertAssets: Insert Assets
-    insertBlock: Insert Block
     insertCodeBlock: Insert Code Block
     insertDiagram: Insert Diagram
     insertLink: Insert Link
@@ -1018,7 +897,6 @@ editor:
     strikethrough: Strikethrough
     subscript: Subscript
     superscript: Superscript
-    tableHelper: Table Helper
     togglePreviewPane: Hide / Show Preview Pane
     toggleSpellcheck: Toggle Spellcheck
     unorderedList: Unordered List
@@ -1026,15 +904,9 @@ editor:
   props:
     allowComments: Allow Comments
     allowCommentsHint: Enable commenting abilities on this page.
-    allowRatings: Allow Ratings
-    allowRatingsHint: Enable rating capabilities on this page.
     categorization: Categorization
     css: CSS
     cssHint: CSS will automatically be minified upon saving. Do not include surrounding style tags, only the actual CSS code.
-    displayAuthor: Display Author Info
-    displayAuthorHint: Show the page author along with the last edition time.
-    displaySharingBar: Display Sharing Toolbar
-    displaySharingBarHint: Show a toolbar with buttons to share and print this page
     html: HTML
     htmlHint: You must surround your javascript code with HTML script tags.
     info: Info
@@ -1042,7 +914,6 @@ editor:
     pageInfo: Page Info
     pageProperties: Page Properties
     path: Path
-    pathCategorization: Path & Categorization
     pathHint: Do not include any leading or trailing slashes.
     publishEnd: Publish ending on...
     publishEndHint: Leave empty for no end date
@@ -1061,23 +932,15 @@ editor:
     tags: Tags
     tagsHint: Use tags to categorize your pages and make them easier to find.
     title: Title
-    toc: TOC
-    tocHeadingLevels: TOC Heading Levels
-    tocHeadingLevelsHint: The table of contents will show headings from and up to the selected levels.
-    tocTitle: Table of Contents
-    tocUseDefault: Use Site Defaults
     templateToggle: Use as Template
     templateToggleHint: Offer this page as a starting template when creating new pages. Template pages are excluded from search results.
   save:
     createSuccess: Page created successfully.
-    error: An error occurred while creating the page
     pleaseWait: Please wait...
     processing: Rendering
     saved: Saved
     updateSuccess: Page updated successfully.
   select:
-    cannotChange: This cannot be changed once the page is created.
-    customView: or create a custom view?
     title: Which editor do you want to use for this page?
     templates: Templates
   unsaved:
@@ -1096,7 +959,6 @@ history:
     success: Page version restored succesfully!
 profile:
   activity:
-    commentsPosted: Comments posted
     joinedOn: Joined on
     lastLoginOn: Last login on
     lastUpdatedOn: Profile last updated on
@@ -1126,8 +988,6 @@ profile:
       manualKey: 'Or enter this key manually:'
       code: Security code
       confirm: Confirm and enable
-  comments:
-    title: Comments
   dateFormat: Date Format
   displayName: Display Name
   groups:

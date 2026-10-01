@@ -6,7 +6,7 @@ const path = require('path')
 const localeSegmentRegex = /^[A-Z]{2}(-[A-Z]{2})?$/i
 const localeFolderRegex = /^([a-z]{2}(?:-[a-z]{2})?\/)?(.*)/i
 // eslint-disable-next-line no-control-regex
-const unsafeCharsRegex = /[\x00-\x1f\x80-\x9f\\"|<>:*?]/
+const unsafeCharsRegex = /[\x00-\x1f\x80-\x9f\\"|<>:*?]/g
 
 const contentToExt = {
   markdown: 'md',

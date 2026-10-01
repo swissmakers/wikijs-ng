@@ -64,9 +64,6 @@ admin:
     displayNameHint: Der Titel, der dem Endbenutzer für diese Authentifizierungsstrategie angezeigt wird.
     domainsWhitelist: Beschränkung auf bestimmte E-Mail-Domains
     domainsWhitelistHint: Eine Liste der Domains, die zur Registrierung berechtigt sind. Die E-Mail-Adresse des Benutzers muss mit einer dieser Adressen übereinstimmen, um Zugriff zu erhalten.
-    force2fa: Erzwingen, dass alle Benutzer:innen die Zwei-Faktor-Authentifizierung (2FA) aktivieren.
-    force2faHint: Benutzer:innen müssen die 2FA bei der ersten Anmeldung einrichten und können diese nicht deaktivieren.
-    globalAdvSettings: Globale erweiterte Einstellungen
     jwtAudience: JWT Audience
     jwtAudienceHint: Die in JWT verwendete  Audience URN wird beim Anmelden vergeben. Normalerweise der Name der Domain. (z.B. urn:wiki.domain.de)
     loginUrl: Login-URL
@@ -74,19 +71,12 @@ admin:
     refreshSuccess: Die Liste der Strategien wurde aktualisiert.
     registration: Registrierung
     saveSuccess: Authentifizierungskonfiguration erfolgreich gespeichert.
-    security: Sicherheit
     selfRegistration: Selbstregistrierung zulassen
     selfRegistrationHint: Jede:r durch diese Strategie autorisierte Benutzer:in darf auf das Wiki zugreifen.
     siteUrlNotSetup: Du musst zuerst eine gültige {{siteUrl}} setzen! Klicke auf {{general}} in der linken Seitenleiste.
-    strategies: Strategien
     strategyConfiguration: Strategie-Konfiguration
     strategyIsEnabled: Aktiv
     strategyIsEnabledHint: Können Benutzer sich mit dieser Methode anmelden?
-    strategyNoConfiguration: Diese Strategie hat keine Konfigurationsoptionen, die geändert werden können.
-    strategyState: Diese Strategie ist {{state}} {{locked}}
-    strategyStateActive: aktiv
-    strategyStateInactive: nicht aktiv
-    strategyStateLocked: und kann nicht deaktiviert werden.
     subtitle: Die Authentifizierungseinstellungen des Wikis konfigurieren
     title: Authentifizierung
     tokenEndpointAuthMethod: Token-Endpunkt-Authentifizierungsmethode
@@ -105,58 +95,18 @@ admin:
     moderationSubtitle: Zur Freigabe zurückgehaltene Kommentare prüfen
     pendingOnly: Nur ausstehende
     moderationEmpty: Keine Kommentare zu prüfen.
-  contribute:
-    becomeAPatron: Werde ein Förderer
-    becomeASponsor: Werde ein Sponsor
-    contribute: Mitwirken
-    ethereum: 'Wir akzeptieren Spenden mittels Ethereum:'
-    followUsOnTwitter: Folge uns auf {{0}}.
-    foundABug: Einen Fehler gefunden? Erstelle einen Vorgang auf {{0}}.
-    fundOurWork: Finanziere unsere Arbeit
-    github: Werde Sponsor über GitHub Sponsors (wird direkt zum Erreichen des Ziels des leitenden Entwicklers Nicolas Giard verwendet, Vollzeit an Wiki.js zu arbeiten).
-    helpTranslate: Hilf bei der Übersetzung von Wiki.js in deine Sprache. Kontaktiere uns auf {{0}}.
-    makeADonation: Spenden
-    needYourHelp: Wir benötigen deine Hilfe, um die Software ständig zu verbessern und die verschiedenen notwendigen Dienste (z. B. Hosting und Networking) betreiben zu können.
-    openCollective: 'Wiki.js ist auch Teil der Open Collective Initiative, einem transparenten Fonds, der für Gemeinschaftsmittel verwendet wird. Du kannst dich finanziell beteiligen, indem du eine monatliche oder einmalige Spende machst:'
-    openSource: Wiki.js ist eine kostenlose Open-Source-Software, bereitgestellt mit {{0}} von {{1}} und {{2}}.
-    openSourceContributors: Mitwirkende
-    patreon: Werde ein Unterstützer oder Sponsor über Patreon (wird direkt zum Erreichen des Ziels des leitenden Entwicklers Nicolas Giard verwendet, Vollzeit an Wiki.js zu arbeiten).
-    paypal: 'Mache eine einmalige oder wiederkehrende Spende über Paypal:'
-    shop: Wiki.js Shop
-    spreadTheWord: Spread the word
-    submitAnIdea: Bringe eine Idee ein oder stimme über vorgeschlagene Ideen ab auf der {{0}}.
-    submitAnIdeaLink: Plattform für Anfragen zu neuen Funktionen
-    subtitle: Unterstütze die Entwicklung und den Betrieb von Wiki.js.
-    talkToFriends: Sprich mit deinen Freunden und Kollegen darüber, wie großartig Wiki.js ist!
-    title: An Wiki.js mitwirken
-    tshirts: 'Du kannst auch Wiki.js-T-Shirts kaufen, um das Projekt finanziell zu unterstützen:'
+    listRefreshSuccess: Liste der Kommentaranbieter wurde aktualisiert.
   dashboard:
-    contributeHelp: Wir brauchen deine Hilfe!
-    contributeLearnMore: Erfahre mehr
-    contributeSubtitle: Wiki.js ist ein kostenloses Open-Source-Projekt. Es gibt mehrere Möglichkeiten, zum Projekt beizutragen.
     groups: Gruppen
     lastLogins: Letzte Anmeldungen
-    mostPopularPages: Beliebteste Seiten
     pages: Seiten
     recentPages: Letzte Seiten
     subtitle: Wiki.js
     title: Dashboard
     users: Benutzer
-    versionLatest: Sie verwenden die neueste Version.
-    versionNew: 'Eine neue Version ist verfügbar: {{version}}'
   dev:
     flags:
       title: Flags
-    graphiql:
-      title: GraphiQL
-    title: Entwickler-Tools
-    voyager:
-      title: Voyager
-  editor:
-    title: Bearbeitung
-  extensions:
-    subtitle: Erweiterungen für zusätzliche Funktionen installieren
-    title: Erweiterungen
   general:
     companyName: Name des Unternehmens / der Organisation
     companyNameHint: Name, der bei der Anzeige des Copyright-Vermerks in der Fußzeile verwendet werden soll. Lassen Sie das Feld leer, um es auszublenden.
@@ -190,7 +140,6 @@ admin:
     pageExtensions: Seitenerweiterungen
     pageExtensionsHint: Eine durch Kommas getrennte Liste von URL-Erweiterungen, die als Seiten behandelt werden. Wenn Sie beispielsweise md hinzufügen, wird /foobar.md genauso behandelt wie /foobar.
     saveSuccess: Konfiguration erfolgreich gespeichert.
-    siteBranding: Seiten-Kennzeichnung (Branding)
     siteDescription: Seitenbeschreibung
     siteDescriptionHint: Standardbeschreibung, wenn für eine Seite keine angegeben ist.
     siteInfo: Seiteninformation
@@ -201,10 +150,6 @@ admin:
     siteUrlHint: Vollständige URL zum Wiki, ohne den abschließenden Schrägstrich. (z.B. https://wiki.example.com)
     subtitle: Haupteinstellungen des Wikis
     title: Allgemeines
-    uploadClear: Leeren
-    uploadLogo: Logo hochladen
-    uploadSizeHint: Für beste Ergebnisse wird ein Bild mit {{size}} Pixeln empfohlen.
-    uploadTypesHint: Nur {{typeList}} oder {{lastType}} Dateien
     featureNotifications: Seiten beobachten & E-Mail-Benachrichtigungen
     featureNotificationsHint: Benutzer können Seiten und Ordner beobachten und erhalten eine E-Mail-Zusammenfassung der Änderungen (erfordert eine E-Mail-Konfiguration).
     integrations: Integrationen
@@ -242,8 +187,6 @@ admin:
     sourceSideloaded: Nachgeladen
     sourceDatabase: Datenbank (altes Sprachpaket)
     sideloadFolder: Ordner für eigene Sprachdateien
-  logging:
-    title: Protokollierung
   mail:
     configuration: Konfiguration
     dkim: DKIM (optional)
@@ -292,8 +235,6 @@ admin:
     edit: Bearbeite {{kind}}
     emptyList: Die Navigation ist leer
     header: Kopfzeile
-    icon: Symbol
-    label: Label
     link: Link
     mode: Navigationsmodus
     modeCustom:
@@ -321,8 +262,6 @@ admin:
     sourceLocale: Ursprungs-Lokalisierung
     sourceLocaleHint: Die Lokalisierung, aus welcher Navigationselemente kopiert werden.
     subtitle: Verwalten der Seitennavigation
-    target: Ziel
-    targetType: Zieltyp
     title: Navigation
     untitled: '{{kind}} ohne Titel'
     visibilityMode:
@@ -389,24 +328,18 @@ admin:
   ssl:
     currentState: Aktueller Status
     domain: Domain
-    domainHint: Geben Sie die vollqualifizierte Domain (FQDN) ein, die auf Ihr Wiki zeigt. (z.B. wiki.beispiel.com)
     expiration: Ablauf des Zertifikats
     httpPort: HTTP-Port
-    httpPortHint: Nicht-SSL-Port, auf welchem der Server auf HTTP-Anfragen wartet. Normalerweise 80 oder 3000.
     httpPortRedirect: HTTP-Anforderungen an HTTPS umleiten
-    httpPortRedirectHint: Leitet alle Anfragen auf dem HTTP-Port automatisch an HTTPS weiter.
     httpPortRedirectSaveSuccess: HTTP-Umleitung erfolgreich geändert.
     httpPortRedirectTurnOff: Ausschalten
     httpPortRedirectTurnOn: Einschalten
     httpsPort: HTTPS-Port
-    httpsPortHint: SSL-Port, auf welchem der Server auf HTTPS-Anfragen wartet. Normalerweise 443.
     ports: Ports
     provider: Anbieter
     providerCustomCertificate: Benutzerdefiniertes Zertifikat
     providerDisabled: Deaktiviert
-    providerHint: Wählen Sie Benutzerdefiniertes Zertifikat, wenn Sie bereits ein eigenes Zertifikat besitzen.
     providerLetsEncrypt: Let's Encrypt
-    providerOptions: Anbieter-Optionen
     renewCertificate: Zertifikat erneuern
     renewCertificateLoadingSubtitle: Verlassen Sie diese Seite nicht.
     renewCertificateLoadingTitle: Zertifikat wird erneuert …
@@ -415,9 +348,6 @@ admin:
     subscriberEmail: Abonnenten-Email
     subtitle: Verwalten der SSL-Konfiguration
     title: SSL
-    writableConfigFileWarning: Die Konfigurationsdatei muss beschreibbar sein, damit die Konfiguration der Ports erhalten bleibt.
-  stats:
-    title: Statistiken
   storage:
     actionRun: Ausführen
     actions: Aktionen
@@ -455,10 +385,7 @@ admin:
     dbPartialSupport: Die Datenbankversion wird nicht vollständig unterstützt. Einige Funktionen sind möglicherweise eingeschränkt oder funktionieren nicht wie erwartet.
     hostInfo: Host-Informationen
     hostname: Hostname
-    latestVersion: Neueste Version
     os: Betriebssystem
-    published: Veröffentlicht
-    ramUsage: 'RAM-Nutzung: {{used}} / {{total}}'
     refreshSuccess: Systeminformationen wurden aktualisiert.
     subtitle: Informationen über dein System
     title: Systeminformationen
@@ -473,7 +400,6 @@ admin:
     edit: Tag bearbeiten
     emptyList: Keine Tags zum Anzeigen.
     filter: Filter...
-    label: Label
     noItemsText: Füge einen Tag zu einer Seite hinzu, um zu beginnen.
     noSelectionText: Wähle einen Tag aus der Liste links aus.
     refreshSuccess: Tags wurden aktualisiert.
@@ -492,21 +418,13 @@ admin:
     cssOverrideWarningCaution: 'VORSICHT:'
     darkMode: Dunkler Modus
     darkModeHint: Nicht für Barrierefreiheit empfohlen. Wird möglicherweise nicht von allen Themen unterstützt.
-    downloadAuthor: Autor
-    downloadDownload: Herunterladen
-    downloadName: Name
-    downloadThemes: Themen herunterladen
     headHtmlInjection: Head HTML Injektion
     headHtmlInjectionHint: HTML-Code, der direkt vor dem schließenden Head-Tag eingefügt werden soll. Normalerweise für Skript-Tags.
     iconset: Icon Satz
     iconsetHint: Satz von Icons, die für die Seitenleistennavigation verwendet werden sollen.
     options: Theme Optionen
-    siteTheme: Site Theme
-    siteThemeHint: Themen beeinflussen die Darstellung von Inhaltsseiten. Andere Bereiche der Website (z.B. der Editor oder der Admin-Bereich) sind davon nicht betroffen.
     subtitle: Ändert das Aussehen und Verhalten des Wikis
     title: Theme
-    tocHeadingLevels: Standard Inhaltsverzeichnis Überschriftenebenen
-    tocHeadingLevelsHint: Das Inhaltsverzeichnis zeigt standardmäßig Überschriften von und bis zu den ausgewählten Ebenen.
   users:
     active: Aktiv
     authProvider: Anbieter
@@ -514,7 +432,6 @@ admin:
     authentication: Authentifizierung
     basicInfo: Grundlegende Informationen
     changePassword: Passwort ändern
-    deleteConfirmForeignNotice: Ein Benutzer, der bereits Inhalte erstellt hat, kann nicht gelöscht werden. Entweder den Benutzer deaktivieren oder alle Inhalte, die von diesem Benutzer erstellt wurden, löschen.
     deleteConfirmReplaceWarn: Alle Inhalte (Seiten, Uploads, Kommentare usw.), die von diesem Benutzer erstellt wurden, werden dem unten ausgewählten Benutzer zugeordnet. Es wird empfohlen, einen Dummy-Zielbenutzer (z.B. „Gelöschter Benutzer“) zu erstellen, wenn der Inhalt keinem aktuell aktiven Benutzer zugeordnet werden soll.
     deleteConfirmText: Soll der Benutzer {{username}} gelöscht werden?
     deleteConfirmTitle: Benutzer löschen?
@@ -548,6 +465,7 @@ admin:
     userVerifySuccess: Benutzer wurde erfolgreich verifiziert.
     verified: Verifiziert
     sendWelcomeEmail: Willkommens-E-Mail senden
+    userDeleteSuccess: Benutzer wurde gelöscht.
   utilities:
     authSubtitle: Werkzeuge für Authentifizierung / Benutzer
     authTitle: Authentifizierung
@@ -557,18 +475,9 @@ admin:
     contentTitle: Inhalt
     exportSubtitle: Inhalte für Sicherung / Migration als tarball speichern
     exportTitle: Auf Festplatte exportieren
-    graphEndpointSubtitle: Ändern des GraphQL-Endpunktes für Wiki.js
-    graphEndpointTitle: GraphQL-Endpunkt
-    importv1Subtitle: Migrieren von Daten aus einer vorherigen 1.x-Installation
-    importv1Title: Importieren aus Wiki.js 1.x
     subtitle: Wartung und verschiedene Werkzeuge
-    telemetrySubtitle: Aktivieren / Deaktivieren der Telemetrie oder Zurücksetzen der Client-ID
-    telemetryTitle: Telemetrie
     title: Dienstprogramme
     tools: Werkzeuge
-  webhooks:
-    subtitle: Webhooks zu externen Diensten verwalten
-    title: Webhooks
   assets:
     title: Dateien
     subtitle: Hochgeladene Dateien und Ordner verwalten
@@ -604,25 +513,14 @@ auth:
     login: Anmeldung
     register: Registrieren
   changePwd:
-    instructions: 'Wähle ein neues Passwort:'
     loading: Ändere Passwort …
     newPasswordPlaceholder: Neues Passwort
     newPasswordVerifyPlaceholder: Neues Passwort bestätigen
     proceed: Passwort ändern
     subtitle: Neues Passwort wählen
   enterCredentials: Gib deine Anmeldedaten ein
-  errors:
-    invalidLogin: Falscher Login
-    invalidLoginMsg: Die E-Mail oder das Passwort sind ungültig.
-    invalidUserEmail: Falsche Benutzer E-Mail-Adresse
-    loginError: Anmeldefehler
-    notYetAuthorized: Du bist noch nicht berechtigt, dich auf dieser Seite anzumelden.
-    tooManyAttempts: Zu viele Versuche!
-    tooManyAttemptsMsg: Du hattest zu viele Fehlversuche in zu kurzer Zeit, bitte versuche es erneut {{time}}
-    userNotFound: Benutzer nicht gefunden
   fields:
     email: E-Mail-Adresse
-    emailUser: E-Mail / Benutzername
     name: Name
     password: Passwort
     username: Benutzername
@@ -637,27 +535,15 @@ auth:
   invalidEmail: E-Mail-Adresse ist ungültig.
   invalidEmailUsername: Gültige E-Mail / Benutzernamen eingeben.
   invalidPassword: Gültiges Passwort eingeben.
-  loginRequired: Anmeldung erforderlich
   loginSuccess: Anmeldung erfolgreich! Weiterleitung...
-  loginUsingStrategy: Anmeldung mit {{strategy}}
   missingEmail: Fehlende E-Mail-Adresse.
   missingName: Der Name fehlt.
   missingPassword: Fehlendes Passwort.
   nameTooLong: Der Name ist zu lang.
   nameTooShort: Der Name ist zu kurz.
-  orLoginUsingStrategy: oder melde dich an mit...
   passwordNotMatch: Die Passwörter stimmen nicht überein.
   passwordTooShort: Das Passwort ist zu kurz.
   pleaseWait: Bitte warten
-  providers:
-    azure: Azure Active Directory
-    facebook: Facebook
-    github: GitHub
-    google: Google ID
-    ldap: LDAP / Active Directory
-    local: Lokal
-    slack: Slack
-    windowslive: Microsoft-Konto
   registerCheckEmail: Überprüfe deine E-Mails, um dein Konto zu aktivieren.
   registerSubTitle: Fülle das untenstehende Formular aus, um dein Konto zu erstellen.
   registerSuccess: Der Account wurde erfolgreich erstellt!
@@ -671,11 +557,8 @@ auth:
     text: Du hast schon einen Account? {{link}}
   switchToRegister:
     link: Erstelle einen Account
-    text: Du hast noch keinen Account? {{link}}
   tfa:
     placeholder: XXXXXX
-    subtitle: 'Sicherheitscode erforderlich:'
-    title: Zwei-Faktor-Authentifizierung
     verifyToken: Überprüfen
   tfaFormTitle: 'Gib den von deinem vertrauenswürdigen Gerät generierten Sicherheitscode ein:'
   tfaSetupInstrFirst: '1) Scanne den untenstehenden QR-Code aus Ihrer mobilen 2FA-Anwendung:'
@@ -717,6 +600,7 @@ common:
     select: Auswählen
     upload: Hochladen
     goBack: Zurück
+    view: Ansehen
   comments:
     beFirst: Verfasse den ersten Kommentar.
     contentMissingError: Kommentar ist leer oder zu kurz!
@@ -764,7 +648,6 @@ common:
   header:
     account: Konto
     admin: Administration
-    assets: Assets
     browseTags: Nach Schlagwörtern filtern
     convert: Konvertieren
     currentPage: Aktuelle Seite
@@ -778,19 +661,16 @@ common:
     login: Anmelden
     logout: Abmelden
     move: Verschieben / Umbenennen
-    myWiki: Mein Wiki
     newPage: Neue Seite
     pageActions: Seitenaktionen
     profile: Profil
     search: Suche...
     searchClose: Schließen
-    searchCopyLink: Suchlink kopieren
     searchDidYouMean: Meintest du...
     searchHint: Geben Sie mindestens 2 Zeichen ein, um mit der Suche zu beginnen…
     searchLoading: Suchen...
     searchNoResult: Keine Seiten, die der Suchanfrage entsprechen.
     searchResultsCount: Es wurde(n) {{total}} Ergebnis(se) gefunden
-    siteMap: Seitenverzeichnis
     view: Ansicht
     viewSource: Quellcode anzeigen
     searchRestrictLocale: Nur {{locale}}
@@ -810,7 +690,6 @@ common:
     ccbynd: Creative Commons Lizenz (Namensnennung – keine Bearbeitung)
     ccbysa: Creative Commons Lizenz (Namensnennung – Weitergabe unter gleichen Bedingungen)
     none: Keine
-  modernBrowser: modernen Browser
   newpage:
     create: Seite erstellen
     goback: Zurück
@@ -821,7 +700,6 @@ common:
     subtitle: Diese Seite existiert nicht.
     title: Nicht gefunden
     searchHint: 'Tipp: Verwenden Sie die Suchleiste auf der Startseite, um zu finden, wonach Sie gesucht haben.'
-  outdatedBrowserWarning: Dieser Browser ist veraltet. Aktualisiere auf einen {{modernBrowser}}.
   page:
     bookmark: Lesezeichen
     convert: Seite konvertieren
@@ -869,6 +747,9 @@ common:
     pages: Seiten
     selectTitle: Seite auswählen
     virtualFolders: Virtuelle Ordner
+    searchPlaceholder: Seiten nach Titel suchen...
+    noResults: Keine passenden Seiten gefunden.
+    recent: Zuletzt
   password:
     average: Durchschnittlich
     strong: Stark
@@ -941,7 +822,6 @@ editor:
     deleteAssetConfirm: Soll diese Datei gelöscht werden?
     deleteAssetWarn: Diese Aktion kann nicht rückgängig gemacht werden!
     deleteSuccess: Datei erfolgreich gelöscht
-    fetchImage: Externes Bild abrufen
     fileCount: '{{count}} Datei(en)'
     folderCreateSuccess: Datei-Ordner erfolgreich erstellt.
     folderEmpty: Dieser Ordner ist leer
@@ -1004,7 +884,6 @@ editor:
     horizontalBar: Horizontale Linie
     inlineCode: Eingebetteter Code
     insertAssets: Datei(en) einfügen
-    insertBlock: Blockzitat einfügen
     insertCodeBlock: Codeblock einfügen
     insertDiagram: Diagramm einfügen
     insertLink: Link einfügen
@@ -1018,7 +897,6 @@ editor:
     strikethrough: Durchgestrichen
     subscript: Tiefgestellt
     superscript: Hochgestellt
-    tableHelper: Tabellenhelfer
     togglePreviewPane: Vorschaufenster ein- / ausblenden
     toggleSpellcheck: Rechtschreibprüfung umschalten
     unorderedList: Ungeordnete Liste
@@ -1026,15 +904,9 @@ editor:
   props:
     allowComments: Kommentare erlauben
     allowCommentsHint: Aktiviere die Kommentarfunktion auf dieser Seite.
-    allowRatings: Bewertungen erlauben
-    allowRatingsHint: Bewertungsfunktion auf dieser Seite aktivieren.
     categorization: Kategorisierung
     css: CSS
     cssHint: CSS wird beim Speichern automatisch verkleinert. Fügen Sie keine einschließenden Style-Tags ein, sondern nur den eigentlichen CSS-Code.
-    displayAuthor: Autoreninformationen anzeigen
-    displayAuthorHint: Zeige den Autor der Seite zusammen mit dem Zeitpunkt der letzten Bearbeitung an.
-    displaySharingBar: Teilen-Symbolleiste anzeigen
-    displaySharingBarHint: Zeige eine Symbolleiste mit Schaltflächen zum Teilen und Drucken dieser Seite an.
     html: HTML
     htmlHint: Der Javascript-Code muss in HTML-Skript-Tags eingeschlossen werden.
     info: Info
@@ -1042,7 +914,6 @@ editor:
     pageInfo: Seiteninformation
     pageProperties: Seiteneigenschaften
     path: Pfad
-    pathCategorization: Pfad & Kategorisierung
     pathHint: Füge keine führenden oder nachfolgenden Schrägstriche ein.
     publishEnd: Ende der Veröffentlichung am ...
     publishEndHint: Leer lassen für kein Enddatum
@@ -1061,23 +932,15 @@ editor:
     tags: Schlagwörter
     tagsHint: Verwende Schlagwörter, um Seiten zu kategorisieren und leichter zu finden.
     title: Titel
-    toc: Inhaltsverzeichnis
-    tocHeadingLevels: Inhaltsverzeichnis-Überschrift-ebenen
-    tocHeadingLevelsHint: Das Inhaltsverzeichnis zeigt Überschriften von und bis zu den ausgewählten Ebenen.
-    tocTitle: Inhaltsverzeichnis
-    tocUseDefault: Site-Standardwerte verwenden
     templateToggle: Als Vorlage verwenden
     templateToggleHint: Diese Seite beim Erstellen neuer Seiten als Vorlage anbieten. Vorlagen erscheinen nicht in den Suchergebnissen.
   save:
     createSuccess: Seite erfolgreich erstellt.
-    error: Beim Erstellen der Seite ist ein Fehler aufgetreten
     pleaseWait: Bitte warten...
     processing: Verarbeitung
     saved: Gespeichert
     updateSuccess: Seite erfolgreich aktualisiert.
   select:
-    cannotChange: Dies kann nach dem Anlegen der Seite nicht mehr geändert werden.
-    customView: 'Erstelle eine benutzerdefinierte Ansicht:'
     title: Welcher Editor soll für diese Seite verwendet werden?
     templates: Vorlagen
   unsaved:
@@ -1096,7 +959,6 @@ history:
     success: Seitenversion erfolgreich wiederhergestellt!
 profile:
   activity:
-    commentsPosted: Kommentare veröffentlicht
     joinedOn: Beitritt am
     lastLoginOn: Letzte Anmeldung am
     lastUpdatedOn: Profil zuletzt aktualisiert am
@@ -1126,8 +988,6 @@ profile:
       manualKey: 'Oder diesen Schlüssel manuell eingeben:'
       code: Sicherheitscode
       confirm: Bestätigen und aktivieren
-  comments:
-    title: Kommentare
   dateFormat: Datumsformat
   displayName: Anzeigename
   groups:

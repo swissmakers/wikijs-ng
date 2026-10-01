@@ -49,7 +49,7 @@ module.exports = {
 
     // Merge with defaults
 
-    appconfig = _.defaultsDeep(appconfig, appdata.defaults.config)
+    appconfig = cfgHelper.withDefaults(appconfig, appdata.defaults.config)
 
     if (appconfig.port < 1 || process.env.HEROKU) {
       appconfig.port = process.env.PORT || 80
@@ -82,7 +82,7 @@ module.exports = {
   async loadFromDb() {
     let conf = await WIKI.models.settings.getConfig()
     if (conf) {
-      WIKI.config = _.defaultsDeep(conf, WIKI.config)
+      WIKI.config = cfgHelper.withDefaults(conf, WIKI.config)
     } else {
       WIKI.logger.warn('DB Configuration is empty or incomplete. Switching to Setup mode...')
       WIKI.config.setup = true

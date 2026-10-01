@@ -1,6 +1,17 @@
 /* global WIKI */
 
+/**
+ * Split a query into search tokens (all tokens must match)
+ *
+ * @param {String} q Query
+ * @returns {Array<String>} Tokens
+ */
+function tokenize (q) {
+  return (q || '').trim().split(/\s+/).filter(t => t.length > 0)
+}
+
 module.exports = {
+  tokenize,
   activate() {
     // not used
   },
@@ -21,7 +32,7 @@ module.exports = {
    */
   async query(q, opts) {
     const likeOperator = WIKI.config.db.type === 'postgres' ? 'ILIKE' : 'LIKE'
-    const tokens = q.trim().split(/\s+/).filter(t => t.length > 0)
+    const tokens = tokenize(q)
     const applyFilters = builder => {
       builder.where('isPublished', true)
       builder.andWhere('isTemplate', false)

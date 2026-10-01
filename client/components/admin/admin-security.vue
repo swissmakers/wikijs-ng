@@ -166,8 +166,6 @@
               v-card.mt-3.animated.fadeInUp.wait-p2s
                 v-toolbar(flat, color='primary', dark, dense)
                   .subtitle-1 {{$t('admin:security.login')}}
-                //- v-card-info(color='blue')
-                //-   span {{$t('admin:security.loginInfo')}}
                 .overline.grey--text.pa-4 {{$t('admin:security.loginScreen')}}
                 .px-4.pb-3
                   v-text-field(

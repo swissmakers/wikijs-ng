@@ -7,4 +7,5 @@ assets
 data
 logs
 config.yml
-wiki-js-ng.tar.gz
+dev/cypress
+*.sqlite

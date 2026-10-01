@@ -6,10 +6,13 @@ If you find such vulnerability, it's important to disclose it in a quick and sec
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 2.6.x   | :white_check_mark: |
-| < 2.6   | :x:                |
+| Version | Supported                               |
+| ------- | --------------------------------------- |
+| 2.8.x   | :white_check_mark:                      |
+| 2.6.x   | :white_check_mark: (security fixes only) |
+| < 2.6   | :x:                                     |
+
+2.7.0 was not released separately; its changes ship with 2.8.0.
 
 ## Known accepted findings
 

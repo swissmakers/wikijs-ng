@@ -16,6 +16,7 @@ function buildBooleanQuery (q) {
 }
 
 module.exports = {
+  buildBooleanQuery,
   async activate () {
     if (WIKI.config.db.type !== 'mariadb' && WIKI.config.db.type !== 'mysql') {
       throw new WIKI.Error.SearchActivationFailed('Must use MariaDB or MySQL database to activate this engine!')

@@ -73,54 +73,12 @@ module.exports = () => {
    */
   app.post('/finalize', async (req, res) => {
     try {
-      // Set config
-      _.set(WIKI.config, 'auth', {
-        audience: 'urn:wiki.js',
-        tokenExpiration: '30m',
-        tokenRenewal: '14d'
-      })
-      _.set(WIKI.config, 'company', '')
-      _.set(WIKI.config, 'features', {
-        featurePageComments: true,
-        featureNotifications: true
-      })
+      // Set config: defaults from server/app/data.yml, plus the values of the setup form
+      for (const key of ['auth', 'company', 'features', 'lang', 'mail', 'seo', 'theming', 'title']) {
+        _.set(WIKI.config, key, _.cloneDeep(WIKI.data.defaults.config[key]))
+      }
       _.set(WIKI.config, 'host', req.body.siteUrl)
-      _.set(WIKI.config, 'lang', {
-        code: 'en',
-        namespacing: false,
-        namespaces: []
-      })
-      _.set(WIKI.config, 'mail', {
-        senderName: '',
-        senderEmail: '',
-        host: '',
-        port: 465,
-        name: '',
-        secure: true,
-        verifySSL: true,
-        user: '',
-        pass: '',
-        useDKIM: false,
-        dkimDomainName: '',
-        dkimKeySelector: '',
-        dkimPrivateKey: ''
-      })
-      _.set(WIKI.config, 'seo', {
-        description: '',
-        robots: ['index', 'follow'],
-        analyticsService: '',
-        analyticsId: ''
-      })
       _.set(WIKI.config, 'sessionSecret', (await randomBytesAsync(32)).toString('hex'))
-      _.set(WIKI.config, 'theming', {
-        theme: 'default',
-        darkMode: false,
-        iconset: 'mdi',
-        injectCSS: '',
-        injectHead: '',
-        injectBody: ''
-      })
-      _.set(WIKI.config, 'title', 'Wiki.js NG')
 
       // Basic checks
       if (!semver.satisfies(process.version, '>=24.0')) {

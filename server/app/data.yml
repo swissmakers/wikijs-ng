@@ -46,9 +46,26 @@ defaults:
       - html
       - txt
     mail:
+      senderName: ''
+      senderEmail: ''
       host: ''
+      port: 465
+      name: ''
       secure: true
       verifySSL: true
+      user: ''
+      pass: ''
+      useDKIM: false
+      dkimDomainName: ''
+      dkimKeySelector: ''
+      dkimPrivateKey: ''
+    seo:
+      description: ''
+      robots:
+        - index
+        - follow
+      analyticsService: ''
+      analyticsId: ''
     nav:
       mode: 'MIXED'
     theming:
@@ -118,7 +135,6 @@ jobs:
     onInit: true
     offlineSkip: false
     repeat: false
-    immediate: true
     worker: true
 groups:
   defaultPermissions:

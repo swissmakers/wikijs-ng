@@ -11,7 +11,6 @@ RUN apt-get update && \
 WORKDIR /wiki
 
 ENV dockerdev 1
-ENV DEVDB postgres
 
 EXPOSE 3000
 

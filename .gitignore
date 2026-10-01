@@ -8,7 +8,6 @@ dist
 
 # Dependency directories
 node_modules
-npm/node_modules
 
 # NPM / Yarn
 .npm
@@ -23,7 +22,6 @@ server/views/setup.pug
 
 # Webpack
 .webpack-cache
-.fusebox
 
 # Config Files
 /config.yml
@@ -42,7 +40,6 @@ server/views/setup.pug
 
 # Test results
 test-results/
-.scannerwork
 
 dev/deploy-test.local.env
 

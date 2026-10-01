@@ -28,8 +28,10 @@ For end-user and administration documentation, the upstream [Wiki.js 2.x documen
 | Area | Change |
 | --- | --- |
 | Runtime | Node.js 24 baseline (enforced at setup, install and image level) |
-| Dependency baseline | Fully modernized stack -> Webpack 5, Vue 2.7 / Vuetify 2.7, Apollo Server 5 + GraphQL 16, graphql-ws subscriptions, Knex 3 / Objection 3, AWS SDK v3, current passport / @node-saml |
-| Security | Removed EOL and vulnerable packages (`request`, `aws-sdk` v2, `subscriptions-transport-ws`, `raven`, multer 1.x, forced legacy `xml-crypto`, and lot more..) |
+| Dependency baseline | Fully modernized stack -> Webpack 5, Vue 2.7 / Vuetify 2.7, Apollo Server 5 + GraphQL 16, Knex 3 / Objection 3, AWS SDK v3, current passport / @node-saml |
+| Security | Removed EOL and vulnerable packages (`request`, `aws-sdk` v2, `subscriptions-transport-ws`, `raven`, multer 1.x, forced legacy `xml-crypto`, and lot more..), optional Content Security Policy, self-service two-factor authentication |
+| Offline | No upstream services: bundled translations (English, German, French, Italian) and module logos, no update checks, no telemetry |
+| Collaboration | Watch pages and folders with e-mail digests, bookmarks, recent changes, RSS feed and sitemap, backlinks, comment replies and moderation, PDF export |
 | Git storage | Hardened bi-directional sync with self-healing worktree recovery, deterministic conflict resolution |
 | Stability | Bounded background worker processes, scheduler fixes, resource-aware build tooling |
 | Delivery | Reproducible multi-arch container images (amd64 / arm64) with OCI metadata, published to Docker Hub and GHCR |
@@ -105,17 +107,12 @@ Open `http://localhost:3000` and complete the setup wizard. A compose example in
 
 ```bash
 yarn install
-yarn build          # production client assets
+yarn build          # production client assets (yarn build:safe on memory-constrained hosts)
+yarn test           # lint and unit tests
 node server         # start Wiki.js NG
 ```
 
-On memory-constrained hosts use the resource-capped build wrapper:
-
-```bash
-yarn build:safe
-```
-
-Building the container image locally, including multi-arch builds, is documented in [`dev/BUILD.md`](dev/BUILD.md). Continuous builds are performed by CI on every push to `main`.
+[`dev/BUILD.md`](dev/BUILD.md) covers memory-constrained hosts, native modules on older distributions, container image builds (including multi-arch) and throwaway test instances. CI runs the lint and unit tests for every push and pull request and builds the images from `main`.
 
 ## Upgrading from Wiki.js 2.5.314
 
@@ -128,6 +125,20 @@ for English, German, French and Italian are bundled in `server/locales/`; there
 is no download or sync of language packs anymore. Additional languages or
 custom wording can be sideloaded as YAML files into `data/sideload/locales/`
 (see [`server/locales/README.md`](server/locales/README.md)).
+
+A few optional features use external services. Disable them or point them to
+self-hosted instances if the wiki must not reach the internet:
+
+| Feature | Default | Where to change it |
+| --- | --- | --- |
+| PlantUML diagrams | enabled, rendered by `https://www.plantuml.com/plantuml` | Admin → Rendering → PlantUML (server or disable) |
+| Kroki diagrams | disabled (`https://kroki.io`) | Admin → Rendering → Kroki |
+| draw.io diagram editor | `https://embed.diagrams.net` | Admin → General → Integrations |
+| Font Awesome icons | only with the Font Awesome icon sets (CDN) | Admin → Theme → Icon set (`mdi` is bundled) |
+
+Modules you configure yourself (authentication providers, storage targets,
+search engines, analytics, comment providers, mail) connect only to the
+services you enter.
 
 ## Security
 

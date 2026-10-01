@@ -25,10 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Self-hosted draw.io**: the draw.io editor URL is configurable in Admin → General → Integrations (default `https://embed.diagrams.net`). The editor only accepts messages from that origin, and the CSP `frame-src` includes it.
 - **Diagram preview follows the renderer settings**: the Markdown editor preview renders PlantUML and Kroki blocks only when the renderer is enabled, using the configured server, image format and markers (Kroki had no preview before; PlantUML always used the public server).
 
-### Fixed
-
-- Deleting a user who had unsaved drafts failed on PostgreSQL (foreign key); drafts, watches and bookmarks of the user are now removed with the account.
-
 ### Added — features that were half built
 
 - **Backlinks**: pages show which other pages link to them ("Pages linking here"), filtered by the reader's permissions (unpublished pages and templates only for editors). New `pages.backlinks` GraphQL query.
@@ -103,7 +99,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Disabling 2FA from the model crashed; `/_userav` sent two responses; a missing user during session restore threw a `TypeError` instead of a proper error; the unauthenticated no-op `resetPassword` mutation was removed.
 - The media manager shows and enforces the configured upload limits instead of a hard-coded "Max 10 files, 5 MB each".
 - A failing PostgreSQL/MySQL session setup (e.g. an invalid `db.schema`) left new database connections hanging instead of failing; this also removes a Node.js deprecation warning at startup.
+- Deleting a user who had unsaved drafts failed on PostgreSQL (foreign key); drafts, watches and bookmarks of the user are now removed with the account.
+- **List settings were reset to their defaults on every restart**: narrowing *Page Extensions* (Admin → General) to e.g. only `md`, or clearing it, came back as `md, html, txt` after the next start, because saved lists were merged item by item with the defaults.
+- Page URLs: only the first unsafe character (`"`, `<`, `>`, `|`, `:`, `*`, `?`, control characters) was stripped from a requested path.
+- The setup wizard stored incomplete defaults for some settings (e.g. login, theme); it now takes all of them from `server/app/data.yml`, which also gained the full mail and SEO defaults.
 - Smaller fixes: the footer link used `ref` instead of `rel`, the sharing menu's default URL was undefined, the Apollo devtools flag never matched, the default page description read a non-existent setting, Let's Encrypt ignored the development flag, the default icon set was the invalid value `md`, and the dev container config used a different database password than the compose file.
+
+### Changed — tests, CI and housekeeping
+
+- **Automated tests**: unit tests now cover page permissions and the permission inspector, the page path helpers, brute-force protection, the git sync lock, search query building, comment posting rules, notifications, feeds, the CSP builder, configuration merging, the diagram renderers (including the editor preview) and the translation files (same keys and placeholders in every language, every key used in the code exists).
+- **CI runs lint and tests** for every push to `main` and `dev` and for pull requests; the container image is only built (from `main`) when they pass.
+- Removed 51 unused images (fundraising buttons, splash photos, icons of removed features) and 135 unused translation keys of removed features, plus obsolete build files (an ARM Dockerfile for a GitHub workflow that no longer exists, an upstream CI script).
+- `config.sample.yml` lists the actually supported database versions and documents `db.socketPath` (MySQL / MariaDB); `.gitattributes` is reduced to the rules that apply to this repository; pages declare the Apple touch and Safari pinned-tab icons.
 
 ### Database
 
@@ -111,7 +118,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - New migration `2.8.1`: page activity log (seeded with the latest 500 page changes), user watches and bookmarks.
 - New migration `2.8.0`: drops the unused `loggers` table and the `graphEndpoint` setting, moves a PlantUML renderer still configured for `plantuml.requarks.io` to `www.plantuml.com`, and replaces the upstream default logo setting with the bundled one. Applied automatically on first start.
 
-## [2.7.0] - Unreleased
+## [2.7.0] - Not released separately
+
+Developed on `dev` after 2.6.0 and shipped together with 2.8.0.
 
 ### Added — navigation & content discovery
 
@@ -170,7 +179,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - New migrations `2.7.0` (asset folder/file indexes), `2.7.1` (`pageDrafts` table), `2.7.2` (`pages.isTemplate` column). Applied automatically on first start.
 
-## [2.6.0] - Unreleased
+## [2.6.0] - 2026-08-28
 
 ### Changed — User interface refresh (Swissmakers branding)
 
@@ -195,7 +204,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
-- **Telemetry removed entirely.** The hardened image no longer phones home: the telemetry module, its kernel/setup hooks, the GraphQL mutations and query fields (`setTelemetry`, `resetTelemetryClientId`, `telemetry`, `telemetryClientId`), the admin utility page, the setup-wizard opt-in and the related config defaults are gone. (The version update check and the translation download still contact the upstream service — see the notes in the README if you want to run fully offline.)
+- **Telemetry removed entirely.** The hardened image no longer phones home: the telemetry module, its kernel/setup hooks, the GraphQL mutations and query fields (`setTelemetry`, `resetTelemetryClientId`, `telemetry`, `telemetryClientId`), the admin utility page, the setup-wizard opt-in and the related config defaults are gone. (Translation downloads still used the upstream service in this release; since 2.8.0 all translations are bundled.)
 - **CAS authentication and SFTP storage modules dropped.** Both were built on packages abandoned since 2013/2016 and were the sole source of four findings (`underscore` 1.6.0 critical, `xml2js` 0.4.4, `node-uuid` 1.4.1, `ip-address` 5.9.4 — the last one had no fix available at all). Existing installations that used them will see the strategy/target disappear automatically.
 - Dead dependencies: `image-size`, `markdown-it-external-links`, `markdown-it-mathjax` (none were imported anywhere).
 
@@ -240,10 +249,6 @@ Production symptoms addressed: `spawn git EAGAIN` after prolonged uptime, bi-dir
 - **Asset binary corruption**: git storage wrote uploaded assets with `utf8` encoding, corrupting every binary file — fixed
 - "Add Untracked Changes" / "Import Everything" no longer hang forever when a single file fails (stream callback bug)
 - `render-page` job continued after destroying its DB pool on empty content; page paths containing dots were mangled on git import (`getPagePath` join bug)
-
-### Changed
-
-- Admin → System now compares versions with semver instead of strict equality — a fork version newer than upstream no longer shows a bogus "upgrade available" (which could have pulled the upstream Docker image)
 
 ## [Modernization] - 2026-08-26
 

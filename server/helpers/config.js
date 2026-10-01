@@ -25,5 +25,22 @@ module.exports = {
 
   isValidDurationString (val) {
     return isoDurationReg.test(val)
+  },
+
+  /**
+   * Fill the missing settings of a configuration object from defaults.
+   * Like _.defaultsDeep, but arrays are values: a configured array (even an
+   * empty one) replaces the default instead of being merged index by index.
+   *
+   * @param {Object} config Configuration
+   * @param {Object} defaults Default values
+   * @returns {Object} Merged configuration (new object)
+   */
+  withDefaults (config, defaults) {
+    return _.mergeWith({}, defaults, config, (objValue, srcValue) => {
+      if (Array.isArray(srcValue)) {
+        return srcValue
+      }
+    })
   }
 }
