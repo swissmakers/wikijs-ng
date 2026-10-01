@@ -25,6 +25,12 @@ type CommentQuery {
   single(
     id: Int!
   ): CommentPost @auth(requires: ["read:comments", "manage:system"])
+
+  moderation(
+    pendingOnly: Boolean
+    before: Int
+    limit: Int
+  ): [CommentModerationItem!]! @auth(requires: ["manage:comments", "manage:system"])
 }
 
 # -----------------------------------------------
@@ -52,6 +58,10 @@ type CommentMutation {
   delete(
     id: Int!
   ): DefaultResponse @auth(requires: ["write:comments", "manage:comments", "manage:system"])
+
+  approve(
+    id: Int!
+  ): DefaultResponse @auth(requires: ["manage:comments", "manage:system"])
 }
 
 # -----------------------------------------------
@@ -84,13 +94,28 @@ type CommentPost {
   authorName: String!
   authorEmail: String! @auth(requires: ["manage:system"])
   authorIP: String! @auth(requires: ["manage:system"])
+  isApproved: Boolean!
   createdAt: Date!
   updatedAt: Date!
+}
+
+type CommentModerationItem {
+  id: Int!
+  replyTo: Int!
+  render: String!
+  authorName: String!
+  isApproved: Boolean!
+  createdAt: Date!
+  pageId: Int!
+  pageLocale: String!
+  pagePath: String!
+  pageTitle: String!
 }
 
 type CommentCreateResponse {
   responseResult: ResponseStatus
   id: Int
+  isPending: Boolean
 }
 
 type CommentUpdateResponse {

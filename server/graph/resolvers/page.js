@@ -4,6 +4,14 @@ const notificationsHelper = require('../../helpers/notifications')
 
 /* global WIKI */
 
+// Permissions shown by the permission inspector
+const PAGE_PERMISSIONS = [
+  'read:pages', 'write:pages', 'manage:pages', 'delete:pages',
+  'read:source', 'read:history', 'write:styles', 'write:scripts',
+  'read:comments', 'write:comments', 'manage:comments',
+  'read:assets', 'write:assets'
+]
+
 module.exports = {
   Query: {
     async pages() { return {} }
@@ -391,6 +399,47 @@ module.exports = {
           path: r.path,
           locale: r.locale
         })
+      })
+    },
+    /**
+     * EXPLAIN PAGE ACCESS (permission inspector) for a user or a group
+     */
+    async explainAccess (obj, args, context, info) {
+      const page = await WIKI.models.pages.query().select('id', 'path', 'localeCode').findById(args.pageId).withGraphFetched('tags')
+      if (!page) {
+        throw new WIKI.Error.PageNotFound()
+      }
+      let subject
+      if (args.userId > 0) {
+        const usr = await WIKI.models.users.query().findById(args.userId).withGraphFetched('groups').modifyGraph('groups', builder => {
+          builder.select('groups.id', 'permissions')
+        })
+        if (!usr) {
+          throw new WIKI.Error.UserNotFound()
+        }
+        subject = { permissions: usr.getGlobalPermissions(), groups: _.map(usr.groups, 'id') }
+      } else if (args.groupId > 0) {
+        const grp = await WIKI.models.groups.query().findById(args.groupId)
+        if (!grp) {
+          throw new WIKI.Error.InputInvalid()
+        }
+        subject = { permissions: grp.permissions, groups: [grp.id] }
+      } else {
+        throw new WIKI.Error.InputInvalid()
+      }
+      const pageCtx = { path: page.path, locale: page.localeCode, tags: page.tags }
+      return PAGE_PERMISSIONS.map(permission => {
+        const result = WIKI.auth.explainAccess(subject, permission, pageCtx)
+        return {
+          permission,
+          allowed: result.allowed,
+          reason: result.reason,
+          groupId: result.groupId,
+          groupName: result.groupId ? _.get(WIKI.auth.groups, [result.groupId, 'name'], null) : null,
+          ruleMatch: _.get(result, 'rule.match', null),
+          rulePath: _.get(result, 'rule.path', null),
+          ruleDeny: _.get(result, 'rule.deny', null)
+        }
       })
     },
     /**

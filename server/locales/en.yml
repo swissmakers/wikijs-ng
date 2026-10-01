@@ -101,6 +101,10 @@ admin:
     providerNoConfig: This provider has no configuration options you can modify.
     subtitle: Add discussions to your wiki pages
     title: Comments
+    moderation: Comment Moderation
+    moderationSubtitle: Review comments held for approval
+    pendingOnly: Pending only
+    moderationEmpty: No comments to review.
   contribute:
     becomeAPatron: Become a Patron
     becomeASponsor: Become a Sponsor
@@ -203,6 +207,9 @@ admin:
     uploadTypesHint: '{{typeList}} or {{lastType}} files only'
     featureNotifications: Watch pages & e-mail notifications
     featureNotificationsHint: Users can watch pages and folders and receive an e-mail digest of the changes (requires a mail configuration).
+    integrations: Integrations
+    drawioUrl: draw.io Editor URL
+    drawioUrlHint: URL of the draw.io (diagrams.net) editor embedded in the Markdown editor. Point it to a self-hosted instance to keep diagrams on your network.
   groups:
     title: Groups
   locale:
@@ -325,6 +332,17 @@ admin:
     title: Pages
     rerender: Rerender
     rerenderSuccess: Page rendered successfully.
+    accessInspector: Access Inspector
+    accessInspectorHint: Check what a user or a group may do on this page, and which page rule decides it.
+    accessGroup: Group
+    accessUser: User
+    accessUserSearch: Search a user by name or e-mail
+    accessPermission: Permission
+    accessResult: Result
+    accessReason: Decided by
+    accessReasonAdmin: Administrator (manage:system)
+    accessReasonNoGlobal: Permission not granted to any of the groups
+    accessReasonNoRule: No page rule matches this page
   rendering:
     subtitle: Configure the page rendering pipeline
     title: Rendering
@@ -727,6 +745,9 @@ common:
     postReply: Reply
     replyPlaceholder: Write a reply...
     deleteRepliesWarn: Its {{count}} replies will be deleted as well.
+    pending: Awaiting approval
+    approve: Approve
+    postPending: Your comment was saved and will be visible after a moderator approved it.
   duration:
     days: Day(s)
     every: Every
@@ -775,6 +796,10 @@ common:
     searchRestrictLocale: Only {{locale}}
     searchRestrictPath: Only under /{{path}}
     recentChanges: Recent changes
+    appearance: Appearance
+    appearanceLight: Light
+    appearanceDark: Dark
+    appearanceSystem: Follow System
   license:
     alr: All Rights Reserved
     cc0: Public Domain
@@ -836,6 +861,7 @@ common:
     watchSubtree: Watch this page and its subpages
     stopWatching: Stop watching
     watchCovered: Already notified through your watch on {{path}}.
+    exportPdf: Export as PDF
   pageSelector:
     createTitle: Select New Page Location
     folderEmptyWarning: This folder is empty.
@@ -898,6 +924,17 @@ common:
     empty: No changes yet.
     sync: storage sync
     loadMore: Load more
+  shortcuts:
+    title: Keyboard shortcuts
+    search: Search
+    edit: Edit page
+    history: Page history
+    newPage: New page
+    bookmark: Bookmark page
+    watch: Watch page
+    pdf: Export as PDF
+    help: Show keyboard shortcuts
+    disable: Disable single-key shortcuts
 editor:
   assets:
     deleteAsset: Delete Asset
@@ -1129,6 +1166,7 @@ profile:
     title: Bookmarks
     subtitle: Pages you marked with a star
     empty: No bookmarks yet. Use the star on a page to bookmark it.
+  appearanceSystem: Follow System
 tags:
   clearSelection: Clear Selection
   currentSelection: Current Selection

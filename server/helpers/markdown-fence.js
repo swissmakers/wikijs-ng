@@ -4,8 +4,73 @@
 //
 // Shared by the PlantUML and Kroki renderers: turns a fenced block
 // (e.g. ```plantuml ... ```) into an <img> token pointing to a diagram server.
+// Also used by the editor preview (client/components/editor/markdown/diagrams.js).
+
+function encode6bit (raw) {
+  let b = raw
+  if (b < 10) {
+    return String.fromCharCode(48 + b)
+  }
+  b -= 10
+  if (b < 26) {
+    return String.fromCharCode(65 + b)
+  }
+  b -= 26
+  if (b < 26) {
+    return String.fromCharCode(97 + b)
+  }
+  b -= 26
+  if (b === 0) {
+    return '-'
+  }
+  if (b === 1) {
+    return '_'
+  }
+  return '?'
+}
+
+function append3bytes (b1, b2, b3) {
+  const c1 = b1 >> 2
+  const c2 = ((b1 & 0x3) << 4) | (b2 >> 4)
+  const c3 = ((b2 & 0xF) << 2) | (b3 >> 6)
+  const c4 = b3 & 0x3F
+  return encode6bit(c1 & 0x3F) + encode6bit(c2 & 0x3F) + encode6bit(c3 & 0x3F) + encode6bit(c4 & 0x3F)
+}
 
 module.exports = {
+  /**
+   * PlantUML text encoding (base64 variant) of deflated diagram source
+   *
+   * @param {string} data Raw-deflated source as a binary string
+   * @returns {string} Encoded source
+   */
+  plantumlEncode (data) {
+    let r = ''
+    for (let i = 0; i < data.length; i += 3) {
+      if (i + 2 === data.length) {
+        r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), 0)
+      } else if (i + 1 === data.length) {
+        r += append3bytes(data.charCodeAt(i), 0, 0)
+      } else {
+        r += append3bytes(data.charCodeAt(i), data.charCodeAt(i + 1), data.charCodeAt(i + 2))
+      }
+    }
+    return r
+  },
+  /**
+   * Split a Kroki block: the first line is the diagram type (e.g. graphviz, mermaid)
+   *
+   * @param {string} contents Block contents
+   * @returns {Object} { diagramType, source }
+   */
+  splitKrokiSource (contents) {
+    let firstlf = contents.indexOf('\n')
+    if (firstlf === -1) firstlf = undefined
+    return {
+      diagramType: contents.substring(0, firstlf),
+      source: contents.substring(firstlf + 1)
+    }
+  },
   /**
    * Register a block rule rendering a fenced diagram as an image
    *

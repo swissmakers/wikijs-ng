@@ -158,7 +158,8 @@ module.exports = class Page extends Model {
       ],
       extra: {
         js: 'string',
-        css: 'string'
+        css: 'string',
+        commentsDisabled: 'boolean'
       },
       title: 'string',
       toc: 'string',
@@ -287,7 +288,8 @@ module.exports = class Page extends Model {
       toc: '[]',
       extra: {
         js: scriptJs,
-        css: scriptCss
+        css: scriptCss,
+        commentsDisabled: opts.allowComments === false
       }
     })
     const page = await WIKI.models.pages.getPageFromDb({
@@ -393,7 +395,8 @@ module.exports = class Page extends Model {
       extra: {
         ...ogPage.extra,
         js: scriptJs,
-        css: scriptCss
+        css: scriptCss,
+        ...(_.isBoolean(opts.allowComments) && { commentsDisabled: !opts.allowComments })
       }
     }).where('id', ogPage.id)
     let page = await WIKI.models.pages.getPageFromDb(ogPage.id)
@@ -1050,7 +1053,8 @@ module.exports = class Page extends Model {
       editorKey: page.editorKey,
       extra: {
         css: _.get(page, 'extra.css', ''),
-        js: _.get(page, 'extra.js', '')
+        js: _.get(page, 'extra.js', ''),
+        commentsDisabled: _.get(page, 'extra.commentsDisabled', false) === true
       },
       isPrivate: page.isPrivate === 1 || page.isPrivate === true,
       isPublished: page.isPublished === 1 || page.isPublished === true,

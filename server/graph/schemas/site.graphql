@@ -64,7 +64,7 @@ type SiteMutation {
     uploadMaxFiles: Int
     uploadScanSVG: Boolean
     uploadForceDownload: Boolean
-
+    drawioUrl: String
   ): DefaultResponse @auth(requires: ["manage:system"])
 }
 
@@ -114,4 +114,5 @@ type SiteConfig {
   uploadMaxFiles: Int
   uploadScanSVG: Boolean
   uploadForceDownload: Boolean
+  drawioUrl: String
 }

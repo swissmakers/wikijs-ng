@@ -57,3 +57,11 @@ describe('helpers/csp/addNonce', () => {
     expect(csp.addNonce('<script></script>', '')).toBe('<script></script>')
   })
 })
+
+describe('helpers/csp/integrationFrameSources', () => {
+  it('allows the configured draw.io origin', () => {
+    expect(csp.integrationFrameSources({ integrations: { drawioUrl: 'http://drawio.lan:8080/app/' } })).toEqual(['http://drawio.lan:8080'])
+    expect(csp.integrationFrameSources({ integrations: { drawioUrl: 'javascript:alert(1)' } })).toEqual([])
+    expect(csp.integrationFrameSources({})).toEqual([])
+  })
+})

@@ -8,6 +8,9 @@
             .headline.primary--text.animated.fadeInLeft {{$t('admin:comments.title')}}
             .subtitle-1.grey--text.animated.fadeInLeft.wait-p2s {{$t('admin:comments.subtitle')}}
           v-spacer
+          v-btn.animated.fadeInDown.wait-p2s(outlined, color='primary', to='/comments/moderation')
+            v-icon(left) mdi-account-check-outline
+            span {{ $t('admin:comments.moderation', { defaultValue: 'Comment Moderation' }) }}
           v-btn.mx-3.animated.fadeInDown.wait-p2s(icon, outlined, color='grey', @click='refresh')
             v-icon mdi-refresh
           v-btn.animated.fadeInDown(color='success', @click='save', depressed, large)

@@ -4,6 +4,8 @@ const _ = require('lodash')
 
 /* global WIKI */
 
+const DEFAULT_DRAWIO_URL = 'https://embed.diagrams.net'
+
 module.exports = {
   Query: {
     async site() { return {} }
@@ -25,7 +27,11 @@ module.exports = {
         ...WIKI.config.editShortcuts,
         ...WIKI.config.features,
         ...WIKI.config.security,
-        securityCSPPreview: cspHelper.buildPolicy({ security: WIKI.config.security, iconset: WIKI.config.theming.iconset }).value,
+        securityCSPPreview: cspHelper.buildPolicy({
+          security: WIKI.config.security,
+          iconset: WIKI.config.theming.iconset,
+          frameSources: cspHelper.integrationFrameSources(WIKI.config)
+        }).value,
         authAutoLogin: WIKI.config.auth.autoLogin,
         authEnforce2FA: WIKI.config.auth.enforce2FA,
         authHideLocal: WIKI.config.auth.hideLocal,
@@ -36,13 +42,20 @@ module.exports = {
         uploadMaxFileSize: WIKI.config.uploads.maxFileSize,
         uploadMaxFiles: WIKI.config.uploads.maxFiles,
         uploadScanSVG: WIKI.config.uploads.scanSVG,
-        uploadForceDownload: WIKI.config.uploads.forceDownload
+        uploadForceDownload: WIKI.config.uploads.forceDownload,
+        drawioUrl: WIKI.config.integrations.drawioUrl
       }
     }
   },
   SiteMutation: {
     async updateConfig(obj, args, context) {
       try {
+        // -> Validate before changing anything
+        const drawioUrl = args.hasOwnProperty('drawioUrl') ? (_.trimEnd(_.trim(args.drawioUrl), '/') || DEFAULT_DRAWIO_URL) : null
+        if (drawioUrl && !cspHelper.httpOrigin(drawioUrl)) {
+          throw new WIKI.Error.InputInvalid()
+        }
+
         if (args.hasOwnProperty('host')) {
           let siteHost = _.trim(args.host)
           if (siteHost.endsWith('/')) {
@@ -126,7 +139,14 @@ module.exports = {
           forceDownload: _.get(args, 'uploadForceDownload', WIKI.config.uploads.forceDownload)
         }
 
-        await WIKI.configSvc.saveToDb(['host', 'title', 'company', 'contentLicense', 'footerOverride', 'seo', 'logoUrl', 'pageExtensions', 'auth', 'editShortcuts', 'features', 'security', 'uploads'])
+        if (drawioUrl) {
+          WIKI.config.integrations = {
+            ...WIKI.config.integrations,
+            drawioUrl
+          }
+        }
+
+        await WIKI.configSvc.saveToDb(['host', 'title', 'company', 'contentLicense', 'footerOverride', 'seo', 'logoUrl', 'pageExtensions', 'auth', 'editShortcuts', 'features', 'security', 'uploads', 'integrations'])
 
         if (WIKI.config.security.securityTrustProxy) {
           WIKI.app.enable('trust proxy')

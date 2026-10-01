@@ -213,7 +213,7 @@ import katex from 'katex'
 import underline from '../../../server/modules/rendering/markdown-core/underline'
 import 'katex/dist/contrib/mhchem'
 import twemoji from 'twemoji'
-import plantuml from './markdown/plantuml'
+import { plantumlPreview, krokiPreview } from './markdown/diagrams'
 
 // Prism (Syntax Highlighting)
 import Prism from 'prismjs'
@@ -315,11 +315,17 @@ md.renderer.rules.blockquote_open = injectLineNumbers
 
 cmFold.register('markdown')
 // ========================================
-// PLANTUML
+// DIAGRAMS (PLANTUML / KROKI)
 // ========================================
 
-// TODO: Use same options as defined in backend
-plantuml.init(md, {})
+// -> Same renderers and servers as the backend (only when enabled there)
+const editorIntegrations = _.get(siteConfig, 'editorIntegrations', {})
+if (editorIntegrations.plantuml) {
+  plantumlPreview(md, editorIntegrations.plantuml)
+}
+if (editorIntegrations.kroki) {
+  krokiPreview(md, editorIntegrations.kroki)
+}
 
 // ========================================
 // KATEX

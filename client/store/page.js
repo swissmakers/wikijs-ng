@@ -8,6 +8,7 @@ const state = {
   description: '',
   isPublished: true,
   isTemplate: false,
+  allowComments: true,
   locale: 'en',
   path: '',
   publishEndDate: '',

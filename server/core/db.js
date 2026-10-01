@@ -137,25 +137,24 @@ module.exports = {
       connection: dbConfig,
       pool: {
         ...WIKI.config.pool,
-        async afterCreate(conn, done) {
-          // -> Set Connection App Name
-          switch (WIKI.config.db.type) {
-            case 'postgres':
-              await conn.query(`set application_name = 'Wiki.js NG'`)
-              // -> Set schema if it's not public
-              if (WIKI.config.db.schema && WIKI.config.db.schema !== 'public') {
-                await conn.query(`set search_path TO ${WIKI.config.db.schema}, public;`)
-              }
-              done()
-              break
-            case 'mysql':
-              await conn.promise().query(`set autocommit = 1`)
-              done()
-              break
-            default:
-              done()
-              break
+        afterCreate(conn, done) {
+          // -> Callback style: knex promisifies this hook, errors must reach done()
+          const setup = async () => {
+            switch (WIKI.config.db.type) {
+              case 'postgres':
+                // -> Set Connection App Name
+                await conn.query(`set application_name = 'Wiki.js NG'`)
+                // -> Set schema if it's not public
+                if (WIKI.config.db.schema && WIKI.config.db.schema !== 'public') {
+                  await conn.query(`set search_path TO ${WIKI.config.db.schema}, public;`)
+                }
+                break
+              case 'mysql':
+                await conn.promise().query(`set autocommit = 1`)
+                break
+            }
           }
+          setup().then(() => done(), err => done(err))
         }
       },
       debug: WIKI.IS_DEBUG

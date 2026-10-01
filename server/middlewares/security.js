@@ -44,7 +44,8 @@ module.exports = function (req, res, next) {
     const policy = cspHelper.buildPolicy({
       nonce: res.locals.nonce,
       security: WIKI.config.security,
-      iconset: WIKI.config.theming.iconset
+      iconset: WIKI.config.theming.iconset,
+      frameSources: cspHelper.integrationFrameSources(WIKI.config)
     })
     res.set(policy.headerName, policy.value)
   }

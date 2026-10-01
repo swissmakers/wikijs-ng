@@ -86,6 +86,12 @@ type PageQuery {
     locale: String!
   ): [PageBacklinkItem!]! @auth(requires: ["manage:system", "read:pages"])
 
+  explainAccess(
+    pageId: Int!
+    userId: Int
+    groupId: Int
+  ): [PageAccessExplanation!]! @auth(requires: ["manage:system", "manage:groups", "write:groups"])
+
   recentChanges(
     before: Int
     limit: Int
@@ -123,6 +129,7 @@ type PageMutation {
     tags: [String]!
     title: String!
     isTemplate: Boolean
+    allowComments: Boolean
   ): PageResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
   update(
@@ -141,6 +148,7 @@ type PageMutation {
     tags: [String]
     title: String
     isTemplate: Boolean
+    allowComments: Boolean
   ): PageResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
   saveDraft(
@@ -364,6 +372,17 @@ type PageLinkItem {
   path: String!
   title: String!
   links: [String]!
+}
+
+type PageAccessExplanation {
+  permission: String!
+  allowed: Boolean!
+  reason: String!
+  groupId: Int
+  groupName: String
+  ruleMatch: String
+  rulePath: String
+  ruleDeny: Boolean
 }
 
 type PageRecentChanges {

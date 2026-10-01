@@ -14,6 +14,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **RSS feed** (`/rss.xml`, linked from every page) of the latest changes and an **XML sitemap** (`/sitemap.xml`, announced in `robots.txt`). Both only contain published pages that guests may read and are cached for 5 minutes; the sitemap is disabled when the site is set to `noindex`.
 - Profile: new *Bookmarks* and *Watched Pages* sections.
 
+### Added — moderation, export and admin tools
+
+- **Comment moderation** (built-in comment provider): new *Moderation* setting (off / guests only / everyone) in Admin → Comments. Comments awaiting approval are only visible to their author and to moderators, who approve them inline on the page or in the new queue (Admin → Comments → Comment Moderation). New `comments.moderation` query and `comments.approve` mutation.
+- **Comments per page**: editors can switch comments off for a single page (page properties → *Social*). The comment section is hidden and posting is rejected for that page.
+- **Export as PDF**: new *Export as PDF* page action (and `p` shortcut) that prints the page without navigation, using the browser's print dialog.
+- **Permission inspector** (Admin → Pages → page): pick a user or group and see, for every page permission, whether it is granted and which page rule decides it. New `pages.explainAccess` query.
+- **Keyboard shortcuts** for readers: `/` search, `e` edit, `h` history, `n` new page, `b` bookmark, `w` watch, `p` PDF and `?` for an overview. They can be switched off in the overview (stored per browser).
+- **Follow system appearance**: users can choose *Follow System* as appearance (switches with the operating system's light/dark setting); guests get a light/dark/system toggle in the header (stored per browser).
+- **Self-hosted draw.io**: the draw.io editor URL is configurable in Admin → General → Integrations (default `https://embed.diagrams.net`). The editor only accepts messages from that origin, and the CSP `frame-src` includes it.
+- **Diagram preview follows the renderer settings**: the Markdown editor preview renders PlantUML and Kroki blocks only when the renderer is enabled, using the configured server, image format and markers (Kroki had no preview before; PlantUML always used the public server).
+
 ### Fixed
 
 - Deleting a user who had unsaved drafts failed on PostgreSQL (foreign key); drafts, watches and bookmarks of the user are now removed with the account.
@@ -91,10 +102,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The welcome email of a new user can no longer fail the (already created) account; the error is logged instead.
 - Disabling 2FA from the model crashed; `/_userav` sent two responses; a missing user during session restore threw a `TypeError` instead of a proper error; the unauthenticated no-op `resetPassword` mutation was removed.
 - The media manager shows and enforces the configured upload limits instead of a hard-coded "Max 10 files, 5 MB each".
+- A failing PostgreSQL/MySQL session setup (e.g. an invalid `db.schema`) left new database connections hanging instead of failing; this also removes a Node.js deprecation warning at startup.
 - Smaller fixes: the footer link used `ref` instead of `rel`, the sharing menu's default URL was undefined, the Apollo devtools flag never matched, the default page description read a non-existent setting, Let's Encrypt ignored the development flag, the default icon set was the invalid value `md`, and the dev container config used a different database password than the compose file.
 
 ### Database
 
+- New migration `2.8.2`: comment approval flag (`comments.isApproved`, existing comments stay approved).
 - New migration `2.8.1`: page activity log (seeded with the latest 500 page changes), user watches and bookmarks.
 - New migration `2.8.0`: drops the unused `loggers` table and the `graphEndpoint` setting, moves a PlantUML renderer still configured for `plantuml.requarks.io` to `www.plantuml.com`, and replaces the upstream default logo setting with the bundled one. Applied automatically on first start.
 

@@ -90,9 +90,12 @@
 <script>
 import _ from 'lodash'
 import { sync } from 'vuex-pathify'
+import { applyAppearance } from '@/helpers/appearance'
 
 import themeConfigQuery from 'gql/admin/theme/theme-query-config.gql'
 import themeSaveMutation from 'gql/admin/theme/theme-mutation-save.gql'
+
+/* global siteConfig */
 
 export default {
   data() {
@@ -137,8 +140,7 @@ export default {
     // Restore the saved site-level setting in the store, but apply the user's
     // effective appearance to the UI (personal preference wins over site default)
     this.darkMode = this.darkModeInitial
-    const userAppearance = this.$store.get('user/appearance')
-    this.$vuetify.theme.dark = userAppearance === 'dark' || (userAppearance !== 'light' && this.darkModeInitial)
+    applyAppearance(this.$store.get('user/appearance'))
   },
   methods: {
     async save () {
@@ -160,6 +162,7 @@ export default {
         const resp = _.get(respRaw, 'data.theming.setConfig.responseResult', {})
         if (resp.succeeded) {
           this.darkModeInitial = this.darkMode
+          siteConfig.darkMode = this.darkMode
           this.$store.commit('showNotification', {
             message: 'Theme settings updated successfully.',
             style: 'success',

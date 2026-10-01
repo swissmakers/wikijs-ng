@@ -105,3 +105,38 @@ describe('core/auth/checkAccess', () => {
     expect(auth.checkAccess(user([{ id: 1 }]), ['read:pages'], page('hr/salaries'))).toBe(true)
   })
 })
+
+describe('core/auth/explainAccess', () => {
+  afterEach(() => {
+    delete global.WIKI
+  })
+
+  it('reports admin, missing global permission and missing rules', () => {
+    setGroups({ 1: { pageRules: [rule('a', 'START', 'docs')] } })
+    expect(auth.explainAccess(user([], ['manage:system']), 'read:pages', page('x')).reason).toBe('ADMIN')
+    expect(auth.explainAccess(user([1], ['read:pages']), 'write:pages', page('docs/a')).reason).toBe('NO_GLOBAL')
+    expect(auth.explainAccess(user([1]), 'read:pages', page('blog'))).toMatchObject({ allowed: false, reason: 'NO_RULE' })
+  })
+
+  it('names the deciding rule and group', () => {
+    setGroups({
+      1: { pageRules: [rule('a', 'START', '')] },
+      2: { pageRules: [rule('b', 'START', 'hr', { deny: true })] }
+    })
+    const result = auth.explainAccess(user([1, 2]), 'read:pages', page('hr/salaries'))
+    expect(result).toMatchObject({ allowed: false, reason: 'RULE', groupId: 2 })
+    expect(result.rule.id).toBe('b')
+  })
+
+  it('agrees with checkAccess', () => {
+    setGroups({
+      1: { pageRules: [rule('a', 'START', 'docs'), rule('b', 'EXACT', 'docs/private', { deny: true }), rule('c', 'TAG', 'draft', { deny: true })] },
+      2: { pageRules: [rule('d', 'END', '/public'), rule('e', 'REGEX', '^kb/[0-9]+$')] }
+    })
+    const pages = [page('docs'), page('docs/private'), page('docs/a', { tags: ['draft'] }), page('x/public'), page('kb/12'), page('kb/x'), page('other')]
+    for (const p of pages) {
+      const u = user([1, 2])
+      expect(auth.explainAccess(u, 'read:pages', p).allowed).toBe(auth.checkAccess(u, ['read:pages'], p))
+    }
+  })
+})

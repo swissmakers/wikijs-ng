@@ -123,6 +123,10 @@ export default {
       type: Boolean,
       default: false
     },
+    allowComments: {
+      type: Boolean,
+      default: true
+    },
     scriptCss: {
       type: String,
       default: ''
@@ -182,6 +186,7 @@ export default {
         description: '',
         isPublished: false,
         isTemplate: false,
+        allowComments: true,
         publishEndDate: '',
         publishStartDate: '',
         tags: '',
@@ -209,6 +214,7 @@ export default {
         this.savedState.tags !== this.$store.get('page/tags'),
         this.savedState.isPublished !== this.$store.get('page/isPublished'),
         this.savedState.isTemplate !== this.$store.get('page/isTemplate'),
+        this.savedState.allowComments !== this.$store.get('page/allowComments'),
         this.savedState.publishStartDate !== this.$store.get('page/publishStartDate'),
         this.savedState.publishEndDate !== this.$store.get('page/publishEndDate'),
         this.savedState.css !== this.$store.get('page/scriptCss'),
@@ -233,6 +239,7 @@ export default {
     this.$store.set('page/description', this.description)
     this.$store.set('page/isPublished', this.isPublished)
     this.$store.set('page/isTemplate', this.isTemplate)
+    this.$store.set('page/allowComments', this.allowComments)
     this.$store.set('page/publishStartDate', this.publishStartDate)
     this.$store.set('page/publishEndDate', this.publishEndDate)
     this.$store.set('page/locale', this.locale)
@@ -327,6 +334,7 @@ export default {
                 $isPrivate: Boolean!
                 $isPublished: Boolean!
                 $isTemplate: Boolean
+                $allowComments: Boolean
                 $locale: String!
                 $path: String!
                 $publishEndDate: Date
@@ -344,6 +352,7 @@ export default {
                     isPrivate: $isPrivate
                     isPublished: $isPublished
                     isTemplate: $isTemplate
+                    allowComments: $allowComments
                     locale: $locale
                     path: $path
                     publishEndDate: $publishEndDate
@@ -375,6 +384,7 @@ export default {
               isPrivate: false,
               isPublished: this.$store.get('page/isPublished'),
               isTemplate: this.$store.get('page/isTemplate'),
+              allowComments: this.$store.get('page/allowComments'),
               path: this.$store.get('page/path'),
               publishEndDate: this.$store.get('page/publishEndDate') || '',
               publishStartDate: this.$store.get('page/publishStartDate') || '',
@@ -435,6 +445,7 @@ export default {
                 $isPrivate: Boolean
                 $isPublished: Boolean
                 $isTemplate: Boolean
+                $allowComments: Boolean
                 $locale: String
                 $path: String
                 $publishEndDate: Date
@@ -453,6 +464,7 @@ export default {
                     isPrivate: $isPrivate
                     isPublished: $isPublished
                     isTemplate: $isTemplate
+                    allowComments: $allowComments
                     locale: $locale
                     path: $path
                     publishEndDate: $publishEndDate
@@ -484,6 +496,7 @@ export default {
               isPrivate: false,
               isPublished: this.$store.get('page/isPublished'),
               isTemplate: this.$store.get('page/isTemplate'),
+              allowComments: this.$store.get('page/allowComments'),
               path: this.$store.get('page/path'),
               publishEndDate: this.$store.get('page/publishEndDate') || '',
               publishStartDate: this.$store.get('page/publishStartDate') || '',
@@ -569,6 +582,7 @@ export default {
         description: this.$store.get('page/description'),
         isPublished: this.$store.get('page/isPublished'),
         isTemplate: this.$store.get('page/isTemplate'),
+        allowComments: this.$store.get('page/allowComments'),
         publishEndDate: this.$store.get('page/publishEndDate') || '',
         publishStartDate: this.$store.get('page/publishStartDate') || '',
         tags: this.$store.get('page/tags'),

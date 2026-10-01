@@ -151,6 +151,20 @@
                     persistent-hint
                     )
 
+              v-card.mt-5.animated.fadeInUp.wait-p6s
+                v-toolbar(color='primary', dark, dense, flat)
+                  v-toolbar-title.subtitle-1 {{$t('admin:general.integrations', { defaultValue: 'Integrations' })}}
+                v-card-text
+                  v-text-field(
+                    outlined
+                    :label='$t(`admin:general.drawioUrl`, { defaultValue: "draw.io Editor URL" })'
+                    v-model='config.drawioUrl'
+                    prepend-icon='mdi-chart-timeline-variant'
+                    placeholder='https://embed.diagrams.net'
+                    :hint='$t(`admin:general.drawioUrlHint`, { defaultValue: "URL of the draw.io (diagrams.net) editor embedded in the Markdown editor. Point it to a self-hosted instance to keep diagrams on your network." })'
+                    persistent-hint
+                    )
+
               v-card.mt-5.animated.fadeInUp.wait-p7s
                 v-toolbar(color='primary', dark, dense, flat)
                   v-toolbar-title.subtitle-1 {{$t('admin:general.editShortcuts')}}
@@ -269,7 +283,8 @@ export default {
         editMenuExternalBtn: false,
         editMenuExternalName: '',
         editMenuExternalIcon: '',
-        editMenuExternalUrl: ''
+        editMenuExternalUrl: '',
+        drawioUrl: ''
       },
       metaRobots: [
         { text: 'Index', value: 'index' },
@@ -312,7 +327,7 @@ export default {
         return
       }
       try {
-        await this.$apollo.mutate({
+        const resp = await this.$apollo.mutate({
           mutation: gql`
             mutation (
               $host: String
@@ -335,6 +350,7 @@ export default {
               $editMenuExternalName: String
               $editMenuExternalIcon: String
               $editMenuExternalUrl: String
+              $drawioUrl: String
             ) {
               site {
                 updateConfig(
@@ -358,6 +374,7 @@ export default {
                   editMenuExternalName: $editMenuExternalName
                   editMenuExternalIcon: $editMenuExternalIcon
                   editMenuExternalUrl: $editMenuExternalUrl
+                  drawioUrl: $drawioUrl
                 ) {
                   responseResult {
                     succeeded
@@ -389,12 +406,17 @@ export default {
             editMenuExternalBtn: _.get(this.config, 'editMenuExternalBtn', false),
             editMenuExternalName: _.get(this.config, 'editMenuExternalName', ''),
             editMenuExternalIcon: _.get(this.config, 'editMenuExternalIcon', ''),
-            editMenuExternalUrl: _.get(this.config, 'editMenuExternalUrl', '')
+            editMenuExternalUrl: _.get(this.config, 'editMenuExternalUrl', ''),
+            drawioUrl: _.get(this.config, 'drawioUrl', '')
           },
           watchLoading (isLoading) {
             this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-site-update')
           }
         })
+        const result = _.get(resp, 'data.site.updateConfig.responseResult', {})
+        if (!result.succeeded) {
+          throw new Error(result.message)
+        }
         this.$store.commit('showNotification', {
           style: 'success',
           message: this.$t('admin:general.saveSuccess'),
@@ -451,6 +473,7 @@ export default {
               editMenuExternalName
               editMenuExternalIcon
               editMenuExternalUrl
+              drawioUrl
             }
           }
         }

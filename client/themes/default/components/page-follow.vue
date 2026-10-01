@@ -81,7 +81,13 @@ export default {
   mounted () {
     if (this.isAuthenticated) {
       this.refresh()
+      this.$root.$on('pageToggleBookmark', this.toggleBookmark)
+      this.$root.$on('pageWatch', this.onWatchShortcut)
     }
+  },
+  beforeDestroy () {
+    this.$root.$off('pageToggleBookmark', this.toggleBookmark)
+    this.$root.$off('pageWatch', this.onWatchShortcut)
   },
   methods: {
     async refresh () {
@@ -125,6 +131,11 @@ export default {
       const result = await this.mutate(gql`mutation ($pageId: Int!) { bookmarks { toggle(pageId: $pageId) { ${RESULT_FIELDS} isBookmarked } } }`, { pageId: this.pageId }, 'data.bookmarks.toggle')
       if (result) {
         this.isBookmarked = result.isBookmarked
+      }
+    },
+    onWatchShortcut () {
+      if (this.notificationsEnabled && this.status.pageWatchId < 1) {
+        this.watchPage()
       }
     },
     async watchPage () {

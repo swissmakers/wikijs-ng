@@ -101,6 +101,10 @@ admin:
     providerNoConfig: Dieser Anbieter verfügt über keine Konfigurationsoptionen, die angepasst werden können.
     subtitle: Füge Diskussionen zu deinen Wiki Seiten hinzu
     title: Kommentare
+    moderation: Kommentar-Moderation
+    moderationSubtitle: Zur Freigabe zurückgehaltene Kommentare prüfen
+    pendingOnly: Nur ausstehende
+    moderationEmpty: Keine Kommentare zu prüfen.
   contribute:
     becomeAPatron: Werde ein Förderer
     becomeASponsor: Werde ein Sponsor
@@ -203,6 +207,9 @@ admin:
     uploadTypesHint: Nur {{typeList}} oder {{lastType}} Dateien
     featureNotifications: Seiten beobachten & E-Mail-Benachrichtigungen
     featureNotificationsHint: Benutzer können Seiten und Ordner beobachten und erhalten eine E-Mail-Zusammenfassung der Änderungen (erfordert eine E-Mail-Konfiguration).
+    integrations: Integrationen
+    drawioUrl: draw.io-Editor-URL
+    drawioUrlHint: URL des im Markdown-Editor eingebetteten draw.io-Editors (diagrams.net). Verweisen Sie auf eine selbst gehostete Instanz, damit Diagramme in Ihrem Netzwerk bleiben.
   groups:
     title: Gruppen
   locale:
@@ -325,6 +332,17 @@ admin:
     title: Seiten
     rerender: Neu rendern
     rerenderSuccess: Seite erfolgreich neu gerendert.
+    accessInspector: Zugriffsprüfung
+    accessInspectorHint: Prüfen, was ein Benutzer oder eine Gruppe auf dieser Seite darf und welche Seitenregel darüber entscheidet.
+    accessGroup: Gruppe
+    accessUser: Benutzer
+    accessUserSearch: Benutzer nach Name oder E-Mail suchen
+    accessPermission: Berechtigung
+    accessResult: Ergebnis
+    accessReason: Entschieden durch
+    accessReasonAdmin: Administrator (manage:system)
+    accessReasonNoGlobal: Berechtigung ist keiner der Gruppen erteilt
+    accessReasonNoRule: Keine Seitenregel trifft auf diese Seite zu
   rendering:
     subtitle: Konfiguriere die Pipeline für die Seitendarstellung
     title: Rendering
@@ -727,6 +745,9 @@ common:
     postReply: Antworten
     replyPlaceholder: Antwort schreiben...
     deleteRepliesWarn: Die {{count}} Antworten darauf werden ebenfalls gelöscht.
+    pending: Wartet auf Freigabe
+    approve: Freigeben
+    postPending: Ihr Kommentar wurde gespeichert und wird nach der Freigabe durch einen Moderator sichtbar.
   duration:
     days: Tag(e)
     every: Alle
@@ -775,6 +796,10 @@ common:
     searchRestrictLocale: Nur {{locale}}
     searchRestrictPath: Nur unter /{{path}}
     recentChanges: Letzte Änderungen
+    appearance: Darstellung
+    appearanceLight: Hell
+    appearanceDark: Dunkel
+    appearanceSystem: Systemeinstellung folgen
   license:
     alr: Alle Rechte vorbehalten
     cc0: Public Domain
@@ -836,6 +861,7 @@ common:
     watchSubtree: Diese Seite und ihre Unterseiten beobachten
     stopWatching: Nicht mehr beobachten
     watchCovered: Bereits abgedeckt durch Ihre Beobachtung von {{path}}.
+    exportPdf: Als PDF exportieren
   pageSelector:
     createTitle: Neuen Seitenpfad auswählen
     folderEmptyWarning: Dieser Order ist leer.
@@ -898,6 +924,17 @@ common:
     empty: Noch keine Änderungen.
     sync: Speicher-Sync
     loadMore: Mehr laden
+  shortcuts:
+    title: Tastenkürzel
+    search: Suchen
+    edit: Seite bearbeiten
+    history: Seitenverlauf
+    newPage: Neue Seite
+    bookmark: Lesezeichen setzen
+    watch: Seite beobachten
+    pdf: Als PDF exportieren
+    help: Tastenkürzel anzeigen
+    disable: Einzeltasten-Kürzel deaktivieren
 editor:
   assets:
     deleteAsset: Datei löschen
@@ -1129,6 +1166,7 @@ profile:
     title: Lesezeichen
     subtitle: Mit einem Stern markierte Seiten
     empty: Noch keine Lesezeichen. Verwenden Sie den Stern auf einer Seite, um sie zu merken.
+  appearanceSystem: Systemeinstellung folgen
 tags:
   clearSelection: Auswahl aufheben
   currentSelection: Aktuelle Auswahl

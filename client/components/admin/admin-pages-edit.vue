@@ -140,6 +140,9 @@
               v-list-item-action
                 v-list-item-action-text {{ page.updatedAt | date('calendar') }}
 
+      v-flex(xs12)
+        admin-pages-access(:page-id='page.id')
+
     v-layout(row, align-center, v-else)
       v-progress-circular(indeterminate, width='2', color='grey')
       .body-2.pl-3.grey--text {{ $t('common:page.loading') }}
@@ -155,7 +158,8 @@ import renderPageMutation from 'gql/common/common-pages-mutation-render.gql'
 
 export default {
   components: {
-    StatusIndicator
+    StatusIndicator,
+    AdminPagesAccess: () => import(/* webpackChunkName: "admin" */ './admin-pages-access.vue')
   },
   data() {
     return {

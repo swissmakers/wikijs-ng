@@ -407,8 +407,9 @@ import validate from 'validate.js'
 
 import PasswordStrength from '../common/password-strength.vue'
 import { timezones } from '@/helpers'
+import { applyAppearance } from '@/helpers/appearance'
 
-/* global WIKI, siteConfig */
+/* global WIKI */
 
 export default {
   i18nOptions: {
@@ -469,7 +470,8 @@ export default {
       return [
         { text: this.$t('profile:appearanceDefault'), value: '' },
         { text: this.$t('profile:appearanceLight'), value: 'light' },
-        { text: this.$t('profile:appearanceDark'), value: 'dark' }
+        { text: this.$t('profile:appearanceDark'), value: 'dark' },
+        { text: this.$t('profile:appearanceSystem', { defaultValue: 'Follow System' }), value: 'system' }
       ]
     },
     currentAppearance () {
@@ -478,11 +480,7 @@ export default {
   },
   watch: {
     'user.appearance': (newValue, oldValue) => {
-      if (newValue === '') {
-        WIKI.$vuetify.theme.dark = siteConfig.darkMode
-      } else {
-        WIKI.$vuetify.theme.dark = (newValue === 'dark')
-      }
+      applyAppearance(newValue)
     },
     'user.dateFormat': (newValue, oldValue) => {
       WIKI.$datetime.setDateFormat(newValue)

@@ -279,7 +279,7 @@ module.exports = {
           throw new WIKI.Error.InputInvalid()
         }
 
-        if (!['', 'light', 'dark'].includes(args.appearance)) {
+        if (!['', 'light', 'dark', 'system'].includes(args.appearance)) {
           throw new WIKI.Error.InputInvalid()
         }
 

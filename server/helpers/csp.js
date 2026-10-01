@@ -28,8 +28,30 @@ const ICONSET_SOURCES = {
   fa4: 'https://cdn.jsdelivr.net'
 }
 
+/**
+ * Origin of an http(s) URL, or null when the URL is invalid
+ */
+const httpOrigin = url => {
+  try {
+    const parsed = new URL(url)
+    return ['http:', 'https:'].includes(parsed.protocol) ? parsed.origin : null
+  } catch (err) {
+    return null
+  }
+}
+
 module.exports = {
   NONCE,
+  httpOrigin,
+  /**
+   * Frame sources required by the configured integrations (draw.io editor)
+   *
+   * @param {Object} config Site configuration (WIKI.config)
+   * @returns {Array<string>} Origins
+   */
+  integrationFrameSources (config) {
+    return _.compact([httpOrigin(_.get(config, 'integrations.drawioUrl'))])
+  },
   /**
    * Parse custom directives: one directive per line, e.g. "connect-src https://analytics.example.com"
    *

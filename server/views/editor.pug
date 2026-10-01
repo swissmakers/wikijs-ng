@@ -15,6 +15,7 @@ block body
       :tags=page.tags
       :is-published=page.isPublished
       :is-template=page.isTemplate
+      :allow-comments=(page.extra && page.extra.commentsDisabled ? 'false' : 'true')
       publish-start-date=page.publishStartDate
       publish-end-date=page.publishEndDate
       script-css=page.extra.css

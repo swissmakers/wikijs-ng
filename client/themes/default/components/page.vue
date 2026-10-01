@@ -167,6 +167,11 @@
                     v-btn(icon, tile, v-on='on', @click='print', :aria-label='$t(`common:page.printFormat`)')
                       v-icon(:color='printView ? `primary` : `grey`') mdi-printer
                   span {{$t('common:page.printFormat')}}
+                v-tooltip(bottom)
+                  template(v-slot:activator='{ on }')
+                    v-btn(icon, tile, v-on='on', @click='exportPdf', :aria-label='$t(`common:page.exportPdf`, { defaultValue: "Export as PDF" })')
+                      v-icon(color='grey') mdi-file-pdf-box
+                  span {{$t('common:page.exportPdf', { defaultValue: 'Export as PDF' })}}
                 v-spacer
 
           v-flex.page-col-content(
@@ -518,6 +523,9 @@ export default {
     this.$store.set('page/mode', 'view')
   },
   mounted () {
+    this.$root.$on('pageExportPdf', () => {
+      this.exportPdf()
+    })
     if (this.$vuetify.theme.dark) {
       this.scrollStyle.bar.background = '#424242'
     } else {
@@ -602,6 +610,25 @@ export default {
           window.print()
         })
       }
+    },
+    /**
+     * Export as PDF through the browser's print dialog ("Save as PDF"),
+     * using the print layout and the page title as default file name
+     */
+    exportPdf () {
+      const previousTitle = document.title
+      const wasPrintView = this.printView
+      document.title = this.title
+      this.printView = true
+      const restore = () => {
+        document.title = previousTitle
+        this.printView = wasPrintView
+        window.removeEventListener('afterprint', restore)
+      }
+      window.addEventListener('afterprint', restore)
+      this.$nextTick(() => {
+        window.print()
+      })
     },
     pageEdit () {
       this.$root.$emit('pageEdit')

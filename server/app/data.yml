@@ -92,6 +92,8 @@ defaults:
       maxFiles: 10
       scanSVG: true
       forceDownload: true
+    integrations:
+      drawioUrl: 'https://embed.diagrams.net'
     flags:
       ldapdebug: false
       sqllog: false

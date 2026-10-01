@@ -113,6 +113,15 @@ module.exports = {
       }
     }
 
+    // -> Hold the comment for moderation if required (moderators are never held)
+    const moderation = WIKI.data.commentProvider.config.moderation || 'off'
+    const isModerator = WIKI.auth.checkAccess(user, ['manage:comments'], {
+      path: page.path,
+      locale: page.localeCode,
+      tags: page.tags
+    })
+    newComment.isApproved = isModerator || moderation === 'off' || (moderation === 'guests' && user.id !== 2)
+
     // -> Save Comment to DB
     const cm = await WIKI.models.comments.query().insert(newComment)
 

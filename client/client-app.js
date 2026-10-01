@@ -25,6 +25,7 @@ import datetime from './modules/datetime'
 // ====================================
 
 import { initials, bytes } from './helpers'
+import { initAppearance, getGuestAppearance } from './helpers/appearance'
 
 // ====================================
 // Initialize Global Vars
@@ -176,10 +177,7 @@ let bootstrap = () => {
 
   const i18n = localization.init()
 
-  let darkModeEnabled = siteConfig.darkMode
-  if ((store.get('user/appearance') || '').length > 0) {
-    darkModeEnabled = (store.get('user/appearance') === 'dark')
-  }
+  const darkModeEnabled = initAppearance(store.get('user/authenticated') ? store.get('user/appearance') : getGuestAppearance())
 
   window.WIKI = new Vue({
     el: '#root',

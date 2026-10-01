@@ -22,6 +22,7 @@ module.exports = class Comment extends Model {
         name: {type: 'string'},
         email: {type: 'string'},
         ip: {type: 'string'},
+        isApproved: {type: 'boolean'},
         createdAt: {type: 'string'},
         updatedAt: {type: 'string'}
       }
@@ -106,6 +107,11 @@ module.exports = class Comment extends Model {
       }
     } else {
       throw new WIKI.Error.PageNotFound()
+    }
+
+    // -> Comments can be turned off per page
+    if (_.get(page, 'extra.commentsDisabled', false) === true) {
+      throw new WIKI.Error.CommentPostForbidden()
     }
 
     // -> Replies must target a comment of the same page; threads are kept to one level

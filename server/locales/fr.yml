@@ -101,6 +101,10 @@ admin:
     providerNoConfig: Ce fournisseur n'a pas d'option de configuration que vous pouvez modifier.
     subtitle: Ajoutez des discussions à vos pages wiki
     title: Commentaires
+    moderation: Modération des commentaires
+    moderationSubtitle: Examiner les commentaires en attente d’approbation
+    pendingOnly: En attente uniquement
+    moderationEmpty: Aucun commentaire à examiner.
   contribute:
     becomeAPatron: Devenez un mécène
     becomeASponsor: Devenez un mécène
@@ -203,6 +207,9 @@ admin:
     uploadTypesHint: Fichiers de types {{typeList}} ou {{lastType}} uniquement
     featureNotifications: Suivi des pages et notifications par e-mail
     featureNotificationsHint: Les utilisateurs peuvent suivre des pages et des dossiers et recevoir un résumé des modifications par e-mail (nécessite une configuration e-mail).
+    integrations: Intégrations
+    drawioUrl: URL de l'éditeur draw.io
+    drawioUrlHint: URL de l'éditeur draw.io (diagrams.net) intégré à l'éditeur Markdown. Indiquez une instance auto-hébergée pour garder les diagrammes sur votre réseau.
   groups:
     title: Groupes
   locale:
@@ -325,6 +332,17 @@ admin:
     title: Pages
     rerender: Régénérer le rendu
     rerenderSuccess: Page régénérée avec succès.
+    accessInspector: Inspecteur d’accès
+    accessInspectorHint: Vérifiez ce qu’un utilisateur ou un groupe peut faire sur cette page et quelle règle en décide.
+    accessGroup: Groupe
+    accessUser: Utilisateur
+    accessUserSearch: Rechercher un utilisateur par nom ou e-mail
+    accessPermission: Permission
+    accessResult: Résultat
+    accessReason: Décidé par
+    accessReasonAdmin: Administrateur (manage:system)
+    accessReasonNoGlobal: Permission accordée à aucun des groupes
+    accessReasonNoRule: Aucune règle ne correspond à cette page
   rendering:
     subtitle: Configurer le pipeline de rendu des pages
     title: Rendu du contenu
@@ -727,6 +745,9 @@ common:
     postReply: Répondre
     replyPlaceholder: Écrire une réponse...
     deleteRepliesWarn: Ses {{count}} réponses seront également supprimées.
+    pending: En attente d’approbation
+    approve: Approuver
+    postPending: Votre commentaire a été enregistré et sera visible après approbation par un modérateur.
   duration:
     days: Jour(s)
     every: Tous les
@@ -775,6 +796,10 @@ common:
     searchRestrictLocale: Uniquement {{locale}}
     searchRestrictPath: Uniquement sous /{{path}}
     recentChanges: Modifications récentes
+    appearance: Apparence
+    appearanceLight: Clair
+    appearanceDark: Sombre
+    appearanceSystem: Suivre le système
   license:
     alr: Tous droits réservés
     cc0: Licence du domaine public
@@ -836,6 +861,7 @@ common:
     watchSubtree: Suivre cette page et ses sous-pages
     stopWatching: Ne plus suivre
     watchCovered: Déjà couverte par votre suivi de {{path}}.
+    exportPdf: Exporter en PDF
   pageSelector:
     createTitle: Sélectionnez l'emplacement de la nouvelle page
     folderEmptyWarning: Ce dossier est vide.
@@ -898,6 +924,17 @@ common:
     empty: Aucune modification pour l’instant.
     sync: synchro stockage
     loadMore: Charger plus
+  shortcuts:
+    title: Raccourcis clavier
+    search: Rechercher
+    edit: Modifier la page
+    history: Historique de la page
+    newPage: Nouvelle page
+    bookmark: Ajouter aux favoris
+    watch: Suivre la page
+    pdf: Exporter en PDF
+    help: Afficher les raccourcis clavier
+    disable: Désactiver les raccourcis à une touche
 editor:
   assets:
     deleteAsset: Supprimer le fichier
@@ -1129,6 +1166,7 @@ profile:
     title: Favoris
     subtitle: Pages marquées d’une étoile
     empty: Aucun favori pour l’instant. Utilisez l’étoile d’une page pour l’ajouter.
+  appearanceSystem: Suivre le système
 tags:
   clearSelection: Effacer la sélection
   currentSelection: Sélection actuelle

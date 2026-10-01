@@ -26,6 +26,7 @@ export default {
       return _.filter([
         { key: 'pageHistory', icon: 'mdi-history', label: this.$t('common:header.history'), show: mode !== 'history' && this.hasReadHistoryPermission },
         { key: 'pageSource', icon: 'mdi-code-tags', label: this.$t('common:header.viewSource'), show: mode !== 'source' && this.hasReadSourcePermission },
+        { key: 'pageExportPdf', icon: 'mdi-file-pdf-box', label: this.$t('common:page.exportPdf', { defaultValue: 'Export as PDF' }), show: mode === 'view' },
         { key: 'pageConvert', icon: 'mdi-lightning-bolt', label: this.$t('common:header.convert'), show: this.hasWritePagesPermission },
         { key: 'pageDuplicate', icon: 'mdi-content-duplicate', label: this.$t('common:header.duplicate'), show: this.hasWritePagesPermission },
         { key: 'pageMove', icon: 'mdi-content-save-move-outline', label: this.$t('common:header.move'), show: this.hasManagePagesPermission },

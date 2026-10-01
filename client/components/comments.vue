@@ -86,7 +86,10 @@
             .comments-post-actions(v-if='canChange(cm) && !isBusy && commentEditId === 0')
               v-icon.mr-3(small, @click='editComment(cm)') mdi-pencil
               v-icon(small, @click='deleteCommentConfirm(cm)') mdi-delete
-            .comments-post-name.caption: strong {{cm.authorName}}
+            .comments-post-name.caption
+              strong {{cm.authorName}}
+              v-chip.ml-2(v-if='!cm.isApproved', x-small, label, color='orange', dark) {{ $t('common:comments.pending', { defaultValue: 'Awaiting approval' }) }}
+              v-btn.ml-2(v-if='!cm.isApproved && permissions.manage', x-small, depressed, color='success', @click='approveComment(cm)') {{ $t('common:comments.approve', { defaultValue: 'Approve' }) }}
             .comments-post-date.overline.grey--text {{cm.createdAt | date('from') }} #[em(v-if='cm.createdAt !== cm.updatedAt') - {{$t('common:comments.modified', { reldate: $options.filters.date(cm.updatedAt, 'from') })}}]
             .comments-post-content.mt-3(v-if='commentEditId !== cm.id', v-html='cm.render')
             .comments-post-editcontent.mt-3(v-else)
@@ -241,6 +244,7 @@ export default {
                   id
                   replyTo
                   render
+                  isApproved
                   authorId
                   authorName
                   createdAt
@@ -368,6 +372,7 @@ export default {
                     message
                   }
                   id
+                  isPending
                 }
               }
             }
@@ -384,7 +389,7 @@ export default {
         if (_.get(resp, 'data.comments.create.responseResult.succeeded', false)) {
           this.$store.commit('showNotification', {
             style: 'success',
-            message: this.$t('common:comments.postSuccess'),
+            message: _.get(resp, 'data.comments.create.isPending', false) ? this.$t('common:comments.postPending', { defaultValue: 'Your comment was saved and will be visible after a moderator approved it.' }) : this.$t('common:comments.postSuccess'),
             icon: 'check'
           })
 
@@ -403,6 +408,31 @@ export default {
           message: err.message,
           icon: 'alert'
         })
+      }
+    },
+    /**
+     * Approve a comment held for moderation
+     */
+    async approveComment (cm) {
+      try {
+        const resp = await this.$apollo.mutate({
+          mutation: gql`
+            mutation ($id: Int!) {
+              comments {
+                approve(id: $id) {
+                  responseResult { succeeded errorCode slug message }
+                }
+              }
+            }
+          `,
+          variables: { id: cm.id }
+        })
+        if (!_.get(resp, 'data.comments.approve.responseResult.succeeded', false)) {
+          throw new Error(_.get(resp, 'data.comments.approve.responseResult.message', 'An unexpected error occurred.'))
+        }
+        await this.fetch(true)
+      } catch (err) {
+        this.$store.commit('showNotification', { style: 'red', message: err.message, icon: 'alert' })
       }
     },
     /**

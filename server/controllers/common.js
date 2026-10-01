@@ -327,6 +327,18 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
     }
   }
 
+  // -> Editor integrations: draw.io and the diagram servers of the enabled renderers (live preview)
+  const diagramRenderers = await WIKI.models.renderers.query().select('key', 'isEnabled', 'config').whereIn('key', ['markdownPlantuml', 'markdownKroki'])
+  const diagramConfig = (key, props) => {
+    const rdr = _.find(diagramRenderers, ['key', key])
+    return (rdr && rdr.isEnabled) ? _.pick(rdr.config, props) : null
+  }
+  _.set(res, 'locals.siteConfig.editorIntegrations', {
+    drawioUrl: WIKI.config.integrations.drawioUrl,
+    plantuml: diagramConfig('markdownPlantuml', ['server', 'imageFormat', 'openMarker', 'closeMarker']),
+    kroki: diagramConfig('markdownKroki', ['server', 'openMarker', 'closeMarker'])
+  })
+
   res.render('editor', { page, injectCode, effectivePermissions })
 })
 
@@ -608,14 +620,15 @@ router.get('/*', async (req, res, next) => {
           page.toc = JSON.stringify(page.toc)
         }
 
-        // -> Inject comments variables
+        // -> Inject comments variables (comments can be turned off per page)
+        const commentsEnabled = WIKI.config.features.featurePageComments && _.get(page, 'extra.commentsDisabled', false) !== true
         let commentTmpl = {
           codeTemplate: WIKI.data.commentProvider.codeTemplate,
           head: WIKI.data.commentProvider.head,
           body: WIKI.data.commentProvider.body,
           main: WIKI.data.commentProvider.main
         }
-        if (WIKI.config.features.featurePageComments && WIKI.data.commentProvider.codeTemplate) {
+        if (commentsEnabled && WIKI.data.commentProvider.codeTemplate) {
           commentTmpl = commonHelper.renderCodeTemplate(commentTmpl, {
             pageUrl: `${WIKI.config.host}/i/${page.id}`,
             pageId: page.id
@@ -632,6 +645,7 @@ router.get('/*', async (req, res, next) => {
           sidebar,
           injectCode: cspHelper.nonceSnippets(injectCode, res),
           comments: cspHelper.nonceSnippets(commentTmpl, res),
+          commentsEnabled,
           effectivePermissions,
           pageFilename
         })

@@ -242,60 +242,94 @@ module.exports = {
 
     // Check Page Rules
     if (user.groups) {
-      let checkState = {
-        deny: false,
-        match: false,
-        specificity: ''
-      }
-      user.groups.forEach(grp => {
-        const grpId = _.isObject(grp) ? _.get(grp, 'id', 0) : grp
-        _.get(WIKI.auth.groups, `${grpId}.pageRules`, []).forEach(rule => {
-          if (rule.locales && rule.locales.length > 0) {
-            if (!rule.locales.includes(page.locale)) { return }
-          }
-          if (_.intersection(rule.roles, permissions).length > 0) {
-            switch (rule.match) {
-              case 'START':
-                if (_.startsWith(`/${page.path}`, `/${rule.path}`)) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: ['END', 'REGEX', 'EXACT', 'TAG'] })
-                }
-                break
-              case 'END':
-                if (_.endsWith(page.path, rule.path)) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: ['REGEX', 'EXACT', 'TAG'] })
-                }
-                break
-              case 'REGEX':
-                const reg = new RegExp(rule.path)
-                if (reg.test(page.path)) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: ['EXACT', 'TAG'] })
-                }
-                break
-              case 'TAG':
-                _.get(page, 'tags', []).forEach(tag => {
-                  if (tag.tag === rule.path) {
-                    checkState = this._applyPageRuleSpecificity({
-                      rule,
-                      checkState,
-                      higherPriority: ['EXACT']
-                    })
-                  }
-                })
-                break
-              case 'EXACT':
-                if (`/${page.path}` === `/${rule.path}`) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: [] })
-                }
-                break
-            }
-          }
-        })
-      })
-
+      const checkState = this._evaluatePageRules(user, permissions, page)
       return (checkState.match && !checkState.deny)
     }
 
     return false
+  },
+
+  /**
+   * Evaluate the page rules of the user's groups for the given permissions
+   *
+   * @access private
+   * @returns {Object} { match, deny, specificity, rule, groupId } of the deciding rule (match is false if none applies)
+   */
+  _evaluatePageRules (user, permissions, page) {
+    let checkState = {
+      deny: false,
+      match: false,
+      specificity: ''
+    }
+    user.groups.forEach(grp => {
+      const grpId = _.isObject(grp) ? _.get(grp, 'id', 0) : grp
+      _.get(WIKI.auth.groups, `${grpId}.pageRules`, []).forEach(rule => {
+        if (rule.locales && rule.locales.length > 0) {
+          if (!rule.locales.includes(page.locale)) { return }
+        }
+        if (_.intersection(rule.roles, permissions).length > 0) {
+          switch (rule.match) {
+            case 'START':
+              if (_.startsWith(`/${page.path}`, `/${rule.path}`)) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['END', 'REGEX', 'EXACT', 'TAG'] })
+              }
+              break
+            case 'END':
+              if (_.endsWith(page.path, rule.path)) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['REGEX', 'EXACT', 'TAG'] })
+              }
+              break
+            case 'REGEX':
+              const reg = new RegExp(rule.path)
+              if (reg.test(page.path)) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['EXACT', 'TAG'] })
+              }
+              break
+            case 'TAG':
+              _.get(page, 'tags', []).forEach(tag => {
+                if (tag.tag === rule.path) {
+                  checkState = this._applyPageRuleSpecificity({
+                    rule,
+                    groupId: grpId,
+                    checkState,
+                    higherPriority: ['EXACT']
+                  })
+                }
+              })
+              break
+            case 'EXACT':
+              if (`/${page.path}` === `/${rule.path}`) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: [] })
+              }
+              break
+          }
+        }
+      })
+    })
+    return checkState
+  },
+
+  /**
+   * Explain the access decision for one permission on a page (permission inspector)
+   *
+   * @param {Object} user User or pseudo-user ({ permissions, groups })
+   * @param {String} permission Permission to check
+   * @param {Object} page Page ({ path, locale, tags })
+   * @returns {Object} { permission, allowed, reason (ADMIN, NO_GLOBAL, NO_RULE, RULE), rule, groupId }
+   */
+  explainAccess (user, permission, page) {
+    const userPermissions = user.permissions ? user.permissions : user.getGlobalPermissions()
+    if (_.includes(userPermissions, 'manage:system')) {
+      return { permission, allowed: true, reason: 'ADMIN', rule: null, groupId: null }
+    }
+    if (!_.includes(userPermissions, permission)) {
+      return { permission, allowed: false, reason: 'NO_GLOBAL', rule: null, groupId: null }
+    }
+    const checkState = this._evaluatePageRules({ ...user, groups: user.groups || [] }, [permission], page)
+    if (!checkState.match) {
+      return { permission, allowed: false, reason: 'NO_RULE', rule: null, groupId: null }
+    }
+    return { permission, allowed: !checkState.deny, reason: 'RULE', rule: checkState.rule, groupId: checkState.groupId }
   },
 
   /**
@@ -369,7 +403,7 @@ module.exports = {
    *
    * @access private
    */
-  _applyPageRuleSpecificity ({ rule, checkState, higherPriority = [] }) {
+  _applyPageRuleSpecificity ({ rule, groupId = null, checkState, higherPriority = [] }) {
     if (rule.path.length === checkState.specificity.length) {
       // Do not override higher priority rules
       if (_.includes(higherPriority, checkState.match)) {
@@ -387,7 +421,9 @@ module.exports = {
     return {
       deny: rule.deny,
       match: rule.match,
-      specificity: rule.path
+      specificity: rule.path,
+      rule,
+      groupId
     }
   },
 
