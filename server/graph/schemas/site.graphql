@@ -50,6 +50,7 @@ type SiteMutation {
     editMenuExternalIcon: String
     editMenuExternalUrl: String
     featurePageComments: Boolean
+    featureNotifications: Boolean
     securityOpenRedirect: Boolean
     securityIframe: Boolean
     securityReferrerPolicy: Boolean
@@ -98,6 +99,7 @@ type SiteConfig {
   editMenuExternalIcon: String
   editMenuExternalUrl: String
   featurePageComments: Boolean
+  featureNotifications: Boolean
   securityOpenRedirect: Boolean
   securityIframe: Boolean
   securityReferrerPolicy: Boolean

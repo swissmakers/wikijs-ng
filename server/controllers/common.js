@@ -3,6 +3,7 @@ const router = express.Router()
 const pageHelper = require('../helpers/page')
 const commonHelper = require('../helpers/common')
 const cspHelper = require('../helpers/csp')
+const feedsHelper = require('../helpers/feeds')
 const _ = require('lodash')
 const CleanCSS = require('clean-css')
 const qs = require('querystring')
@@ -19,8 +20,98 @@ router.get('/robots.txt', (req, res, next) => {
   if (_.includes(WIKI.config.seo.robots, 'noindex')) {
     res.send('User-agent: *\nDisallow: /')
   } else {
-    res.status(200).end()
+    res.send(`User-agent: *\nAllow: /\nSitemap: ${feedHost(req)}/sitemap.xml\n`)
   }
+})
+
+// ----------------------------------------
+// Feeds (sitemap, RSS) — public pages only, as seen by the guest user
+// ----------------------------------------
+
+const FEED_CACHE_TTL = 300
+const feedHost = req => WIKI.config.host || `${req.protocol}://${req.get('host')}`
+const feedPageUrl = (locale, path) => WIKI.config.lang.namespacing ? `/${locale}/${path}` : `/${path}`
+
+/**
+ * Keep the items whose page is public and readable by guests
+ */
+const filterPublicPages = async (items) => {
+  const guest = await WIKI.models.users.getGuestUser()
+  const pagesTags = _.keyBy(await WIKI.models.pages.query()
+    .select('id')
+    .whereIn('id', _.uniq(_.map(items, 'pageId')))
+    .withGraphFetched('tags'), 'id')
+  return items.filter(item => feedsHelper.isPubliclyVisible(item) && WIKI.auth.checkAccess(guest, ['read:pages'], {
+    path: item.path,
+    locale: item.localeCode,
+    tags: _.get(pagesTags, [item.pageId, 'tags'], [])
+  }))
+}
+
+/**
+ * XML Sitemap
+ */
+router.get('/sitemap.xml', async (req, res, next) => {
+  try {
+    if (_.includes(WIKI.config.seo.robots, 'noindex')) {
+      return res.sendStatus(404)
+    }
+    let xml = await WIKI.cache.get('feeds:sitemap')
+    if (!xml) {
+      const pages = await WIKI.models.pages.query()
+        .select({ pageId: 'id' }, 'localeCode', 'path', 'updatedAt', 'isPublished', 'isPrivate', 'isTemplate', 'publishStartDate', 'publishEndDate')
+        .orderBy(['localeCode', 'path'])
+      xml = feedsHelper.sitemapXml(await filterPublicPages(pages), { host: feedHost(req), pageUrl: feedPageUrl })
+      await WIKI.cache.set('feeds:sitemap', xml, FEED_CACHE_TTL)
+    }
+    res.type('application/xml').send(xml)
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * RSS feed of recent changes
+ */
+router.get('/rss.xml', async (req, res, next) => {
+  try {
+    let xml = await WIKI.cache.get('feeds:rss')
+    if (!xml) {
+      const rows = await WIKI.models.knex('pageActivity')
+        .join('pages', 'pageActivity.pageId', 'pages.id')
+        .select('pageActivity.id', 'pageActivity.pageId', 'pageActivity.action', 'pageActivity.authorName', 'pageActivity.createdAt',
+          'pages.localeCode', 'pages.path', 'pages.title', 'pages.description', 'pages.isPublished', 'pages.isPrivate', 'pages.isTemplate',
+          'pages.publishStartDate', 'pages.publishEndDate')
+        .orderBy('pageActivity.id', 'desc')
+        .limit(500)
+      const items = _.take(await filterPublicPages(_.uniqBy(rows, 'pageId')), 50)
+      const lng = WIKI.config.lang.code
+      xml = feedsHelper.rssXml(items, {
+        title: WIKI.config.title,
+        description: WIKI.lang.engine.t('common:recent.title', { lng, defaultValue: 'Recent changes' }),
+        host: feedHost(req),
+        lang: lng,
+        pageUrl: feedPageUrl,
+        actionLabel: action => WIKI.lang.engine.t(`common:notifications.action.${action}`, { lng, defaultValue: action })
+      })
+      await WIKI.cache.set('feeds:rss', xml, FEED_CACHE_TTL)
+    }
+    res.type('application/rss+xml').send(xml)
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * Recent Changes
+ */
+router.get(['/r', '/r/*'], (req, res, next) => {
+  if (!WIKI.auth.checkAccess(req.user, ['read:pages'])) {
+    _.set(res.locals, 'pageMeta.title', 'Unauthorized')
+    return res.status(403).render('unauthorized', { action: 'view' })
+  }
+  _.set(res.locals, 'pageMeta.title', WIKI.lang.engine.t('common:recent.title', { lng: WIKI.config.lang.code, defaultValue: 'Recent changes' }))
+  res.render('recent')
 })
 
 /**

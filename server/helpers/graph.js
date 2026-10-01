@@ -1,6 +1,21 @@
 const _ = require('lodash')
 
+/* global WIKI */
+
 module.exports = {
+  /**
+   * Return the user of the request, rejecting guests
+   *
+   * @param {Object} context GraphQL context
+   * @returns {Object} JWT user
+   */
+  assertAuthenticated (context) {
+    const user = _.get(context, 'req.user')
+    if (!user || user.id < 1 || user.id === 2) {
+      throw new WIKI.Error.AuthRequired()
+    }
+    return user
+  },
   generateSuccess (msg) {
     return {
       succeeded: true,

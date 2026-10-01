@@ -332,6 +332,9 @@ module.exports = class Page extends Model {
     // -> Get latest updatedAt
     page.updatedAt = await WIKI.models.pages.query().findById(page.id).select('updatedAt').then(r => r.updatedAt)
 
+    // -> Log activity (storage sync changes are flagged and never notified)
+    await WIKI.models.pageActivity.record({ action: 'created', page, user: opts.user, isSync: opts.skipStorage === true })
+
     return page
   }
 
@@ -417,6 +420,14 @@ module.exports = class Page extends Model {
         page
       })
     }
+
+    // -> Log activity
+    await WIKI.models.pageActivity.record({
+      action: opts.action === 'restored' ? 'restored' : 'updated',
+      page,
+      user: opts.user,
+      isSync: opts.skipStorage === true
+    })
 
     // -> Perform move?
     if ((opts.locale && opts.locale !== page.localeCode) || (opts.path && opts.path !== page.path)) {
@@ -613,6 +624,9 @@ module.exports = class Page extends Model {
       event: 'updated',
       page
     })
+
+    // -> Log activity
+    await WIKI.models.pageActivity.record({ action: 'updated', page, user: opts.user })
   }
 
   /**
@@ -738,6 +752,15 @@ module.exports = class Page extends Model {
       path: opts.destinationPath,
       mode: 'create'
     })
+
+    // -> Log activity
+    await WIKI.models.pageActivity.record({
+      action: 'moved',
+      page: { ...page, localeCode: opts.destinationLocale, path: opts.destinationPath, title: destinationTitle },
+      previous: { path: page.path, localeCode: page.localeCode },
+      user: opts.user,
+      isSync: opts.skipStorage === true
+    })
   }
 
   /**
@@ -792,6 +815,12 @@ module.exports = class Page extends Model {
       path: page.path,
       mode: 'delete'
     })
+
+    // -> Remove bookmarks (page watches are cleaned up after the deletion was notified)
+    await WIKI.models.userBookmarks.query().delete().where('pageId', page.id)
+
+    // -> Log activity
+    await WIKI.models.pageActivity.record({ action: 'deleted', page, user: opts.user, isSync: opts.skipStorage === true })
   }
 
   /**

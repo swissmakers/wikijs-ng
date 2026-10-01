@@ -129,6 +129,14 @@
                     persistent-hint
                     hint='Allow users to leave comments on pages.'
                     )
+                  v-switch(
+                    inset
+                    :label='$t(`admin:general.featureNotifications`, { defaultValue: "Watch pages & e-mail notifications" })'
+                    color='indigo'
+                    v-model='config.featureNotifications'
+                    persistent-hint
+                    :hint='$t(`admin:general.featureNotificationsHint`, { defaultValue: "Users can watch pages and folders and receive an e-mail digest of the changes (requires a mail configuration)." })'
+                    )
 
               v-card.mt-5.animated.fadeInUp.wait-p6s
                 v-toolbar(color='primary', dark, dense, flat)
@@ -252,6 +260,7 @@ export default {
         logoUrl: '',
         featureAnalytics: false,
         featurePageComments: false,
+        featureNotifications: false,
         featureTinyPNG: false,
         pageExtensions: '',
         editFab: false,
@@ -318,6 +327,7 @@ export default {
               $logoUrl: String
               $pageExtensions: String
               $featurePageComments: Boolean
+              $featureNotifications: Boolean
               $editFab: Boolean
               $editMenuBar: Boolean
               $editMenuBtn: Boolean
@@ -340,6 +350,7 @@ export default {
                   logoUrl: $logoUrl
                   pageExtensions: $pageExtensions
                   featurePageComments: $featurePageComments
+                  featureNotifications: $featureNotifications
                   editFab: $editFab
                   editMenuBar: $editMenuBar
                   editMenuBtn: $editMenuBtn
@@ -371,6 +382,7 @@ export default {
             logoUrl: _.get(this.config, 'logoUrl', ''),
             pageExtensions: _.get(this.config, 'pageExtensions', ''),
             featurePageComments: _.get(this.config, 'featurePageComments', false),
+            featureNotifications: _.get(this.config, 'featureNotifications', false),
             editFab: _.get(this.config, 'editFab', false),
             editMenuBar: _.get(this.config, 'editMenuBar', false),
             editMenuBtn: _.get(this.config, 'editMenuBtn', false),
@@ -431,6 +443,7 @@ export default {
               logoUrl
               pageExtensions
               featurePageComments
+              featureNotifications
               editFab
               editMenuBar
               editMenuBtn

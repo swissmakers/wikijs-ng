@@ -201,6 +201,8 @@ admin:
     uploadLogo: Logo hochladen
     uploadSizeHint: Für beste Ergebnisse wird ein Bild mit {{size}} Pixeln empfohlen.
     uploadTypesHint: Nur {{typeList}} oder {{lastType}} Dateien
+    featureNotifications: Seiten beobachten & E-Mail-Benachrichtigungen
+    featureNotificationsHint: Benutzer können Seiten und Ordner beobachten und erhalten eine E-Mail-Zusammenfassung der Änderungen (erfordert eine E-Mail-Konfiguration).
   groups:
     title: Gruppen
   locale:
@@ -267,6 +269,9 @@ admin:
     testRecipient: E-Mail-Adresse des Empfängers
     testSend: E-Mail senden
     title: E-Mail
+    notifications: Benachrichtigungen bei Seitenänderungen
+    notificationsHint: Beobachter erhalten alle 10 Minuten eine Zusammenfassung der Seitenänderungen. Ausstehende Benachrichtigungen können sofort versendet werden.
+    sendDigestsNow: Ausstehende Benachrichtigungen jetzt senden
   nav:
     modules: Module
     site: Seite
@@ -769,6 +774,7 @@ common:
     viewSource: Quellcode anzeigen
     searchRestrictLocale: Nur {{locale}}
     searchRestrictPath: Nur unter /{{path}}
+    recentChanges: Letzte Änderungen
   license:
     alr: Alle Rechte vorbehalten
     cc0: Public Domain
@@ -824,6 +830,12 @@ common:
     linkCopyFailed: Kopieren in die Zwischenablage fehlgeschlagen.
     createdOnBy: Erstellt am {{date}} von {{name}}
     backlinks: Seiten, die hierher verlinken
+    unbookmark: Lesezeichen entfernen
+    watch: Beobachten
+    watchPage: Diese Seite beobachten
+    watchSubtree: Diese Seite und ihre Unterseiten beobachten
+    stopWatching: Nicht mehr beobachten
+    watchCovered: Bereits abgedeckt durch Ihre Beobachtung von {{path}}.
   pageSelector:
     createTitle: Neuen Seitenpfad auswählen
     folderEmptyWarning: Dieser Order ist leer.
@@ -868,6 +880,24 @@ common:
     folders: Ordner
     pages: Seiten
     empty: Dieser Ordner enthält keine für Sie sichtbaren Seiten.
+    watch: Diesen Ordner beobachten
+  notifications:
+    action:
+      created: erstellt
+      updated: bearbeitet
+      restored: wiederhergestellt
+      moved: verschoben
+      deleted: gelöscht
+    more: +{{count}} weitere Seiten
+    digestTitle: Änderungen an beobachteten Seiten ({{count}})
+    manageWatches: Beobachtete Seiten verwalten
+  recent:
+    title: Letzte Änderungen
+    locale: Sprache
+    pathFilter: Ordner (z. B. docs/setup)
+    empty: Noch keine Änderungen.
+    sync: Speicher-Sync
+    loadMore: Mehr laden
 editor:
   assets:
     deleteAsset: Datei löschen
@@ -1086,6 +1116,19 @@ profile:
   timezone: Zeitzone
   title: Profil
   viewPublicProfile: Öffentliches Profil anzeigen
+  watches:
+    title: Beobachtete Seiten
+    subtitle: Bei Änderungen eine E-Mail-Zusammenfassung erhalten
+    disabled: E-Mail-Benachrichtigungen sind in diesem Wiki derzeit nicht verfügbar.
+    addFolder: Ordner beobachten (z. B. docs/setup)
+    add: Beobachten
+    deletedPage: Gelöschte Seite
+    folderHint: Dieser Ordner und alle seine Seiten
+    empty: Sie beobachten noch keine Seite. Verwenden Sie die Glocke auf einer Seite, um sie zu beobachten.
+  bookmarks:
+    title: Lesezeichen
+    subtitle: Mit einem Stern markierte Seiten
+    empty: Noch keine Lesezeichen. Verwenden Sie den Stern auf einer Seite, um sie zu merken.
 tags:
   clearSelection: Auswahl aufheben
   currentSelection: Aktuelle Auswahl

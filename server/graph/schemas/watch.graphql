@@ -1,0 +1,93 @@
+# ===============================================
+# WATCHES & BOOKMARKS
+# ===============================================
+
+extend type Query {
+  watches: WatchQuery
+  bookmarks: BookmarkQuery
+}
+
+extend type Mutation {
+  watches: WatchMutation
+  bookmarks: BookmarkMutation
+}
+
+# -----------------------------------------------
+# QUERIES
+# -----------------------------------------------
+
+type WatchQuery {
+  list: [WatchItem!]! @auth(requires: ["read:pages", "manage:system"])
+
+  status(
+    pageId: Int!
+  ): WatchStatus! @auth(requires: ["read:pages", "manage:system"])
+}
+
+type BookmarkQuery {
+  list: [BookmarkItem!]! @auth(requires: ["read:pages", "manage:system"])
+
+  isBookmarked(
+    pageId: Int!
+  ): Boolean! @auth(requires: ["read:pages", "manage:system"])
+}
+
+# -----------------------------------------------
+# MUTATIONS
+# -----------------------------------------------
+
+type WatchMutation {
+  watchPage(
+    pageId: Int!
+  ): DefaultResponse @auth(requires: ["read:pages", "manage:system"])
+
+  watchPath(
+    locale: String!
+    path: String!
+  ): DefaultResponse @auth(requires: ["read:pages", "manage:system"])
+
+  remove(
+    id: Int!
+  ): DefaultResponse @auth(requires: ["read:pages", "manage:system"])
+}
+
+type BookmarkMutation {
+  toggle(
+    pageId: Int!
+  ): BookmarkToggleResponse @auth(requires: ["read:pages", "manage:system"])
+}
+
+# -----------------------------------------------
+# TYPES
+# -----------------------------------------------
+
+type WatchItem {
+  id: Int!
+  kind: String!
+  pageId: Int!
+  locale: String!
+  path: String!
+  title: String
+  createdAt: Date!
+}
+
+type WatchStatus {
+  pageWatchId: Int!
+  pathWatchId: Int!
+  coveringPath: String
+}
+
+type BookmarkItem {
+  id: Int!
+  pageId: Int!
+  locale: String!
+  path: String!
+  title: String!
+  description: String
+  createdAt: Date!
+}
+
+type BookmarkToggleResponse {
+  responseResult: ResponseStatus!
+  isBookmarked: Boolean!
+}

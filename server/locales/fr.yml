@@ -201,6 +201,8 @@ admin:
     uploadLogo: Envoyer un logo
     uploadSizeHint: Une image de {{size}} pixels est recommandée pour de meilleurs résultats.
     uploadTypesHint: Fichiers de types {{typeList}} ou {{lastType}} uniquement
+    featureNotifications: Suivi des pages et notifications par e-mail
+    featureNotificationsHint: Les utilisateurs peuvent suivre des pages et des dossiers et recevoir un résumé des modifications par e-mail (nécessite une configuration e-mail).
   groups:
     title: Groupes
   locale:
@@ -267,6 +269,9 @@ admin:
     testRecipient: Adresse courriel du destinataire
     testSend: Envoyer un courriel
     title: Courrier
+    notifications: Notifications de modification
+    notificationsHint: Les abonnés reçoivent un résumé des modifications toutes les 10 minutes. Vous pouvez envoyer immédiatement les notifications en attente.
+    sendDigestsNow: Envoyer les notifications en attente
   nav:
     modules: Modules
     site: Site
@@ -769,6 +774,7 @@ common:
     viewSource: Voir la source
     searchRestrictLocale: Uniquement {{locale}}
     searchRestrictPath: Uniquement sous /{{path}}
+    recentChanges: Modifications récentes
   license:
     alr: Tous droits réservés
     cc0: Licence du domaine public
@@ -824,6 +830,12 @@ common:
     linkCopyFailed: Échec de la copie dans le presse-papiers.
     createdOnBy: Créée le {{date}} par {{name}}
     backlinks: Pages qui pointent ici
+    unbookmark: Retirer des favoris
+    watch: Suivre
+    watchPage: Suivre cette page
+    watchSubtree: Suivre cette page et ses sous-pages
+    stopWatching: Ne plus suivre
+    watchCovered: Déjà couverte par votre suivi de {{path}}.
   pageSelector:
     createTitle: Sélectionnez l'emplacement de la nouvelle page
     folderEmptyWarning: Ce dossier est vide.
@@ -868,6 +880,24 @@ common:
     folders: Dossiers
     pages: Pages
     empty: Ce dossier ne contient aucune page que vous pouvez consulter.
+    watch: Suivre ce dossier
+  notifications:
+    action:
+      created: créée
+      updated: modifiée
+      restored: restaurée
+      moved: déplacée
+      deleted: supprimée
+    more: +{{count}} autres pages
+    digestTitle: Modifications de vos pages suivies ({{count}})
+    manageWatches: Gérer les pages suivies
+  recent:
+    title: Modifications récentes
+    locale: Langue
+    pathFilter: Dossier (p. ex. docs/setup)
+    empty: Aucune modification pour l’instant.
+    sync: synchro stockage
+    loadMore: Charger plus
 editor:
   assets:
     deleteAsset: Supprimer le fichier
@@ -1086,6 +1116,19 @@ profile:
   timezone: Fuseau horaire
   title: Profil
   viewPublicProfile: Afficher mon profil public
+  watches:
+    title: Pages suivies
+    subtitle: Recevoir un résumé par e-mail lorsque ces pages changent
+    disabled: Les notifications par e-mail ne sont pas disponibles sur ce wiki pour le moment.
+    addFolder: Suivre un dossier (p. ex. docs/setup)
+    add: Suivre
+    deletedPage: Page supprimée
+    folderHint: Ce dossier et toutes ses pages
+    empty: Vous ne suivez encore aucune page. Utilisez la cloche d’une page pour la suivre.
+  bookmarks:
+    title: Favoris
+    subtitle: Pages marquées d’une étoile
+    empty: Aucun favori pour l’instant. Utilisez l’étoile d’une page pour l’ajouter.
 tags:
   clearSelection: Effacer la sélection
   currentSelection: Sélection actuelle

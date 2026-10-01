@@ -201,6 +201,8 @@ admin:
     uploadLogo: Upload Logo
     uploadSizeHint: An image of {{size}} pixels is recommended for best results.
     uploadTypesHint: '{{typeList}} or {{lastType}} files only'
+    featureNotifications: Watch pages & e-mail notifications
+    featureNotificationsHint: Users can watch pages and folders and receive an e-mail digest of the changes (requires a mail configuration).
   groups:
     title: Groups
   locale:
@@ -267,6 +269,9 @@ admin:
     testRecipient: Recipient Email Address
     testSend: Send Email
     title: Mail
+    notifications: Page change notifications
+    notificationsHint: Watchers receive a digest of page changes every 10 minutes. You can send the pending notifications right away.
+    sendDigestsNow: Send pending notifications now
   nav:
     modules: Modules
     site: Site
@@ -769,6 +774,7 @@ common:
     viewSource: View Source
     searchRestrictLocale: Only {{locale}}
     searchRestrictPath: Only under /{{path}}
+    recentChanges: Recent changes
   license:
     alr: All Rights Reserved
     cc0: Public Domain
@@ -824,6 +830,12 @@ common:
     linkCopyFailed: Failed to copy to clipboard.
     createdOnBy: Created on {{date}} by {{name}}
     backlinks: Pages linking here
+    unbookmark: Remove bookmark
+    watch: Watch
+    watchPage: Watch this page
+    watchSubtree: Watch this page and its subpages
+    stopWatching: Stop watching
+    watchCovered: Already notified through your watch on {{path}}.
   pageSelector:
     createTitle: Select New Page Location
     folderEmptyWarning: This folder is empty.
@@ -868,6 +880,24 @@ common:
     folders: Folders
     pages: Pages
     empty: This folder has no pages you can view.
+    watch: Watch this folder
+  notifications:
+    action:
+      created: created
+      updated: updated
+      restored: restored
+      moved: moved
+      deleted: deleted
+    more: +{{count}} more pages
+    digestTitle: Changes to your watched pages ({{count}})
+    manageWatches: Manage watched pages
+  recent:
+    title: Recent changes
+    locale: Language
+    pathFilter: Folder (e.g. docs/setup)
+    empty: No changes yet.
+    sync: storage sync
+    loadMore: Load more
 editor:
   assets:
     deleteAsset: Delete Asset
@@ -1086,6 +1116,19 @@ profile:
   timezone: Timezone
   title: Profile
   viewPublicProfile: View Public Profile
+  watches:
+    title: Watched Pages
+    subtitle: Get an e-mail digest when these pages change
+    disabled: E-mail notifications are currently not available on this wiki.
+    addFolder: Watch a folder (e.g. docs/setup)
+    add: Watch
+    deletedPage: Deleted page
+    folderHint: This folder and all its pages
+    empty: You are not watching any page yet. Use the bell on a page to watch it.
+  bookmarks:
+    title: Bookmarks
+    subtitle: Pages you marked with a star
+    empty: No bookmarks yet. Use the star on a page to bookmark it.
 tags:
   clearSelection: Clear Selection
   currentSelection: Current Selection

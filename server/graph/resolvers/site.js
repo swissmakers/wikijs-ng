@@ -103,7 +103,8 @@ module.exports = {
         }
 
         WIKI.config.features = {
-          featurePageComments: _.get(args, 'featurePageComments', WIKI.config.features.featurePageComments)
+          featurePageComments: _.get(args, 'featurePageComments', WIKI.config.features.featurePageComments),
+          featureNotifications: _.get(args, 'featureNotifications', WIKI.config.features.featureNotifications)
         }
 
         WIKI.config.security = {

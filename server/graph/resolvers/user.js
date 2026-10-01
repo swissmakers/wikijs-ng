@@ -7,10 +7,7 @@ const _ = require('lodash')
  * Load the logged in user (guests are rejected)
  */
 const getCurrentUser = async (context) => {
-  if (!context.req.user || context.req.user.id < 1 || context.req.user.id === 2) {
-    throw new WIKI.Error.AuthRequired()
-  }
-  const usr = await WIKI.models.users.query().findById(context.req.user.id)
+  const usr = await WIKI.models.users.query().findById(graphHelper.assertAuthenticated(context).id)
   if (!usr || !usr.isActive) {
     throw new WIKI.Error.AuthAccountBanned()
   }

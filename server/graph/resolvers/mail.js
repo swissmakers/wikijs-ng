@@ -42,6 +42,19 @@ module.exports = {
         return graphHelper.generateError(err)
       }
     },
+    async sendDigestsNow(obj, args, context) {
+      try {
+        if (!WIKI.mail.transport) {
+          throw new WIKI.Error.MailNotConfigured()
+        }
+        await require('../../jobs/send-page-digests')()
+        return {
+          responseResult: graphHelper.generateSuccess('Pending page change notifications sent.')
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
     async updateConfig(obj, args, context) {
       try {
         WIKI.config.mail = {

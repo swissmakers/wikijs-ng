@@ -74,6 +74,7 @@ defaults:
       editMenuExternalUrl: 'https://github.com/org/repo/blob/main/{filename}'
     features:
       featurePageComments: true
+      featureNotifications: true
     security:
       securityOpenRedirect: true
       securityIframe: true
@@ -104,6 +105,11 @@ jobs:
   purgeUploads:
     onInit: true
     schedule: PT15M
+    offlineSkip: false
+    repeat: true
+  sendPageDigests:
+    onInit: false
+    schedule: PT10M
     offlineSkip: false
     repeat: true
   rebuildTree:

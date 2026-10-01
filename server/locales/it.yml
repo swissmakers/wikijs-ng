@@ -201,6 +201,8 @@ admin:
     uploadLogo: Carica Logo
     uploadSizeHint: Per ottenere i migliori risultati, si raccomanda un'immagine di {{size}} pixel.
     uploadTypesHint: Solo file di tipo {{typeList}} o {{lastType}}
+    featureNotifications: Segui pagine e notifiche via e-mail
+    featureNotificationsHint: Gli utenti possono seguire pagine e cartelle e ricevere un riepilogo delle modifiche via e-mail (richiede una configurazione e-mail).
   groups:
     title: Gruppi
   locale:
@@ -267,6 +269,9 @@ admin:
     testRecipient: Indirizzo email destinatario
     testSend: Invia email
     title: Email
+    notifications: Notifiche di modifica
+    notificationsHint: Chi segue le pagine riceve un riepilogo delle modifiche ogni 10 minuti. Puoi inviare subito le notifiche in sospeso.
+    sendDigestsNow: Invia ora le notifiche in sospeso
   nav:
     modules: Moduli
     site: Sito
@@ -769,6 +774,7 @@ common:
     viewSource: Visualizza Sorgente
     searchRestrictLocale: Solo {{locale}}
     searchRestrictPath: Solo sotto /{{path}}
+    recentChanges: Modifiche recenti
   license:
     alr: Tutti i diritti riservati
     cc0: Pubblico dominio
@@ -824,6 +830,12 @@ common:
     linkCopyFailed: Copia negli appunti non riuscita.
     createdOnBy: Creata il {{date}} da {{name}}
     backlinks: Pagine che rimandano qui
+    unbookmark: Rimuovi segnalibro
+    watch: Segui
+    watchPage: Segui questa pagina
+    watchSubtree: Segui questa pagina e le sue sottopagine
+    stopWatching: Smetti di seguire
+    watchCovered: Già coperta dal tuo monitoraggio di {{path}}.
   pageSelector:
     createTitle: Seleziona una nuova posizione della pagina
     folderEmptyWarning: Questa cartella è vuota.
@@ -868,6 +880,24 @@ common:
     folders: Cartelle
     pages: Pagine
     empty: Questa cartella non contiene pagine che puoi visualizzare.
+    watch: Segui questa cartella
+  notifications:
+    action:
+      created: creata
+      updated: modificata
+      restored: ripristinata
+      moved: spostata
+      deleted: eliminata
+    more: +{{count}} altre pagine
+    digestTitle: Modifiche alle pagine che segui ({{count}})
+    manageWatches: Gestisci le pagine seguite
+  recent:
+    title: Modifiche recenti
+    locale: Lingua
+    pathFilter: Cartella (ad es. docs/setup)
+    empty: Ancora nessuna modifica.
+    sync: sincronizzazione
+    loadMore: Carica altro
 editor:
   assets:
     deleteAsset: Elimina risorsa
@@ -1086,6 +1116,19 @@ profile:
   timezone: Fuso Orario
   title: Profilo
   viewPublicProfile: Visualizza il profilo pubblico
+  watches:
+    title: Pagine seguite
+    subtitle: Ricevi un riepilogo via e-mail quando queste pagine cambiano
+    disabled: Le notifiche via e-mail non sono attualmente disponibili in questo wiki.
+    addFolder: Segui una cartella (ad es. docs/setup)
+    add: Segui
+    deletedPage: Pagina eliminata
+    folderHint: Questa cartella e tutte le sue pagine
+    empty: Non segui ancora nessuna pagina. Usa la campanella su una pagina per seguirla.
+  bookmarks:
+    title: Segnalibri
+    subtitle: Pagine contrassegnate con una stella
+    empty: Ancora nessun segnalibro. Usa la stella su una pagina per salvarla.
 tags:
   clearSelection: Cancella selezione
   currentSelection: Selezione attuale

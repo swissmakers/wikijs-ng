@@ -150,6 +150,7 @@
             v-card.page-shortcuts-card(flat)
               v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-3`', flat, dense)
                 v-spacer
+                page-follow(:page-id='pageId', :locale='locale', :path='path')
                 v-menu(offset-y, bottom, min-width='300')
                   template(v-slot:activator='{ on: menu }')
                     v-tooltip(bottom)
@@ -281,6 +282,7 @@ import Tabset from './tabset.vue'
 import NavSidebar from './nav-sidebar.vue'
 import PageBreadcrumbs from '@/components/common/page-breadcrumbs.vue'
 import PageBacklinks from './page-backlinks.vue'
+import PageFollow from './page-follow.vue'
 import pageActionsMixin from '@/helpers/page-actions'
 import { decodePermissions, initials } from '@/helpers'
 import Prism from 'prismjs'
@@ -332,6 +334,7 @@ export default {
   components: {
     NavSidebar,
     PageBacklinks,
+    PageFollow,
     PageBreadcrumbs,
     StatusIndicator
   },

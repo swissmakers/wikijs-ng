@@ -11,6 +11,14 @@
           v-list-item-action: v-icon mdi-file-document-outline
           v-list-item-content
             v-list-item-title {{$t('profile:pages.title')}}
+        v-list-item(to='/bookmarks', color='primary')
+          v-list-item-action: v-icon mdi-star-outline
+          v-list-item-content
+            v-list-item-title {{$t('profile:bookmarks.title', { defaultValue: 'Bookmarks' })}}
+        v-list-item(to='/watches', color='primary')
+          v-list-item-action: v-icon mdi-bell-outline
+          v-list-item-content
+            v-list-item-title {{$t('profile:watches.title', { defaultValue: 'Watched Pages' })}}
 
     v-main(:class='$vuetify.theme.dark ? "grey darken-4" : "grey lighten-5"')
       .profile-content-container
@@ -33,7 +41,9 @@ const router = new VueRouter({
   routes: [
     { path: '/', redirect: '/profile' },
     { path: '/profile', component: () => import(/* webpackChunkName: "profile" */ './profile/profile.vue') },
-    { path: '/pages', component: () => import(/* webpackChunkName: "profile" */ './profile/pages.vue') }
+    { path: '/pages', component: () => import(/* webpackChunkName: "profile" */ './profile/pages.vue') },
+    { path: '/bookmarks', component: () => import(/* webpackChunkName: "profile" */ './profile/bookmarks.vue') },
+    { path: '/watches', component: () => import(/* webpackChunkName: "profile" */ './profile/watches.vue') }
   ]
 })
 

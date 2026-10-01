@@ -81,7 +81,8 @@ module.exports = () => {
       })
       _.set(WIKI.config, 'company', '')
       _.set(WIKI.config, 'features', {
-        featurePageComments: true
+        featurePageComments: true,
+        featureNotifications: true
       })
       _.set(WIKI.config, 'host', req.body.siteUrl)
       _.set(WIKI.config, 'lang', {

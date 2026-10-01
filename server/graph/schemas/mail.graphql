@@ -27,6 +27,8 @@ type MailMutation {
     recipientEmail: String!
   ): DefaultResponse @auth(requires: ["manage:system"])
 
+  sendDigestsNow: DefaultResponse @auth(requires: ["manage:system"])
+
   updateConfig(
     senderName: String!
     senderEmail: String!

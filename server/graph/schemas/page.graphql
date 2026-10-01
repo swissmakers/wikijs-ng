@@ -86,6 +86,13 @@ type PageQuery {
     locale: String!
   ): [PageBacklinkItem!]! @auth(requires: ["manage:system", "read:pages"])
 
+  recentChanges(
+    before: Int
+    limit: Int
+    locale: String
+    path: String
+  ): PageRecentChanges! @auth(requires: ["manage:system", "read:pages"])
+
   checkConflicts(
     id: Int!
     checkoutDate: Date!
@@ -357,6 +364,25 @@ type PageLinkItem {
   path: String!
   title: String!
   links: [String]!
+}
+
+type PageRecentChanges {
+  items: [PageActivityItem!]!
+  nextCursor: Int
+}
+
+type PageActivityItem {
+  id: Int!
+  pageId: Int!
+  locale: String!
+  path: String!
+  title: String!
+  action: String!
+  previousPath: String
+  previousLocale: String
+  authorName: String!
+  isSync: Boolean!
+  createdAt: Date!
 }
 
 type PageBacklinkItem {

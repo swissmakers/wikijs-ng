@@ -143,6 +143,7 @@ Vue.component('Notify', () => import(/* webpackMode: "eager" */ './components/co
 Vue.component('NotFound', () => import(/* webpackChunkName: "not-found" */ './components/not-found.vue'))
 Vue.component('PageSelector', () => import(/* webpackPrefetch: true, webpackChunkName: "ui-extra" */ './components/common/page-selector.vue'))
 Vue.component('PageSource', () => import(/* webpackChunkName: "source" */ './components/source.vue'))
+Vue.component('RecentChanges', () => import(/* webpackChunkName: "recent" */ './components/recent-changes.vue'))
 Vue.component('Profile', () => import(/* webpackChunkName: "profile" */ './components/profile.vue'))
 Vue.component('Register', () => import(/* webpackChunkName: "register" */ './components/register.vue'))
 Vue.component('SearchResults', () => import(/* webpackPrefetch: true, webpackChunkName: "ui-extra" */ './components/common/search-results.vue'))

@@ -159,7 +159,8 @@ module.exports = async () => {
       logoUrl: WIKI.config.logoUrl,
       localeVersion: WIKI.lang.version,
       uploadMaxFiles: WIKI.config.uploads.maxFiles,
-      uploadMaxFileSize: WIKI.config.uploads.maxFileSize
+      uploadMaxFileSize: WIKI.config.uploads.maxFileSize,
+      notifications: WIKI.config.features.featureNotifications !== false && Boolean(WIKI.mail.transport)
     }
     res.locals.langs = await WIKI.models.locales.getNavLocales({ cache: true })
     res.locals.analyticsCode = cspHelper.nonceSnippets(await WIKI.models.analytics.getCode({ cache: true }), res)

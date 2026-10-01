@@ -758,6 +758,9 @@ module.exports = class User extends Model {
       await WIKI.models.pages.query().patch({ creatorId: replaceId }).where('creatorId', id)
 
       await WIKI.models.userKeys.query().delete().where('userId', id)
+      await WIKI.models.pageDrafts.query().delete().where('authorId', id)
+      await WIKI.models.userWatches.query().delete().where('userId', id)
+      await WIKI.models.userBookmarks.query().delete().where('userId', id)
       await WIKI.models.users.query().deleteById(id)
     } else {
       throw new WIKI.Error.UserNotFound()

@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const graphHelper = require('../../helpers/graph')
+const notificationsHelper = require('../../helpers/notifications')
 
 /* global WIKI */
 
@@ -391,6 +392,55 @@ module.exports = {
           locale: r.locale
         })
       })
+    },
+    /**
+     * FETCH RECENT CHANGES (activity log, newest first, cursor = activity ID)
+     */
+    async recentChanges (obj, args, context, info) {
+      const limit = _.clamp(_.toSafeInteger(args.limit) || 50, 1, 100)
+      const path = _.trim(args.path || '', '/ ')
+      const items = []
+      let cursor = _.toSafeInteger(args.before)
+      let exhausted = false
+      while (items.length < limit && !exhausted) {
+        const batch = await WIKI.models.pageActivity.query()
+          .modify(qb => {
+            if (cursor > 0) { qb.where('id', '<', cursor) }
+            if (args.locale) { qb.where('localeCode', args.locale) }
+            if (path) {
+              qb.where(builder => builder.where('path', path).orWhere('path', 'like', `${path}/%`))
+            }
+          })
+          .orderBy('id', 'desc')
+          .limit(200)
+        exhausted = batch.length < 200
+        if (batch.length < 1) {
+          break
+        }
+        cursor = _.last(batch).id
+        const pagesTags = _.keyBy(await WIKI.models.pages.query()
+          .select('id')
+          .whereIn('id', _.uniq(_.map(batch, 'pageId')))
+          .withGraphFetched('tags'), 'id')
+        for (const event of batch) {
+          if (notificationsHelper.canSeeEvent(context.req.user, event, _.get(pagesTags, [event.pageId, 'tags'], []))) {
+            items.push(event)
+            if (items.length >= limit) {
+              cursor = event.id
+              break
+            }
+          }
+        }
+      }
+      return {
+        items: items.map(e => ({
+          ...e,
+          locale: e.localeCode,
+          previousLocale: e.previousLocaleCode,
+          isSync: Boolean(e.isSync)
+        })),
+        nextCursor: (items.length >= limit || !exhausted) && items.length > 0 ? cursor : null
+      }
     },
     /**
      * FETCH PAGES LINKING TO A PAGE

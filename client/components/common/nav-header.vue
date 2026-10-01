@@ -54,6 +54,11 @@
                 v-btn.ml-2.mr-0(icon, v-on='on', href='/t', :aria-label='$t(`common:header.browseTags`)')
                   v-icon(color='grey') mdi-tag-multiple
               span {{$t('common:header.browseTags')}}
+            v-tooltip(bottom)
+              template(v-slot:activator='{ on }')
+                v-btn.ml-0.mr-0(icon, v-on='on', href='/r', :aria-label='$t(`common:header.recentChanges`, { defaultValue: "Recent changes" })')
+                  v-icon(color='grey') mdi-update
+              span {{$t('common:header.recentChanges', { defaultValue: 'Recent changes' })}}
             v-tooltip(bottom, v-if='canManageAssets')
               template(v-slot:activator='{ on }')
                 v-btn.ml-0.mr-0(icon, v-on='on', href='/a/assets', :aria-label='$t(`common:header.imagesFiles`)')

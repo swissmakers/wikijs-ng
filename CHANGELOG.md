@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [2.8.0] - Unreleased
 
+### Added — following changes
+
+- **Watch pages and folders with e-mail digests.** The bell next to the share button watches a page (follows it when moved) or the page and all its subpages; folders can be watched from the folder view or from the profile. Watchers receive one e-mail every 10 minutes summarizing the changes they are allowed to see (created, updated, restored, moved, deleted) — never for their own changes, and never for changes imported by a storage sync (git/disk). Requires a mail configuration; can be switched off in Admin → General → Features. Admins can send pending notifications immediately from Admin → Mail.
+- **Bookmarks**: the star on a page bookmarks it; all bookmarks are listed in the profile.
+- **Recent changes** page (`/r`, header button) with day grouping, folder/language filters and paging, built on a new page activity log. Storage-sync changes are marked as such.
+- **RSS feed** (`/rss.xml`, linked from every page) of the latest changes and an **XML sitemap** (`/sitemap.xml`, announced in `robots.txt`). Both only contain published pages that guests may read and are cached for 5 minutes; the sitemap is disabled when the site is set to `noindex`.
+- Profile: new *Bookmarks* and *Watched Pages* sections.
+
+### Fixed
+
+- Deleting a user who had unsaved drafts failed on PostgreSQL (foreign key); drafts, watches and bookmarks of the user are now removed with the account.
+
 ### Added — features that were half built
 
 - **Backlinks**: pages show which other pages link to them ("Pages linking here"), filtered by the reader's permissions (unpublished pages and templates only for editors). New `pages.backlinks` GraphQL query.
@@ -83,6 +95,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Database
 
+- New migration `2.8.1`: page activity log (seeded with the latest 500 page changes), user watches and bookmarks.
 - New migration `2.8.0`: drops the unused `loggers` table and the `graphEndpoint` setting, moves a PlantUML renderer still configured for `plantuml.requarks.io` to `www.plantuml.com`, and replaces the upstream default logo setting with the bundled one. Applied automatically on first start.
 
 ## [2.7.0] - Unreleased
