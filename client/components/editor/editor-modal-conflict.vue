@@ -48,12 +48,12 @@
       v-row.grey.lighten-2.body-2(no-gutters)
         v-col.px-4.py-2
           i18next.grey--text.text--darken-2(tag='em', path='editor:conflict.leftPanelInfo')
-            span(place='date', :title='$options.filters.moment(checkoutDateActive, `LLL`)') {{ checkoutDateActive | moment('from') }}
+            span(place='date', :title='$options.filters.date(checkoutDateActive, `LLL`)') {{ checkoutDateActive | date('from') }}
         v-divider(vertical)
         v-col.px-4.py-2
           i18next.grey--text.text--darken-2(tag='em', path='editor:conflict.rightPanelInfo')
             strong(place='authorName') {{latest.authorName}}
-            span(place='date', :title='$options.filters.moment(latest.updatedAt, `LLL`)') {{ latest.updatedAt | moment('from') }}
+            span(place='date', :title='$options.filters.date(latest.updatedAt, `LLL`)') {{ latest.updatedAt | date('from') }}
       v-row.grey.lighten-3.grey--text.text--darken-3(no-gutters)
         v-col.pa-4
           .body-2

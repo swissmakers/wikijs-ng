@@ -38,18 +38,8 @@ module.exports = {
           name: 'wiki-js'
         })
         break
-      case '6.x':
-        const { Client: Client6 } = require('elasticsearch6')
-        this.client = new Client6({
-          nodes: this.config.hosts.split(',').map(_.trim),
-          sniffOnStart: this.config.sniffOnStart,
-          sniffInterval: (this.config.sniffInterval > 0) ? this.config.sniffInterval : false,
-          ssl: getTlsOptions(this.config),
-          name: 'wiki-js'
-        })
-        break
       default:
-        throw new Error('Unsupported version of elasticsearch! Update your settings in the Administration Area.')
+        throw new Error(`Unsupported Elasticsearch version ${this.config.apiVersion} (supported: 7.x, 8.x). Update your settings in the Administration Area.`)
     }
 
     // -> Create Search Index
@@ -63,7 +53,7 @@ module.exports = {
   async createIndex() {
     try {
       const indexExists = await this.client.indices.exists({ index: this.config.indexName })
-      // Elasticsearch 6.x / 7.x
+      // Elasticsearch 7.x
       if (this.config.apiVersion !== '8.x' && !indexExists.body) {
         WIKI.logger.info(`(SEARCH/ELASTICSEARCH) Creating index...`)
         try {
@@ -82,9 +72,7 @@ module.exports = {
           await this.client.indices.create({
             index: this.config.indexName,
             body: {
-              mappings: (this.config.apiVersion === '6.x') ? {
-                _doc: idxBody
-              } : idxBody,
+              mappings: idxBody,
               settings: {
                 analysis: {
                   analyzer: {

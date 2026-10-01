@@ -58,9 +58,9 @@
                 td: strong {{ props.item.name }}
                 td {{ props.item.email }}
                 td {{ getStrategyName(props.item.providerKey) }}
-                td {{ props.item.createdAt | moment('from') }}
+                td {{ props.item.createdAt | date('from') }}
                 td
-                  span(v-if='props.item.lastLoginAt') {{ props.item.lastLoginAt | moment('from') }}
+                  span(v-if='props.item.lastLoginAt') {{ props.item.lastLoginAt | date('from') }}
                   em.grey--text(v-else) Never
                 td.text-right
                   v-icon.mr-3(v-if='props.item.isSystem') mdi-lock-outline

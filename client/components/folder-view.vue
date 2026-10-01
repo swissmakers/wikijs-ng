@@ -73,7 +73,7 @@
                       v-icon.mr-3(color='grey darken-1') mdi-text-box-outline
                       .subtitle-2.text-truncate {{item.title}}
                     .caption.grey--text.mt-2.folder-view-card-description(v-if='item.description') {{item.description}}
-                    .caption.grey--text.text--lighten-1.mt-1(v-if='item.updatedAt') {{item.updatedAt | moment('calendar')}}
+                    .caption.grey--text.text--lighten-1.mt-1(v-if='item.updatedAt') {{item.updatedAt | date('calendar')}}
           v-row(v-if='!folders.length && !pages.length', justify='center')
             v-col(cols='12', md='6')
               v-card.text-center.pa-8(outlined)

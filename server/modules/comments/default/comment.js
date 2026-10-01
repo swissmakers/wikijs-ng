@@ -4,7 +4,6 @@ const { JSDOM } = require('jsdom')
 const createDOMPurify = require('dompurify')
 const _ = require('lodash')
 const { AkismetClient } = require('akismet-api')
-const moment = require('moment')
 
 /* global WIKI */
 
@@ -109,7 +108,7 @@ module.exports = {
     // -> Check for minimum delay between posts
     if (WIKI.data.commentProvider.config.minDelay > 0) {
       const lastComment = await WIKI.models.comments.query().select('updatedAt').findOne('authorId', user.id).orderBy('updatedAt', 'desc')
-      if (lastComment && moment().subtract(WIKI.data.commentProvider.config.minDelay, 'seconds').isBefore(lastComment.updatedAt)) {
+      if (lastComment && Date.now() - WIKI.data.commentProvider.config.minDelay * 1000 < new Date(lastComment.updatedAt)) {
         throw new Error('Your administrator has set a time limit before you can post another comment. Try again later.')
       }
     }

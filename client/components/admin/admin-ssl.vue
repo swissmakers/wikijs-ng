@@ -49,7 +49,7 @@
                         v-icon.indigo.white--text mdi-calendar-remove-outline
                       v-list-item-content
                         v-list-item-title {{ $t('admin:ssl.expiration') }}
-                        v-list-item-subtitle {{ info.sslExpirationDate | moment('calendar') }}
+                        v-list-item-subtitle {{ info.sslExpirationDate | date('calendar') }}
                     v-list-item
                       v-list-item-avatar
                         v-icon.indigo.white--text mdi-traffic-light

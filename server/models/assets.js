@@ -1,12 +1,11 @@
 /* global WIKI */
 
 const Model = require('objection').Model
-const moment = require('moment')
 const path = require('path')
+const util = require('util')
 const fs = require('fs-extra')
 const _ = require('lodash')
 const assetHelper = require('../helpers/asset')
-const Promise = require('bluebird')
 
 /**
  * Users model
@@ -57,13 +56,13 @@ module.exports = class Asset extends Model {
   async $beforeUpdate(opt, context) {
     await super.$beforeUpdate(opt, context)
 
-    this.updatedAt = moment.utc().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
   async $beforeInsert(context) {
     await super.$beforeInsert(context)
 
-    this.createdAt = moment.utc().toISOString()
-    this.updatedAt = moment.utc().toISOString()
+    this.createdAt = new Date().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
 
   async getAssetPath() {
@@ -199,7 +198,7 @@ module.exports = class Asset extends Model {
     } catch (err) {
       return false
     }
-    const sendFile = Promise.promisify(res.sendFile, {context: res})
+    const sendFile = util.promisify(res.sendFile.bind(res))
     res.type(path.extname(assetPath))
     await sendFile(cachePath, { dotfiles: 'deny' })
     return true

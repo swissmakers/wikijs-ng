@@ -3,7 +3,7 @@ const path = require('path')
 const tar = require('tar-fs')
 const zlib = require('zlib')
 const { pipeline } = require('node:stream/promises')
-const moment = require('moment')
+const { DateTime } = require('luxon')
 
 const pageHelper = require('../../../helpers/page')
 const storageExport = require('../../../helpers/storage-export')
@@ -22,7 +22,7 @@ module.exports = {
       const dirPath = path.join(this.config.path, manual ? '_manual' : '_daily')
       await fs.ensureDir(dirPath)
 
-      const dateFilename = moment().format(manual ? 'YYYYMMDD-HHmmss' : 'DD')
+      const dateFilename = DateTime.now().toFormat(manual ? 'yyyyMMdd-HHmmss' : 'dd')
 
       WIKI.logger.info(`(STORAGE/DISK) Creating backup archive...`)
       await pipeline(

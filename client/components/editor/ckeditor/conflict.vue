@@ -10,7 +10,7 @@
       v-card-text.pt-4
         i18next.body-2(tag='div', path='editor:conflict.infoGeneric')
           strong(place='authorName') {{latest.authorName}}
-          span(place='date', :title='$options.filters.moment(latest.updatedAt, `LLL`)') {{ latest.updatedAt | moment('from') }}.
+          span(place='date', :title='$options.filters.date(latest.updatedAt, `LLL`)') {{ latest.updatedAt | date('from') }}.
         v-btn.mt-2(outlined, color='indigo', small, :href='`/` + latest.locale + `/` + latest.path', target='_blank')
           v-icon(left) mdi-open-in-new
           span {{$t('editor:conflict.viewLatestVersion')}}

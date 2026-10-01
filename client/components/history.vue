@@ -31,7 +31,7 @@
                 )
                 v-card.radius-7(flat, :class='trailBgColor(ph.actionType)')
                   v-toolbar(flat, :color='trailBgColor(ph.actionType)', height='40')
-                    .caption(:title='$options.filters.moment(ph.versionDate, `LLL`)') {{ ph.versionDate | moment('ll') }}
+                    .caption(:title='$options.filters.date(ph.versionDate, `LLL`)') {{ ph.versionDate | date('ll') }}
                     v-divider.mx-3(vertical)
                     .caption(v-if='ph.actionType === `edit`') Edited by #[strong {{ ph.authorName }}]
                     .caption(v-else-if='ph.actionType === `move`') Moved from #[strong {{ph.valueBefore}}] to #[strong {{ph.valueAfter}}] by #[strong {{ ph.authorName }}]
@@ -116,7 +116,7 @@
         .dialog-header.is-orange {{$t('history:restore.confirmTitle')}}
         v-card-text.pa-4
           i18next(tag='span', path='history:restore.confirmText')
-            strong(place='date') {{ restoreTarget.versionDate | moment('LLL') }}
+            strong(place='date') {{ restoreTarget.versionDate | date('LLL') }}
         v-card-actions
           v-spacer
           v-btn(text, @click='isRestoreConfirmDialogShown = false', :disabled='restoreLoading') {{$t('common:actions.cancel')}}

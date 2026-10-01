@@ -1,7 +1,6 @@
 const ACME = require('acme')
 const Keypairs = require('@root/keypairs')
 const _ = require('lodash')
-const moment = require('moment')
 const CSR = require('@root/csr')
 const PEM = require('@root/pem')
 // eslint-disable-next-line n/no-deprecated-api
@@ -18,7 +17,7 @@ module.exports = {
     } else if (WIKI.config.letsencrypt.domain !== WIKI.config.ssl.domain) {
       WIKI.logger.info(`(LETSENCRYPT) Domain has changed. Requesting new certificates...`)
       await this.requestCertificate()
-    } else if (moment(WIKI.config.letsencrypt.payload.expires).isSameOrBefore(moment().add(5, 'days'))) {
+    } else if (new Date(WIKI.config.letsencrypt.payload.expires) <= new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)) {
       WIKI.logger.info(`(LETSENCRYPT) Certificate is about to or has expired, requesting a new one...`)
       await this.requestCertificate()
     } else {

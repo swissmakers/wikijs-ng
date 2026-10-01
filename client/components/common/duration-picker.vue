@@ -54,7 +54,8 @@
 
 <script>
 import _ from 'lodash'
-import moment from 'moment'
+import { Duration } from 'luxon'
+import datetime from '../../modules/datetime'
 
 export default {
   props: {
@@ -65,34 +66,34 @@ export default {
   },
   data() {
     return {
-      duration: moment.duration(0)
+      duration: datetime.parseDuration('PT0S')
     }
   },
   computed: {
     years: {
-      get() { return this.duration.years() || 0 },
+      get() { return this.duration.years || 0 },
       set(val) { this.rebuild(_.toNumber(val), 'years') }
     },
     months: {
-      get() { return this.duration.months() || 0 },
+      get() { return this.duration.months || 0 },
       set(val) { this.rebuild(_.toNumber(val), 'months') }
     },
     days: {
-      get() { return this.duration.days() || 0 },
+      get() { return this.duration.days || 0 },
       set(val) { this.rebuild(_.toNumber(val), 'days') }
     },
     hours: {
-      get() { return this.duration.hours() || 0 },
+      get() { return this.duration.hours || 0 },
       set(val) { this.rebuild(_.toNumber(val), 'hours') }
     },
     minutes: {
-      get() { return this.duration.minutes() || 0 },
+      get() { return this.duration.minutes || 0 },
       set(val) { this.rebuild(_.toNumber(val), 'minutes') }
     }
   },
   watch: {
     value(newValue, oldValue) {
-      this.duration = moment.duration(newValue)
+      this.duration = datetime.parseDuration(newValue)
     }
   },
   methods: {
@@ -100,20 +101,14 @@ export default {
       if (!_.isFinite(val) || val < 0) {
         val = 0
       }
-      const newDuration = {
-        minutes: this.duration.minutes(),
-        hours: this.duration.hours(),
-        days: this.duration.days(),
-        months: this.duration.months(),
-        years: this.duration.years()
-      }
+      const newDuration = this.duration.toObject()
       _.set(newDuration, unit, val)
-      this.duration = moment.duration(newDuration)
-      this.$emit('input', this.duration.toISOString())
+      this.duration = datetime.parseDuration(Duration.fromObject(newDuration).toISO())
+      this.$emit('input', this.duration.toISO())
     }
   },
   mounted() {
-    this.duration = moment.duration(this.value)
+    this.duration = datetime.parseDuration(this.value)
   }
 }
 </script>

@@ -219,7 +219,7 @@
 <script>
 import _ from 'lodash'
 import gql from 'graphql-tag'
-import { v4 as uuid } from 'uuid'
+import { nanoid } from 'nanoid/non-secure'
 
 import groupsQuery from 'gql/admin/auth/auth-query-groups.gql'
 import hostQuery from 'gql/admin/auth/auth-query-host.gql'
@@ -265,7 +265,7 @@ export default {
     },
     addStrategy (str) {
       const newStr = {
-        key: uuid(),
+        key: nanoid(),
         strategy: str,
         config: str.props.map(c => ({
           key: c.key,

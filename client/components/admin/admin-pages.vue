@@ -69,8 +69,8 @@
                 td.admin-pages-path
                   v-chip(label, small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`') {{ props.item.locale }}
                   span.ml-2.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') / {{ props.item.path }}
-                td {{ props.item.createdAt | moment('calendar') }}
-                td {{ props.item.updatedAt | moment('calendar') }}
+                td {{ props.item.createdAt | date('calendar') }}
+                td {{ props.item.updatedAt | date('calendar') }}
             template(slot='no-data')
               v-alert.ma-3(icon='mdi-alert', :value='true', outlined) No pages to display.
           .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')

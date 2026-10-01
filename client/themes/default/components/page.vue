@@ -234,7 +234,7 @@
                 span.white--text.subtitle-2 {{ authorInitials }}
               div
                 .caption.grey--text {{$t('common:page.lastEditedBy')}}
-                .body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-1` : `grey--text text--darken-3`') {{ authorName }} · {{ updatedAt | moment('calendar') }}
+                .body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-1` : `grey--text text--darken-3`') {{ authorName }} · {{ updatedAt | date('calendar') }}
               v-spacer
               v-btn(
                 text

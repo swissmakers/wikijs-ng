@@ -68,7 +68,7 @@
                 td.admin-pages-path
                   v-chip(label, small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`') {{ props.item.locale }}
                   span.ml-2.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') / {{ props.item.path }}
-                td.text-right.caption(width='250') {{ props.item.updatedAt | moment('calendar') }}
+                td.text-right.caption(width='250') {{ props.item.updatedAt | date('calendar') }}
       v-flex(xs12, xl6)
         v-card.radius-7.animated.fadeInUp.wait-p4s
           v-toolbar(:color='$vuetify.theme.dark ? `grey darken-2` : `grey lighten-5`', dense, flat)
@@ -86,7 +86,7 @@
               tr.is-clickable(:active='props.selected', @click='$router.push(`/users/` + props.item.id)')
                 td
                   .body-2: strong {{ props.item.name }}
-                td.text-right.caption(width='250') {{ props.item.lastLoginAt | moment('calendar') }}
+                td.text-right.caption(width='250') {{ props.item.lastLoginAt | date('calendar') }}
 
 </template>
 

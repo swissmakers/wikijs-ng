@@ -6,7 +6,6 @@ const { VueLoaderPlugin } = require('vue-loader')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackPugPlugin = require('html-webpack-pug-plugin')
-const MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
 const WebpackBarPlugin = require('webpackbar')
 
@@ -144,10 +143,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process/browser.js'
-    }),
-    new MomentTimezoneDataPlugin({
-      startYear: 2017,
-      endYear: (new Date().getFullYear()) + 5
     }),
     new CopyWebpackPlugin({
       patterns: [

@@ -8,6 +8,8 @@ RUN apk upgrade --no-cache && apk add yarn g++ make cmake python3 --no-cache
 WORKDIR /wiki
 
 COPY ./client ./client
+# -> The client bundle imports a few shared modules from the server
+COPY ./server ./server
 COPY ./dev ./dev
 COPY ./patches ./patches
 COPY ./package.json ./package.json

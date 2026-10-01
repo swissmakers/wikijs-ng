@@ -1,7 +1,6 @@
 const _ = require('lodash')
 const autoload = require('auto-load')
 const path = require('path')
-const Promise = require('bluebird')
 const Knex = require('knex')
 const fs = require('fs')
 const Objection = require('objection')
@@ -222,7 +221,12 @@ module.exports = {
     // Perform init tasks
 
     WIKI.logger.info(`Using database driver ${dbClient} for ${WIKI.config.db.type} [ OK ]`)
-    this.onReady = Promise.each(initTasksQueue, t => t()).return(true)
+    this.onReady = (async () => {
+      for (const task of initTasksQueue) {
+        await task()
+      }
+      return true
+    })()
 
     return {
       ...this,

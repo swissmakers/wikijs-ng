@@ -1,7 +1,6 @@
 const _ = require('lodash')
 const getos = require('getos')
 const os = require('os')
-const filesize = require('filesize')
 const path = require('path')
 const fs = require('fs-extra')
 const graphHelper = require('../../helpers/graph')
@@ -190,7 +189,7 @@ module.exports = {
       return os.platform()
     },
     ramTotal () {
-      return filesize(os.totalmem())
+      return `${(os.totalmem() / Math.pow(1024, 3)).toFixed(2)} GB`
     },
     sslDomain () {
       return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? WIKI.config.ssl.domain : null

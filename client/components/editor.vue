@@ -53,7 +53,7 @@
 
     v-snackbar(v-model='draftBannerShown', :timeout='-1', bottom)
       .body-2 {{$t('editor:draft.found', { defaultValue: 'An unsaved draft of this page was found.' })}}
-      .caption(v-if='draftFound') {{ draftFound.updatedAt | moment('calendar') }}
+      .caption(v-if='draftFound') {{ draftFound.updatedAt | date('calendar') }}
       template(v-slot:action='{ attrs }')
         v-btn(text, color='green lighten-2', v-bind='attrs', @click='restoreDraft') {{$t('editor:draft.restore', { defaultValue: 'Restore' })}}
         v-btn(text, color='orange lighten-2', v-bind='attrs', @click='discardDraftAction') {{$t('editor:draft.discard', { defaultValue: 'Discard' })}}
@@ -67,7 +67,6 @@ import _ from 'lodash'
 import gql from 'graphql-tag'
 import { get, sync } from 'vuex-pathify'
 import { AtomSpinner } from 'epic-spinners'
-import { Base64 } from 'js-base64'
 import { StatusIndicator } from 'vue-status-indicator'
 
 import editorStore from '../store/editor'
@@ -256,7 +255,7 @@ export default {
   mounted() {
     this.$store.set('editor/mode', this.initMode || 'create')
 
-    this.initContentParsed = this.initContent ? Base64.decode(this.initContent) : ''
+    this.initContentParsed = this.initContent ? Buffer.from(this.initContent, 'base64').toString('utf8') : ''
     this.$store.set('editor/content', this.initContentParsed)
     if (this.mode === 'create' && !this.initEditor) {
       _.delay(() => {

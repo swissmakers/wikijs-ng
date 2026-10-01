@@ -1,4 +1,4 @@
-const moment = require('moment')
+const { Duration } = require('luxon')
 const childProcess = require('child_process')
 const _ = require('lodash')
 const configHelper = require('../helpers/config')
@@ -43,7 +43,12 @@ class Job {
     this.finished = Promise.resolve()
     this.name = name
     this.immediate = immediate
-    this.schedule = moment.duration(schedule)
+    this.schedule = Duration.fromISO(schedule)
+    if (!this.schedule.isValid) {
+      // -> An invalid duration would make setTimeout fire immediately, over and over
+      WIKI.logger.warn(`Job ${name}: invalid schedule "${schedule}", using P1D instead.`)
+      this.schedule = Duration.fromISO('P1D')
+    }
     this.repeat = repeat
     this.worker = worker
   }
@@ -68,7 +73,7 @@ class Job {
    * @param {Object} data Job Data
    */
   enqueue(data) {
-    this.timeout = setTimeout(this.invoke.bind(this), this.schedule.asMilliseconds(), data)
+    this.timeout = setTimeout(this.invoke.bind(this), this.schedule.toMillis(), data)
   }
 
   /**

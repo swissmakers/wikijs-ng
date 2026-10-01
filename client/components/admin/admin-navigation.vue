@@ -273,7 +273,7 @@
 <script>
 import _ from 'lodash'
 import gql from 'graphql-tag'
-import { v4 as uuid } from 'uuid'
+import { nanoid } from 'nanoid/non-secure'
 
 import groupsQuery from 'gql/admin/users/users-query-groups.gql'
 
@@ -344,7 +344,7 @@ export default {
   methods: {
     addItem(kind) {
       let newItem = {
-        id: uuid(),
+        id: nanoid(),
         kind,
         visibilityMode: 'all',
         visibilityGroups: []

@@ -2,7 +2,6 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import VueClipboards from 'vue-clipboards'
 import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
 import { BatchHttpLink } from '@apollo/client/link/batch-http'
 import { onError } from '@apollo/client/link/error'
@@ -10,9 +9,6 @@ import VueApollo from 'vue-apollo'
 import Vuetify from 'vuetify/lib'
 import Velocity from 'velocity-animate'
 import Vuescroll from 'vuescroll/dist/vuescroll-native'
-import Hammer from 'hammerjs'
-import moment from 'moment-timezone'
-import VueMoment from 'vue-moment'
 import store from './store'
 import Cookies from 'js-cookie'
 
@@ -22,6 +18,7 @@ import Cookies from 'js-cookie'
 
 import boot from './modules/boot'
 import localization from './modules/localization'
+import datetime from './modules/datetime'
 
 // ====================================
 // Load Helpers
@@ -35,9 +32,6 @@ import { initials, bytes } from './helpers'
 
 window.WIKI = null
 window.boot = boot
-window.Hammer = Hammer
-
-moment.locale(siteConfig.lang)
 
 store.commit('user/REFRESH_AUTH')
 
@@ -117,17 +111,19 @@ window.graphQL = new ApolloClient({
 
 Vue.config.productionTip = false
 
+datetime.setLocale(siteConfig.lang)
+
 Vue.use(VueRouter)
 Vue.use(VueApollo)
-Vue.use(VueClipboards)
 Vue.use(localization.VueI18Next)
 Vue.use(Vuetify)
-Vue.use(VueMoment, { moment })
 Vue.use(Vuescroll)
 
 Vue.prototype.Velocity = Velocity
 
 Vue.filter('initials', initials)
+Vue.filter('date', datetime.formatDate)
+Vue.prototype.$datetime = datetime
 Vue.filter('bytes', bytes)
 
 // ====================================
@@ -221,17 +217,8 @@ let bootstrap = () => {
       }
     }),
     mounted () {
-      this.$moment.locale(siteConfig.lang)
-      if ((store.get('user/dateFormat') || '').length > 0) {
-        this.$moment.updateLocale(this.$moment.locale(), {
-          longDateFormat: {
-            'L': store.get('user/dateFormat')
-          }
-        })
-      }
-      if ((store.get('user/timezone') || '').length > 0) {
-        this.$moment.tz.setDefault(store.get('user/timezone'))
-      }
+      datetime.setDateFormat(store.get('user/dateFormat'))
+      datetime.setZone(store.get('user/timezone'))
     }
   })
 

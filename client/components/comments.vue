@@ -86,7 +86,7 @@
               v-icon.mr-3(small, @click='editComment(cm)') mdi-pencil
               v-icon(small, @click='deleteCommentConfirm(cm)') mdi-delete
             .comments-post-name.caption: strong {{cm.authorName}}
-            .comments-post-date.overline.grey--text {{cm.createdAt | moment('from') }} #[em(v-if='cm.createdAt !== cm.updatedAt') - {{$t('common:comments.modified', { reldate: $options.filters.moment(cm.updatedAt, 'from') })}}]
+            .comments-post-date.overline.grey--text {{cm.createdAt | date('from') }} #[em(v-if='cm.createdAt !== cm.updatedAt') - {{$t('common:comments.modified', { reldate: $options.filters.date(cm.updatedAt, 'from') })}}]
             .comments-post-content.mt-3(v-if='commentEditId !== cm.id', v-html='cm.render')
             .comments-post-editcontent.mt-3(v-else)
               v-textarea(

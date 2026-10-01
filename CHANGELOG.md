@@ -33,6 +33,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The PlantUML/Kroki diagram fences, the KaTeX/MathJax math parser, the module configuration forms of six admin pages, the page action menus (header and edit button) and the conflict dialogs of the editors each share one implementation now.
 - New unit tests for page permission rules, diagram and math rendering, and the shared helpers (`yarn test`).
 
+### Changed — dependencies
+
+- **moment.js replaced by luxon / native `Intl`** on the server and in the browser (moment, moment-timezone, vue-moment, moment-duration-format and the webpack time zone data plugin are gone). Dates use the browser's locale formats; the personal date format and time zone settings keep working. Recent dates read e.g. "Today, 14:30" instead of "Today at 2:30 PM".
+- **bluebird removed** (native promises), `uuid`, `filesize`, `js-base64`, `body-parser` (Express built-ins) removed, and 11 packages that were not used at all (`graphql-list-fields`, `remove-markdown`, `scim-query-filter-parser`, `xss`, `pg-hstore`, `vue2-animate`, `viz.js`, `vuex-persistedstate`, `filepond-plugin-file-validate-type`, `xterm`, `vue-clipboards`, `hammerjs`, `babel-jest`).
+- Client-only packages (`diff`, `diff2html`, `markdown-it-mark`) and the dev-server file watcher (`chokidar`) moved to the development dependencies, so they are no longer part of the production image.
+- KaTeX chemistry (`\ce`, `\pu`) uses KaTeX's bundled mhchem extension instead of a vendored 1,700-line copy (identical output); the underline plugin is shared between the server renderer and the editor preview.
+- **Elasticsearch 6.x is no longer supported** (end of life since 2022); 7.x and 8.x remain, new configurations default to 8.x.
+- The job scheduler falls back to a daily interval instead of firing continuously when a schedule is not a valid ISO 8601 duration.
+
 ### Removed — dead subsystems and legacy code
 
 - **Logging modules** (Airbrake, Bugsnag, Disk, Eventlog, Loggly, Logstash, New Relic, Papertrail, Raygun, Rollbar, Sentry, Syslog): their loader had been commented out, so none of them ever ran. Removed with the `loggers` table, the logging GraphQL API, the live-trail log stream and the whole GraphQL **WebSocket subscription endpoint** (`/graphql-subscriptions`), which only existed for it — plus the `@sentry/node`, `@opentelemetry/core`, `graphql-ws`, `graphql-subscriptions` and `ws` dependencies.

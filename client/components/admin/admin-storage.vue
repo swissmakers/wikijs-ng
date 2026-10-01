@@ -57,13 +57,13 @@
                     v-icon(color='white') mdi-check-circle
                   v-list-item-content
                     v-list-item-title.body-2 {{tgt.title}}
-                    v-list-item-subtitle.green--text.caption {{$t('admin:storage.lastSync', { time: $options.filters.moment(tgt.lastAttempt, 'from') })}}
+                    v-list-item-subtitle.green--text.caption {{$t('admin:storage.lastSync', { time: $options.filters.date(tgt.lastAttempt, 'from') })}}
                 template(v-else)
                   v-list-item-avatar(color='red')
                     v-icon(color='white') mdi-close-circle-outline
                   v-list-item-content
                     v-list-item-title.body-2 {{tgt.title}}
-                    v-list-item-subtitle.red--text.caption {{$t('admin:storage.lastSyncAttempt', { time: $options.filters.moment(tgt.lastAttempt, 'from') })}}
+                    v-list-item-subtitle.red--text.caption {{$t('admin:storage.lastSyncAttempt', { time: $options.filters.date(tgt.lastAttempt, 'from') })}}
                   v-list-item-action
                     v-menu
                       template(v-slot:activator='{ on }')
@@ -218,8 +218,7 @@
 
 <script>
 import _ from 'lodash'
-import moment from 'moment'
-import momentDurationFormatSetup from 'moment-duration-format'
+import datetime from '../../modules/datetime'
 
 import DurationPicker from '../common/duration-picker.vue'
 import { LoopingRhombusesSpinner } from 'epic-spinners'
@@ -228,8 +227,6 @@ import statusQuery from 'gql/admin/storage/storage-query-status.gql'
 import targetsQuery from 'gql/admin/storage/storage-query-targets.gql'
 import targetExecuteActionMutation from 'gql/admin/storage/storage-mutation-executeaction.gql'
 import targetsSaveMutation from 'gql/admin/storage/storage-mutation-save-targets.gql'
-
-momentDurationFormatSetup(moment)
 
 export default {
   components: {
@@ -296,7 +293,7 @@ export default {
     },
     getDefaultSchedule(val) {
       if (!val) { return 'N/A' }
-      return moment.duration(val).format('y [years], M [months], d [days], h [hours], m [minutes]')
+      return datetime.humanizeDuration(val)
     },
     async executeAction(targetKey, handler) {
       this.$store.commit(`loadingStart`, 'admin-storage-executeaction')

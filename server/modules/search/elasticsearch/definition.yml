@@ -14,8 +14,7 @@ props:
     enum:
       - '8.x'
       - '7.x'
-      - '6.x'
-    default: '7.x'
+    default: '8.x'
   hosts:
     type: String
     title: Host(s)

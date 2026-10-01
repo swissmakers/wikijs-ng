@@ -4,7 +4,6 @@ const pageHelper = require('../helpers/page')
 const commonHelper = require('../helpers/common')
 const _ = require('lodash')
 const CleanCSS = require('clean-css')
-const moment = require('moment')
 const qs = require('querystring')
 
 /* global WIKI */
@@ -482,10 +481,10 @@ router.get('/*', async (req, res, next) => {
         // -> Check Publishing State
         let pageIsPublished = page.isPublished
         if (pageIsPublished && !_.isEmpty(page.publishStartDate)) {
-          pageIsPublished = moment(page.publishStartDate).isSameOrBefore()
+          pageIsPublished = new Date(page.publishStartDate) <= new Date()
         }
         if (pageIsPublished && !_.isEmpty(page.publishEndDate)) {
-          pageIsPublished = moment(page.publishEndDate).isSameOrAfter()
+          pageIsPublished = new Date(page.publishEndDate) >= new Date()
         }
         if (!pageIsPublished && !effectivePermissions.pages.write) {
           _.set(res.locals, 'pageMeta.title', 'Unauthorized')

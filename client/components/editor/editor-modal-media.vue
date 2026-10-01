@@ -74,7 +74,7 @@
                       v-chip.ma-0(x-small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`')
                         .overline {{props.item.ext.toUpperCase().substring(1)}}
                     td.caption(v-if='$vuetify.breakpoint.mdAndUp') {{ props.item.fileSize | bytes }}
-                    td.caption(v-if='$vuetify.breakpoint.mdAndUp') {{ props.item.createdAt | moment('from') }}
+                    td.caption(v-if='$vuetify.breakpoint.mdAndUp') {{ props.item.createdAt | date('from') }}
                     td(v-if='$vuetify.breakpoint.smAndUp')
                       v-menu(offset-x, min-width='200')
                         template(v-slot:activator='{ on }')

@@ -89,7 +89,7 @@
             template(v-slot:item.fileSize='{ item }')
               span.caption {{ item.fileSize | bytes }}
             template(v-slot:item.updatedAt='{ item }')
-              span.caption {{ item.updatedAt | moment('calendar') }}
+              span.caption {{ item.updatedAt | date('calendar') }}
             template(v-slot:item.actions='{ item }')
               v-menu(offset-x, min-width='200')
                 template(v-slot:activator='{ on }')

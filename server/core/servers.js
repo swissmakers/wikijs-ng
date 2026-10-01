@@ -3,10 +3,13 @@ const http = require('http')
 const https = require('https')
 const { ApolloServer } = require('@apollo/server')
 const { expressMiddleware } = require('@as-integrations/express4')
-const Promise = require('bluebird')
 const _ = require('lodash')
 
 /* global WIKI */
+
+const closeServer = server => new Promise((resolve, reject) => {
+  server.close(err => err ? reject(err) : resolve())
+})
 
 module.exports = {
   servers: {
@@ -153,11 +156,11 @@ module.exports = {
   async stopServers () {
     this.closeConnections()
     if (this.servers.http) {
-      await Promise.fromCallback(cb => { this.servers.http.close(cb) })
+      await closeServer(this.servers.http)
       this.servers.http = null
     }
     if (this.servers.https) {
-      await Promise.fromCallback(cb => { this.servers.https.close(cb) })
+      await closeServer(this.servers.https)
       this.servers.https = null
     }
     if (this.servers.graph) {
@@ -173,14 +176,14 @@ module.exports = {
     switch (srv) {
       case 'http':
         if (this.servers.http) {
-          await Promise.fromCallback(cb => { this.servers.http.close(cb) })
+          await closeServer(this.servers.http)
           this.servers.http = null
         }
         this.startHTTP()
         break
       case 'https':
         if (this.servers.https) {
-          await Promise.fromCallback(cb => { this.servers.https.close(cb) })
+          await closeServer(this.servers.https)
           this.servers.https = null
         }
         this.startHTTPS()

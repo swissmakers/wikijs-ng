@@ -1,5 +1,4 @@
 const Model = require('objection').Model
-const moment = require('moment')
 
 /* global WIKI */
 
@@ -45,13 +44,13 @@ module.exports = class PageDraft extends Model {
   async $beforeUpdate(opt, context) {
     await super.$beforeUpdate(opt, context)
 
-    this.updatedAt = moment.utc().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
   async $beforeInsert(context) {
     await super.$beforeInsert(context)
 
-    this.createdAt = moment.utc().toISOString()
-    this.updatedAt = moment.utc().toISOString()
+    this.createdAt = new Date().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
 
   /**
