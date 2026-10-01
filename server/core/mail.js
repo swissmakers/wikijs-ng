@@ -60,12 +60,20 @@ module.exports = {
       subject: `${opts.subject} - ${WIKI.config.title}`,
       text: opts.text,
       html: _.get(this.templates, opts.template)({
-        logo: (WIKI.config.logoUrl.startsWith('http') ? '' : WIKI.config.host) + WIKI.config.logoUrl,
+        logo: this.getLogoUrl(),
         siteTitle: WIKI.config.title,
         copyright: WIKI.config.company.length > 0 ? WIKI.config.company : 'Powered by Wiki.js NG',
         ...opts.data
       })
     })
+  },
+  /**
+   * Absolute logo URL for e-mails. Most mail clients do not display SVG images,
+   * so the bundled SVG logo is replaced by its PNG icon.
+   */
+  getLogoUrl() {
+    const logoUrl = WIKI.config.logoUrl === '/_assets/svg/logo-swissmakers.svg' ? '/_assets/favicons/android-chrome-256x256.png' : WIKI.config.logoUrl
+    return (logoUrl.startsWith('http') ? '' : WIKI.config.host) + logoUrl
   },
   async loadTemplate(key) {
     if (_.has(this.templates, key)) { return }

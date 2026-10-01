@@ -3,6 +3,28 @@ const _ = require('lodash')
 
 /* global WIKI */
 
+/**
+ * Load the logged in user (guests are rejected)
+ */
+const getCurrentUser = async (context) => {
+  if (!context.req.user || context.req.user.id < 1 || context.req.user.id === 2) {
+    throw new WIKI.Error.AuthRequired()
+  }
+  const usr = await WIKI.models.users.query().findById(context.req.user.id)
+  if (!usr || !usr.isActive) {
+    throw new WIKI.Error.AuthAccountBanned()
+  }
+  return usr
+}
+
+/**
+ * 2FA is only checked at login for form based strategies (local, LDAP...)
+ */
+const isTFAAvailable = (usr) => {
+  const strategy = _.get(WIKI.auth.strategies, usr.providerKey, {})
+  return _.get(_.find(WIKI.data.authentication, ['key', strategy.strategyKey]), 'useForm', false) === true
+}
+
 module.exports = {
   Query: {
     async users() { return {} }
@@ -50,6 +72,9 @@ module.exports = {
       usr.password = ''
       usr.providerId = ''
       usr.tfaSecret = ''
+      usr.tfaIsActive = Boolean(usr.tfaIsActive)
+      usr.tfaAvailable = isTFAAvailable(usr)
+      usr.tfaEnforced = WIKI.config.auth.enforce2FA === true
 
       return usr
     },
@@ -169,6 +194,72 @@ module.exports = {
 
         return {
           responseResult: graphHelper.generateSuccess('User 2FA disabled successfully')
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
+    /**
+     * Start the 2FA setup for the current user: generates a secret and its QR code
+     */
+    async setupTFA (obj, args, context) {
+      try {
+        const usr = await getCurrentUser(context)
+        if (!isTFAAvailable(usr)) {
+          throw new WIKI.Error.AuthProviderInvalid()
+        }
+        if (usr.tfaIsActive) {
+          throw new Error('Two-factor authentication is already enabled.')
+        }
+        if (usr.providerKey === 'local') {
+          await usr.verifyPassword(args.password || '')
+        }
+        const qrImage = await usr.generateTFA()
+        const { tfaSecret } = await WIKI.models.users.query().select('tfaSecret').findById(usr.id)
+        return {
+          responseResult: graphHelper.generateSuccess('Scan the QR code and confirm with a security code.'),
+          qrImage,
+          secret: tfaSecret
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
+    /**
+     * Activate 2FA for the current user after verifying a security code
+     */
+    async confirmTFA (obj, args, context) {
+      try {
+        const usr = await getCurrentUser(context)
+        if (usr.tfaIsActive || !usr.tfaSecret) {
+          throw new WIKI.Error.AuthTFAInvalid()
+        }
+        if (!usr.verifyTFA(args.securityCode)) {
+          throw new WIKI.Error.AuthTFAFailed()
+        }
+        await usr.enableTFA()
+        return {
+          responseResult: graphHelper.generateSuccess('Two-factor authentication enabled.')
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
+    /**
+     * Disable 2FA for the current user (requires a valid security code)
+     */
+    async disableOwnTFA (obj, args, context) {
+      try {
+        const usr = await getCurrentUser(context)
+        if (WIKI.config.auth.enforce2FA) {
+          throw new Error('Two-factor authentication is enforced for all users.')
+        }
+        if (!usr.tfaIsActive || !usr.verifyTFA(args.securityCode)) {
+          throw new WIKI.Error.AuthTFAFailed()
+        }
+        await usr.disableTFA()
+        return {
+          responseResult: graphHelper.generateSuccess('Two-factor authentication disabled.')
         }
       } catch (err) {
         return graphHelper.generateError(err)

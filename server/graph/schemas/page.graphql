@@ -81,6 +81,11 @@ type PageQuery {
     locale: String!
   ): [PageLinkItem] @auth(requires: ["manage:system", "read:pages"])
 
+  backlinks(
+    path: String!
+    locale: String!
+  ): [PageBacklinkItem!]! @auth(requires: ["manage:system", "read:pages"])
+
   checkConflicts(
     id: Int!
     checkoutDate: Date!
@@ -352,6 +357,14 @@ type PageLinkItem {
   path: String!
   title: String!
   links: [String]!
+}
+
+type PageBacklinkItem {
+  id: Int!
+  path: String!
+  locale: String!
+  title: String!
+  description: String
 }
 
 type PageConflictLatest {

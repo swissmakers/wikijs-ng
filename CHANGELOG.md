@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [2.8.0] - Unreleased
 
+### Added — features that were half built
+
+- **Backlinks**: pages show which other pages link to them ("Pages linking here"), filtered by the reader's permissions (unpublished pages and templates only for editors). New `pages.backlinks` GraphQL query.
+- **Comment replies** (built-in comment provider): every comment has a *Reply* action; replies are shown indented below their comment (one level, replies to replies join the same thread). Deleting a comment also deletes its replies, and the confirmation says so.
+- **Self-service two-factor authentication**: users of form-based login methods (local, LDAP, …) can enable 2FA in their profile (QR code or manual key, confirmed with a code; local accounts confirm their password first) and disable it again with a valid code unless 2FA is enforced. New mutations `users.setupTFA`, `confirmTFA` and `disableOwnTFA` (rate limited).
+- **Content Security Policy** (Admin → Security): optional CSP header with a per-request nonce, *Report only* mode (default when enabling it) and additional directives, plus a preview of the effective policy. Scripts added through theme/page code injection, analytics and comment providers receive the nonce automatically. Off by default.
+- **Rerender a single page** from Admin → Pages → Actions (the menu entry was a "coming soon" stub).
+- **Welcome email** option when creating users in Admin → Users (the template was missing). Creating a user with this option now fails up front if mail is not configured, instead of creating the account and then failing.
+- The page footer shows when and by whom a page was created.
+
+### Security
+
+- The site configuration embedded in every page (`siteConfig`) can no longer break out of its `<script>` element (e.g. through a site title containing `</script>`).
+- E-mails use the PNG version of the bundled logo; most mail clients do not display SVG images.
+
 ### Changed — localization is fully offline
 
 - **Translations are bundled and never downloaded anymore.** English, German, French and Italian ship in `server/locales/` (listed in `server/locales/locales.yml`); the upstream locale service (`graph.requarks.io`) is no longer contacted at all. Removed: the daily locale sync job, the on-demand locale download (`downloadLocale` mutation, `fetch-graph-locale` job, GraphQL fetch helper), the `graphEndpoint` setting and the *Update Automatically* locale option.

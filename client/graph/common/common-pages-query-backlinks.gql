@@ -1,0 +1,11 @@
+query ($path: String!, $locale: String!) {
+  pages {
+    backlinks(path: $path, locale: $locale) {
+      id
+      path
+      locale
+      title
+      description
+    }
+  }
+}

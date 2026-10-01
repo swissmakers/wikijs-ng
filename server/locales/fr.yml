@@ -318,6 +318,8 @@ admin:
       restricted: Visible uniquement par les groupes sélectionnés…
   pages:
     title: Pages
+    rerender: Régénérer le rendu
+    rerenderSuccess: Page régénérée avec succès.
   rendering:
     subtitle: Configurer le pipeline de rendu des pages
     title: Rendu du contenu
@@ -354,6 +356,13 @@ admin:
     title: Sécurité
     uploads: Téléversements
     uploadsInfo: Ces paramètres ne concernent que Wiki.js. Si vous utilisez un reverse-proxy (par exemple nginx, apache, Cloudflare), vous devez également modifier ses paramètres pour qu'ils correspondent.
+    csp: Content Security Policy (CSP)
+    cspHint: Limite les scripts, styles, images et cadres que le navigateur peut charger. Le code injecté, les outils d’analyse et les fournisseurs de commentaires reçoivent automatiquement le nonce de la politique.
+    cspReportOnly: Signaler uniquement
+    cspReportOnlyHint: Les violations sont seulement signalées dans la console du navigateur au lieu d’être bloquées. Vérifiez la console sur toutes les pages avant de désactiver cette option.
+    cspDirectives: Directives supplémentaires
+    cspDirectivesHint: Une directive par ligne, p. ex. connect-src https://analytics.example.com. Les sources sont ajoutées à la politique par défaut.
+    cspPreview: 'Politique effective :'
   ssl:
     currentState: État actuel
     domain: Nom de domaine
@@ -515,6 +524,7 @@ admin:
     userUpdateSuccess: Utilisateur mis à jour avec succès.
     userVerifySuccess: L'utilisateur a été vérifié avec succès.
     verified: Vérifié
+    sendWelcomeEmail: Envoyer un e-mail de bienvenue
   utilities:
     authSubtitle: Divers outils d'authentification / utilisateurs
     authTitle: Authentification
@@ -708,6 +718,10 @@ common:
     updateComment: Mettre à jour le commentaire
     updateSuccess: Le commentaire a été mis à jour avec succès.
     viewDiscussion: Afficher la discussion
+    reply: Répondre
+    postReply: Répondre
+    replyPlaceholder: Écrire une réponse...
+    deleteRepliesWarn: Ses {{count}} réponses seront également supprimées.
   duration:
     days: Jour(s)
     every: Tous les
@@ -808,6 +822,8 @@ common:
     shareByEmail: Envoyer par e-mail
     linkCopied: Lien copié dans le presse-papiers.
     linkCopyFailed: Échec de la copie dans le presse-papiers.
+    createdOnBy: Créée le {{date}} par {{name}}
+    backlinks: Pages qui pointent ici
   pageSelector:
     createTitle: Sélectionnez l'emplacement de la nouvelle page
     folderEmptyWarning: Ce dossier est vide.
@@ -1031,6 +1047,18 @@ profile:
     provider: Fournisseur
     title: Authentification
     verifyPassword: Vérifier le nouveau mot de passe
+    tfa:
+      title: Authentification à deux facteurs (2FA)
+      enabled: Activée
+      disabled: Désactivée
+      hint: Exige un code d’une application d’authentification sur votre téléphone lors de la connexion.
+      enforced: La 2FA est obligatoire pour tous les utilisateurs de ce wiki.
+      enable: Activer la 2FA
+      disable: Désactiver la 2FA
+      scan: Scannez ce code QR avec votre application d’authentification, puis saisissez le code affiché.
+      manualKey: 'Ou saisissez cette clé manuellement :'
+      code: Code de sécurité
+      confirm: Confirmer et activer
   comments:
     title: Commentaires
   dateFormat: Format de date

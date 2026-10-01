@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const pageHelper = require('../helpers/page')
 const commonHelper = require('../helpers/common')
+const cspHelper = require('../helpers/csp')
 const _ = require('lodash')
 const CleanCSS = require('clean-css')
 const qs = require('querystring')
@@ -538,8 +539,8 @@ router.get('/*', async (req, res, next) => {
         res.render('page', {
           page,
           sidebar,
-          injectCode,
-          comments: commentTmpl,
+          injectCode: cspHelper.nonceSnippets(injectCode, res),
+          comments: cspHelper.nonceSnippets(commentTmpl, res),
           effectivePermissions,
           pageFilename
         })

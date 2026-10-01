@@ -393,6 +393,43 @@ module.exports = {
       })
     },
     /**
+     * FETCH PAGES LINKING TO A PAGE
+     */
+    async backlinks (obj, args, context, info) {
+      if (!WIKI.auth.checkAccess(context.req.user, ['read:pages'], { path: args.path, locale: args.locale })) {
+        throw new WIKI.Error.PageViewForbidden()
+      }
+      const sourceIds = _.uniq(_.map(await WIKI.models.pageLinks.query().select('pageId').where({
+        path: args.path,
+        localeCode: args.locale
+      }), 'pageId'))
+      if (sourceIds.length < 1) {
+        return []
+      }
+      const sources = await WIKI.models.pages.query()
+        .select('id', 'path', 'localeCode', 'title', 'description', 'isPublished', 'isTemplate')
+        .whereIn('id', sourceIds)
+        .withGraphFetched('tags')
+        .orderBy('title')
+      return sources.filter(page => {
+        const pageCtx = { path: page.path, locale: page.localeCode, tags: page.tags }
+        if (!WIKI.auth.checkAccess(context.req.user, ['read:pages'], pageCtx)) {
+          return false
+        }
+        // -> Unpublished pages and templates are only shown to users who can edit them
+        if (!page.isPublished || page.isTemplate) {
+          return WIKI.auth.checkAccess(context.req.user, ['write:pages'], pageCtx)
+        }
+        return true
+      }).map(page => ({
+        id: page.id,
+        path: page.path,
+        locale: page.localeCode,
+        title: page.title,
+        description: page.description
+      }))
+    },
+    /**
      * FETCH PAGE LINKS
      */
     async links (obj, args, context, info) {

@@ -97,6 +97,7 @@ import utilityContentMigrateLocaleMutation from 'gql/admin/utilities/utilities-m
 import utilityContentRebuildTreeMutation from 'gql/admin/utilities/utilities-mutation-content-rebuildtree.gql'
 
 import { SemipolarSpinner } from 'epic-spinners'
+import renderPageMutation from 'gql/common/common-pages-mutation-render.gql'
 
 /* global siteLangs, siteConfig */
 
@@ -193,20 +194,7 @@ export default {
           this.renderIndex++
           this.renderProgress = Math.round(this.renderIndex / this.renderTotal * 100)
           const respRaw = await this.$apollo.mutate({
-            mutation: gql`
-              mutation($id: Int!) {
-                pages {
-                  render(id: $id) {
-                    responseResult {
-                      succeeded
-                      errorCode
-                      slug
-                      message
-                    }
-                  }
-                }
-              }
-            `,
+            mutation: renderPageMutation,
             variables: {
               id: page.id
             }

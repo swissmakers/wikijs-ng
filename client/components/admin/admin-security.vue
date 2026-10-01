@@ -82,25 +82,38 @@
                     .caption Defines the duration for which the server should only deliver content through HTTPS.
                     .caption It's a good idea to start with small values and make sure that nothing breaks on your wiki before moving to longer values.
 
-                  //- v-divider.mt-3
-                  //- v-switch(
-                  //-   inset
-                  //-   label='Enforce CSP'
-                  //-   color='red darken-2'
-                  //-   v-model='config.securityCSP'
-                  //-   persistent-hint
-                  //-   hint='Restricts scripts to pre-approved content sources.'
-                  //-   disabled
-                  //-   )
-                  //- v-textarea.mt-5(
-                  //-   label='CSP Directives'
-                  //-   outlined
-                  //-   v-model='config.securityCSPDirectives'
-                  //-   prepend-icon='mdi-subdirectory-arrow-right'
-                  //-   persistent-hint
-                  //-   hint='One directive per line.'
-                  //-   disabled
-                  //- )
+                  v-divider.mt-3
+                  v-switch(
+                    inset
+                    :label='$t(`admin:security.csp`, { defaultValue: "Content Security Policy (CSP)" })'
+                    color='primary'
+                    v-model='config.securityCSP'
+                    persistent-hint
+                    :hint='$t(`admin:security.cspHint`, { defaultValue: "Restricts which scripts, styles, images and frames the browser may load. Injected code, analytics and comment providers receive the policy nonce automatically." })'
+                    )
+                  v-switch(
+                    inset
+                    :label='$t(`admin:security.cspReportOnly`, { defaultValue: "Report only" })'
+                    color='primary'
+                    v-model='config.securityCSPReportOnly'
+                    :disabled='!config.securityCSP'
+                    persistent-hint
+                    :hint='$t(`admin:security.cspReportOnlyHint`, { defaultValue: "Violations are only reported in the browser console instead of being blocked. Check the console on all pages before switching it off." })'
+                    )
+                  v-textarea.mt-5(
+                    :label='$t(`admin:security.cspDirectives`, { defaultValue: "Additional directives" })'
+                    outlined
+                    v-model='config.securityCSPDirectives'
+                    :disabled='!config.securityCSP'
+                    prepend-icon='mdi-subdirectory-arrow-right'
+                    persistent-hint
+                    :hint='$t(`admin:security.cspDirectivesHint`, { defaultValue: "One directive per line, e.g. connect-src https://analytics.example.com. Sources are added to the default policy." })'
+                    rows='3'
+                    auto-grow
+                    )
+                  .pl-11.mt-3(v-if='config.securityCSP && config.securityCSPPreview')
+                    .caption.grey--text {{ $t('admin:security.cspPreview', { defaultValue: 'Effective policy:' }) }}
+                    code.admin-security-csp-preview.caption {{ config.securityCSPPreview }}
 
             v-flex(lg6 xs12)
               v-card.animated.fadeInUp.wait-p2s
@@ -260,7 +273,9 @@ export default {
         securityHSTS: false,
         securityHSTSDuration: 0,
         securityCSP: false,
+        securityCSPReportOnly: true,
         securityCSPDirectives: '',
+        securityCSPPreview: '',
         authAutoLogin: false,
         authHideLocal: false,
         authLoginBgUrl: '',
@@ -305,6 +320,7 @@ export default {
               $securityHSTS: Boolean
               $securityHSTSDuration: Int
               $securityCSP: Boolean
+              $securityCSPReportOnly: Boolean
               $securityCSPDirectives: String
             ) {
               site {
@@ -327,6 +343,7 @@ export default {
                   securityHSTS: $securityHSTS,
                   securityHSTSDuration: $securityHSTSDuration,
                   securityCSP: $securityCSP,
+                  securityCSPReportOnly: $securityCSPReportOnly,
                   securityCSPDirectives: $securityCSPDirectives
                 ) {
                   responseResult {
@@ -358,6 +375,7 @@ export default {
             securityHSTS: _.get(this.config, 'securityHSTS', false),
             securityHSTSDuration: _.get(this.config, 'securityHSTSDuration', 0),
             securityCSP: _.get(this.config, 'securityCSP', false),
+            securityCSPReportOnly: _.get(this.config, 'securityCSPReportOnly', true),
             securityCSPDirectives: _.get(this.config, 'securityCSPDirectives', '')
           },
           watchLoading (isLoading) {
@@ -369,6 +387,7 @@ export default {
           message: 'Configuration saved successfully.',
           icon: 'check'
         })
+        await this.$apollo.queries.config.refetch()
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
@@ -410,7 +429,9 @@ export default {
               securityHSTS
               securityHSTSDuration
               securityCSP
+              securityCSPReportOnly
               securityCSPDirectives
+              securityCSPPreview
             }
           }
         }
@@ -426,5 +447,11 @@ export default {
 </script>
 
 <style lang='scss'>
-
+.admin-security-csp-preview {
+  display: block;
+  margin-top: 4px;
+  padding: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 </style>

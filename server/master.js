@@ -8,6 +8,7 @@ const { ConnectSessionKnexStore } = require('connect-session-knex')
 const favicon = require('serve-favicon')
 const path = require('path')
 const _ = require('lodash')
+const cspHelper = require('./helpers/csp')
 
 /* global WIKI */
 
@@ -161,7 +162,7 @@ module.exports = async () => {
       uploadMaxFileSize: WIKI.config.uploads.maxFileSize
     }
     res.locals.langs = await WIKI.models.locales.getNavLocales({ cache: true })
-    res.locals.analyticsCode = await WIKI.models.analytics.getCode({ cache: true })
+    res.locals.analyticsCode = cspHelper.nonceSnippets(await WIKI.models.analytics.getCode({ cache: true }), res)
     next()
   })
 

@@ -123,11 +123,68 @@
               )
               v-icon(:color='$vuetify.theme.dark ? "grey lighten-1" : "primary"') mdi-shield-lock
               .subheading.ml-3 {{ user.providerName }}
-            //- v-divider.mt-3
-            //- v-subheader.pl-0: span.subtitle-2 Two-Factor Authentication (2FA)
-            //- .caption.mb-2 2FA adds an extra layer of security by requiring a unique code generated on your smartphone when signing in.
-            //- v-btn(color='purple darken-4', disabled).ml-0 Enable 2FA
-            //- v-btn(color='purple darken-4', dark, depressed, disabled).ml-0 Disable 2FA
+            template(v-if='user.tfaAvailable')
+              v-divider.mt-3
+              v-subheader.pl-0: span.subtitle-2 {{$t('profile:auth.tfa.title', { defaultValue: 'Two-Factor Authentication (2FA)' })}}
+              .d-flex.align-center.mb-2
+                v-chip.mr-3(small, label, :color='user.tfaIsActive ? `success` : `grey`', dark)
+                  v-icon(left, small) {{ user.tfaIsActive ? 'mdi-shield-check' : 'mdi-shield-off-outline' }}
+                  span {{ user.tfaIsActive ? $t('profile:auth.tfa.enabled', { defaultValue: 'Enabled' }) : $t('profile:auth.tfa.disabled', { defaultValue: 'Disabled' }) }}
+                .caption {{ user.tfaEnforced ? $t('profile:auth.tfa.enforced', { defaultValue: '2FA is required for all users of this wiki.' }) : $t('profile:auth.tfa.hint', { defaultValue: 'Requires a code from an authenticator app on your phone when signing in.' }) }}
+              template(v-if='!user.tfaIsActive && !tfaSetup.qrImage')
+                v-text-field.mt-2(
+                  v-if='user.providerKey === `local`'
+                  v-model='tfaPassword'
+                  outlined
+                  dense
+                  hide-details
+                  type='password'
+                  autocomplete='current-password'
+                  prepend-inner-icon='mdi-form-textbox-password'
+                  :label='$t(`profile:auth.currentPassword`)'
+                  @keydown.enter='setupTFA'
+                  )
+                v-btn.mt-3.ml-0(color='primary', depressed, :loading='tfaLoading', @click='setupTFA')
+                  v-icon(left) mdi-shield-key-outline
+                  span {{$t('profile:auth.tfa.enable', { defaultValue: 'Enable 2FA' })}}
+              template(v-else-if='!user.tfaIsActive')
+                .body-2.mt-2 {{$t('profile:auth.tfa.scan', { defaultValue: 'Scan this QR code with your authenticator app, then enter the code it shows.' })}}
+                .profile-tfa-qr.my-3(v-html='tfaSetup.qrImage')
+                .caption {{$t('profile:auth.tfa.manualKey', { defaultValue: 'Or enter this key manually:' })}} #[code.profile-tfa-secret {{ tfaSetup.secret }}]
+                v-text-field.mt-3(
+                  v-model='tfaCode'
+                  outlined
+                  dense
+                  hide-details
+                  inputmode='numeric'
+                  autocomplete='one-time-code'
+                  maxlength='6'
+                  prepend-inner-icon='mdi-numeric'
+                  :label='$t(`profile:auth.tfa.code`, { defaultValue: `Security code` })'
+                  @keydown.enter='confirmTFA'
+                  )
+                .d-flex.mt-3
+                  v-btn(text, @click='cancelTFASetup') {{$t('common:actions.cancel')}}
+                  v-spacer
+                  v-btn(color='primary', depressed, :loading='tfaLoading', @click='confirmTFA')
+                    v-icon(left) mdi-check
+                    span {{$t('profile:auth.tfa.confirm', { defaultValue: 'Confirm and enable' })}}
+              template(v-else-if='!user.tfaEnforced')
+                v-text-field.mt-2(
+                  v-model='tfaCode'
+                  outlined
+                  dense
+                  hide-details
+                  inputmode='numeric'
+                  autocomplete='one-time-code'
+                  maxlength='6'
+                  prepend-inner-icon='mdi-numeric'
+                  :label='$t(`profile:auth.tfa.code`, { defaultValue: `Security code` })'
+                  @keydown.enter='disableTFA'
+                  )
+                v-btn.mt-3.ml-0(color='red darken-2', dark, depressed, :loading='tfaLoading', @click='disableTFA')
+                  v-icon(left) mdi-shield-off-outline
+                  span {{$t('profile:auth.tfa.disable', { defaultValue: 'Disable 2FA' })}}
             template(v-if='user.providerKey === `local`')
               form#change-password-form(@submit.prevent='changePassword')
                 v-divider.mt-3
@@ -379,6 +436,13 @@ export default {
       currentPass: '',
       newPass: '',
       verifyPass: '',
+      tfaLoading: false,
+      tfaPassword: '',
+      tfaCode: '',
+      tfaSetup: {
+        qrImage: '',
+        secret: ''
+      },
       editPop: {
         name: false,
         location: false,
@@ -428,6 +492,83 @@ export default {
     }
   },
   methods: {
+    /**
+     * Run a 2FA mutation and show its result
+     */
+    async runTFAMutation (mutation, variables, resultPath) {
+      this.tfaLoading = true
+      let result = null
+      try {
+        const respRaw = await this.$apollo.mutate({ mutation, variables })
+        result = _.get(respRaw, `data.users.${resultPath}`, {})
+        const resp = _.get(result, 'responseResult', {})
+        if (!resp.succeeded) {
+          throw new Error(resp.message)
+        }
+        this.$store.commit('showNotification', {
+          style: 'success',
+          message: resp.message,
+          icon: 'check'
+        })
+      } catch (err) {
+        this.$store.commit('pushGraphError', err)
+        result = null
+      }
+      this.tfaLoading = false
+      return result
+    },
+    async setupTFA () {
+      const result = await this.runTFAMutation(gql`
+        mutation ($password: String) {
+          users {
+            setupTFA(password: $password) {
+              responseResult { succeeded errorCode slug message }
+              qrImage
+              secret
+            }
+          }
+        }
+      `, { password: this.tfaPassword }, 'setupTFA')
+      if (result) {
+        this.tfaPassword = ''
+        this.tfaCode = ''
+        this.tfaSetup = { qrImage: result.qrImage, secret: result.secret }
+      }
+    },
+    cancelTFASetup () {
+      this.tfaSetup = { qrImage: '', secret: '' }
+      this.tfaCode = ''
+    },
+    async confirmTFA () {
+      const result = await this.runTFAMutation(gql`
+        mutation ($securityCode: String!) {
+          users {
+            confirmTFA(securityCode: $securityCode) {
+              responseResult { succeeded errorCode slug message }
+            }
+          }
+        }
+      `, { securityCode: _.trim(this.tfaCode) }, 'confirmTFA')
+      if (result) {
+        this.cancelTFASetup()
+        this.user.tfaIsActive = true
+      }
+    },
+    async disableTFA () {
+      const result = await this.runTFAMutation(gql`
+        mutation ($securityCode: String!) {
+          users {
+            disableOwnTFA(securityCode: $securityCode) {
+              responseResult { succeeded errorCode slug message }
+            }
+          }
+        }
+      `, { securityCode: _.trim(this.tfaCode) }, 'disableOwnTFA')
+      if (result) {
+        this.tfaCode = ''
+        this.user.tfaIsActive = false
+      }
+    },
     /**
      * Focus an input after delay
      */
@@ -622,6 +763,9 @@ export default {
               lastLoginAt
               groups
               pagesTotal
+              tfaIsActive
+              tfaAvailable
+              tfaEnforced
             }
           }
         }
@@ -637,5 +781,20 @@ export default {
 </script>
 
 <style lang='scss'>
+.profile-tfa-qr {
+  width: 200px;
+  height: 200px;
+  padding: 8px;
+  background-color: #FFF;
+  border-radius: 4px;
 
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.profile-tfa-secret {
+  word-break: break-all;
+}
 </style>

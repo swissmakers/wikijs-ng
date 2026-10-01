@@ -71,15 +71,16 @@
       )
       v-timeline-item.comments-post(
         color='pink darken-4'
-        large
-        v-for='cm of comments'
+        :large='!cm.isReply'
+        :small='cm.isReply'
+        :class='{ "is-reply": cm.isReply }'
+        v-for='cm of orderedComments'
         :key='`comment-` + cm.id'
         :id='`comment-post-id-` + cm.id'
         )
         template(v-slot:icon)
-          v-avatar(color='blue-grey')
-            //- v-img(src='http://i.pravatar.cc/64')
-            span.white--text.title {{cm.initials}}
+          v-avatar(color='blue-grey', :size='cm.isReply ? 32 : 48')
+            span.white--text(:class='cm.isReply ? `caption` : `title`') {{cm.initials}}
         v-card.elevation-1
           v-card-text
             .comments-post-actions(v-if='canChange(cm) && !isBusy && commentEditId === 0')
@@ -118,6 +119,30 @@
                   )
                   v-icon(left) mdi-comment
                   span.text-none {{$t('common:comments.updateComment')}}
+            .comments-post-replybtn.mt-2(v-if='permissions.write && commentEditId !== cm.id && replyToId !== cm.id')
+              v-btn.px-1(text, x-small, color='blue-grey', @click='startReply(cm)')
+                v-icon(left, x-small) mdi-reply
+                span.text-none {{$t('common:comments.reply', { defaultValue: 'Reply' })}}
+            .comments-post-replyform.mt-3(v-if='replyToId === cm.id')
+              v-textarea(
+                outlined
+                flat
+                auto-grow
+                dense
+                rows='2'
+                hide-details
+                autofocus
+                v-model='replyContent'
+                color='blue-grey darken-2'
+                :placeholder='$t(`common:comments.replyPlaceholder`, { defaultValue: `Write a reply...` })'
+                :background-color='$vuetify.theme.dark ? `grey darken-5` : `white`'
+              )
+              .d-flex.align-center.pt-2
+                v-spacer
+                v-btn.mr-2(text, small, color='blue-grey', @click='cancelReply') {{$t('common:actions.cancel')}}
+                v-btn(small, dark, depressed, color='blue-grey darken-2', @click='postReply', :loading='isBusy')
+                  v-icon(left, small) mdi-reply
+                  span.text-none {{$t('common:comments.postReply', { defaultValue: 'Reply' })}}
     .pt-5.text-center.body-2.blue-grey--text(v-else-if='permissions.write') {{$t('common:comments.beFirst')}}
     .text-center.body-2.blue-grey--text(v-else) {{$t('common:comments.none')}}
 
@@ -126,6 +151,7 @@
         .dialog-header.is-red {{$t('common:comments.deleteConfirmTitle')}}
         v-card-text.pt-5
           span {{$t('common:comments.deleteWarn')}}
+          .caption.mt-2(v-if='commentToDelete.replyCount > 0') {{ deleteRepliesWarn }}
           .caption: strong {{$t('common:comments.deletePermanentWarn')}}
         v-card-chin
           v-spacer
@@ -150,6 +176,8 @@ export default {
       guestName: '',
       guestEmail: '',
       commentToDelete: {},
+      replyToId: 0,
+      replyContent: '',
       commentEditId: 0,
       commentEditContent: null,
       deleteCommentDialogShown: false,
@@ -166,7 +194,29 @@ export default {
     permissions: get('page/effectivePermissions@comments'),
     isAuthenticated: get('user/authenticated'),
     userDisplayName: get('user/name'),
-    userId: get('user/id')
+    userId: get('user/id'),
+    /**
+     * Root comments in chronological order, each followed by its replies
+     */
+    orderedComments () {
+      const ids = new Set(this.comments.map(c => c.id))
+      const isRoot = c => !c.replyTo || !ids.has(c.replyTo)
+      const result = []
+      for (const root of this.comments.filter(isRoot)) {
+        const replies = this.comments.filter(c => !isRoot(c) && c.replyTo === root.id)
+        result.push({ ...root, isReply: false, replyCount: replies.length })
+        for (const reply of replies) {
+          result.push({ ...reply, isReply: true, replyCount: 0 })
+        }
+      }
+      return result
+    },
+    deleteRepliesWarn () {
+      return this.$t('common:comments.deleteRepliesWarn', {
+        count: this.commentToDelete.replyCount,
+        defaultValue: 'Its {{count}} replies will be deleted as well.'
+      })
+    }
   },
   methods: {
     /**
@@ -189,6 +239,7 @@ export default {
               comments {
                 list(locale: $locale, path: $path) {
                   id
+                  replyTo
                   render
                   authorId
                   authorName
@@ -225,6 +276,31 @@ export default {
      * Post New Comment
      */
     async postComment () {
+      const id = await this.submitComment({ content: this.newcomment, replyTo: 0 })
+      if (id) {
+        this.newcomment = ''
+      }
+    },
+    startReply (cm) {
+      this.replyToId = cm.id
+      this.replyContent = ''
+    },
+    cancelReply () {
+      this.replyToId = 0
+      this.replyContent = ''
+    },
+    async postReply () {
+      this.isBusy = true
+      const id = await this.submitComment({ content: this.replyContent, replyTo: this.replyToId })
+      if (id) {
+        this.cancelReply()
+      }
+      this.isBusy = false
+    },
+    /**
+     * Validate and post a comment or reply, returns the new comment ID
+     */
+    async submitComment ({ content, replyTo }) {
       let rules = {
         comment: {
           presence: {
@@ -253,7 +329,7 @@ export default {
         }
       }
       const validationResults = validate({
-        comment: this.newcomment,
+        comment: content,
         name: this.guestName,
         email: this.guestEmail
       }, rules, { format: 'flat' })
@@ -264,7 +340,7 @@ export default {
           message: validationResults[0],
           icon: 'alert'
         })
-        return
+        return 0
       }
 
       try {
@@ -298,8 +374,8 @@ export default {
           `,
           variables: {
             pageId: this.pageId,
-            replyTo: 0,
-            content: this.newcomment,
+            replyTo,
+            content,
             guestName: this.guestName,
             guestEmail: this.guestEmail
           }
@@ -312,11 +388,12 @@ export default {
             icon: 'check'
           })
 
-          this.newcomment = ''
+          const newId = _.get(resp, 'data.comments.create.id', 0)
           await this.fetch()
           this.$nextTick(() => {
-            this.$vuetify.goTo(`#comment-post-id-${_.get(resp, 'data.comments.create.id', 0)}`, this.scrollOpts)
+            this.$vuetify.goTo(`#comment-post-id-${newId}`, this.scrollOpts)
           })
+          return newId
         } else {
           throw new Error(_.get(resp, 'data.comments.create.responseResult.message', 'An unexpected error occurred.'))
         }
@@ -505,6 +582,11 @@ export default {
 <style lang="scss">
 .comments-post {
   position: relative;
+
+  &.is-reply {
+    margin-left: 48px;
+    padding-top: 0;
+  }
 
   &:hover {
     .comments-post-actions {

@@ -318,6 +318,8 @@ admin:
       restricted: Sichtbar für ausgewählte Gruppen...
   pages:
     title: Seiten
+    rerender: Neu rendern
+    rerenderSuccess: Seite erfolgreich neu gerendert.
   rendering:
     subtitle: Konfiguriere die Pipeline für die Seitendarstellung
     title: Rendering
@@ -354,6 +356,13 @@ admin:
     title: Sicherheit
     uploads: Uploads
     uploadsInfo: Diese Einstellungen betreffen nur Wiki.js. Wenn Sie einen Reverse-Proxy (z.B. nginx, apache, Cloudflare) verwenden, müssen Sie auch dessen Einstellungen entsprechend ändern.
+    csp: Content Security Policy (CSP)
+    cspHint: Schränkt ein, welche Skripte, Styles, Bilder und Frames der Browser laden darf. Eingefügter Code, Analytics und Kommentar-Anbieter erhalten die Nonce der Richtlinie automatisch.
+    cspReportOnly: Nur melden
+    cspReportOnlyHint: Verstösse werden nur in der Browser-Konsole gemeldet statt blockiert. Prüfen Sie die Konsole auf allen Seiten, bevor Sie dies ausschalten.
+    cspDirectives: Zusätzliche Direktiven
+    cspDirectivesHint: Eine Direktive pro Zeile, z. B. connect-src https://analytics.example.com. Die Quellen werden zur Standardrichtlinie hinzugefügt.
+    cspPreview: 'Wirksame Richtlinie:'
   ssl:
     currentState: Aktueller Status
     domain: Domain
@@ -515,6 +524,7 @@ admin:
     userUpdateSuccess: Benutzer erfolgreich aktualisiert.
     userVerifySuccess: Benutzer wurde erfolgreich verifiziert.
     verified: Verifiziert
+    sendWelcomeEmail: Willkommens-E-Mail senden
   utilities:
     authSubtitle: Werkzeuge für Authentifizierung / Benutzer
     authTitle: Authentifizierung
@@ -708,6 +718,10 @@ common:
     updateComment: Kommentar aktualisieren
     updateSuccess: Kommentar wurde erfolgreich aktualisiert.
     viewDiscussion: Diskussion ansehen
+    reply: Antworten
+    postReply: Antworten
+    replyPlaceholder: Antwort schreiben...
+    deleteRepliesWarn: Die {{count}} Antworten darauf werden ebenfalls gelöscht.
   duration:
     days: Tag(e)
     every: Alle
@@ -808,6 +822,8 @@ common:
     shareByEmail: Per E-Mail senden
     linkCopied: Link in die Zwischenablage kopiert.
     linkCopyFailed: Kopieren in die Zwischenablage fehlgeschlagen.
+    createdOnBy: Erstellt am {{date}} von {{name}}
+    backlinks: Seiten, die hierher verlinken
   pageSelector:
     createTitle: Neuen Seitenpfad auswählen
     folderEmptyWarning: Dieser Order ist leer.
@@ -1031,6 +1047,18 @@ profile:
     provider: Anbieter
     title: Authentifizierung
     verifyPassword: Neues Passwort bestätigen
+    tfa:
+      title: Zwei-Faktor-Authentifizierung (2FA)
+      enabled: Aktiv
+      disabled: Inaktiv
+      hint: Verlangt bei der Anmeldung einen Code aus einer Authenticator-App auf Ihrem Telefon.
+      enforced: 2FA ist für alle Benutzer dieses Wikis vorgeschrieben.
+      enable: 2FA aktivieren
+      disable: 2FA deaktivieren
+      scan: Scannen Sie diesen QR-Code mit Ihrer Authenticator-App und geben Sie den angezeigten Code ein.
+      manualKey: 'Oder diesen Schlüssel manuell eingeben:'
+      code: Sicherheitscode
+      confirm: Bestätigen und aktivieren
   comments:
     title: Kommentare
   dateFormat: Datumsformat

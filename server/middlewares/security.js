@@ -1,5 +1,8 @@
 /* global WIKI */
 
+const crypto = require('crypto')
+const cspHelper = require('../helpers/csp')
+
 /**
  * Security Middleware
  *
@@ -33,6 +36,17 @@ module.exports = function (req, res, next) {
   // -> Enforce HSTS
   if (WIKI.config.security.securityHSTS) {
     res.set('Strict-Transport-Security', `max-age=${WIKI.config.security.securityHSTSDuration}; includeSubDomains`)
+  }
+
+  // -> Content Security Policy (nonce is always set, templates add it to their scripts)
+  res.locals.nonce = crypto.randomBytes(16).toString('base64')
+  if (WIKI.config.security.securityCSP) {
+    const policy = cspHelper.buildPolicy({
+      nonce: res.locals.nonce,
+      security: WIKI.config.security,
+      iconset: WIKI.config.theming.iconset
+    })
+    res.set(policy.headerName, policy.value)
   }
 
   // -> Prevent Open Redirect from user provided URL

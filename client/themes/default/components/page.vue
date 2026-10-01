@@ -235,6 +235,7 @@
               div
                 .caption.grey--text {{$t('common:page.lastEditedBy')}}
                 .body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-1` : `grey--text text--darken-3`') {{ authorName }} · {{ updatedAt | date('calendar') }}
+                .caption.grey--text(v-if='createdLabel') {{ createdLabel }}
               v-spacer
               v-btn(
                 text
@@ -245,6 +246,7 @@
                 )
                 v-icon(left, small) mdi-history
                 span {{$t('common:header.history')}}
+            page-backlinks.mt-6(v-if='!printView', :locale='locale', :path='path')
             .comments-container#discussion(v-if='commentsEnabled && commentsPerms.read && !printView')
               .comments-header
                 v-icon.mr-2(dark) mdi-comment-text-outline
@@ -278,8 +280,9 @@ import { StatusIndicator } from 'vue-status-indicator'
 import Tabset from './tabset.vue'
 import NavSidebar from './nav-sidebar.vue'
 import PageBreadcrumbs from '@/components/common/page-breadcrumbs.vue'
+import PageBacklinks from './page-backlinks.vue'
 import pageActionsMixin from '@/helpers/page-actions'
-import { decodePermissions } from '@/helpers'
+import { decodePermissions, initials } from '@/helpers'
 import Prism from 'prismjs'
 import mermaid from 'mermaid'
 import { get, sync } from 'vuex-pathify'
@@ -328,6 +331,7 @@ export default {
   mixins: [pageActionsMixin],
   components: {
     NavSidebar,
+    PageBacklinks,
     PageBreadcrumbs,
     StatusIndicator
   },
@@ -363,6 +367,10 @@ export default {
     tags: {
       type: Array,
       default: () => ([])
+    },
+    creatorName: {
+      type: String,
+      default: ''
     },
     authorName: {
       type: String,
@@ -448,7 +456,18 @@ export default {
     editShortcutsObj: get('page/editShortcuts'),
     pageUrl () { return window.location.href },
     authorInitials () {
-      return _.take(_.trim(this.authorName).split(' ').map(w => w.charAt(0).toUpperCase()), 2).join('')
+      return initials(this.authorName)
+    },
+    createdLabel () {
+      if (!this.createdAt || (this.createdAt === this.updatedAt && (!this.creatorName || this.creatorName === this.authorName))) {
+        return ''
+      }
+      return this.$t('common:page.createdOnBy', {
+        date: this.$options.filters.date(this.createdAt, 'LL'),
+        name: this.creatorName || this.authorName,
+        defaultValue: 'Created on {{date}} by {{name}}',
+        interpolation: { escapeValue: false }
+      })
     },
     upBtnPosition () {
       if (this.$vuetify.breakpoint.mdAndUp) {

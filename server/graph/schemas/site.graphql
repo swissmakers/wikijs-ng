@@ -57,6 +57,7 @@ type SiteMutation {
     securityHSTS: Boolean
     securityHSTSDuration: Int
     securityCSP: Boolean
+    securityCSPReportOnly: Boolean
     securityCSPDirectives: String
     uploadMaxFileSize: Int
     uploadMaxFiles: Int
@@ -104,7 +105,9 @@ type SiteConfig {
   securityHSTS: Boolean
   securityHSTSDuration: Int
   securityCSP: Boolean
+  securityCSPReportOnly: Boolean
   securityCSPDirectives: String
+  securityCSPPreview: String
   uploadMaxFileSize: Int
   uploadMaxFiles: Int
   uploadScanSVG: Boolean

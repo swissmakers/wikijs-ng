@@ -39,6 +39,7 @@ module.exports = {
           const comments = await WIKI.models.comments.query().where('pageId', page.id).orderBy('createdAt')
           return comments.map(c => ({
             ...c,
+            replyTo: c.replyTo || 0,
             authorName: c.name,
             authorEmail: c.email,
             authorIP: c.ip

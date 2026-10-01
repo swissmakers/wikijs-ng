@@ -47,6 +47,10 @@
                 v-list-item-icon
                   v-icon(color='indigo') mdi-history
                 v-list-item-title View History
+              v-list-item(@click='rerenderPage', :disabled='loading')
+                v-list-item-icon
+                  v-icon(color='indigo') mdi-cached
+                v-list-item-title {{ $t('admin:pages.rerender', { defaultValue: 'Rerender' }) }}
               v-dialog(v-model='deletePageDialog', max-width='500')
                 template(v-slot:activator='{ on }')
                   v-list-item(v-on='on')
@@ -147,6 +151,7 @@ import { StatusIndicator } from 'vue-status-indicator'
 
 import pageQuery from 'gql/admin/pages/pages-query-single.gql'
 import deletePageMutation from 'gql/common/common-pages-mutation-delete.gql'
+import renderPageMutation from 'gql/common/common-pages-mutation-render.gql'
 
 export default {
   components: {
@@ -186,11 +191,30 @@ export default {
       this.$store.commit(`loadingStop`, 'page-delete')
     },
     async rerenderPage() {
-      this.$store.commit('showNotification', {
-        style: 'indigo',
-        message: `Coming soon...`,
-        icon: 'directions_boat'
-      })
+      this.loading = true
+      this.$store.commit(`loadingStart`, 'page-render')
+      try {
+        const resp = await this.$apollo.mutate({
+          mutation: renderPageMutation,
+          variables: {
+            id: this.page.id
+          }
+        })
+        if (_.get(resp, 'data.pages.render.responseResult.succeeded', false)) {
+          this.$store.commit('showNotification', {
+            style: 'success',
+            message: this.$t('admin:pages.rerenderSuccess', { defaultValue: 'Page rendered successfully.' }),
+            icon: 'check'
+          })
+          await this.$apollo.queries.page.refetch()
+        } else {
+          throw new Error(_.get(resp, 'data.pages.render.responseResult.message', this.$t('common:error.unexpected')))
+        }
+      } catch (err) {
+        this.$store.commit('pushGraphError', err)
+      }
+      this.$store.commit(`loadingStop`, 'page-render')
+      this.loading = false
     }
   },
   apollo: {

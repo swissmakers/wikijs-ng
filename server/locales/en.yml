@@ -318,6 +318,8 @@ admin:
       restricted: Visible to select groups...
   pages:
     title: Pages
+    rerender: Rerender
+    rerenderSuccess: Page rendered successfully.
   rendering:
     subtitle: Configure the page rendering pipeline
     title: Rendering
@@ -354,6 +356,13 @@ admin:
     title: Security
     uploads: Uploads
     uploadsInfo: These settings only affect Wiki.js. If you're using a reverse-proxy (e.g. nginx, apache, Cloudflare), you must also change its settings to match.
+    csp: Content Security Policy (CSP)
+    cspHint: Restricts which scripts, styles, images and frames the browser may load. Injected code, analytics and comment providers receive the policy nonce automatically.
+    cspReportOnly: Report only
+    cspReportOnlyHint: Violations are only reported in the browser console instead of being blocked. Check the console on all pages before switching it off.
+    cspDirectives: Additional directives
+    cspDirectivesHint: One directive per line, e.g. connect-src https://analytics.example.com. Sources are added to the default policy.
+    cspPreview: 'Effective policy:'
   ssl:
     currentState: Current State
     domain: Domain
@@ -515,6 +524,7 @@ admin:
     userUpdateSuccess: User updated successfully.
     userVerifySuccess: User has been verified successfully.
     verified: Verified
+    sendWelcomeEmail: Send a welcome email
   utilities:
     authSubtitle: Various tools for authentication / users
     authTitle: Authentication
@@ -708,6 +718,10 @@ common:
     updateComment: Update Comment
     updateSuccess: Comment was updated successfully.
     viewDiscussion: View Discussion
+    reply: Reply
+    postReply: Reply
+    replyPlaceholder: Write a reply...
+    deleteRepliesWarn: Its {{count}} replies will be deleted as well.
   duration:
     days: Day(s)
     every: Every
@@ -808,6 +822,8 @@ common:
     shareByEmail: Send by email
     linkCopied: Link copied to clipboard.
     linkCopyFailed: Failed to copy to clipboard.
+    createdOnBy: Created on {{date}} by {{name}}
+    backlinks: Pages linking here
   pageSelector:
     createTitle: Select New Page Location
     folderEmptyWarning: This folder is empty.
@@ -1031,6 +1047,18 @@ profile:
     provider: Provider
     title: Authentication
     verifyPassword: Confirm New Password
+    tfa:
+      title: Two-Factor Authentication (2FA)
+      enabled: Enabled
+      disabled: Disabled
+      hint: Requires a code from an authenticator app on your phone when signing in.
+      enforced: 2FA is required for all users of this wiki.
+      enable: Enable 2FA
+      disable: Disable 2FA
+      scan: Scan this QR code with your authenticator app, then enter the code it shows.
+      manualKey: 'Or enter this key manually:'
+      code: Security code
+      confirm: Confirm and enable
   comments:
     title: Comments
   dateFormat: Date Format

@@ -25,13 +25,13 @@ html(lang=siteConfig.lang)
     link(rel='manifest', href='/_assets/manifest.json')
 
     //- Site Properties
-    script.
-      var siteConfig = !{JSON.stringify(siteConfig)}
-      var siteLangs = !{JSON.stringify(langs)}
+    script(nonce=nonce).
+      var siteConfig = !{JSON.stringify(siteConfig).replace(/</g, '\\u003c')}
+      var siteLangs = !{JSON.stringify(langs).replace(/</g, '\\u003c')}
 
     //- Dev Mode Warning
     if devMode
-      script.
+      script(nonce=nonce).
         siteConfig.devMode = true
 
     //- Icon Set
@@ -62,6 +62,7 @@ html(lang=siteConfig.lang)
     script(
       type='text/javascript'
       src='<%= htmlWebpackPlugin.files.js[index] %>'
+      nonce=nonce
       )
     <% } %>
 

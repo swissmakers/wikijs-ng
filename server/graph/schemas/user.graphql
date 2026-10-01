@@ -99,6 +99,18 @@ type UserMutation {
     current: String!
     new: String!
   ): UserTokenResponse
+
+  setupTFA(
+    password: String
+  ): UserTFASetupResponse @rateLimit(limit: 5, duration: 60)
+
+  confirmTFA(
+    securityCode: String!
+  ): DefaultResponse @rateLimit(limit: 5, duration: 60)
+
+  disableOwnTFA(
+    securityCode: String!
+  ): DefaultResponse @rateLimit(limit: 5, duration: 60)
 }
 
 # -----------------------------------------------
@@ -168,6 +180,15 @@ type UserProfile {
   lastLoginAt: Date
   groups: [String]!
   pagesTotal: Int!
+  tfaIsActive: Boolean!
+  tfaAvailable: Boolean!
+  tfaEnforced: Boolean!
+}
+
+type UserTFASetupResponse {
+  responseResult: ResponseStatus!
+  qrImage: String
+  secret: String
 }
 
 type UserTokenResponse {

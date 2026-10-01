@@ -18,12 +18,12 @@ html
     link(rel='manifest', href='/_assets/manifest.json')
 
     //- Site Lang
-    script.
-      var siteConfig = !{JSON.stringify({ title: config.title })}
+    script(nonce=nonce).
+      var siteConfig = !{JSON.stringify({ title: config.title }).replace(/</g, '\\u003c')}
 
     //- Dev Mode Warning
     if devMode
-      script.
+      script(nonce=nonce).
         siteConfig.devMode = true
 
     //- CSS
@@ -40,6 +40,7 @@ html
     script(
       type='text/javascript'
       src='<%= htmlWebpackPlugin.files.js[index] %>'
+      nonce=nonce
       )
     <% } %>
 

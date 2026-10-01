@@ -108,6 +108,16 @@ module.exports = class Comment extends Model {
       throw new WIKI.Error.PageNotFound()
     }
 
+    // -> Replies must target a comment of the same page; threads are kept to one level
+    replyTo = _.toSafeInteger(replyTo)
+    if (replyTo > 0) {
+      const parent = await WIKI.data.commentProvider.getCommentById(replyTo)
+      if (!parent || parent.pageId !== page.id) {
+        throw new WIKI.Error.InputInvalid('Invalid comment to reply to.')
+      }
+      replyTo = parent.replyTo > 0 ? parent.replyTo : parent.id
+    }
+
     // -> Process by comment provider
     return WIKI.data.commentProvider.create({
       page,

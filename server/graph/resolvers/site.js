@@ -1,4 +1,5 @@
 const graphHelper = require('../../helpers/graph')
+const cspHelper = require('../../helpers/csp')
 const _ = require('lodash')
 
 /* global WIKI */
@@ -24,6 +25,7 @@ module.exports = {
         ...WIKI.config.editShortcuts,
         ...WIKI.config.features,
         ...WIKI.config.security,
+        securityCSPPreview: cspHelper.buildPolicy({ security: WIKI.config.security, iconset: WIKI.config.theming.iconset }).value,
         authAutoLogin: WIKI.config.auth.autoLogin,
         authEnforce2FA: WIKI.config.auth.enforce2FA,
         authHideLocal: WIKI.config.auth.hideLocal,
@@ -112,6 +114,7 @@ module.exports = {
           securityHSTS: _.get(args, 'securityHSTS', WIKI.config.security.securityHSTS),
           securityHSTSDuration: _.get(args, 'securityHSTSDuration', WIKI.config.security.securityHSTSDuration),
           securityCSP: _.get(args, 'securityCSP', WIKI.config.security.securityCSP),
+          securityCSPReportOnly: _.get(args, 'securityCSPReportOnly', WIKI.config.security.securityCSPReportOnly),
           securityCSPDirectives: _.get(args, 'securityCSPDirectives', WIKI.config.security.securityCSPDirectives)
         }
 

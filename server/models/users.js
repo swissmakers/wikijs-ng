@@ -623,6 +623,11 @@ module.exports = class User extends Model {
       throw new WIKI.Error.InputInvalid(validation[0])
     }
 
+    // A welcome email can only be sent with a mail configuration (checked before creating the account)
+    if (sendWelcomeEmail && !WIKI.mail.transport) {
+      throw new WIKI.Error.MailNotConfigured()
+    }
+
     // Check if email already exists
     const usr = await WIKI.models.users.query().findOne({ email, providerKey })
     if (!usr) {

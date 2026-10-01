@@ -82,6 +82,7 @@ defaults:
       securityHSTS: false
       securityHSTSDuration: 300
       securityCSP: false
+      securityCSPReportOnly: true
       securityCSPDirectives: ''
     server:
       sslRedir: false
