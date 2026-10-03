@@ -4,7 +4,7 @@ All notable changes to **wikijs-ng** (fork of [Requarks/wiki](https://github.com
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.8.0] - Unreleased
+## [2.8.0] - 2026-10-03
 
 ### Added — following changes
 
