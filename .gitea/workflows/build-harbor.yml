@@ -20,7 +20,7 @@ jobs:
         env:
           CYPRESS_INSTALL_BINARY: 0
         run: |
-          npm install --global yarn@1
+          command -v yarn >/dev/null || npm install --global yarn@1
           yarn install --frozen-lockfile --non-interactive
 
       - name: Lint and unit tests
