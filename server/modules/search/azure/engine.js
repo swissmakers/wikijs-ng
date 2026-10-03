@@ -6,23 +6,23 @@ const { Transform } = require('node:stream')
 /* global WIKI */
 
 module.exports = {
-  async activate() {
+  async activate () {
     // not used
   },
-  async deactivate() {
+  async deactivate () {
     // not used
   },
   /**
    * INIT
    */
-  async init() {
-    WIKI.logger.info(`(SEARCH/AZURE) Initializing...`)
+  async init () {
+    WIKI.logger.info('(SEARCH/AZURE) Initializing...')
     this.client = new SearchService(this.config.serviceName, this.config.adminKey)
 
     // -> Create Search Index
     const indexes = await this.client.indexes.list()
     if (!_.find(_.get(indexes, 'result.value', []), ['name', this.config.indexName])) {
-      WIKI.logger.info(`(SEARCH/AZURE) Creating index...`)
+      WIKI.logger.info('(SEARCH/AZURE) Creating index...')
       await this.client.indexes.create({
         name: this.config.indexName,
         fields: [
@@ -79,7 +79,7 @@ module.exports = {
         ]
       })
     }
-    WIKI.logger.info(`(SEARCH/AZURE) Initialization completed.`)
+    WIKI.logger.info('(SEARCH/AZURE) Initialization completed.')
   },
   /**
    * QUERY
@@ -87,7 +87,7 @@ module.exports = {
    * @param {String} q Query
    * @param {Object} opts Additional options
    */
-  async query(q, opts) {
+  async query (q, opts) {
     try {
       let suggestions = []
       const results = await this.client.indexes.use(this.config.indexName).search({
@@ -137,7 +137,7 @@ module.exports = {
    *
    * @param {Object} page Page to create
    */
-  async created(page) {
+  async created (page) {
     await this.client.indexes.use(this.config.indexName).index([
       {
         id: page.hash,
@@ -154,7 +154,7 @@ module.exports = {
    *
    * @param {Object} page Page to update
    */
-  async updated(page) {
+  async updated (page) {
     await this.client.indexes.use(this.config.indexName).index([
       {
         id: page.hash,
@@ -171,7 +171,7 @@ module.exports = {
    *
    * @param {Object} page Page to delete
    */
-  async deleted(page) {
+  async deleted (page) {
     await this.client.indexes.use(this.config.indexName).index([
       {
         '@search.action': 'delete',
@@ -184,7 +184,7 @@ module.exports = {
    *
    * @param {Object} page Page to rename
    */
-  async renamed(page) {
+  async renamed (page) {
     await this.client.indexes.use(this.config.indexName).index([
       {
         '@search.action': 'delete',
@@ -205,8 +205,8 @@ module.exports = {
   /**
    * REBUILD INDEX
    */
-  async rebuild() {
-    WIKI.logger.info(`(SEARCH/AZURE) Rebuilding Index...`)
+  async rebuild () {
+    WIKI.logger.info('(SEARCH/AZURE) Rebuilding Index...')
     await pipeline(
       WIKI.models.knex.column({ id: 'hash' }, 'path', { locale: 'localeCode' }, 'title', 'description', 'render').select().from('pages').where({
         isPublished: true,
@@ -227,6 +227,6 @@ module.exports = {
       }),
       this.client.indexes.use(this.config.indexName).createIndexingStream()
     )
-    WIKI.logger.info(`(SEARCH/AZURE) Index rebuilt successfully.`)
+    WIKI.logger.info('(SEARCH/AZURE) Index rebuilt successfully.')
   }
 }

@@ -2,8 +2,8 @@ key: default
 title: Default
 description: Built-in advanced comments tool.
 author: requarks.io
-logo: https://static.requarks.io/logo/wikijs-butterfly.svg
-website: https://wiki.js.org
+logo: /_assets/svg/modules/wikijs-ng.svg
+website: https://github.com/swissmakers/wikijs-ng
 codeTemplate: false
 isAvailable: true
 props:
@@ -21,3 +21,14 @@ props:
     hint: 'Minimum delay (in seconds) between comments per account. Note that all guests are considered as a single account.'
     maxWidth: 400
     order: 2
+  moderation:
+    type: String
+    title: Moderation
+    default: 'off'
+    hint: 'Hold new comments until a moderator (manage:comments) approves them: off, guests (only comments of guests) or all.'
+    enum:
+      - 'off'
+      - guests
+      - all
+    maxWidth: 400
+    order: 3

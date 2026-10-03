@@ -58,9 +58,9 @@
                 td: strong {{ props.item.name }}
                 td {{ props.item.email }}
                 td {{ getStrategyName(props.item.providerKey) }}
-                td {{ props.item.createdAt | moment('from') }}
+                td {{ props.item.createdAt | date('from') }}
                 td
-                  span(v-if='props.item.lastLoginAt') {{ props.item.lastLoginAt | moment('from') }}
+                  span(v-if='props.item.lastLoginAt') {{ props.item.lastLoginAt | date('from') }}
                   em.grey--text(v-else) Never
                 td.text-right
                   v-icon.mr-3(v-if='props.item.isSystem') mdi-lock-outline
@@ -90,7 +90,7 @@ export default {
     StatusIndicator,
     UserCreate
   },
-  data() {
+  data () {
     return {
       selected: [],
       pagination: 1,
@@ -119,10 +119,10 @@ export default {
     }
   },
   methods: {
-    createUser() {
+    createUser () {
       this.isCreateDialogShown = true
     },
-    async refresh(notify = true) {
+    async refresh (notify = true) {
       await this.$apollo.queries.users.refetch()
       if (notify) {
         this.$store.commit('showNotification', {
@@ -132,7 +132,7 @@ export default {
         })
       }
     },
-    getStrategyName(key) {
+    getStrategyName (key) {
       return (_.find(this.strategies, ['key', key]) || {}).displayName || key
     }
   },

@@ -2,7 +2,7 @@ key: plausible
 title: Plausible Analytics
 description: Simple, open-source, lightweight and privacy-friendly web analytics alternative to Google Analytics.
 author: requarks.io
-logo: https://cdn.js.wiki/images/3rdparty/plausible.svg
+logo: /_assets/svg/modules/plausible.svg
 website: https://plausible.io
 isAvailable: true
 props:

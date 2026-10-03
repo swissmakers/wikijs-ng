@@ -69,8 +69,9 @@
 
 <script>
 import _ from 'lodash'
-import gql from 'graphql-tag'
 import { get } from 'vuex-pathify'
+import { pagePath } from '@/helpers'
+import pagesTreeQuery from 'gql/common/common-pages-query-tree.gql'
 
 /* global siteLangs */
 
@@ -93,7 +94,7 @@ export default {
       default: 'MIXED'
     }
   },
-  data() {
+  data () {
     return {
       currentMode: 'custom',
       currentItems: [],
@@ -113,12 +114,12 @@ export default {
     switchMode (mode) {
       this.currentMode = mode
       window.localStorage.setItem('navPref', mode)
-      if (mode === `browse` && this.loadedCache.length < 1) {
+      if (mode === 'browse' && this.loadedCache.length < 1) {
         this.loadFromCurrentPath()
       }
     },
     async fetchBrowseItems (item) {
-      this.$store.commit(`loadingStart`, 'browse-load')
+      this.$store.commit('loadingStart', 'browse-load')
       if (!item) {
         item = this.currentParent
       }
@@ -143,53 +144,28 @@ export default {
       this.currentParent = item
 
       const resp = await this.$apollo.query({
-        query: gql`
-          query ($parent: Int, $locale: String!) {
-            pages {
-              tree(parent: $parent, mode: ALL, locale: $locale) {
-                id
-                path
-                title
-                isFolder
-                pageId
-                parent
-                locale
-              }
-            }
-          }
-        `,
+        query: pagesTreeQuery,
         fetchPolicy: 'cache-first',
         variables: {
           parent: item.id,
+          mode: 'ALL',
           locale: this.locale
         }
       })
       this.loadedCache = _.union(this.loadedCache, [item.id])
       this.currentItems = _.get(resp, 'data.pages.tree', [])
-      this.$store.commit(`loadingStop`, 'browse-load')
+      this.$store.commit('loadingStop', 'browse-load')
     },
-    async loadFromCurrentPath() {
-      this.$store.commit(`loadingStart`, 'browse-load')
+    async loadFromCurrentPath () {
+      this.$store.commit('loadingStart', 'browse-load')
       const resp = await this.$apollo.query({
-        query: gql`
-          query ($path: String, $locale: String!) {
-            pages {
-              tree(path: $path, mode: ALL, locale: $locale, includeAncestors: true) {
-                id
-                path
-                title
-                isFolder
-                pageId
-                parent
-                locale
-              }
-            }
-          }
-        `,
+        query: pagesTreeQuery,
         fetchPolicy: 'cache-first',
         variables: {
           path: this.path,
-          locale: this.locale
+          mode: 'ALL',
+          locale: this.locale,
+          includeAncestors: true
         }
       })
       const items = _.get(resp, 'data.pages.tree', [])
@@ -210,16 +186,16 @@ export default {
           }
           this.parents = [this.currentParent, ...folderAncestors.reverse()]
           this.currentParent = _.last(this.parents)
-          this.$store.commit(`loadingStop`, 'browse-load')
+          this.$store.commit('loadingStop', 'browse-load')
           return this.fetchBrowseItems(curFolder)
         }
         console.warn('Could not find current page in page tree listing!')
-        this.$store.commit(`loadingStop`, 'browse-load')
+        this.$store.commit('loadingStop', 'browse-load')
         return
       }
 
       let curParentId = curPage.parent
-      let invertedAncestors = []
+      const invertedAncestors = []
       while (curParentId) {
         const curParent = _.find(items, ['id', curParentId])
         if (!curParent) {
@@ -234,10 +210,10 @@ export default {
 
       this.loadedCache = [curPage.parent]
       this.currentItems = _.filter(items, ['parent', curPage.parent])
-      this.$store.commit(`loadingStop`, 'browse-load')
+      this.$store.commit('loadingStop', 'browse-load')
     },
     goHome () {
-      window.location.assign(siteLangs.length > 0 ? `/${this.locale}/home` : '/')
+      window.location.assign(siteLangs.length > 0 ? pagePath(this.locale, 'home') : '/')
     }
   },
   mounted () {

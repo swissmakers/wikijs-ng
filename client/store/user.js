@@ -8,7 +8,6 @@ const state = {
   name: '',
   pictureUrl: '',
   localeCode: '',
-  defaultEditor: '',
   timezone: '',
   dateFormat: '',
   appearance: '',
@@ -23,7 +22,7 @@ export default {
   state,
   mutations: {
     ...make.mutations(state),
-    REFRESH_AUTH(st) {
+    REFRESH_AUTH (st) {
       const jwtCookie = Cookies.get('jwt')
       if (jwtCookie) {
         try {
@@ -36,7 +35,6 @@ export default {
           st.timezone = jwtData.tz || Intl.DateTimeFormat().resolvedOptions().timeZone || ''
           st.dateFormat = jwtData.df || ''
           st.appearance = jwtData.ap || ''
-          // st.defaultEditor = jwtData.defaultEditor
           st.permissions = jwtData.permissions
           st.iat = jwtData.iat
           st.exp = jwtData.exp

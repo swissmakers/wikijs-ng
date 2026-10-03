@@ -9,7 +9,7 @@ const mustacheRegExp = /(\{|&#x7b;?){2}(.+?)(\}|&#x7d;?){2}/i
 /* global WIKI */
 
 module.exports = {
-  async render() {
+  async render () {
     let $ = cheerio.load(this.input, {
       decodeEntities: true
     })
@@ -22,7 +22,7 @@ module.exports = {
     // STEP: PRE
     // --------------------------------
 
-    for (let child of _.reject(this.children, ['step', 'post'])) {
+    for (const child of _.reject(this.children, ['step', 'post'])) {
       const renderer = require(`../${_.kebabCase(child.key)}/renderer.js`)
       await renderer.init($, child.config)
     }
@@ -31,7 +31,7 @@ module.exports = {
     // Detect internal / external links
     // --------------------------------
 
-    let internalRefs = []
+    const internalRefs = []
     const reservedPrefixes = /^\/[a-z]\//i
     const exactReservedPaths = /^\/[a-z]$/i
 
@@ -63,9 +63,9 @@ module.exports = {
 
         // -> Check for system prefix
         if (reservedPrefixes.test(href) || exactReservedPaths.test(href)) {
-          $(elm).addClass(`is-system-link`)
+          $(elm).addClass('is-system-link')
         } else if (href.indexOf('.') >= 0) {
-          $(elm).addClass(`is-asset-link`)
+          $(elm).addClass('is-asset-link')
         } else {
           let pagePath = null
 
@@ -111,10 +111,10 @@ module.exports = {
             path: pagePath.path
           })
 
-          $(elm).addClass(`is-internal-link`)
+          $(elm).addClass('is-internal-link')
         }
       } else {
-        $(elm).addClass(`is-external-link`)
+        $(elm).addClass('is-external-link')
         if (this.config.openExternalLinkNewTab) {
           $(elm).attr('target', '_blank')
           $(elm).attr('rel', this.config.relAttributeExternalLink)
@@ -156,9 +156,9 @@ module.exports = {
         if (_.some(results, r => {
           return r.localeCode === hrefObj.locale && r.path === hrefObj.path
         })) {
-          $(elm).addClass(`is-valid-page`)
+          $(elm).addClass('is-valid-page')
         } else {
-          $(elm).addClass(`is-invalid-page`)
+          $(elm).addClass('is-invalid-page')
         }
       })
 
@@ -199,7 +199,7 @@ module.exports = {
     // Add header handles
     // --------------------------------
 
-    let headers = []
+    const headers = []
     $('h1,h2,h3,h4,h5,h6').each((i, elm) => {
       let headerSlug = uslug($(elm).text())
       // -> If custom ID is defined, try to use that instead
@@ -238,7 +238,7 @@ module.exports = {
     // --------------------------------
 
     $('body').contents().toArray().forEach(item => {
-      if (item && item.type === 'text' && item.parent.name === 'body' && item.data !== `\n` && item.data !== `\r`) {
+      if (item && item.type === 'text' && item.parent.name === 'body' && item.data !== '\n' && item.data !== '\r') {
         $(item).wrap('<div></div>')
       }
     })
@@ -259,7 +259,7 @@ module.exports = {
 
     let output = decodeEscape($.html('body').replace('<body>', '').replace('</body>', ''))
 
-    for (let child of _.sortBy(_.filter(this.children, ['step', 'post']), ['order'])) {
+    for (const child of _.sortBy(_.filter(this.children, ['step', 'post']), ['order'])) {
       const renderer = require(`../${_.kebabCase(child.key)}/renderer.js`)
       output = await renderer.init(output, child.config)
     }

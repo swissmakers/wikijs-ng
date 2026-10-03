@@ -2,7 +2,7 @@ key: rocketchat
 title: Rocket.chat
 description: Communicate and collaborate with your team, share files, chat in real-time, or switch to video/audio conferencing.
 author: requarks.io
-logo: https://static.requarks.io/logo/rocketchat.svg
+logo: /_assets/svg/modules/rocketchat.svg
 color: red accent-3
 website: https://rocket.chat/
 isAvailable: true

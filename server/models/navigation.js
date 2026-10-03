@@ -7,8 +7,8 @@ const _ = require('lodash')
  * Navigation model
  */
 module.exports = class Navigation extends Model {
-  static get tableName() { return 'navigation' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'navigation' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -16,20 +16,20 @@ module.exports = class Navigation extends Model {
       required: ['key'],
 
       properties: {
-        key: {type: 'string'},
-        config: {type: 'array', items: {type: 'object'}}
+        key: { type: 'string' },
+        config: { type: 'array', items: { type: 'object' } }
       }
     }
   }
 
-  static async getTree({ cache = false, locale = 'en', groups = [], bypassAuth = false } = {}) {
+  static async getTree ({ cache = false, locale = 'en', groups = [], bypassAuth = false } = {}) {
     if (cache) {
       const navTreeCached = await WIKI.cache.get(`nav:sidebar:${locale}`)
       if (navTreeCached) {
         return bypassAuth ? navTreeCached : WIKI.models.navigation.getAuthorizedItems(navTreeCached, groups)
       }
     }
-    const navTree = await WIKI.models.navigation.query().findOne('key', `site`)
+    const navTree = await WIKI.models.navigation.query().findOne('key', 'site')
     if (navTree) {
       // Check for pre-2.3 format
       if (_.has(navTree.config[0], 'kind')) {
@@ -59,7 +59,7 @@ module.exports = class Navigation extends Model {
     }
   }
 
-  static getAuthorizedItems(tree = [], groups = []) {
+  static getAuthorizedItems (tree = [], groups = []) {
     return _.filter(tree, leaf => {
       return leaf.visibilityMode === 'all' || _.intersection(leaf.visibilityGroups, groups).length > 0
     })

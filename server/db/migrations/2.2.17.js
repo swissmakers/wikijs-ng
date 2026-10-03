@@ -12,7 +12,7 @@ exports.up = async knex => {
       sqlVersionDate = 'UPDATE h1 SET "versionDate" = COALESCE((SELECT TOP 1 prev."createdAt" FROM "pageHistory" prev WHERE prev."pageId" = h1."pageId" AND prev.id < h1.id ORDER BY prev.id DESC), h1."createdAt") FROM "pageHistory" h1'
       break
     case 'mysql':
-    case 'mariadb':
+    case 'mariadb': {
       // -> Fix for 2.2.50 failed migration
       const pageHistoryColumns = await knex.schema.raw('SHOW COLUMNS FROM pageHistory')
       if (_.some(pageHistoryColumns[0], ['Field', 'versionDate'])) {
@@ -21,8 +21,9 @@ exports.up = async knex => {
         console.info('versionDate column dropped successfully.')
       }
 
-      sqlVersionDate = `UPDATE pageHistory AS h1 INNER JOIN pageHistory AS h2 ON h2.id = (SELECT prev.id FROM (SELECT * FROM pageHistory) AS prev WHERE prev.pageId = h1.pageId AND prev.id < h1.id ORDER BY prev.id DESC LIMIT 1) SET h1.versionDate = h2.createdAt`
+      sqlVersionDate = 'UPDATE pageHistory AS h1 INNER JOIN pageHistory AS h2 ON h2.id = (SELECT prev.id FROM (SELECT * FROM pageHistory) AS prev WHERE prev.pageId = h1.pageId AND prev.id < h1.id ORDER BY prev.id DESC LIMIT 1) SET h1.versionDate = h2.createdAt'
       break
+    }
     // case 'mariadb':
     //   sqlVersionDate = `UPDATE pageHistory AS h1 INNER JOIN pageHistory AS h2 ON h2.id = (SELECT prev.id FROM pageHistory AS prev WHERE prev.pageId = h1.pageId AND prev.id < h1.id ORDER BY prev.id DESC LIMIT 1) SET h1.versionDate = h2.createdAt`
     //   break

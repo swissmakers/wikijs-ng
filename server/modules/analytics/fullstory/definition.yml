@@ -2,7 +2,7 @@ key: fullstory
 title: FullStory
 description: FullStory is your digital experience analytics platform for on-the-fly funnels, pixel-perfect replay, custom events, heat maps, advanced search, Dev Tools, and more.
 author: requarks.io
-logo: https://static.requarks.io/logo/fullstory.svg
+logo: /_assets/svg/modules/fullstory.svg
 website: https://www.fullstory.com
 isAvailable: true
 props:

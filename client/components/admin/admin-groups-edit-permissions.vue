@@ -38,7 +38,7 @@ export default {
       default: () => ({})
     }
   },
-  data() {
+  data () {
     return {
       permissions: [
         {
@@ -216,8 +216,8 @@ export default {
   },
   computed: {
     group: {
-      get() { return this.value },
-      set(val) { this.$set('input', val) }
+      get () { return this.value },
+      set (val) { this.$set('input', val) }
     }
   }
 }

@@ -21,17 +21,17 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return { }
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     }
   },
   methods: {
-    async discard() {
+    async discard () {
       this.isShown = false
       this.$emit('discard', true)
     }

@@ -30,15 +30,15 @@ import utilityCacheFlushCacheMutation from 'gql/admin/utilities/utilities-mutati
 import utilityCacheFlushUploadsMutation from 'gql/admin/utilities/utilities-mutation-cache-flushuploads.gql'
 
 export default {
-  data() {
+  data () {
     return {
       loading: false
     }
   },
   methods: {
-    async flushCache() {
+    async flushCache () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-cache-flushCache')
+      this.$store.commit('loadingStart', 'admin-utilities-cache-flushCache')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -58,12 +58,12 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-cache-flushCache')
+      this.$store.commit('loadingStop', 'admin-utilities-cache-flushCache')
       this.loading = false
     },
-    async flushUploads() {
+    async flushUploads () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-utilities-cache-flushUploads')
+      this.$store.commit('loadingStart', 'admin-utilities-cache-flushUploads')
 
       try {
         const respRaw = await this.$apollo.mutate({
@@ -83,7 +83,7 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
 
-      this.$store.commit(`loadingStop`, 'admin-utilities-cache-flushUploads')
+      this.$store.commit('loadingStop', 'admin-utilities-cache-flushUploads')
       this.loading = false
     },
     async flushClientLocaleCache () {

@@ -9,7 +9,7 @@ const _ = require('lodash')
 
 module.exports = {
   init (passport, conf) {
-    let githubConfig = {
+    const githubConfig = {
       clientID: conf.clientId,
       clientSecret: conf.clientSecret,
       callbackURL: conf.callbackURL,

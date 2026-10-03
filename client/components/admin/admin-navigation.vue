@@ -273,7 +273,7 @@
 <script>
 import _ from 'lodash'
 import gql from 'graphql-tag'
-import { v4 as uuid } from 'uuid'
+import { nanoid } from 'nanoid/non-secure'
 
 import groupsQuery from 'gql/admin/users/users-query-groups.gql'
 
@@ -285,7 +285,7 @@ export default {
   components: {
     draggable
   },
-  data() {
+  data () {
     return {
       selectPageModal: false,
       trees: [],
@@ -342,9 +342,9 @@ export default {
     }
   },
   methods: {
-    addItem(kind) {
+    addItem (kind) {
       let newItem = {
-        id: uuid(),
+        id: nanoid(),
         kind,
         visibilityMode: 'all',
         visibilityGroups: []
@@ -353,27 +353,27 @@ export default {
         case 'link':
           newItem = {
             ...newItem,
-            label: this.$t('navigation.untitled', { kind: this.$t(`navigation.link`) }),
+            label: this.$t('navigation.untitled', { kind: this.$t('navigation.link') }),
             icon: 'mdi-chevron-right',
             targetType: 'home',
             target: ''
           }
           break
         case 'header':
-          newItem.label = this.$t('navigation.untitled', { kind: this.$t(`navigation.header`) })
+          newItem.label = this.$t('navigation.untitled', { kind: this.$t('navigation.header') })
           break
       }
       this.currentTree = [...this.currentTree, newItem]
       this.current = newItem
     },
-    deleteItem(item) {
+    deleteItem (item) {
       this.currentTree = _.pull(this.currentTree, item)
       this.current = {}
     },
-    selectItem(item) {
+    selectItem (item) {
       this.current = item
     },
-    selectPage() {
+    selectPage () {
       this.selectPageModal = true
     },
     selectPageHandle ({ path, locale }) {
@@ -383,8 +383,8 @@ export default {
       this.copyFromLocaleDialogIsShown = false
       this.currentTree = [...this.currentTree, ..._.get(_.find(this.trees, ['locale', this.copyFromLocaleCode]), 'items', null) || []]
     },
-    async save() {
-      this.$store.commit(`loadingStart`, 'admin-navigation-save')
+    async save () {
+      this.$store.commit('loadingStart', 'admin-navigation-save')
       try {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -426,9 +426,9 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-navigation-save')
+      this.$store.commit('loadingStop', 'admin-navigation-save')
     },
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.trees.refetch()
       this.current = {}
       this.$store.commit('showNotification', {

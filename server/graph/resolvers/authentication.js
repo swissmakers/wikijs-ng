@@ -51,23 +51,14 @@ module.exports = {
      */
     async activeStrategies (obj, args, context, info) {
       let strategies = await WIKI.models.authentication.getStrategies()
+      // -> Skip strategies whose module has been removed (kept in DB while users reference them)
+      strategies = strategies.filter(stg => _.some(WIKI.data.authentication, ['key', stg.strategyKey]))
       strategies = strategies.map(stg => {
         const strategyInfo = _.find(WIKI.data.authentication, ['key', stg.strategyKey]) || {}
         return {
           ...stg,
           strategy: strategyInfo,
-          config: _.sortBy(_.transform(stg.config, (res, value, key) => {
-            const configData = _.get(strategyInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(stg.config, strategyInfo.props)
         }
       })
       return args.enabledOnly ? _.filter(strategies, 'isEnabled') : strategies
@@ -205,10 +196,7 @@ module.exports = {
             displayName: str.displayName,
             order: str.order,
             isEnabled: str.isEnabled,
-            config: _.reduce(str.config, (result, value, key) => {
-              _.set(result, `${value.key}`, _.get(JSON.parse(value.value), 'v', null))
-              return result
-            }, {}),
+            config: graphHelper.kvToModuleConfig(str.config),
             selfRegistration: str.selfRegistration,
             domainWhitelist: { v: str.domainWhitelist },
             autoEnrollGroups: { v: str.autoEnrollGroups }

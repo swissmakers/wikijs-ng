@@ -25,7 +25,7 @@ module.exports = {
     /**
      * FETCH A SINGLE GROUP
      */
-    async single(obj, args) {
+    async single (obj, args) {
       return WIKI.models.groups.query().findById(args.id)
     }
   },

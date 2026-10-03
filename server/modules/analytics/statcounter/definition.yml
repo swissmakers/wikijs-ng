@@ -2,7 +2,7 @@ key: statcounter
 title: StatCounter
 description: See how Statcounter's easy-to-use features give you everything you need to understand your visitors and increase your website traffic.
 author: requarks.io
-logo: https://static.requarks.io/logo/statcountr.svg
+logo: /_assets/svg/modules/statcountr.svg
 website: https://statcounter.com/
 isAvailable: true
 props:

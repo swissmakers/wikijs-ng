@@ -1,7 +1,7 @@
 <template lang='pug'>
   v-app(:dark='$vuetify.theme.dark').history
     nav-header
-    v-content
+    v-main
       v-toolbar(color='primary', dark)
         .subheading Viewing history of #[strong /{{path}}]
         template(v-if='$vuetify.breakpoint.mdAndUp')
@@ -31,7 +31,7 @@
                 )
                 v-card.radius-7(flat, :class='trailBgColor(ph.actionType)')
                   v-toolbar(flat, :color='trailBgColor(ph.actionType)', height='40')
-                    .caption(:title='$options.filters.moment(ph.versionDate, `LLL`)') {{ ph.versionDate | moment('ll') }}
+                    .caption(:title='$options.filters.date(ph.versionDate, `LLL`)') {{ ph.versionDate | date('ll') }}
                     v-divider.mx-3(vertical)
                     .caption(v-if='ph.actionType === `edit`') Edited by #[strong {{ ph.authorName }}]
                     .caption(v-else-if='ph.actionType === `move`') Moved from #[strong {{ph.valueBefore}}] to #[strong {{ph.valueAfter}}] by #[strong {{ ph.authorName }}]
@@ -116,7 +116,7 @@
         .dialog-header.is-orange {{$t('history:restore.confirmTitle')}}
         v-card-text.pa-4
           i18next(tag='span', path='history:restore.confirmText')
-            strong(place='date') {{ restoreTarget.versionDate | moment('LLL') }}
+            strong(place='date') {{ restoreTarget.versionDate | date('LLL') }}
         v-card-actions
           v-spacer
           v-btn(text, @click='isRestoreConfirmDialogShown = false', :disabled='restoreLoading') {{$t('common:actions.cancel')}}
@@ -134,6 +134,7 @@ import * as Diff2Html from 'diff2html'
 import { createPatch } from 'diff'
 import _ from 'lodash'
 import gql from 'graphql-tag'
+import { decodePermissions } from '@/helpers'
 
 export default {
   i18nOptions: { namespaces: 'history' },
@@ -322,12 +323,12 @@ export default {
     this.target = this.cache[0]
 
     if (this.effectivePermissions) {
-      this.$store.set('page/effectivePermissions', JSON.parse(Buffer.from(this.effectivePermissions, 'base64').toString()))
+      this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
   },
   methods: {
     async loadVersion (versionId) {
-      this.$store.commit(`loadingStart`, 'history-version-' + versionId)
+      this.$store.commit('loadingStart', 'history-version-' + versionId)
       const resp = await this.$apollo.query({
         query: gql`
           query ($pageId: Int!, $versionId: Int!) {
@@ -361,7 +362,7 @@ export default {
           pageId: this.pageId
         }
       })
-      this.$store.commit(`loadingStop`, 'history-version-' + versionId)
+      this.$store.commit('loadingStop', 'history-version-' + versionId)
       const page = _.get(resp, 'data.pages.version', null)
       if (page) {
         this.cache.push(page)
@@ -385,7 +386,7 @@ export default {
     },
     async restoreConfirm () {
       this.restoreLoading = true
-      this.$store.commit(`loadingStart`, 'history-restore')
+      this.$store.commit('loadingStart', 'history-restore')
       try {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -427,15 +428,15 @@ export default {
           icon: 'alert'
         })
       }
-      this.$store.commit(`loadingStop`, 'history-restore')
+      this.$store.commit('loadingStop', 'history-restore')
       this.restoreLoading = false
     },
     branchOff (versionId) {
       const pathParts = this.path.split('/')
       this.branchOffOpts = {
-        versionId: versionId,
+        versionId,
         locale: this.locale,
-        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + `/new-page` : `new-page`,
+        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + '/new-page' : 'new-page',
         modal: true
       }
     },

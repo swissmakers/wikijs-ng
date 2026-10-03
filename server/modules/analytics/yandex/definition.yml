@@ -2,7 +2,7 @@ key: yandex
 title: Yandex Metrica
 description: From traffic trends to mouse movements – get a comprehensive understanding of your online audience and drive business growth.
 author: requarks.io
-logo: https://static.requarks.io/logo/yandex.svg
+logo: /_assets/svg/modules/yandex.svg
 website: https://metrica.yandex.com
 isAvailable: true
 props:

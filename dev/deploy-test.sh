@@ -52,7 +52,8 @@ cmd_build() {
   echo ">> Building $IMAGE..."
   local runner=()
   if [ -n "$BUILD_MEM" ] && command -v systemd-run >/dev/null 2>&1 && [ "$(id -u)" -eq 0 ]; then
-    runner=(systemd-run --scope -p "MemoryMax=$BUILD_MEM" -p CPUQuota=300%)
+    # -> No swap for the build: on a memory-starved host swapping freezes everything else
+    runner=(systemd-run --scope -p "MemoryMax=$BUILD_MEM" -p MemorySwapMax=0 -p CPUQuota=300%)
   fi
   # --format docker: OCI images silently drop the HEALTHCHECK instruction
   "${runner[@]}" "$PODMAN" build --format docker \
@@ -79,7 +80,10 @@ refresh_snapshot_db() {
   echo ">> Snapshot mode: copying $src -> $dst (production is only read)"
   dump="$(mktemp /tmp/wikijs-snapshot-XXXX.sql)"
   db_admin dump --single-transaction "$src" > "$dump"
-  db_admin "" -e "DROP DATABASE IF EXISTS \`$dst\`; CREATE DATABASE \`$dst\`;"
+  # -> The copy needs the source's charset (new tables inherit it, e.g. utf8mb4 for emoji)
+  local charset collation
+  read -r charset collation < <(db_admin "" -N -B -e "SELECT DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '$src';")
+  db_admin "" -e "DROP DATABASE IF EXISTS \`$dst\`; CREATE DATABASE \`$dst\` CHARACTER SET ${charset:-utf8mb4} COLLATE ${collation:-utf8mb4_general_ci};"
   # Grant for every host entry the app user actually has (a '%' entry may not exist)
   db_admin "" -N -B -e "SELECT Host FROM mysql.user WHERE User='${DB_USER:?DB_USER must be set in snapshot mode}';" | while read -r dbhost; do
     echo "   granting on $dst to '${DB_USER}'@'$dbhost'"

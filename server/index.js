@@ -11,7 +11,7 @@ const { DateTime } = require('luxon')
 // Init WIKI instance
 // ----------------------------------------
 
-let WIKI = {
+const WIKI = {
   IS_DEBUG: process.env.NODE_ENV === 'development',
   IS_MASTER: true,
   ROOTPATH: process.cwd(),

@@ -33,9 +33,6 @@
     v-main(ref='content')
       template(v-if='path !== `home`')
         v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-3`', flat, dense, v-if='$vuetify.breakpoint.smAndUp')
-          //- v-btn.pl-0(v-if='$vuetify.breakpoint.xsOnly', flat, @click='toggleNavigation')
-          //-   v-icon(color='grey darken-2', left) menu
-          //-   span Navigation
           page-breadcrumbs(:locale='locale', :path='path')
           template(v-if='!isPublished')
             v-spacer
@@ -153,6 +150,7 @@
             v-card.page-shortcuts-card(flat)
               v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-3`', flat, dense)
                 v-spacer
+                page-follow(:page-id='pageId', :locale='locale', :path='path')
                 v-menu(offset-y, bottom, min-width='300')
                   template(v-slot:activator='{ on: menu }')
                     v-tooltip(bottom)
@@ -169,6 +167,11 @@
                     v-btn(icon, tile, v-on='on', @click='print', :aria-label='$t(`common:page.printFormat`)')
                       v-icon(:color='printView ? `primary` : `grey`') mdi-printer
                   span {{$t('common:page.printFormat')}}
+                v-tooltip(bottom)
+                  template(v-slot:activator='{ on }')
+                    v-btn(icon, tile, v-on='on', @click='exportPdf', :aria-label='$t(`common:page.exportPdf`, { defaultValue: "Export as PDF" })')
+                      v-icon(color='grey') mdi-file-pdf-box
+                  span {{$t('common:page.exportPdf', { defaultValue: 'Export as PDF' })}}
                 v-spacer
 
           v-flex.page-col-content(
@@ -202,78 +205,19 @@
                       :aria-label='$t(`common:page.editPage`)'
                       )
                       v-icon mdi-pencil
-                  v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasReadHistoryPermission')
+                  v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-for='action of pageActions', :key='action.key')
                     template(v-slot:activator='{ on }')
                       v-btn(
                         fab
                         small
-                        color='white'
-                        light
+                        :color='action.isDanger ? `red` : `white`'
+                        :light='!action.isDanger'
+                        :dark='action.isDanger'
                         v-on='on'
-                        @click='pageHistory'
+                        @click='$root.$emit(action.key)'
                         )
-                        v-icon(size='20') mdi-history
-                    span {{$t('common:header.history')}}
-                  v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasReadSourcePermission')
-                    template(v-slot:activator='{ on }')
-                      v-btn(
-                        fab
-                        small
-                        color='white'
-                        light
-                        v-on='on'
-                        @click='pageSource'
-                        )
-                        v-icon(size='20') mdi-code-tags
-                    span {{$t('common:header.viewSource')}}
-                  v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasWritePagesPermission')
-                    template(v-slot:activator='{ on }')
-                      v-btn(
-                        fab
-                        small
-                        color='white'
-                        light
-                        v-on='on'
-                        @click='pageConvert'
-                        )
-                        v-icon(size='20') mdi-lightning-bolt
-                    span {{$t('common:header.convert')}}
-                  v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasWritePagesPermission')
-                    template(v-slot:activator='{ on }')
-                      v-btn(
-                        fab
-                        small
-                        color='white'
-                        light
-                        v-on='on'
-                        @click='pageDuplicate'
-                        )
-                        v-icon(size='20') mdi-content-duplicate
-                    span {{$t('common:header.duplicate')}}
-                  v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasManagePagesPermission')
-                    template(v-slot:activator='{ on }')
-                      v-btn(
-                        fab
-                        small
-                        color='white'
-                        light
-                        v-on='on'
-                        @click='pageMove'
-                        )
-                        v-icon(size='20') mdi-content-save-move-outline
-                    span {{$t('common:header.move')}}
-                  v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasDeletePagesPermission')
-                    template(v-slot:activator='{ on }')
-                      v-btn(
-                        fab
-                        dark
-                        small
-                        color='red'
-                        v-on='on'
-                        @click='pageDelete'
-                        )
-                        v-icon(size='20') mdi-trash-can-outline
-                    span {{$t('common:header.delete')}}
+                        v-icon(size='20') {{ action.icon }}
+                    span {{ action.label }}
               span {{$t('common:page.editPage')}}
             v-alert.mb-5(v-if='!isPublished', color='red', outlined, icon='mdi-minus-circle', dense)
               .caption {{$t('common:page.unpublishedWarning')}}
@@ -296,7 +240,8 @@
                 span.white--text.subtitle-2 {{ authorInitials }}
               div
                 .caption.grey--text {{$t('common:page.lastEditedBy')}}
-                .body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-1` : `grey--text text--darken-3`') {{ authorName }} · {{ updatedAt | moment('calendar') }}
+                .body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-1` : `grey--text text--darken-3`') {{ authorName }} · {{ updatedAt | date('calendar') }}
+                .caption.grey--text(v-if='createdLabel') {{ createdLabel }}
               v-spacer
               v-btn(
                 text
@@ -307,6 +252,7 @@
                 )
                 v-icon(left, small) mdi-history
                 span {{$t('common:header.history')}}
+            page-backlinks.mt-6(v-if='!printView', :locale='locale', :path='path')
             .comments-container#discussion(v-if='commentsEnabled && commentsPerms.read && !printView')
               .comments-header
                 v-icon.mr-2(dark) mdi-comment-text-outline
@@ -337,19 +283,16 @@
 
 <script>
 import { StatusIndicator } from 'vue-status-indicator'
-import Tabset from './tabset.vue'
 import NavSidebar from './nav-sidebar.vue'
 import PageBreadcrumbs from '@/components/common/page-breadcrumbs.vue'
+import PageBacklinks from './page-backlinks.vue'
+import PageFollow from './page-follow.vue'
+import pageActionsMixin from '@/helpers/page-actions'
+import { decodePermissions, initials } from '@/helpers'
 import Prism from 'prismjs'
 import mermaid from 'mermaid'
 import { get, sync } from 'vuex-pathify'
 import _ from 'lodash'
-import ClipboardJS from 'clipboard'
-import Vue from 'vue'
-
-/* global siteLangs */
-
-Vue.component('Tabset', Tabset)
 
 Prism.plugins.autoloader.languages_path = '/_assets/js/prism/'
 Prism.plugins.NormalizeWhitespace.setDefaults({
@@ -360,35 +303,13 @@ Prism.plugins.NormalizeWhitespace.setDefaults({
   'remove-initial-line-feed': true,
   'tabs-to-spaces': 2
 })
-Prism.plugins.toolbar.registerButton('copy-to-clipboard', (env) => {
-  let linkCopy = document.createElement('button')
-  linkCopy.textContent = 'Copy'
-
-  const clip = new ClipboardJS(linkCopy, {
-    text: () => { return env.code }
-  })
-
-  clip.on('success', () => {
-    linkCopy.textContent = 'Copied!'
-    resetClipboardText()
-  })
-  clip.on('error', () => {
-    linkCopy.textContent = 'Press Ctrl+C to copy'
-    resetClipboardText()
-  })
-
-  return linkCopy
-
-  function resetClipboardText() {
-    setTimeout(() => {
-      linkCopy.textContent = 'Copy'
-    }, 5000)
-  }
-})
 
 export default {
+  mixins: [pageActionsMixin],
   components: {
     NavSidebar,
+    PageBacklinks,
+    PageFollow,
     PageBreadcrumbs,
     StatusIndicator
   },
@@ -424,6 +345,10 @@ export default {
     tags: {
       type: Array,
       default: () => ([])
+    },
+    creatorName: {
+      type: String,
+      default: ''
     },
     authorName: {
       type: String,
@@ -461,10 +386,6 @@ export default {
       type: String,
       default: ''
     },
-    commentsExternal: {
-      type: Boolean,
-      default: false
-    },
     editShortcuts: {
       type: String,
       default: ''
@@ -474,11 +395,9 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {
-      locales: siteLangs,
       navShown: false,
-      navExpanded: false,
       upBtnShown: false,
       pageEditFab: false,
       activeAnchor: '',
@@ -515,13 +434,24 @@ export default {
     editShortcutsObj: get('page/editShortcuts'),
     pageUrl () { return window.location.href },
     authorInitials () {
-      return _.take(_.trim(this.authorName).split(' ').map(w => w.charAt(0).toUpperCase()), 2).join('')
+      return initials(this.authorName)
+    },
+    createdLabel () {
+      if (!this.createdAt || (this.createdAt === this.updatedAt && (!this.creatorName || this.creatorName === this.authorName))) {
+        return ''
+      }
+      return this.$t('common:page.createdOnBy', {
+        date: this.$options.filters.date(this.createdAt, 'LL'),
+        name: this.creatorName || this.authorName,
+        defaultValue: 'Created on {{date}} by {{name}}',
+        interpolation: { escapeValue: false }
+      })
     },
     upBtnPosition () {
       if (this.$vuetify.breakpoint.mdAndUp) {
-        return this.$vuetify.rtl ? `right: 235px;` : `left: 235px;`
+        return this.$vuetify.rtl ? 'right: 235px;' : 'left: 235px;'
       } else {
-        return this.$vuetify.rtl ? `right: 65px;` : `left: 65px;`
+        return this.$vuetify.rtl ? 'right: 65px;' : 'left: 65px;'
       }
     },
     sidebarDecoded () {
@@ -531,16 +461,6 @@ export default {
       return JSON.parse(Buffer.from(this.toc, 'base64').toString())
     },
     tocPosition: get('site/tocPosition'),
-    hasAdminPermission: get('page/effectivePermissions@system.manage'),
-    hasWritePagesPermission: get('page/effectivePermissions@pages.write'),
-    hasManagePagesPermission: get('page/effectivePermissions@pages.manage'),
-    hasDeletePagesPermission: get('page/effectivePermissions@pages.delete'),
-    hasReadSourcePermission: get('page/effectivePermissions@source.read'),
-    hasReadHistoryPermission: get('page/effectivePermissions@history.read'),
-    hasAnyPagePermissions () {
-      return this.hasAdminPermission || this.hasWritePagesPermission || this.hasManagePagesPermission ||
-        this.hasDeletePagesPermission || this.hasReadSourcePermission || this.hasReadHistoryPermission
-    },
     printView: sync('site/printView'),
     editMenuExternalUrl () {
       if (this.editShortcutsObj.editMenuBar && this.editShortcutsObj.editMenuExternalBtn) {
@@ -550,7 +470,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.$store.set('page/authorId', this.authorId)
     this.$store.set('page/authorName', this.authorName)
     this.$store.set('page/createdAt', this.createdAt)
@@ -564,7 +484,7 @@ export default {
     this.$store.set('page/editor', this.editor)
     this.$store.set('page/updatedAt', this.updatedAt)
     if (this.effectivePermissions) {
-      this.$store.set('page/effectivePermissions', JSON.parse(Buffer.from(this.effectivePermissions, 'base64').toString()))
+      this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
     if (this.editShortcuts) {
       this.$store.set('page/editShortcuts', JSON.parse(Buffer.from(this.editShortcuts, 'base64').toString()))
@@ -573,6 +493,9 @@ export default {
     this.$store.set('page/mode', 'view')
   },
   mounted () {
+    this.$root.$on('pageExportPdf', () => {
+      this.exportPdf()
+    })
     if (this.$vuetify.theme.dark) {
       this.scrollStyle.bar.background = '#424242'
     } else {
@@ -608,7 +531,7 @@ export default {
     // -> Render Mermaid diagrams
     mermaid.initialize({
       startOnLoad: false,
-      theme: this.$vuetify.theme.dark ? `dark` : `default`
+      theme: this.$vuetify.theme.dark ? 'dark' : 'default'
     })
     mermaid.run({ querySelector: '.mermaid' })
 
@@ -644,9 +567,6 @@ export default {
     }
   },
   methods: {
-    toggleNavigation () {
-      this.navOpen = !this.navOpen
-    },
     upBtnScroll () {
       const scrollOffset = window.pageYOffset || document.documentElement.scrollTop
       this.upBtnShown = scrollOffset > window.innerHeight * 0.33
@@ -661,26 +581,27 @@ export default {
         })
       }
     },
+    /**
+     * Export as PDF through the browser's print dialog ("Save as PDF"),
+     * using the print layout and the page title as default file name
+     */
+    exportPdf () {
+      const previousTitle = document.title
+      const wasPrintView = this.printView
+      document.title = this.title
+      this.printView = true
+      const restore = () => {
+        document.title = previousTitle
+        this.printView = wasPrintView
+        window.removeEventListener('afterprint', restore)
+      }
+      window.addEventListener('afterprint', restore)
+      this.$nextTick(() => {
+        window.print()
+      })
+    },
     pageEdit () {
       this.$root.$emit('pageEdit')
-    },
-    pageHistory () {
-      this.$root.$emit('pageHistory')
-    },
-    pageSource () {
-      this.$root.$emit('pageSource')
-    },
-    pageConvert () {
-      this.$root.$emit('pageConvert')
-    },
-    pageDuplicate () {
-      this.$root.$emit('pageDuplicate')
-    },
-    pageMove () {
-      this.$root.$emit('pageMove')
-    },
-    pageDelete () {
-      this.$root.$emit('pageDelete')
     },
     handleSideNavVisibility () {
       if (window.innerWidth === this.winWidth) { return }

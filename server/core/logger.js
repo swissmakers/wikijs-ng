@@ -1,11 +1,9 @@
-// const _ = require('lodash')
 const winston = require('winston')
 
 /* global WIKI */
 
 module.exports = {
-  loggers: {},
-  init(uid) {
+  init (uid) {
     const loggerFormats = [
       winston.format.label({ label: uid }),
       winston.format.timestamp()
@@ -32,12 +30,6 @@ module.exports = {
       silent: false,
       timestamp: true
     }))
-
-    // _.forOwn(_.omitBy(WIKI.config.logging.loggers, s => s.enabled === false), (loggerConfig, loggerKey) => {
-    //   let loggerModule = require(`../modules/logging/${loggerKey}`)
-    //   loggerModule.init(logger, loggerConfig)
-    //   this.loggers[logger.key] = loggerModule
-    // })
 
     return logger
   }

@@ -87,9 +87,9 @@
                 v-icon.mr-2(v-else, color='grey darken-1') mdi-file
                 .body-2 {{ item.filename }}
             template(v-slot:item.fileSize='{ item }')
-              span.caption {{ item.fileSize | prettyBytes }}
+              span.caption {{ item.fileSize | bytes }}
             template(v-slot:item.updatedAt='{ item }')
-              span.caption {{ item.updatedAt | moment('calendar') }}
+              span.caption {{ item.updatedAt | date('calendar') }}
             template(v-slot:item.actions='{ item }')
               v-menu(offset-x, min-width='200')
                 template(v-slot:activator='{ on }')
@@ -125,7 +125,7 @@
             :label-idle='$t(`admin:assets.uploadHint`, { defaultValue: `Drag & drop files here or click to browse...` })'
             allow-multiple='true'
             :files='files'
-            max-files='10'
+            :max-files='uploadMaxFiles'
             :server='filePondServerOpts'
             :instant-upload='false'
             :allow-revert='false'
@@ -294,7 +294,7 @@ export default {
   components: {
     FilePond
   },
-  data() {
+  data () {
     return {
       folderTree: [],
       assets: [],
@@ -323,6 +323,9 @@ export default {
     }
   },
   computed: {
+    uploadMaxFiles () {
+      return siteConfig.uploadMaxFiles || 10
+    },
     currentFolderId () {
       return _.head(this.selectedFolders) || 0
     },
@@ -366,7 +369,7 @@ export default {
         process: {
           url: '/u',
           headers: {
-            'Authorization': `Bearer ${jwtToken}`
+            Authorization: `Bearer ${jwtToken}`
           }
         }
       }
@@ -375,27 +378,6 @@ export default {
   watch: {
     currentFolderId () {
       this.selectedAssets = []
-    }
-  },
-  filters: {
-    prettyBytes (num) {
-      if (typeof num !== 'number' || isNaN(num)) {
-        return '0 B'
-      }
-      let exponent
-      let unit
-      let neg = num < 0
-      let units = ['B', 'kB', 'MB', 'GB', 'TB']
-      if (neg) {
-        num = -num
-      }
-      if (num < 1) {
-        return (neg ? '-' : '') + num + ' B'
-      }
-      exponent = Math.min(Math.floor(Math.log(num) / Math.log(1000)), units.length - 1)
-      num = (num / Math.pow(1000, exponent)).toFixed(2) * 1
-      unit = units[exponent]
-      return (neg ? '-' : '') + num + ' ' + unit
     }
   },
   methods: {
@@ -669,7 +651,7 @@ export default {
           icon: 'warning'
         })
       }
-      for (let file of files) {
+      for (const file of files) {
         file.setMetadata({
           folderId: this.currentFolderId
         })

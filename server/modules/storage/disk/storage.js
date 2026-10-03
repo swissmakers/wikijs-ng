@@ -2,36 +2,29 @@ const fs = require('fs-extra')
 const path = require('path')
 const tar = require('tar-fs')
 const zlib = require('zlib')
-const _ = require('lodash')
 const { pipeline } = require('node:stream/promises')
-const { Transform } = require('node:stream')
-const moment = require('moment')
+const { DateTime } = require('luxon')
 
 const pageHelper = require('../../../helpers/page')
+const storageExport = require('../../../helpers/storage-export')
 const commonDisk = require('./common')
 
 /* global WIKI */
 
 module.exports = {
-  async activated() {
-    // not used
-  },
-  async deactivated() {
-    // not used
-  },
-  async init() {
+  async init () {
     WIKI.logger.info('(STORAGE/DISK) Initializing...')
     await fs.ensureDir(this.config.path)
     WIKI.logger.info('(STORAGE/DISK) Initialization completed.')
   },
-  async sync({ manual } = { manual: false }) {
+  async sync ({ manual } = { manual: false }) {
     if (this.config.createDailyBackups || manual) {
       const dirPath = path.join(this.config.path, manual ? '_manual' : '_daily')
       await fs.ensureDir(dirPath)
 
-      const dateFilename = moment().format(manual ? 'YYYYMMDD-HHmmss' : 'DD')
+      const dateFilename = DateTime.now().toFormat(manual ? 'yyyyMMdd-HHmmss' : 'dd')
 
-      WIKI.logger.info(`(STORAGE/DISK) Creating backup archive...`)
+      WIKI.logger.info('(STORAGE/DISK) Creating backup archive...')
       await pipeline(
         tar.pack(this.config.path, {
           ignore: (filePath) => {
@@ -44,7 +37,7 @@ module.exports = {
       WIKI.logger.info('(STORAGE/DISK) Backup archive created successfully.')
     }
   },
-  async created(page) {
+  async created (page) {
     WIKI.logger.info(`(STORAGE/DISK) Creating file [${page.localeCode}] ${page.path}...`)
     let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
     if (WIKI.config.lang.code !== page.localeCode) {
@@ -53,7 +46,7 @@ module.exports = {
     const filePath = path.join(this.config.path, fileName)
     await fs.outputFile(filePath, page.injectMetadata(), 'utf8')
   },
-  async updated(page) {
+  async updated (page) {
     WIKI.logger.info(`(STORAGE/DISK) Updating file [${page.localeCode}] ${page.path}...`)
     let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
     if (WIKI.config.lang.code !== page.localeCode) {
@@ -62,7 +55,7 @@ module.exports = {
     const filePath = path.join(this.config.path, fileName)
     await fs.outputFile(filePath, page.injectMetadata(), 'utf8')
   },
-  async deleted(page) {
+  async deleted (page) {
     WIKI.logger.info(`(STORAGE/DISK) Deleting file [${page.localeCode}] ${page.path}...`)
     let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
     if (WIKI.config.lang.code !== page.localeCode) {
@@ -71,7 +64,7 @@ module.exports = {
     const filePath = path.join(this.config.path, fileName)
     await fs.unlink(filePath)
   },
-  async renamed(page) {
+  async renamed (page) {
     WIKI.logger.info(`(STORAGE/DISK) Renaming file [${page.localeCode}] ${page.path} to [${page.destinationLocaleCode}] ${page.destinationPath}...`)
 
     let sourceFilePath = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
@@ -121,55 +114,31 @@ module.exports = {
   /**
    * HANDLERS
    */
-  async dump() {
-    WIKI.logger.info(`(STORAGE/DISK) Dumping all content to disk...`)
+  async dump () {
+    WIKI.logger.info('(STORAGE/DISK) Dumping all content to disk...')
 
-    // -> Pages
-    await pipeline(
-      WIKI.models.knex.column('id', 'path', 'localeCode', 'title', 'description', 'contentType', 'content', 'isPublished', 'updatedAt', 'createdAt', 'editorKey').select().from('pages').where({
-        isPrivate: false
-      }).stream(),
-      new Transform({
-        objectMode: true,
-        transform: async (page, enc, cb) => {
-          const pageObject = await WIKI.models.pages.query().findById(page.id)
-          page.tags = await pageObject.$relatedQuery('tags')
-
-          let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
-          if (WIKI.config.lang.code !== page.localeCode) {
-            fileName = `${page.localeCode}/${fileName}`
-          }
-          WIKI.logger.info(`(STORAGE/DISK) Dumping page ${fileName}...`)
-          const filePath = path.join(this.config.path, fileName)
-          await fs.outputFile(filePath, pageHelper.injectPageMetadata(page), 'utf8')
-          cb()
+    await storageExport.exportAll({
+      onPage: async page => {
+        let fileName = `${page.path}.${pageHelper.getFileExtension(page.contentType)}`
+        if (WIKI.config.lang.code !== page.localeCode) {
+          fileName = `${page.localeCode}/${fileName}`
         }
-      })
-    )
-
-    // -> Assets
-    const assetFolders = await WIKI.models.assetFolders.getAllPaths()
-
-    await pipeline(
-      WIKI.models.knex.column('filename', 'folderId', 'data').select().from('assets').join('assetData', 'assets.id', '=', 'assetData.id').stream(),
-      new Transform({
-        objectMode: true,
-        transform: async (asset, enc, cb) => {
-          const filename = (asset.folderId && asset.folderId > 0) ? `${_.get(assetFolders, asset.folderId)}/${asset.filename}` : asset.filename
-          WIKI.logger.info(`(STORAGE/DISK) Dumping asset ${filename}...`)
-          await fs.outputFile(path.join(this.config.path, filename), asset.data)
-          cb()
-        }
-      })
-    )
+        WIKI.logger.info(`(STORAGE/DISK) Dumping page ${fileName}...`)
+        await fs.outputFile(path.join(this.config.path, fileName), pageHelper.injectPageMetadata(page), 'utf8')
+      },
+      onAsset: async ({ filename, data }) => {
+        WIKI.logger.info(`(STORAGE/DISK) Dumping asset ${filename}...`)
+        await fs.outputFile(path.join(this.config.path, filename), data)
+      }
+    })
 
     WIKI.logger.info('(STORAGE/DISK) All content was dumped to disk successfully.')
   },
-  async backup() {
+  async backup () {
     return this.sync({ manual: true })
   },
-  async importAll() {
-    WIKI.logger.info(`(STORAGE/DISK) Importing all content from local disk folder to the DB...`)
+  async importAll () {
+    WIKI.logger.info('(STORAGE/DISK) Importing all content from local disk folder to the DB...')
     await commonDisk.importFromDisk({
       fullPath: this.config.path,
       moduleName: 'DISK'

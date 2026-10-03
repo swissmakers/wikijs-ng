@@ -8,7 +8,6 @@ dist
 
 # Dependency directories
 node_modules
-npm/node_modules
 
 # NPM / Yarn
 .npm
@@ -19,12 +18,10 @@ npm-debug.log*
 # Generated assets
 /assets
 server/views/master.pug
-server/views/legacy/master.pug
 server/views/setup.pug
 
 # Webpack
 .webpack-cache
-.fusebox
 
 # Config Files
 /config.yml
@@ -43,8 +40,9 @@ server/views/setup.pug
 
 # Test results
 test-results/
-.scannerwork
 
-# Localization Resources
-/server/locales/**/*.yml
 dev/deploy-test.local.env
+
+# Cypress test-output
+dev/cypress/screenshots/
+dev/cypress/videos/

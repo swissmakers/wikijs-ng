@@ -1,9 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const pageHelper = require('../helpers/page')
+const commonHelper = require('../helpers/common')
+const cspHelper = require('../helpers/csp')
+const feedsHelper = require('../helpers/feeds')
 const _ = require('lodash')
 const CleanCSS = require('clean-css')
-const moment = require('moment')
 const qs = require('querystring')
 
 /* global WIKI */
@@ -18,8 +20,98 @@ router.get('/robots.txt', (req, res, next) => {
   if (_.includes(WIKI.config.seo.robots, 'noindex')) {
     res.send('User-agent: *\nDisallow: /')
   } else {
-    res.status(200).end()
+    res.send(`User-agent: *\nAllow: /\nSitemap: ${feedHost(req)}/sitemap.xml\n`)
   }
+})
+
+// ----------------------------------------
+// Feeds (sitemap, RSS) — public pages only, as seen by the guest user
+// ----------------------------------------
+
+const FEED_CACHE_TTL = 300
+const feedHost = req => WIKI.config.host || `${req.protocol}://${req.get('host')}`
+const feedPageUrl = (locale, path) => WIKI.config.lang.namespacing ? `/${locale}/${path}` : `/${path}`
+
+/**
+ * Keep the items whose page is public and readable by guests
+ */
+const filterPublicPages = async (items) => {
+  const guest = await WIKI.models.users.getGuestUser()
+  const pagesTags = _.keyBy(await WIKI.models.pages.query()
+    .select('id')
+    .whereIn('id', _.uniq(_.map(items, 'pageId')))
+    .withGraphFetched('tags'), 'id')
+  return items.filter(item => feedsHelper.isPubliclyVisible(item) && WIKI.auth.checkAccess(guest, ['read:pages'], {
+    path: item.path,
+    locale: item.localeCode,
+    tags: _.get(pagesTags, [item.pageId, 'tags'], [])
+  }))
+}
+
+/**
+ * XML Sitemap
+ */
+router.get('/sitemap.xml', async (req, res, next) => {
+  try {
+    if (_.includes(WIKI.config.seo.robots, 'noindex')) {
+      return res.sendStatus(404)
+    }
+    let xml = await WIKI.cache.get('feeds:sitemap')
+    if (!xml) {
+      const pages = await WIKI.models.pages.query()
+        .select({ pageId: 'id' }, 'localeCode', 'path', 'updatedAt', 'isPublished', 'isPrivate', 'isTemplate', 'publishStartDate', 'publishEndDate')
+        .orderBy(['localeCode', 'path'])
+      xml = feedsHelper.sitemapXml(await filterPublicPages(pages), { host: feedHost(req), pageUrl: feedPageUrl })
+      await WIKI.cache.set('feeds:sitemap', xml, FEED_CACHE_TTL)
+    }
+    res.type('application/xml').send(xml)
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * RSS feed of recent changes
+ */
+router.get('/rss.xml', async (req, res, next) => {
+  try {
+    let xml = await WIKI.cache.get('feeds:rss')
+    if (!xml) {
+      const rows = await WIKI.models.knex('pageActivity')
+        .join('pages', 'pageActivity.pageId', 'pages.id')
+        .select('pageActivity.id', 'pageActivity.pageId', 'pageActivity.action', 'pageActivity.authorName', 'pageActivity.createdAt',
+          'pages.localeCode', 'pages.path', 'pages.title', 'pages.description', 'pages.isPublished', 'pages.isPrivate', 'pages.isTemplate',
+          'pages.publishStartDate', 'pages.publishEndDate')
+        .orderBy('pageActivity.id', 'desc')
+        .limit(500)
+      const items = _.take(await filterPublicPages(_.uniqBy(rows, 'pageId')), 50)
+      const lng = WIKI.config.lang.code
+      xml = feedsHelper.rssXml(items, {
+        title: WIKI.config.title,
+        description: WIKI.lang.engine.t('common:recent.title', { lng, defaultValue: 'Recent changes' }),
+        host: feedHost(req),
+        lang: lng,
+        pageUrl: feedPageUrl,
+        actionLabel: action => WIKI.lang.engine.t(`common:notifications.action.${action}`, { lng, defaultValue: action })
+      })
+      await WIKI.cache.set('feeds:rss', xml, FEED_CACHE_TTL)
+    }
+    res.type('application/rss+xml').send(xml)
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * Recent Changes
+ */
+router.get(['/r', '/r/*'], (req, res, next) => {
+  if (!WIKI.auth.checkAccess(req.user, ['read:pages'])) {
+    _.set(res.locals, 'pageMeta.title', 'Unauthorized')
+    return res.status(403).render('unauthorized', { action: 'view' })
+  }
+  _.set(res.locals, 'pageMeta.title', WIKI.lang.engine.t('common:recent.title', { lng: WIKI.config.lang.code, defaultValue: 'Recent changes' }))
+  res.render('recent')
 })
 
 /**
@@ -170,7 +262,7 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
       return res.status(403).render('unauthorized', { action: 'create' })
     }
 
-    _.set(res.locals, 'pageMeta.title', `New Page`)
+    _.set(res.locals, 'pageMeta.title', 'New Page')
     page = {
       path: pageArgs.path,
       localeCode: pageArgs.locale,
@@ -234,6 +326,18 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
       }
     }
   }
+
+  // -> Editor integrations: draw.io and the diagram servers of the enabled renderers (live preview)
+  const diagramRenderers = await WIKI.models.renderers.query().select('key', 'isEnabled', 'config').whereIn('key', ['markdownPlantuml', 'markdownKroki'])
+  const diagramConfig = (key, props) => {
+    const rdr = _.find(diagramRenderers, ['key', key])
+    return (rdr && rdr.isEnabled) ? _.pick(rdr.config, props) : null
+  }
+  _.set(res, 'locals.siteConfig.editorIntegrations', {
+    drawioUrl: WIKI.config.integrations.drawioUrl,
+    plantuml: diagramConfig('markdownPlantuml', ['server', 'imageFormat', 'openMarker', 'closeMarker']),
+    kroki: diagramConfig('markdownKroki', ['server', 'openMarker', 'closeMarker'])
+  })
 
   res.render('editor', { page, injectCode, effectivePermissions })
 })
@@ -409,7 +513,7 @@ router.get('/_userav/:uid', async (req, res, next) => {
   const av = await WIKI.models.users.getUserAvatarData(req.params.uid)
   if (av) {
     res.set('Content-Type', 'image/jpeg')
-    res.send(av)
+    return res.send(av)
   }
 
   return res.sendStatus(404)
@@ -481,10 +585,10 @@ router.get('/*', async (req, res, next) => {
         // -> Check Publishing State
         let pageIsPublished = page.isPublished
         if (pageIsPublished && !_.isEmpty(page.publishStartDate)) {
-          pageIsPublished = moment(page.publishStartDate).isSameOrBefore()
+          pageIsPublished = new Date(page.publishStartDate) <= new Date()
         }
         if (pageIsPublished && !_.isEmpty(page.publishEndDate)) {
-          pageIsPublished = moment(page.publishEndDate).isSameOrAfter()
+          pageIsPublished = new Date(page.publishEndDate) >= new Date()
         }
         if (!pageIsPublished && !effectivePermissions.pages.write) {
           _.set(res.locals, 'pageMeta.title', 'Unauthorized')
@@ -511,57 +615,40 @@ router.get('/*', async (req, res, next) => {
           injectCode.body = `${injectCode.body}\n${page.extra.js}`
         }
 
-        if (req.query.legacy || (req.get('user-agent') && req.get('user-agent').indexOf('Trident') >= 0)) {
-          // -> Convert page TOC
-          if (_.isString(page.toc)) {
-            page.toc = JSON.parse(page.toc)
-          }
+        // -> Convert page TOC
+        if (!_.isString(page.toc)) {
+          page.toc = JSON.stringify(page.toc)
+        }
 
-          // -> Render legacy view
-          res.render('legacy/page', {
-            page,
-            sidebar,
-            injectCode,
-            isAuthenticated: req.user && req.user.id !== 2
-          })
-        } else {
-          // -> Convert page TOC
-          if (!_.isString(page.toc)) {
-            page.toc = JSON.stringify(page.toc)
-          }
-
-          // -> Inject comments variables
-          const commentTmpl = {
-            codeTemplate: WIKI.data.commentProvider.codeTemplate,
-            head: WIKI.data.commentProvider.head,
-            body: WIKI.data.commentProvider.body,
-            main: WIKI.data.commentProvider.main
-          }
-          if (WIKI.config.features.featurePageComments && WIKI.data.commentProvider.codeTemplate) {
-            [
-              { key: 'pageUrl', value: `${WIKI.config.host}/i/${page.id}` },
-              { key: 'pageId', value: page.id }
-            ].forEach((cfg) => {
-              commentTmpl.head = _.replace(commentTmpl.head, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-              commentTmpl.body = _.replace(commentTmpl.body, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-              commentTmpl.main = _.replace(commentTmpl.main, new RegExp(`{{${cfg.key}}}`, 'g'), cfg.value)
-            })
-          }
-
-          // -> Page Filename (for edit on external repo button)
-          let pageFilename = WIKI.config.lang.namespacing ? `${pageArgs.locale}/${page.path}` : page.path
-          pageFilename += page.contentType === 'markdown' ? '.md' : '.html'
-
-          // -> Render view
-          res.render('page', {
-            page,
-            sidebar,
-            injectCode,
-            comments: commentTmpl,
-            effectivePermissions,
-            pageFilename
+        // -> Inject comments variables (comments can be turned off per page)
+        const commentsEnabled = WIKI.config.features.featurePageComments && _.get(page, 'extra.commentsDisabled', false) !== true
+        let commentTmpl = {
+          codeTemplate: WIKI.data.commentProvider.codeTemplate,
+          head: WIKI.data.commentProvider.head,
+          body: WIKI.data.commentProvider.body,
+          main: WIKI.data.commentProvider.main
+        }
+        if (commentsEnabled && WIKI.data.commentProvider.codeTemplate) {
+          commentTmpl = commonHelper.renderCodeTemplate(commentTmpl, {
+            pageUrl: `${WIKI.config.host}/i/${page.id}`,
+            pageId: page.id
           })
         }
+
+        // -> Page Filename (for edit on external repo button)
+        let pageFilename = WIKI.config.lang.namespacing ? `${pageArgs.locale}/${page.path}` : page.path
+        pageFilename += page.contentType === 'markdown' ? '.md' : '.html'
+
+        // -> Render view
+        res.render('page', {
+          page,
+          sidebar,
+          injectCode: cspHelper.nonceSnippets(injectCode, res),
+          comments: cspHelper.nonceSnippets(commentTmpl, res),
+          commentsEnabled,
+          effectivePermissions,
+          pageFilename
+        })
       } else if (pageArgs.path === 'home') {
         _.set(res.locals, 'pageMeta.title', 'Welcome')
         res.render('welcome', { locale: pageArgs.locale })

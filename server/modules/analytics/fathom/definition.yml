@@ -2,7 +2,7 @@ key: fathom
 title: Fathom
 description: Fathom Analytics provides simple, useful website stats without tracking or storing personal data of your users.
 author: requarks.io
-logo: https://static.requarks.io/logo/fathom.svg
+logo: /_assets/svg/modules/fathom.svg
 website: https://usefathom.com/
 isAvailable: true
 props:

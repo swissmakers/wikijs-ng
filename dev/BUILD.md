@@ -33,6 +33,14 @@ npm rebuild sqlite3 --build-from-source
 The published container images are unaffected: they are Alpine (musl) based and
 build the module during the image build, where the toolchain is present.
 
+# Lint and unit tests
+
+```bash
+yarn test              # ESLint, pug-lint and the Jest unit tests (server/test)
+```
+
+CI runs the same command for every push and pull request (`.gitea/workflows/build-harbor.yml`); the image is only built when it passes.
+
 # Testing the image locally before committing
 
 `dev/deploy-test.sh` builds the container image and runs it as a throwaway test
@@ -48,6 +56,8 @@ dev/deploy-test.sh cleanup    # remove test container + volume
 Everything is configurable through environment variables (`WIKI_IMAGE`,
 `WIKI_TEST_PORT`, `WIKI_PODMAN`, `DB_*` for an external test database — never a
 production one); see the script header.
+
+`dev/smoke-test.sh <image>` runs the automated check CI does after every image build: it starts the image with a throwaway SQLite database, completes the setup, logs in and loads a few pages and assets.
 
 # Building the container image with Podman
 
@@ -99,22 +109,9 @@ podman build --pull \
 
 Note: the arm64 half runs the full yarn install + webpack build under emulation and is much slower than the native half.
 
-`dev/build-arm/Dockerfile` is **not** used for this — it is only for the GitHub CI flow that reuses pre-built assets from a build artifact.
-
 ## Running the image
 
-Quickest start with SQLite (data kept in a named volume):
-
-```bash
-podman run -d --name wikijs-ng -p 3000:3000 \
-  -e DB_TYPE=sqlite -e DB_FILEPATH=/wiki/data/db.sqlite \
-  -v wikijs-data:/wiki/data \
-  wikijs-ng:local
-```
-
-Then open http://localhost:3000 and complete the setup wizard.
-
-For PostgreSQL & co. either pass the `DB_*` environment variables (see `dev/build/config.yml` for the supported set) or mount your own config:
+Run the local image like the published one (see *Getting started* in the [README](../README.md)), with `wikijs-ng:local` as the image name. The supported `DB_*` environment variables are listed in `dev/build/config.yml`; alternatively mount your own config:
 
 ```bash
 podman run -d --name wikijs-ng -p 3000:3000 \

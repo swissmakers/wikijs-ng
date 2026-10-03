@@ -91,7 +91,7 @@ router.post('/u', (req, res, next) => {
   await WIKI.models.assets.upload({
     ...fileMeta,
     mode: 'upload',
-    folderId: folderId,
+    folderId,
     assetPath,
     user: req.user
   })

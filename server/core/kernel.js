@@ -4,7 +4,7 @@ const EventEmitter = require('eventemitter2').EventEmitter2
 /* global WIKI */
 
 module.exports = {
-  async init() {
+  async init () {
     WIKI.logger.info('=======================================')
     WIKI.logger.info(`= Wiki.js NG ${_.padEnd(WIKI.version + ' ', 26, '=')}`)
     WIKI.logger.info('=======================================')
@@ -29,10 +29,9 @@ module.exports = {
   /**
    * Pre-Master Boot Sequence
    */
-  async preBootMaster() {
+  async preBootMaster () {
     try {
       this.initProcessHandlers()
-      WIKI.sideloader = await require('./sideloader').init()
       WIKI.cache = require('./cache').init()
       WIKI.scheduler = require('./scheduler').init()
       WIKI.servers = require('./servers')
@@ -40,7 +39,6 @@ module.exports = {
         inbound: new EventEmitter(),
         outbound: new EventEmitter()
       }
-      WIKI.extensions = require('./extensions')
       WIKI.asar = require('./asar')
     } catch (err) {
       WIKI.logger.error(err)
@@ -50,7 +48,7 @@ module.exports = {
   /**
    * Boot Master Process
    */
-  async bootMaster() {
+  async bootMaster () {
     try {
       if (WIKI.config.setup) {
         WIKI.logger.info('Starting setup wizard...')
@@ -68,17 +66,14 @@ module.exports = {
   /**
    * Post-Master Boot Sequence
    */
-  async postBootMaster() {
+  async postBootMaster () {
     await WIKI.models.analytics.refreshProvidersFromDisk()
     await WIKI.models.authentication.refreshStrategiesFromDisk()
     await WIKI.models.commentProviders.refreshProvidersFromDisk()
     await WIKI.models.editors.refreshEditorsFromDisk()
-    await WIKI.models.loggers.refreshLoggersFromDisk()
     await WIKI.models.renderers.refreshRenderersFromDisk()
     await WIKI.models.searchEngines.refreshSearchEnginesFromDisk()
     await WIKI.models.storage.refreshTargetsFromDisk()
-
-    await WIKI.extensions.init()
 
     await WIKI.auth.activateStrategies()
     await WIKI.models.commentProviders.initProvider()
@@ -91,7 +86,7 @@ module.exports = {
   /**
    * Init global process error handlers
    */
-  initProcessHandlers() {
+  initProcessHandlers () {
     process.on('unhandledRejection', (err) => {
       WIKI.logger.warn(err)
     })

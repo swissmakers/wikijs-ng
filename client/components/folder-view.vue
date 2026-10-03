@@ -44,6 +44,15 @@
                 .caption.grey--text.text--darken-1 /{{path}}
               v-spacer
               v-btn.mr-3(
+                v-if='canWatch'
+                color='primary'
+                outlined
+                :loading='isWatchLoading'
+                @click='watchFolder'
+                )
+                v-icon(left) mdi-bell-plus-outline
+                span {{$t('common:folderView.watch', { defaultValue: 'Watch this folder' })}}
+              v-btn.mr-3(
                 v-if='hasWritePagesPermission'
                 color='primary'
                 depressed
@@ -73,7 +82,7 @@
                       v-icon.mr-3(color='grey darken-1') mdi-text-box-outline
                       .subtitle-2.text-truncate {{item.title}}
                     .caption.grey--text.mt-2.folder-view-card-description(v-if='item.description') {{item.description}}
-                    .caption.grey--text.text--lighten-1.mt-1(v-if='item.updatedAt') {{item.updatedAt | moment('calendar')}}
+                    .caption.grey--text.text--lighten-1.mt-1(v-if='item.updatedAt') {{item.updatedAt | date('calendar')}}
           v-row(v-if='!folders.length && !pages.length', justify='center')
             v-col(cols='12', md='6')
               v-card.text-center.pa-8(outlined)
@@ -91,12 +100,14 @@
 <script>
 import { get } from 'vuex-pathify'
 import _ from 'lodash'
+import gql from 'graphql-tag'
 import NavSidebar from '@/themes/default/components/nav-sidebar.vue'
 import PageBreadcrumbs from '@/components/common/page-breadcrumbs.vue'
 
 import treeByPathQuery from 'gql/common/common-pages-query-tree-by-path.gql'
+import { decodePermissions, pagePath } from '@/helpers'
 
-/* global siteLangs */
+/* global siteConfig */
 
 export default {
   components: {
@@ -125,12 +136,12 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {
-      locales: siteLangs,
       navShown: false,
       winWidth: 0,
       isLoading: true,
+      isWatchLoading: false,
       children: [],
       scrollStyle: {
         vuescroll: {},
@@ -154,6 +165,10 @@ export default {
   },
   computed: {
     hasWritePagesPermission: get('page/effectivePermissions@pages.write'),
+    isAuthenticated: get('user/authenticated'),
+    canWatch () {
+      return this.isAuthenticated && siteConfig.notifications === true
+    },
     folderTitle () {
       return _.startCase(_.last(this.path.split('/')))
     },
@@ -176,7 +191,7 @@ export default {
     this.$store.set('page/title', this.folderTitle)
     this.$store.set('page/mode', 'view')
     if (this.effectivePermissions) {
-      this.$store.set('page/effectivePermissions', JSON.parse(Buffer.from(this.effectivePermissions, 'base64').toString()))
+      this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
   },
   mounted () {
@@ -190,7 +205,32 @@ export default {
   },
   methods: {
     itemUrl (item) {
-      return (this.locales.length > 0 ? `/${item.locale}` : '') + `/${item.path}`
+      return pagePath(item.locale, item.path)
+    },
+    async watchFolder () {
+      this.isWatchLoading = true
+      try {
+        const resp = await this.$apollo.mutate({
+          mutation: gql`
+            mutation ($locale: String!, $path: String!) {
+              watches {
+                watchPath(locale: $locale, path: $path) {
+                  responseResult { succeeded errorCode slug message }
+                }
+              }
+            }
+          `,
+          variables: { locale: this.locale, path: this.path }
+        })
+        const result = _.get(resp, 'data.watches.watchPath.responseResult', {})
+        if (!result.succeeded) {
+          throw new Error(result.message)
+        }
+        this.$store.commit('showNotification', { style: 'success', message: result.message, icon: 'check' })
+      } catch (err) {
+        this.$store.commit('pushGraphError', err)
+      }
+      this.isWatchLoading = false
     },
     handleSideNavVisibility () {
       if (window.innerWidth === this.winWidth) { return }

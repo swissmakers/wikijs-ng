@@ -1,6 +1,6 @@
 const path = require('path')
 
-let WIKI = {
+const WIKI = {
   IS_DEBUG: process.env.NODE_ENV === 'development',
   ROOTPATH: process.cwd(),
   SERVERPATH: path.join(process.cwd(), 'server'),

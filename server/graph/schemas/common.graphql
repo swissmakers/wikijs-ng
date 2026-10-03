@@ -43,5 +43,3 @@ type Query
 # Mutations (Create, Update, Delete)
 type Mutation
 
-# Subscriptions (Push, Real-time)
-type Subscription

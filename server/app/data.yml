@@ -31,10 +31,8 @@ defaults:
     # DB defaults
     api:
       isEnabled: false
-    graphEndpoint: 'https://graph.requarks.io'
     lang:
       code: en
-      autoUpdate: true
       namespaces: []
       namespacing: false
       rtl: false
@@ -42,20 +40,37 @@ defaults:
     company: ''
     contentLicense: ''
     footerOverride: ''
-    logoUrl: /_assets/svg/logo-wikijs-full.svg
+    logoUrl: /_assets/svg/logo-swissmakers.svg
     pageExtensions:
       - md
       - html
       - txt
     mail:
+      senderName: ''
+      senderEmail: ''
       host: ''
+      port: 465
+      name: ''
       secure: true
       verifySSL: true
+      user: ''
+      pass: ''
+      useDKIM: false
+      dkimDomainName: ''
+      dkimKeySelector: ''
+      dkimPrivateKey: ''
+    seo:
+      description: ''
+      robots:
+        - index
+        - follow
+      analyticsService: ''
+      analyticsId: ''
     nav:
       mode: 'MIXED'
     theming:
       theme: 'default'
-      iconset: 'md'
+      iconset: 'mdi'
       darkMode: false
       tocPosition: 'left'
     auth:
@@ -75,18 +90,17 @@ defaults:
       editMenuExternalIcon: 'mdi-github'
       editMenuExternalUrl: 'https://github.com/org/repo/blob/main/{filename}'
     features:
-      featurePageRatings: true
       featurePageComments: true
-      featurePersonalWikis: true
+      featureNotifications: true
     security:
       securityOpenRedirect: true
       securityIframe: true
       securityReferrerPolicy: true
       securityTrustProxy: false
-      securitySRI: true
       securityHSTS: false
       securityHSTSDuration: 300
       securityCSP: false
+      securityCSPReportOnly: true
       securityCSPDirectives: ''
     server:
       sslRedir: false
@@ -95,41 +109,32 @@ defaults:
       maxFiles: 10
       scanSVG: true
       forceDownload: true
+    integrations:
+      drawioUrl: 'https://embed.diagrams.net'
     flags:
       ldapdebug: false
       sqllog: false
     # System defaults
-    channel: STABLE
     setup: false
     dataPath: ./data
-    cors:
-      credentials: true
-      maxAge: 600
-      methods: 'GET,POST'
-      origin: true
     search:
       maxHits: 100
     maintainerEmail: security@swissmakers.ch
-localeNamespaces:
-  - admin
-  - auth
-  - common
 jobs:
   purgeUploads:
     onInit: true
     schedule: PT15M
     offlineSkip: false
     repeat: true
-  syncGraphLocales:
-    onInit: true
-    schedule: P1D
-    offlineSkip: true
+  sendPageDigests:
+    onInit: false
+    schedule: PT10M
+    offlineSkip: false
     repeat: true
   rebuildTree:
     onInit: true
     offlineSkip: false
     repeat: false
-    immediate: true
     worker: true
 groups:
   defaultPermissions:

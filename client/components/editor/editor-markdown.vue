@@ -169,10 +169,9 @@
 import _ from 'lodash'
 import { get, sync } from 'vuex-pathify'
 import markdownHelp from './markdown/help.vue'
-import gql from 'graphql-tag'
 import DOMPurify from 'dompurify'
 
-/* global siteConfig, siteLangs */
+/* global siteConfig */
 
 // ========================================
 // IMPORTS
@@ -211,10 +210,10 @@ import mdMultiTable from 'markdown-it-multimd-table'
 import mdFootnote from 'markdown-it-footnote'
 import mdImsize from 'markdown-it-imsize'
 import katex from 'katex'
-import underline from '../../libs/markdown-it-underline'
+import underline from '../../../server/modules/rendering/markdown-core/underline'
 import 'katex/dist/contrib/mhchem'
 import twemoji from 'twemoji'
-import plantuml from './markdown/plantuml'
+import { plantumlPreview, krokiPreview } from './markdown/diagrams'
 
 // Prism (Syntax Highlighting)
 import Prism from 'prismjs'
@@ -223,9 +222,11 @@ import Prism from 'prismjs'
 import mermaid from 'mermaid'
 
 // Helpers
-import katexHelper from './common/katex'
+import mathHelper from '../../../server/helpers/markdown-math'
 import tabsetHelper from './markdown/tabset'
 import cmFold from './common/cmFold'
+import { pagePath } from '@/helpers'
+import pagesSearchQuery from 'gql/common/common-pages-query-search.gql'
 
 // ========================================
 // INIT
@@ -251,9 +252,9 @@ const md = new MarkdownIt({
   breaks: true,
   linkify: true,
   typography: true,
-  highlight(str, lang) {
+  highlight (str, lang) {
     if (lang === 'diagram') {
-      return `<pre class="diagram">` + Buffer.from(str, 'base64').toString() + `</pre>`
+      return '<pre class="diagram">' + Buffer.from(str, 'base64').toString() + '</pre>'
     } else if (['mermaid', 'plantuml'].includes(lang)) {
       return `<pre class="codeblock-${lang}"><code>${_.escape(str)}</code></pre>`
     } else {
@@ -314,18 +315,24 @@ md.renderer.rules.blockquote_open = injectLineNumbers
 
 cmFold.register('markdown')
 // ========================================
-// PLANTUML
+// DIAGRAMS (PLANTUML / KROKI)
 // ========================================
 
-// TODO: Use same options as defined in backend
-plantuml.init(md, {})
+// -> Same renderers and servers as the backend (only when enabled there)
+const editorIntegrations = _.get(siteConfig, 'editorIntegrations', {})
+if (editorIntegrations.plantuml) {
+  plantumlPreview(md, editorIntegrations.plantuml)
+}
+if (editorIntegrations.kroki) {
+  krokiPreview(md, editorIntegrations.kroki)
+}
 
 // ========================================
 // KATEX
 // ========================================
 
 const macros = {}
-md.inline.ruler.after('escape', 'katex_inline', katexHelper.katexInline)
+md.inline.ruler.after('escape', 'katex_inline', mathHelper.inlineRule('katex_inline'))
 md.renderer.rules.katex_inline = (tokens, idx) => {
   try {
     return katex.renderToString(tokens[idx].content, {
@@ -336,14 +343,14 @@ md.renderer.rules.katex_inline = (tokens, idx) => {
     return tokens[idx].content
   }
 }
-md.block.ruler.after('blockquote', 'katex_block', katexHelper.katexBlock, {
-  alt: [ 'paragraph', 'reference', 'blockquote', 'list' ]
+md.block.ruler.after('blockquote', 'katex_block', mathHelper.blockRule('katex_block'), {
+  alt: ['paragraph', 'reference', 'blockquote', 'list']
 })
 md.renderer.rules.katex_block = (tokens, idx) => {
   try {
-    return `<p>` + katex.renderToString(tokens[idx].content, {
+    return '<p>' + katex.renderToString(tokens[idx].content, {
       displayMode: true, macros
-    }) + `</p>`
+    }) + '</p>'
   } catch (err) {
     console.warn(err)
     return tokens[idx].content
@@ -378,7 +385,7 @@ export default {
       default: () => {}
     }
   },
-  data() {
+  data () {
     return {
       fabInsertMenu: false,
       cm: null,
@@ -391,10 +398,10 @@ export default {
     }
   },
   computed: {
-    isMobile() {
+    isMobile () {
       return this.$vuetify.breakpoint.smAndDown
     },
-    isModalShown() {
+    isModalShown () {
       return this.helpShown || this.activeModal !== ''
     },
     locale: get('page/locale'),
@@ -421,11 +428,11 @@ export default {
     }
   },
   methods: {
-    toggleModal(key) {
+    toggleModal (key) {
       this.activeModal = (this.activeModal === key) ? '' : key
       this.helpShown = false
     },
-    closeAllModal() {
+    closeAllModal () {
       this.activeModal = ''
       this.helpShown = false
     },
@@ -468,13 +475,13 @@ export default {
     /**
      * Update cursor state
      */
-    positionSync(cm) {
+    positionSync (cm) {
       this.cursorPos = cm.getCursor('head')
     },
     /**
      * Wrap selection with start / end tags
      */
-    toggleMarkup({ start, end }) {
+    toggleMarkup ({ start, end }) {
       if (!end) { end = start }
       if (!this.cm.doc.somethingSelected()) {
         return this.$store.commit('showNotification', {
@@ -488,22 +495,22 @@ export default {
     /**
      * Set current line as header
      */
-    setHeaderLine(lvl) {
+    setHeaderLine (lvl) {
       const curLine = this.cm.doc.getCursor('head').line
       let lineContent = this.cm.doc.getLine(curLine)
       const lineLength = lineContent.length
       if (_.startsWith(lineContent, '#')) {
         lineContent = lineContent.replace(/^(#+ )/, '')
       }
-      lineContent = _.times(lvl, n => '#').join('') + ` ` + lineContent
+      lineContent = _.times(lvl, n => '#').join('') + ' ' + lineContent
       this.cm.doc.replaceRange(lineContent, { line: curLine, ch: 0 }, { line: curLine, ch: lineLength })
     },
     /**
      * Get the header lever of the current line
      */
-    getHeaderLevel(cm) {
+    getHeaderLevel (cm) {
       const curLine = this.cm.doc.getCursor('head').line
-      let lineContent = this.cm.doc.getLine(curLine)
+      const lineContent = this.cm.doc.getLine(curLine)
       let lvl = 0
 
       const result = lineContent.match(/^(#+) /)
@@ -515,14 +522,14 @@ export default {
     /**
      * Insert content at cursor
      */
-    insertAtCursor({ content }) {
+    insertAtCursor ({ content }) {
       const cursor = this.cm.doc.getCursor('head')
       this.cm.doc.replaceRange(content, cursor)
     },
     /**
      * Insert content after current line
      */
-    insertAfter({ content, newLine }) {
+    insertAfter ({ content, newLine }) {
       const curLine = this.cm.doc.getCursor('to').line
       const lineLength = this.cm.doc.getLine(curLine).length
       this.cm.doc.replaceRange(newLine ? `\n${content}\n` : content, { line: curLine, ch: lineLength + 1 })
@@ -530,7 +537,7 @@ export default {
     /**
      * Insert content before current line
      */
-    insertBeforeEachLine({ content, after }) {
+    insertBeforeEachLine ({ content, after }) {
       let lines = []
       if (!this.cm.doc.somethingSelected()) {
         lines.push(this.cm.doc.getCursor('head').line)
@@ -560,13 +567,13 @@ export default {
      */
     scrollSync: _.debounce(function (cm) {
       if (!this.previewShown || cm.somethingSelected()) { return }
-      let currentLine = cm.getCursor().line
+      const currentLine = cm.getCursor().line
       if (currentLine < 3) {
         this.Velocity(this.$refs.editorPreview, 'stop', true)
         this.Velocity(this.$refs.editorPreview.firstChild, 'scroll', { offset: '-50', duration: 1000, container: this.$refs.editorPreviewContainer })
       } else {
-        let closestLine = _.findLast(linesMap, n => n <= currentLine)
-        let destElm = this.$refs.editorPreview.querySelector(`[data-line='${closestLine}']`)
+        const closestLine = _.findLast(linesMap, n => n <= currentLine)
+        const destElm = this.$refs.editorPreview.querySelector(`[data-line='${closestLine}']`)
         if (destElm) {
           this.Velocity(this.$refs.editorPreview, 'stop', true)
           this.Velocity(destElm, 'scroll', { offset: '-100', duration: 1000, container: this.$refs.editorPreviewContainer })
@@ -580,7 +587,7 @@ export default {
     toggleFullscreen () {
       this.cm.setOption('fullScreen', true)
     },
-    refresh() {
+    refresh () {
       this.$nextTick(() => {
         this.cm.refresh()
       })
@@ -616,20 +623,7 @@ export default {
               const token = cm.getTokenAt(cur)
               try {
                 const respRaw = await this.$apollo.query({
-                  query: gql`
-                    query ($query: String!, $locale: String) {
-                      pages {
-                        search(query:$query, locale:$locale) {
-                          results {
-                            title
-                            path
-                            locale
-                          }
-                          totalHits
-                        }
-                      }
-                    }
-                  `,
+                  query: pagesSearchQuery,
                   variables: {
                     query: queryString,
                     locale: this.locale
@@ -640,8 +634,8 @@ export default {
                 if (resp && resp.totalHits > 0) {
                   return {
                     list: resp.results.map(r => ({
-                      text: '(' + (siteLangs.length > 0 ? `/${r.locale}/${r.path}` : `/${r.path}`) + ')',
-                      displayText: siteLangs.length > 0 ? `/${r.locale}/${r.path} - ${r.title}` : `/${r.path} - ${r.title}`
+                      text: '(' + pagePath(r.locale, r.path) + ')',
+                      displayText: `${pagePath(r.locale, r.path)} - ${r.title}`
                     })),
                     from: CodeMirror.Pos(cur.line, token.start),
                     to: CodeMirror.Pos(cur.line, token.end)
@@ -664,7 +658,7 @@ export default {
     insertLinkHandler ({ locale, path, title }) {
       const linkText = title || _.last(path.split('/'))
       this.insertAtCursor({
-        content: siteLangs.length > 0 ? `[${linkText}](/${locale}/${path})` : `[${linkText}](/${path})`
+        content: `[${linkText}](${pagePath(locale, path)})`
       })
     },
     processMarkers (from, to) {
@@ -700,7 +694,7 @@ export default {
                     try {
                       const raw = this.cm.doc.getLine(end - 1)
                       this.$store.set('editor/activeModalData', Buffer.from(raw, 'base64').toString())
-                      this.toggleModal(`editorModalDrawio`)
+                      this.toggleModal('editorModalDrawio')
                     } catch (err) {
                       return this.$store.commit('showNotification', {
                         message: 'Failed to process diagram data.',
@@ -729,7 +723,7 @@ export default {
       this.cm.markText(from, to, { replacedWith: markerElm, __kind: kind })
     }
   },
-  mounted() {
+  mounted () {
     this.$store.set('editor/editorKey', 'markdown')
 
     if (this.mode === 'create' && !this.$store.get('editor/content')) {
@@ -739,7 +733,7 @@ export default {
     // Initialize Mermaid API
     mermaid.initialize({
       startOnLoad: false,
-      theme: this.$vuetify.theme.dark ? `dark` : `default`
+      theme: this.$vuetify.theme.dark ? 'dark' : 'default'
     })
 
     // Initialize CodeMirror
@@ -788,11 +782,11 @@ export default {
       return false
     })
     _.set(keyBindings, `${CtrlKey}-B`, c => {
-      this.toggleMarkup({ start: `**` })
+      this.toggleMarkup({ start: '**' })
       return false
     })
     _.set(keyBindings, `${CtrlKey}-I`, c => {
-      this.toggleMarkup({ start: `*` })
+      this.toggleMarkup({ start: '*' })
       return false
     })
     _.set(keyBindings, `${CtrlKey}-Alt-Right`, c => {
@@ -829,7 +823,7 @@ export default {
 
     this.$root.$on('editorInsert', opts => {
       switch (opts.kind) {
-        case 'IMAGE':
+        case 'IMAGE': {
           let img = `![${opts.text}](${opts.path})`
           if (opts.align && opts.align !== '') {
             img += `{.align-${opts.align}}`
@@ -838,29 +832,31 @@ export default {
             content: img
           })
           break
+        }
         case 'BINARY':
           this.insertAtCursor({
             content: `[${opts.text}](${opts.path})`
           })
           break
-        case 'DIAGRAM':
+        case 'DIAGRAM': {
           const selStartLine = this.cm.getCursor('from').line
           const selEndLine = this.cm.getCursor('to').line + 1
           this.cm.doc.replaceSelection('```diagram\n' + opts.text + '\n```\n', 'start')
           this.processMarkers(selStartLine, selEndLine)
           break
+        }
       }
     })
 
     // Handle save conflict
     this.$root.$on('saveConflict', () => {
-      this.toggleModal(`editorModalConflict`)
+      this.toggleModal('editorModalConflict')
     })
     this.$root.$on('overwriteEditorContent', () => {
       this.cm.setValue(this.$store.get('editor/content'))
     })
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.$root.$off('editorInsert')
   }
 }

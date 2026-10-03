@@ -5,13 +5,13 @@ const graphHelper = require('../../helpers/graph')
 
 module.exports = {
   Query: {
-    async storage() { return {} }
+    async storage () { return {} }
   },
   Mutation: {
-    async storage() { return {} }
+    async storage () { return {} }
   },
   StorageQuery: {
-    async targets(obj, args, context, info) {
+    async targets (obj, args, context, info) {
       let targets = await WIKI.models.storage.getTargets()
       targets = _.sortBy(targets.map(tgt => {
         const targetInfo = _.find(WIKI.data.storage, ['key', tgt.key]) || {}
@@ -21,24 +21,15 @@ module.exports = {
           hasSchedule: (targetInfo.schedule !== false),
           syncInterval: tgt.syncInterval || targetInfo.schedule || 'P0D',
           syncIntervalDefault: targetInfo.schedule,
-          config: _.sortBy(_.transform(tgt.config, (res, value, key) => {
-            const configData = _.get(targetInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value: (configData.sensitive && value.length > 0) ? '********' : value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(tgt.config, targetInfo.props, {
+            transformValue: (configData, value) => (configData.sensitive && value.length > 0) ? '********' : value
+          })
         }
       }), ['title', 'key'])
       return targets
     },
-    async status(obj, args, context, info) {
-      let activeTargets = await WIKI.models.storage.query().where('isEnabled', true)
+    async status (obj, args, context, info) {
+      const activeTargets = await WIKI.models.storage.query().where('isEnabled', true)
       return activeTargets.map(tgt => {
         const targetInfo = _.find(WIKI.data.storage, ['key', tgt.key]) || {}
         return {
@@ -52,10 +43,10 @@ module.exports = {
     }
   },
   StorageMutation: {
-    async updateTargets(obj, args, context) {
+    async updateTargets (obj, args, context) {
       try {
-        let dbTargets = await WIKI.models.storage.getTargets()
-        for (let tgt of args.targets) {
+        const dbTargets = await WIKI.models.storage.getTargets()
+        for (const tgt of args.targets) {
           const currentDbTarget = _.find(dbTargets, ['key', tgt.key])
           if (!currentDbTarget) {
             continue
@@ -64,14 +55,10 @@ module.exports = {
             isEnabled: tgt.isEnabled,
             mode: tgt.mode,
             syncInterval: tgt.syncInterval,
-            config: _.reduce(tgt.config, (result, value, key) => {
-              let configValue = _.get(JSON.parse(value.value), 'v', null)
-              if (configValue === '********') {
-                configValue = _.get(currentDbTarget.config, value.key, '')
-              }
-              _.set(result, `${value.key}`, configValue)
-              return result
-            }, {}),
+            config: graphHelper.kvToModuleConfig(tgt.config, (key, value) => {
+              // -> Masked secrets are sent back unchanged: keep the stored value
+              return value === '********' ? _.get(currentDbTarget.config, key, '') : value
+            }),
             state: {
               status: 'pending',
               message: 'Initializing...',
@@ -87,7 +74,7 @@ module.exports = {
         return graphHelper.generateError(err)
       }
     },
-    async executeAction(obj, args, context) {
+    async executeAction (obj, args, context) {
       try {
         await WIKI.models.storage.executeAction(args.targetKey, args.handler)
         return {

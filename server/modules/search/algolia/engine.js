@@ -6,22 +6,22 @@ const { Transform } = require('node:stream')
 /* global WIKI */
 
 module.exports = {
-  async activate() {
+  async activate () {
     // not used
   },
-  async deactivate() {
+  async deactivate () {
     // not used
   },
   /**
    * INIT
    */
-  async init() {
-    WIKI.logger.info(`(SEARCH/ALGOLIA) Initializing...`)
+  async init () {
+    WIKI.logger.info('(SEARCH/ALGOLIA) Initializing...')
     this.client = algoliasearch(this.config.appId, this.config.apiKey)
     this.index = this.client.initIndex(this.config.indexName)
 
     // -> Create Search Index
-    WIKI.logger.info(`(SEARCH/ALGOLIA) Setting index configuration...`)
+    WIKI.logger.info('(SEARCH/ALGOLIA) Setting index configuration...')
     await this.index.setSettings({
       searchableAttributes: [
         'title',
@@ -36,7 +36,7 @@ module.exports = {
       ],
       advancedSyntax: true
     })
-    WIKI.logger.info(`(SEARCH/ALGOLIA) Initialization completed.`)
+    WIKI.logger.info('(SEARCH/ALGOLIA) Initialization completed.')
   },
   /**
    * QUERY
@@ -44,7 +44,7 @@ module.exports = {
    * @param {String} q Query
    * @param {Object} opts Additional options
    */
-  async query(q, opts) {
+  async query (q, opts) {
     try {
       const results = await this.index.search(q, {
         hitsPerPage: 50
@@ -70,7 +70,7 @@ module.exports = {
    *
    * @param {Object} page Page to create
    */
-  async created(page) {
+  async created (page) {
     await this.index.saveObject({
       objectID: page.hash,
       locale: page.localeCode,
@@ -85,7 +85,7 @@ module.exports = {
    *
    * @param {Object} page Page to update
    */
-  async updated(page) {
+  async updated (page) {
     await this.index.partialUpdateObject({
       objectID: page.hash,
       title: page.title,
@@ -98,7 +98,7 @@ module.exports = {
    *
    * @param {Object} page Page to delete
    */
-  async deleted(page) {
+  async deleted (page) {
     await this.index.deleteObject(page.hash)
   },
   /**
@@ -106,7 +106,7 @@ module.exports = {
    *
    * @param {Object} page Page to rename
    */
-  async renamed(page) {
+  async renamed (page) {
     await this.index.deleteObject(page.hash)
     await this.index.saveObject({
       objectID: page.destinationHash,
@@ -120,8 +120,8 @@ module.exports = {
   /**
    * REBUILD INDEX
    */
-  async rebuild() {
-    WIKI.logger.info(`(SEARCH/ALGOLIA) Rebuilding Index...`)
+  async rebuild () {
+    WIKI.logger.info('(SEARCH/ALGOLIA) Rebuilding Index...')
     await this.index.clearObjects()
 
     const MAX_DOCUMENT_BYTES = 10 * Math.pow(2, 10) // 10 KB
@@ -129,7 +129,7 @@ module.exports = {
     const MAX_INDEXING_COUNT = 1000
     const COMMA_BYTES = Buffer.from(',').byteLength
 
-    let chunks = []
+    const chunks = []
     let bytes = 0
 
     const processDocument = async (cb, doc) => {
@@ -197,6 +197,6 @@ module.exports = {
         flush: async (cb) => processDocument(cb)
       })
     )
-    WIKI.logger.info(`(SEARCH/ALGOLIA) Index rebuilt successfully.`)
+    WIKI.logger.info('(SEARCH/ALGOLIA) Index rebuilt successfully.')
   }
 }

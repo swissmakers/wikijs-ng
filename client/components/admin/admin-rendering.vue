@@ -142,7 +142,7 @@ export default {
   components: {
     StatusIndicator
   },
-  data() {
+  data () {
     return {
       selectedCore: -1,
       renderers: [],
@@ -150,7 +150,7 @@ export default {
     }
   },
   watch: {
-    renderers(newValue, oldValue) {
+    renderers (newValue, oldValue) {
       _.delay(() => {
         this.selectedCore = _.findIndex(newValue, ['key', 'markdownCore'])
         this.selectRenderer('markdownCore')
@@ -159,7 +159,7 @@ export default {
   },
   methods: {
     selectRenderer (key) {
-      this.renderers.map(rdr => {
+      this.renderers.forEach(rdr => {
         if (_.some(rdr.children, ['key', key])) {
           this.currentRenderer = _.find(rdr.children, ['key', key])
         }
@@ -174,7 +174,7 @@ export default {
       })
     },
     async save () {
-      this.$store.commit(`loadingStart`, 'admin-rendering-saverenderers')
+      this.$store.commit('loadingStart', 'admin-rendering-saverenderers')
       await this.$apollo.mutate({
         mutation: renderersSaveMutation,
         variables: {
@@ -193,7 +193,7 @@ export default {
         style: 'success',
         icon: 'check'
       })
-      this.$store.commit(`loadingStop`, 'admin-rendering-saverenderers')
+      this.$store.commit('loadingStop', 'admin-rendering-saverenderers')
     }
   },
   apollo: {
@@ -201,7 +201,7 @@ export default {
       query: renderersQuery,
       fetchPolicy: 'network-only',
       update: (data) => {
-        let renderers = _.cloneDeep(data.rendering.renderers).map(str => ({
+        const renderers = _.cloneDeep(data.rendering.renderers).map(str => ({
           ...str,
           config: _.sortBy(str.config.map(cfg => ({
             ...cfg,
@@ -215,9 +215,9 @@ export default {
           return core
         })
         // Build dependency graph
-        rawCores.map(core => { graph.addNode(core.key) })
-        rawCores.map(core => {
-          rawCores.map(coreTarget => {
+        rawCores.forEach(core => { graph.addNode(core.key) })
+        rawCores.forEach(core => {
+          rawCores.forEach(coreTarget => {
             if (core.key !== coreTarget.key) {
               if (core.output === coreTarget.input) {
                 graph.addDependency(core.key, coreTarget.key)
@@ -226,8 +226,8 @@ export default {
           })
         })
         // Reorder cores in reverse dependency order
-        let orderedCores = []
-        _.reverse(graph.overallOrder()).map(coreKey => {
+        const orderedCores = []
+        _.reverse(graph.overallOrder()).forEach(coreKey => {
           orderedCores.push(_.find(rawCores, ['key', coreKey]))
         })
         return orderedCores

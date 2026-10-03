@@ -21,7 +21,7 @@
         v-tab {{$t('editor:props.info')}}
         v-tab {{$t('editor:props.scheduling')}}
         v-tab(:disabled='!hasScriptPermission') {{$t('editor:props.scripts')}}
-        //- v-tab(disabled) {{$t('editor:props.social')}}
+        v-tab {{$t('editor:props.social')}}
         v-tab(:disabled='!hasStylePermission') {{$t('editor:props.styles')}}
         v-tab-item(transition='fade-transition', reverse-transition='fade-transition')
           v-card-text.pt-5
@@ -204,42 +204,17 @@
           .editor-props-codeeditor-hint
             .caption {{$t('editor:props.htmlHint')}}
 
-        //- v-tab-item(transition='fade-transition', reverse-transition='fade-transition')
-        //-   v-card-text
-        //-     .overline {{$t('editor:props.socialFeatures')}}
-        //-     v-switch(
-        //-       :label='$t(`editor:props.allowComments`)'
-        //-       v-model='isPublished'
-        //-       color='primary'
-        //-       :hint='$t(`editor:props.allowCommentsHint`)'
-        //-       persistent-hint
-        //-       inset
-        //-       )
-        //-     v-switch(
-        //-       :label='$t(`editor:props.allowRatings`)'
-        //-       v-model='isPublished'
-        //-       color='primary'
-        //-       :hint='$t(`editor:props.allowRatingsHint`)'
-        //-       persistent-hint
-        //-       disabled
-        //-       inset
-        //-       )
-        //-     v-switch(
-        //-       :label='$t(`editor:props.displayAuthor`)'
-        //-       v-model='isPublished'
-        //-       color='primary'
-        //-       :hint='$t(`editor:props.displayAuthorHint`)'
-        //-       persistent-hint
-        //-       inset
-        //-       )
-        //-     v-switch(
-        //-       :label='$t(`editor:props.displaySharingBar`)'
-        //-       v-model='isPublished'
-        //-       color='primary'
-        //-       :hint='$t(`editor:props.displaySharingBarHint`)'
-        //-       persistent-hint
-        //-       inset
-        //-       )
+        v-tab-item(transition='fade-transition', reverse-transition='fade-transition')
+          v-card-text
+            .overline {{$t('editor:props.socialFeatures')}}
+            v-switch(
+              :label='$t(`editor:props.allowComments`)'
+              v-model='allowComments'
+              color='primary'
+              :hint='$t(`editor:props.allowCommentsHint`)'
+              persistent-hint
+              inset
+              )
 
         v-tab-item(:transition='false', :reverse-transition='false')
           .editor-props-codeeditor-title
@@ -263,7 +238,8 @@ import 'codemirror/mode/htmlmixed/htmlmixed.js'
 import 'codemirror/mode/css/css.js'
 
 /* global siteLangs, siteConfig */
-const filenamePattern = /^(?![\#\/\.\$\^\=\*\;\:\&\?\(\)\[\]\{\}\"\'\>\<\,\@\!\%\`\~\s])(?!.*[\#\/\.\$\^\=\*\;\:\&\?\(\)\[\]\{\}\"\'\>\<\,\@\!\%\`\~\s]$)[^\#\.\$\^\=\*\;\:\&\?\(\)\[\]\{\}\"\'\>\<\,\@\!\%\`\~\s]*$/
+// -> No special characters; "/" separates folders but must not start or end the path
+const filenamePattern = /^(?![#/.$^=*;:&?()[\]{}"'><,@!%`~\s])(?!.*[#/.$^=*;:&?()[\]{}"'><,@!%`~\s]$)[^#.$^=*;:&?()[\]{}"'><,@!%`~\s]*$/
 
 export default {
   props: {
@@ -293,8 +269,8 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     },
     mode: get('editor/mode'),
     title: sync('page/title'),
@@ -304,6 +280,7 @@ export default {
     path: sync('page/path'),
     isPublished: sync('page/isPublished'),
     isTemplate: sync('page/isTemplate'),
+    allowComments: sync('page/allowComments'),
     publishStartDate: sync('page/publishStartDate'),
     publishEndDate: sync('page/publishEndDate'),
     scriptJs: sync('page/scriptJs'),
@@ -356,17 +333,17 @@ export default {
     removeTag (tag) {
       this.tags = _.without(this.tags, tag)
     },
-    close() {
+    close () {
       this.isShown = false
     },
-    showPathSelector() {
+    showPathSelector () {
       this.pageSelectorShown = true
     },
-    setPath({ path, locale }) {
+    setPath ({ path, locale }) {
       this.locale = locale
       this.path = path
     },
-    loadEditor(ref, mode) {
+    loadEditor (ref, mode) {
       this.cm = CodeMirror.fromTextArea(ref, {
         tabSize: 2,
         mode: `text/${mode}`,

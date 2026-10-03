@@ -2,20 +2,13 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import VueClipboards from 'vue-clipboards'
-import { ApolloClient, ApolloLink, InMemoryCache, split } from '@apollo/client/core'
+import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client/core'
 import { BatchHttpLink } from '@apollo/client/link/batch-http'
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { onError } from '@apollo/client/link/error'
-import { getMainDefinition } from '@apollo/client/utilities'
-import { createClient as createWsClient } from 'graphql-ws'
 import VueApollo from 'vue-apollo'
 import Vuetify from 'vuetify/lib'
 import Velocity from 'velocity-animate'
 import Vuescroll from 'vuescroll/dist/vuescroll-native'
-import Hammer from 'hammerjs'
-import moment from 'moment-timezone'
-import VueMoment from 'vue-moment'
 import store from './store'
 import Cookies from 'js-cookie'
 
@@ -25,12 +18,15 @@ import Cookies from 'js-cookie'
 
 import boot from './modules/boot'
 import localization from './modules/localization'
+import datetime from './modules/datetime'
 
 // ====================================
 // Load Helpers
 // ====================================
 
-import helpers from './helpers'
+import { initials, bytes } from './helpers'
+import { initAppearance, getGuestAppearance } from './helpers/appearance'
+import { serverRenderedRoot, isRegisteredComponent } from './helpers/mount'
 
 // ====================================
 // Initialize Global Vars
@@ -38,9 +34,6 @@ import helpers from './helpers'
 
 window.WIKI = null
 window.boot = boot
-window.Hammer = Hammer
-
-moment.locale(siteConfig.lang)
 
 store.commit('user/REFRESH_AUTH')
 
@@ -49,21 +42,20 @@ store.commit('user/REFRESH_AUTH')
 // ====================================
 
 const graphQLEndpoint = window.location.protocol + '//' + window.location.host + '/graphql'
-const graphQLWSEndpoint = ((window.location.protocol === 'https:') ? 'wss:' : 'ws:') + '//' + window.location.host + '/graphql-subscriptions'
 
 const graphQLLink = ApolloLink.from([
   onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors) {
       let isAuthError = false
-      graphQLErrors.map(({ message, locations, path }) => {
-        if (message === `Forbidden`) {
+      graphQLErrors.forEach(({ message, locations, path }) => {
+        if (message === 'Forbidden') {
           isAuthError = true
         }
         console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`)
       })
       store.commit('showNotification', {
         style: 'red',
-        message: isAuthError ? `You are not authorized to access this resource.` : `An unexpected error occurred.`,
+        message: isAuthError ? 'You are not authorized to access this resource.' : 'An unexpected error occurred.',
         icon: 'alert'
       })
     }
@@ -109,22 +101,19 @@ const graphQLLink = ApolloLink.from([
   })
 ])
 
-const graphQLWSLink = new GraphQLWsLink(createWsClient({
-  url: graphQLWSEndpoint,
-  lazy: true,
-  connectionParams: () => {
-    const token = Cookies.get('jwt')
-    return token ? { token } : {}
-  }
-}))
-
 window.graphQL = new ApolloClient({
-  link: split(({ query }) => {
-    const { kind, operation } = getMainDefinition(query)
-    return kind === 'OperationDefinition' && operation === 'subscription'
-  }, graphQLWSLink, graphQLLink),
-  cache: new InMemoryCache(),
-  connectToDevTools: (process.env.node_env === 'development')
+  link: graphQLLink,
+  cache: new InMemoryCache({
+    // -> The GraphQL API groups its fields in namespace objects without an ID: merge their fields
+    typePolicies: Object.fromEntries([
+      'AnalyticsQuery', 'AssetQuery', 'AuthenticationQuery', 'BookmarkQuery', 'CommentQuery', 'GroupQuery',
+      'LocalizationQuery', 'MailQuery', 'NavigationQuery', 'PageQuery', 'RenderingQuery', 'SearchQuery',
+      'SiteQuery', 'StorageQuery', 'SystemQuery', 'ThemingQuery', 'UserQuery', 'WatchQuery'
+    ].map(type => [type, { merge: true }]))
+  }),
+  devtools: {
+    enabled: process.env.NODE_ENV === 'development'
+  }
 })
 
 // ====================================
@@ -133,16 +122,20 @@ window.graphQL = new ApolloClient({
 
 Vue.config.productionTip = false
 
+datetime.setLocale(siteConfig.lang)
+
 Vue.use(VueRouter)
 Vue.use(VueApollo)
-Vue.use(VueClipboards)
 Vue.use(localization.VueI18Next)
-Vue.use(helpers)
 Vue.use(Vuetify)
-Vue.use(VueMoment, { moment })
 Vue.use(Vuescroll)
 
 Vue.prototype.Velocity = Velocity
+
+Vue.filter('initials', initials)
+Vue.filter('date', datetime.formatDate)
+Vue.prototype.$datetime = datetime
+Vue.filter('bytes', bytes)
 
 // ====================================
 // Register Vue Components
@@ -161,6 +154,7 @@ Vue.component('Notify', () => import(/* webpackMode: "eager" */ './components/co
 Vue.component('NotFound', () => import(/* webpackChunkName: "not-found" */ './components/not-found.vue'))
 Vue.component('PageSelector', () => import(/* webpackPrefetch: true, webpackChunkName: "ui-extra" */ './components/common/page-selector.vue'))
 Vue.component('PageSource', () => import(/* webpackChunkName: "source" */ './components/source.vue'))
+Vue.component('RecentChanges', () => import(/* webpackChunkName: "recent" */ './components/recent-changes.vue'))
 Vue.component('Profile', () => import(/* webpackChunkName: "profile" */ './components/profile.vue'))
 Vue.component('Register', () => import(/* webpackChunkName: "register" */ './components/register.vue'))
 Vue.component('SearchResults', () => import(/* webpackPrefetch: true, webpackChunkName: "ui-extra" */ './components/common/search-results.vue'))
@@ -173,8 +167,9 @@ Vue.component('Welcome', () => import(/* webpackChunkName: "welcome" */ './compo
 
 Vue.component('NavFooter', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/nav-footer.vue'))
 Vue.component('Page', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/page.vue'))
+Vue.component('Tabset', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/tabset.vue'))
 
-let bootstrap = () => {
+const bootstrap = () => {
   // ====================================
   // Notifications
   // ====================================
@@ -193,15 +188,20 @@ let bootstrap = () => {
 
   const i18n = localization.init()
 
-  let darkModeEnabled = siteConfig.darkMode
-  if ((store.get('user/appearance') || '').length > 0) {
-    darkModeEnabled = (store.get('user/appearance') === 'dark')
-  }
+  const darkModeEnabled = initAppearance(store.get('user/authenticated') ? store.get('user/appearance') : getGuestAppearance())
+
+  // -> Render the server-provided mount point without compiling templates in the browser
+  const rootEl = document.getElementById('root')
+  const renderRoot = serverRenderedRoot(rootEl, {
+    isComponent: isRegisteredComponent(Vue),
+    slotRules: {
+      page: { contents: ['tabset'], comments: ['comments'] }
+    }
+  })
 
   window.WIKI = new Vue({
-    el: '#root',
-    components: {},
-    mixins: [helpers],
+    el: rootEl,
+    render: renderRoot,
     apolloProvider,
     store,
     i18n,
@@ -236,17 +236,8 @@ let bootstrap = () => {
       }
     }),
     mounted () {
-      this.$moment.locale(siteConfig.lang)
-      if ((store.get('user/dateFormat') || '').length > 0) {
-        this.$moment.updateLocale(this.$moment.locale(), {
-          longDateFormat: {
-            'L': store.get('user/dateFormat')
-          }
-        })
-      }
-      if ((store.get('user/timezone') || '').length > 0) {
-        this.$moment.tz.setDefault(store.get('user/timezone'))
-      }
+      datetime.setDateFormat(store.get('user/dateFormat'))
+      datetime.setZone(store.get('user/timezone'))
     }
   })
 

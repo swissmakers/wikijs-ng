@@ -8,7 +8,6 @@ const state = {
   footerOverride: siteConfig.footerOverride,
   dark: siteConfig.darkMode,
   tocPosition: siteConfig.tocPosition,
-  mascot: true,
   title: siteConfig.title,
   logoUrl: siteConfig.logoUrl,
   search: '',

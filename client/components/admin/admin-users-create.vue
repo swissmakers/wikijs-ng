@@ -70,13 +70,12 @@
           v-model='mustChangePwd'
           hide-details
         )
-        //- v-checkbox(
-        //-   color='primary'
-        //-   label='Send a welcome email'
-        //-   hide-details
-        //-   v-model='sendWelcomeEmail'
-        //-   disabled
-        //- )
+        v-checkbox(
+          color='primary'
+          :label='$t(`admin:users.sendWelcomeEmail`, { defaultValue: "Send a welcome email" })'
+          hide-details
+          v-model='sendWelcomeEmail'
+        )
       v-card-chin
         v-spacer
         v-btn(text, @click='isShown = false') Cancel
@@ -103,7 +102,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       providers: [],
       provider: 'local',
@@ -118,12 +117,12 @@ export default {
   },
   computed: {
     isShown: {
-      get() { return this.value },
-      set(val) { this.$emit('input', val) }
+      get () { return this.value },
+      set (val) { this.$emit('input', val) }
     }
   },
   watch: {
-    value(newValue, oldValue) {
+    value (newValue, oldValue) {
       if (newValue) {
         this.$nextTick(() => {
           this.$refs.emailInput.focus()
@@ -132,8 +131,8 @@ export default {
     }
   },
   methods: {
-    async newUser(close = false) {
-      let rules = {
+    async newUser (close = false) {
+      const rules = {
         email: {
           presence: {
             allowEmpty: false
@@ -150,7 +149,7 @@ export default {
           }
         }
       }
-      if (this.provider === `local`) {
+      if (this.provider === 'local') {
         rules.password = {
           presence: {
             allowEmpty: false
@@ -220,7 +219,7 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
     },
-    generatePwd() {
+    generatePwd () {
       const pwdChars = 'abcdefghkmnpqrstuvwxyzABCDEFHJKLMNPQRSTUVWXYZ23456789_*=?#!()+'
       this.password = _.sampleSize(pwdChars, 12).join('')
     }

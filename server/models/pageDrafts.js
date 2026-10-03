@@ -1,5 +1,4 @@
 const Model = require('objection').Model
-const moment = require('moment')
 
 /* global WIKI */
 
@@ -7,7 +6,7 @@ const moment = require('moment')
  * PageDraft model
  */
 module.exports = class PageDraft extends Model {
-  static get tableName() { return 'pageDrafts' }
+  static get tableName () { return 'pageDrafts' }
 
   static get jsonSchema () {
     return {
@@ -15,21 +14,21 @@ module.exports = class PageDraft extends Model {
       required: ['path', 'localeCode', 'editorKey'],
 
       properties: {
-        id: {type: 'integer'},
-        pageId: {type: ['integer', 'null']},
-        path: {type: 'string'},
-        localeCode: {type: 'string'},
-        title: {type: 'string'},
-        description: {type: 'string'},
-        content: {type: 'string'},
-        editorKey: {type: 'string'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        id: { type: 'integer' },
+        pageId: { type: ['integer', 'null'] },
+        path: { type: 'string' },
+        localeCode: { type: 'string' },
+        title: { type: 'string' },
+        description: { type: 'string' },
+        content: { type: 'string' },
+        editorKey: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       author: {
         relation: Model.BelongsToOneRelation,
@@ -42,22 +41,23 @@ module.exports = class PageDraft extends Model {
     }
   }
 
-  async $beforeUpdate(opt, context) {
+  async $beforeUpdate (opt, context) {
     await super.$beforeUpdate(opt, context)
 
-    this.updatedAt = moment.utc().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
-  async $beforeInsert(context) {
+
+  async $beforeInsert (context) {
     await super.$beforeInsert(context)
 
-    this.createdAt = moment.utc().toISOString()
-    this.updatedAt = moment.utc().toISOString()
+    this.createdAt = new Date().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
 
   /**
    * Save (upsert) a draft for the given user + path + locale
    */
-  static async saveDraft(opts) {
+  static async saveDraft (opts) {
     const existing = await WIKI.models.pageDrafts.query().findOne({
       authorId: opts.authorId,
       path: opts.path,

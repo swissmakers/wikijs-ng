@@ -6,7 +6,7 @@ const path = require('path')
 const localeSegmentRegex = /^[A-Z]{2}(-[A-Z]{2})?$/i
 const localeFolderRegex = /^([a-z]{2}(?:-[a-z]{2})?\/)?(.*)/i
 // eslint-disable-next-line no-control-regex
-const unsafeCharsRegex = /[\x00-\x1f\x80-\x9f\\"|<>:*?]/
+const unsafeCharsRegex = /[\x00-\x1f\x80-\x9f\\"|<>:*?]/g
 
 const contentToExt = {
   markdown: 'md',
@@ -22,7 +22,7 @@ module.exports = {
    * Parse raw url path and make it safe
    */
   parsePath (rawPath, opts = {}) {
-    let pathObj = {
+    const pathObj = {
       locale: WIKI.config.lang.code,
       path: 'home',
       private: false,
@@ -39,7 +39,7 @@ module.exports = {
     rawPath = rawPath.replace(/\\/g, '').replace(/\/\//g, '').replace(/\.\.+/ig, '')
 
     // Extract Info
-    let pathParts = _.filter(_.split(rawPath, '/'), p => {
+    const pathParts = _.filter(_.split(rawPath, '/'), p => {
       p = _.trim(p)
       return !_.isEmpty(p) && p !== '..' && p !== '.'
     })
@@ -68,14 +68,14 @@ module.exports = {
   /**
    * Generate unique hash from page
    */
-  generateHash(opts) {
+  generateHash (opts) {
     return crypto.createHash('sha1').update(`${opts.locale}|${opts.path}|${opts.privateNS}`).digest('hex')
   },
   /**
    * Inject Page Metadata
    */
-  injectPageMetadata(page) {
-    let meta = [
+  injectPageMetadata (page) {
+    const meta = [
       ['title', page.title],
       ['description', page.description],
       ['published', page.isPublished.toString()],
@@ -101,7 +101,7 @@ module.exports = {
   /**
    * Check if path is a reserved path
    */
-  isReservedPath(rawPath) {
+  isReservedPath (rawPath) {
     const firstSection = _.head(rawPath.split('/'))
     if (firstSection.length <= 1) {
       return true
@@ -119,7 +119,7 @@ module.exports = {
   /**
    * Get file extension from content type
    */
-  getFileExtension(contentType) {
+  getFileExtension (contentType) {
     return _.get(contentToExt, contentType, 'txt')
   },
   /**

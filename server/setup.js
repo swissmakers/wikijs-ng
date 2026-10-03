@@ -1,6 +1,4 @@
 const path = require('path')
-const { v4: uuid } = require('uuid')
-const bodyParser = require('body-parser')
 const compression = require('compression')
 const express = require('express')
 const favicon = require('serve-favicon')
@@ -27,7 +25,7 @@ module.exports = () => {
   // Define Express App
   // ----------------------------------------
 
-  let app = express()
+  const app = express()
   app.use(compression())
 
   // ----------------------------------------
@@ -44,8 +42,8 @@ module.exports = () => {
   app.set('views', path.join(WIKI.SERVERPATH, 'views'))
   app.set('view engine', 'pug')
 
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: false }))
 
   app.locals.config = WIKI.config
   app.locals.data = WIKI.data
@@ -66,7 +64,7 @@ module.exports = () => {
   // ----------------------------------------
 
   app.get('*', async (req, res) => {
-    let packageObj = await fs.readJson(path.join(WIKI.ROOTPATH, 'package.json'))
+    const packageObj = await fs.readJson(path.join(WIKI.ROOTPATH, 'package.json'))
     res.render('setup', { packageObj })
   })
 
@@ -75,61 +73,12 @@ module.exports = () => {
    */
   app.post('/finalize', async (req, res) => {
     try {
-      // Set config
-      _.set(WIKI.config, 'auth', {
-        audience: 'urn:wiki.js',
-        tokenExpiration: '30m',
-        tokenRenewal: '14d'
-      })
-      _.set(WIKI.config, 'company', '')
-      _.set(WIKI.config, 'features', {
-        featurePageRatings: true,
-        featurePageComments: true,
-        featurePersonalWikis: true
-      })
-      _.set(WIKI.config, 'graphEndpoint', 'https://graph.requarks.io')
+      // Set config: defaults from server/app/data.yml, plus the values of the setup form
+      for (const key of ['auth', 'company', 'features', 'lang', 'mail', 'seo', 'theming', 'title']) {
+        _.set(WIKI.config, key, _.cloneDeep(WIKI.data.defaults.config[key]))
+      }
       _.set(WIKI.config, 'host', req.body.siteUrl)
-      _.set(WIKI.config, 'lang', {
-        code: 'en',
-        autoUpdate: true,
-        namespacing: false,
-        namespaces: []
-      })
-      _.set(WIKI.config, 'logo', {
-        hasLogo: false,
-        logoIsSquare: false
-      })
-      _.set(WIKI.config, 'mail', {
-        senderName: '',
-        senderEmail: '',
-        host: '',
-        port: 465,
-        name: '',
-        secure: true,
-        verifySSL: true,
-        user: '',
-        pass: '',
-        useDKIM: false,
-        dkimDomainName: '',
-        dkimKeySelector: '',
-        dkimPrivateKey: ''
-      })
-      _.set(WIKI.config, 'seo', {
-        description: '',
-        robots: ['index', 'follow'],
-        analyticsService: '',
-        analyticsId: ''
-      })
       _.set(WIKI.config, 'sessionSecret', (await randomBytesAsync(32)).toString('hex'))
-      _.set(WIKI.config, 'theming', {
-        theme: 'default',
-        darkMode: false,
-        iconset: 'mdi',
-        injectCSS: '',
-        injectHead: '',
-        injectBody: ''
-      })
-      _.set(WIKI.config, 'title', 'Wiki.js NG')
 
       // Basic checks
       if (!semver.satisfies(process.version, '>=24.0')) {
@@ -171,10 +120,8 @@ module.exports = () => {
         'certs',
         'company',
         'features',
-        'graphEndpoint',
         'host',
         'lang',
-        'logo',
         'mail',
         'seo',
         'sessionSecret',
@@ -215,15 +162,9 @@ module.exports = () => {
           break
       }
 
-      // Create default locale
-      WIKI.logger.info('Installing default locale...')
-      await WIKI.models.locales.query().insert({
-        code: 'en',
-        strings: {},
-        isRTL: false,
-        name: 'English',
-        nativeName: 'English'
-      })
+      // Create bundled locales
+      WIKI.logger.info('Installing bundled locales...')
+      await WIKI.models.locales.syncRows(await WIKI.models.locales.getBundledLocales(), { clearStrings: true })
 
       // Create default groups
 
@@ -252,8 +193,8 @@ module.exports = () => {
         config: {},
         selfRegistration: false,
         isEnabled: true,
-        domainWhitelist: {v: []},
-        autoEnrollGroups: {v: []},
+        domainWhitelist: { v: [] },
+        autoEnrollGroups: { v: [] },
         order: 0,
         strategyKey: 'local',
         displayName: 'Local'
@@ -262,9 +203,6 @@ module.exports = () => {
       // Load editors + enable default
       await WIKI.models.editors.refreshEditorsFromDisk()
       await WIKI.models.editors.query().patch({ isEnabled: true }).where('key', 'markdown')
-
-      // Load loggers
-      await WIKI.models.loggers.refreshLoggersFromDisk()
 
       // Load renderers
       await WIKI.models.renderers.refreshRenderersFromDisk()
@@ -322,7 +260,7 @@ module.exports = () => {
             locale: 'en',
             items: [
               {
-                id: uuid(),
+                id: crypto.randomUUID(),
                 icon: 'mdi-home',
                 kind: 'link',
                 label: 'Home',
@@ -392,10 +330,10 @@ module.exports = () => {
   WIKI.server = http.createServer(app)
   WIKI.server.listen(WIKI.config.port, WIKI.config.bindIP)
 
-  var openConnections = []
+  const openConnections = []
 
   WIKI.server.on('connection', (conn) => {
-    let key = conn.remoteAddress + ':' + conn.remotePort
+    const key = conn.remoteAddress + ':' + conn.remotePort
     openConnections[key] = conn
     conn.on('close', () => {
       openConnections.splice(key, 1)
@@ -404,7 +342,7 @@ module.exports = () => {
 
   WIKI.server.destroy = (cb) => {
     WIKI.server.close(cb)
-    for (let key in openConnections) {
+    for (const key in openConnections) {
       openConnections[key].destroy()
     }
   }

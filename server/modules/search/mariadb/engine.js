@@ -16,25 +16,26 @@ function buildBooleanQuery (q) {
 }
 
 module.exports = {
+  buildBooleanQuery,
   async activate () {
     if (WIKI.config.db.type !== 'mariadb' && WIKI.config.db.type !== 'mysql') {
       throw new WIKI.Error.SearchActivationFailed('Must use MariaDB or MySQL database to activate this engine!')
     }
   },
   async deactivate () {
-    WIKI.logger.info(`(SEARCH/MARIADB) Dropping index table...`)
+    WIKI.logger.info('(SEARCH/MARIADB) Dropping index table...')
     await WIKI.models.knex.schema.dropTableIfExists('pagesSearch')
-    WIKI.logger.info(`(SEARCH/MARIADB) Index table has been dropped.`)
+    WIKI.logger.info('(SEARCH/MARIADB) Index table has been dropped.')
   },
   /**
    * INIT
    */
   async init () {
-    WIKI.logger.info(`(SEARCH/MARIADB) Initializing...`)
+    WIKI.logger.info('(SEARCH/MARIADB) Initializing...')
 
     const indexExists = await WIKI.models.knex.schema.hasTable('pagesSearch')
     if (!indexExists) {
-      WIKI.logger.info(`(SEARCH/MARIADB) Creating Pages Search table...`)
+      WIKI.logger.info('(SEARCH/MARIADB) Creating Pages Search table...')
       await WIKI.models.knex.raw(`
         CREATE TABLE \`pagesSearch\` (
           \`id\` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +51,7 @@ module.exports = {
       `)
     }
 
-    WIKI.logger.info(`(SEARCH/MARIADB) Initialization completed.`)
+    WIKI.logger.info('(SEARCH/MARIADB) Initialization completed.')
   },
   /**
    * QUERY
@@ -181,7 +182,7 @@ module.exports = {
    * REBUILD INDEX
    */
   async rebuild () {
-    WIKI.logger.info(`(SEARCH/MARIADB) Rebuilding Index...`)
+    WIKI.logger.info('(SEARCH/MARIADB) Rebuilding Index...')
     await WIKI.models.knex('pagesSearch').truncate()
 
     let chunk = []
@@ -221,6 +222,6 @@ module.exports = {
     )
     await flushChunk()
 
-    WIKI.logger.info(`(SEARCH/MARIADB) Index rebuilt successfully.`)
+    WIKI.logger.info('(SEARCH/MARIADB) Index rebuilt successfully.')
   }
 }

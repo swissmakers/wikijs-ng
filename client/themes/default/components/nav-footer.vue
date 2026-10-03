@@ -6,7 +6,7 @@
       template(v-else-if='company && company.length > 0 && contentLicense !== ``')
         span(v-if='contentLicense === `alr`') {{ $t('common:footer.copyright', { company: company, year: currentYear, interpolation: { escapeValue: false } }) }} |&nbsp;
         span(v-else) {{ $t('common:footer.license', { company: company, license: $t('common:license.' + contentLicense), interpolation: { escapeValue: false } }) }} |&nbsp;
-      span {{ $t('common:footer.poweredBy') }} #[a(href='https://github.com/swissmakers/wikijs-ng', ref='nofollow') Wiki.js NG]
+      span {{ $t('common:footer.poweredBy') }} #[a(href='https://github.com/swissmakers/wikijs-ng', rel='nofollow') Wiki.js NG]
 </template>
 
 <script>
@@ -30,7 +30,7 @@ export default {
       default: 'grey darken-3'
     }
   },
-  data() {
+  data () {
     return {
       currentYear: (new Date()).getFullYear()
     }
@@ -43,7 +43,7 @@ export default {
       if (!this.footerOverride) { return '' }
       return md.renderInline(this.footerOverride)
     },
-    bgColor() {
+    bgColor () {
       if (!this.$vuetify.theme.dark) {
         return this.color
       } else {

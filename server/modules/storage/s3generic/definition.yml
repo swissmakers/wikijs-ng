@@ -2,8 +2,8 @@ key: s3generic
 title: S3 Generic
 description: Generic storage module for S3-compatible services.
 author: requarks.io
-logo: https://static.requarks.io/logo/aws-s3-alt.svg
-website: https://wiki.js.org
+logo: /_assets/svg/modules/aws-s3-alt.svg
+website: https://github.com/swissmakers/wikijs-ng
 isAvailable: true
 supportedModes:
   - push

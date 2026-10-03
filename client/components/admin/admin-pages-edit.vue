@@ -47,6 +47,10 @@
                 v-list-item-icon
                   v-icon(color='indigo') mdi-history
                 v-list-item-title View History
+              v-list-item(@click='rerenderPage', :disabled='loading')
+                v-list-item-icon
+                  v-icon(color='indigo') mdi-cached
+                v-list-item-title {{ $t('admin:pages.rerender', { defaultValue: 'Rerender' }) }}
               v-dialog(v-model='deletePageDialog', max-width='500')
                 template(v-slot:activator='{ on }')
                   v-list-item(v-on='on')
@@ -124,7 +128,7 @@
                 v-list-item-title: .overline.grey--text Creator
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.creatorName }} #[em.caption ({{ page.creatorEmail }})]
               v-list-item-action
-                v-list-item-action-text {{ page.createdAt | moment('calendar') }}
+                v-list-item-action-text {{ page.createdAt | date('calendar') }}
             v-divider
             v-list-item
               v-list-item-avatar(size='24')
@@ -134,7 +138,10 @@
                 v-list-item-title: .overline.grey--text Last Editor
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.authorName }} #[em.caption ({{ page.authorEmail }})]
               v-list-item-action
-                v-list-item-action-text {{ page.updatedAt | moment('calendar') }}
+                v-list-item-action-text {{ page.updatedAt | date('calendar') }}
+
+      v-flex(xs12)
+        admin-pages-access(:page-id='page.id')
 
     v-layout(row, align-center, v-else)
       v-progress-circular(indeterminate, width='2', color='grey')
@@ -147,12 +154,14 @@ import { StatusIndicator } from 'vue-status-indicator'
 
 import pageQuery from 'gql/admin/pages/pages-query-single.gql'
 import deletePageMutation from 'gql/common/common-pages-mutation-delete.gql'
+import renderPageMutation from 'gql/common/common-pages-mutation-render.gql'
 
 export default {
   components: {
-    StatusIndicator
+    StatusIndicator,
+    AdminPagesAccess: () => import(/* webpackChunkName: "admin" */ './admin-pages-access.vue')
   },
-  data() {
+  data () {
     return {
       deletePageDialog: false,
       page: {},
@@ -160,9 +169,9 @@ export default {
     }
   },
   methods: {
-    async deletePage() {
+    async deletePage () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'page-delete')
+      this.$store.commit('loadingStart', 'page-delete')
       try {
         const resp = await this.$apollo.mutate({
           mutation: deletePageMutation,
@@ -173,7 +182,7 @@ export default {
         if (_.get(resp, 'data.pages.delete.responseResult.succeeded', false)) {
           this.$store.commit('showNotification', {
             style: 'green',
-            message: `Page deleted successfully.`,
+            message: 'Page deleted successfully.',
             icon: 'check'
           })
           this.$router.replace('/pages')
@@ -183,20 +192,39 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'page-delete')
+      this.$store.commit('loadingStop', 'page-delete')
     },
-    async rerenderPage() {
-      this.$store.commit('showNotification', {
-        style: 'indigo',
-        message: `Coming soon...`,
-        icon: 'directions_boat'
-      })
+    async rerenderPage () {
+      this.loading = true
+      this.$store.commit('loadingStart', 'page-render')
+      try {
+        const resp = await this.$apollo.mutate({
+          mutation: renderPageMutation,
+          variables: {
+            id: this.page.id
+          }
+        })
+        if (_.get(resp, 'data.pages.render.responseResult.succeeded', false)) {
+          this.$store.commit('showNotification', {
+            style: 'success',
+            message: this.$t('admin:pages.rerenderSuccess', { defaultValue: 'Page rendered successfully.' }),
+            icon: 'check'
+          })
+          await this.$apollo.queries.page.refetch()
+        } else {
+          throw new Error(_.get(resp, 'data.pages.render.responseResult.message', this.$t('common:error.unexpected')))
+        }
+      } catch (err) {
+        this.$store.commit('pushGraphError', err)
+      }
+      this.$store.commit('loadingStop', 'page-render')
+      this.loading = false
     }
   },
   apollo: {
     page: {
       query: pageQuery,
-      variables() {
+      variables () {
         return {
           id: _.toSafeInteger(this.$route.params.id)
         }

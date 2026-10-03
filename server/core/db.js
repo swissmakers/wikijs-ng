@@ -1,13 +1,11 @@
 const _ = require('lodash')
 const autoload = require('auto-load')
 const path = require('path')
-const Promise = require('bluebird')
 const Knex = require('knex')
 const fs = require('fs')
 const Objection = require('objection')
 
 const migrationSource = require('../db/migrator-source')
-const migrateFromBeta = require('../db/beta')
 
 /* global WIKI */
 
@@ -23,19 +21,21 @@ module.exports = {
    *
    * @return     {Object}  DB instance
    */
-  init() {
-    let self = this
+  init () {
+    const self = this
 
     // Fetch DB Config
 
     let dbClient = null
-    let dbConfig = (!_.isEmpty(process.env.DATABASE_URL)) ? process.env.DATABASE_URL : {
-      host: WIKI.config.db.host.toString(),
-      user: WIKI.config.db.user.toString(),
-      password: WIKI.config.db.pass.toString(),
-      database: WIKI.config.db.db.toString(),
-      port: WIKI.config.db.port
-    }
+    let dbConfig = (!_.isEmpty(process.env.DATABASE_URL))
+      ? process.env.DATABASE_URL
+      : {
+          host: WIKI.config.db.host.toString(),
+          user: WIKI.config.db.user.toString(),
+          password: WIKI.config.db.pass.toString(),
+          database: WIKI.config.db.db.toString(),
+          port: WIKI.config.db.port
+        }
 
     // Handle SSL Options
 
@@ -101,7 +101,7 @@ module.exports = {
         // Fix mysql boolean handling...
         dbConfig.typeCast = (field, next) => {
           if (field.type === 'TINY' && field.length === 1) {
-            let value = field.string()
+            const value = field.string()
             return value ? (value === '1') : null
           }
           return next()
@@ -139,25 +139,24 @@ module.exports = {
       connection: dbConfig,
       pool: {
         ...WIKI.config.pool,
-        async afterCreate(conn, done) {
-          // -> Set Connection App Name
-          switch (WIKI.config.db.type) {
-            case 'postgres':
-              await conn.query(`set application_name = 'Wiki.js NG'`)
-              // -> Set schema if it's not public
-              if (WIKI.config.db.schema && WIKI.config.db.schema !== 'public') {
-                await conn.query(`set search_path TO ${WIKI.config.db.schema}, public;`)
-              }
-              done()
-              break
-            case 'mysql':
-              await conn.promise().query(`set autocommit = 1`)
-              done()
-              break
-            default:
-              done()
-              break
+        afterCreate (conn, done) {
+          // -> Callback style: knex promisifies this hook, errors must reach done()
+          const setup = async () => {
+            switch (WIKI.config.db.type) {
+              case 'postgres':
+                // -> Set Connection App Name
+                await conn.query('set application_name = \'Wiki.js NG\'')
+                // -> Set schema if it's not public
+                if (WIKI.config.db.schema && WIKI.config.db.schema !== 'public') {
+                  await conn.query(`set search_path TO ${WIKI.config.db.schema}, public;`)
+                }
+                break
+              case 'mysql':
+                await conn.promise().query('set autocommit = 1')
+                break
+            }
           }
+          setup().then(() => done(), err => done(err))
         }
       },
       debug: WIKI.IS_DEBUG
@@ -171,7 +170,7 @@ module.exports = {
 
     // Set init tasks
     let conAttempts = 0
-    let initTasks = {
+    const initTasks = {
       // -> Attempt initial connection
       async connect () {
         try {
@@ -200,24 +199,37 @@ module.exports = {
           migrationSource
         })
       },
-      // -> Migrate DB Schemas from beta
-      async migrateFromBeta () {
-        return migrateFromBeta.migrate(self.knex)
+      // -> Refuse databases still on a 2.0 beta/rc schema
+      async checkBetaSchema () {
+        if (!await self.knex.schema.hasTable('migrations')) {
+          return
+        }
+        const betaMigration = await self.knex('migrations').where('name', 'like', '2.0.0-beta%').first()
+        if (betaMigration) {
+          throw new Error('This database uses a Wiki.js 2.0 beta schema. Upgrade it with upstream Wiki.js 2.5 first, then switch to Wiki.js NG.')
+        }
       }
     }
 
-    let initTasksQueue = (WIKI.IS_MASTER) ? [
-      initTasks.connect,
-      initTasks.migrateFromBeta,
-      initTasks.syncSchemas
-    ] : [
-      () => { return Promise.resolve() }
-    ]
+    const initTasksQueue = (WIKI.IS_MASTER)
+      ? [
+          initTasks.connect,
+          initTasks.checkBetaSchema,
+          initTasks.syncSchemas
+        ]
+      : [
+          () => { return Promise.resolve() }
+        ]
 
     // Perform init tasks
 
     WIKI.logger.info(`Using database driver ${dbClient} for ${WIKI.config.db.type} [ OK ]`)
-    this.onReady = Promise.each(initTasksQueue, t => t()).return(true)
+    this.onReady = (async () => {
+      for (const task of initTasksQueue) {
+        await task()
+      }
+      return true
+    })()
 
     return {
       ...this,
@@ -232,7 +244,7 @@ module.exports = {
     if (!useHA) {
       return
     } else if (WIKI.config.db.type !== 'postgres') {
-      WIKI.logger.warn(`Database engine doesn't support pub/sub. Will not handle concurrent instances: [ DISABLED ]`)
+      WIKI.logger.warn('Database engine doesn\'t support pub/sub. Will not handle concurrent instances: [ DISABLED ]')
       return
     }
 
@@ -260,7 +272,7 @@ module.exports = {
     WIKI.configSvc.subscribeToEvents()
     WIKI.models.pages.subscribeToEvents()
 
-    WIKI.logger.info(`High-Availability Listener initialized successfully: [ OK ]`)
+    WIKI.logger.info('High-Availability Listener initialized successfully: [ OK ]')
   },
   /**
    * Unsubscribe from database LISTEN / NOTIFY

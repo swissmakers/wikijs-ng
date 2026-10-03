@@ -49,8 +49,8 @@
                 td {{ props.item.id }}
                 td: strong {{ props.item.name }}
                 td {{ props.item.userCount }}
-                td {{ props.item.createdAt | moment('calendar') }}
-                td {{ props.item.updatedAt | moment('calendar') }}
+                td {{ props.item.createdAt | date('calendar') }}
+                td {{ props.item.updatedAt | date('calendar') }}
                 td
                   v-tooltip(left, v-if='props.item.isSystem')
                     template(v-slot:activator='{ on }')
@@ -69,7 +69,7 @@ import groupsQuery from 'gql/admin/groups/groups-query-list.gql'
 import createGroupMutation from 'gql/admin/groups/groups-mutation-create.gql'
 
 export default {
-  data() {
+  data () {
     return {
       newGroupDialog: false,
       newGroupName: '',
@@ -90,7 +90,7 @@ export default {
     }
   },
   watch: {
-    newGroupDialog(newValue, oldValue) {
+    newGroupDialog (newValue, oldValue) {
       if (newValue) {
         this.$nextTick(() => {
           this.$refs.groupNameIpt.focus()
@@ -99,7 +99,7 @@ export default {
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.groups.refetch()
       this.$store.commit('showNotification', {
         message: 'Groups have been refreshed.',
@@ -107,7 +107,7 @@ export default {
         icon: 'cached'
       })
     },
-    async createGroup() {
+    async createGroup () {
       if (_.trim(this.newGroupName).length < 1) {
         this.$store.commit('showNotification', {
           style: 'red',
@@ -141,7 +141,7 @@ export default {
         this.newGroupName = ''
         this.$store.commit('showNotification', {
           style: 'success',
-          message: `Group has been created successfully.`,
+          message: 'Group has been created successfully.',
           icon: 'check'
         })
       } catch (err) {

@@ -1,11 +1,15 @@
-query ($limit: Int, $orderBy: PageOrderBy, $orderByDirection: PageOrderByDirection, $tags: [String!], $locale: String) {
+query ($limit: Int, $orderBy: PageOrderBy, $orderByDirection: PageOrderByDirection, $tags: [String!], $locale: String, $creatorId: Int, $authorId: Int) {
   pages {
-    list(limit: $limit, orderBy: $orderBy, orderByDirection: $orderByDirection, tags: $tags, locale: $locale) {
+    list(limit: $limit, orderBy: $orderBy, orderByDirection: $orderByDirection, tags: $tags, locale: $locale, creatorId: $creatorId, authorId: $authorId) {
       id
       locale
       path
       title
       description
+      contentType
+      isPublished
+      isPrivate
+      privateNS
       createdAt
       updatedAt
       tags

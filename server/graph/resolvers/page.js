@@ -1,20 +1,29 @@
 const _ = require('lodash')
 const graphHelper = require('../../helpers/graph')
+const notificationsHelper = require('../../helpers/notifications')
 
 /* global WIKI */
 
+// Permissions shown by the permission inspector
+const PAGE_PERMISSIONS = [
+  'read:pages', 'write:pages', 'manage:pages', 'delete:pages',
+  'read:source', 'read:history', 'write:styles', 'write:scripts',
+  'read:comments', 'write:comments', 'manage:comments',
+  'read:assets', 'write:assets'
+]
+
 module.exports = {
   Query: {
-    async pages() { return {} }
+    async pages () { return {} }
   },
   Mutation: {
-    async pages() { return {} }
+    async pages () { return {} }
   },
   PageQuery: {
     /**
      * PAGE HISTORY
      */
-    async history(obj, args, context, info) {
+    async history (obj, args, context, info) {
       const page = await WIKI.models.pages.query().select('path', 'localeCode').findById(args.id)
       if (WIKI.auth.checkAccess(context.req.user, ['read:history'], {
         path: page.path,
@@ -32,7 +41,7 @@ module.exports = {
     /**
      * PAGE VERSION
      */
-    async version(obj, args, context, info) {
+    async version (obj, args, context, info) {
       const page = await WIKI.models.pages.query().select('path', 'localeCode').findById(args.pageId)
       if (WIKI.auth.checkAccess(context.req.user, ['read:history'], {
         path: page.path,
@@ -81,6 +90,7 @@ module.exports = {
         'title',
         'description',
         'isPublished',
+        'isTemplate',
         'isPrivate',
         'privateNS',
         'contentType',
@@ -92,9 +102,6 @@ module.exports = {
           builder.select('tag')
         })
         .modify(queryBuilder => {
-          if (args.limit) {
-            queryBuilder.limit(args.limit)
-          }
           if (args.locale) {
             queryBuilder.where('localeCode', args.locale)
           }
@@ -133,10 +140,18 @@ module.exports = {
           }
         })
       results = _.filter(results, r => {
-        return WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
+        const pageCtx = {
           path: r.path,
           locale: r.locale
-        })
+        }
+        if (!WIKI.auth.checkAccess(context.req.user, ['read:pages'], pageCtx)) {
+          return false
+        }
+        // -> Unpublished pages and templates are only listed for users who can edit them
+        if (!r.isPublished || r.isTemplate) {
+          return WIKI.auth.checkAccess(context.req.user, ['write:pages'], pageCtx) || WIKI.auth.checkAccess(context.req.user, ['manage:pages'], pageCtx)
+        }
+        return true
       }).map(r => ({
         ...r,
         tags: _.map(r.tags, 'tag')
@@ -144,13 +159,17 @@ module.exports = {
       if (args.tags && args.tags.length > 0) {
         results = _.filter(results, r => _.every(args.tags, t => _.includes(r.tags, t)))
       }
+      // -> Limit after permission filtering, otherwise hidden pages reduce the result size
+      if (args.limit) {
+        results = _.take(results, args.limit)
+      }
       return results
     },
     /**
      * FETCH SINGLE PAGE
      */
     async single (obj, args, context, info) {
-      let page = await WIKI.models.pages.getPageFromDb(args.id)
+      const page = await WIKI.models.pages.getPageFromDb(args.id)
       if (page) {
         if (WIKI.auth.checkAccess(context.req.user, ['manage:pages', 'delete:pages'], {
           path: page.path,
@@ -170,8 +189,8 @@ module.exports = {
         throw new WIKI.Error.PageNotFound()
       }
     },
-    async singleByPath(obj, args, context, info) {
-      let page = await WIKI.models.pages.getPageFromDb({
+    async singleByPath (obj, args, context, info) {
+      const page = await WIKI.models.pages.getPageFromDb({
         path: args.path,
         locale: args.locale
       })
@@ -330,7 +349,9 @@ module.exports = {
         folder: WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
           path: folder.path,
           locale: folder.localeCode
-        }) ? mapItem(folder) : null,
+        })
+          ? mapItem(folder)
+          : null,
         children: results.filter(r => {
           return WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
             path: r.path,
@@ -381,6 +402,133 @@ module.exports = {
           locale: r.locale
         })
       })
+    },
+    /**
+     * EXPLAIN PAGE ACCESS (permission inspector) for a user or a group
+     */
+    async explainAccess (obj, args, context, info) {
+      const page = await WIKI.models.pages.query().select('id', 'path', 'localeCode').findById(args.pageId).withGraphFetched('tags')
+      if (!page) {
+        throw new WIKI.Error.PageNotFound()
+      }
+      let subject
+      if (args.userId > 0) {
+        const usr = await WIKI.models.users.query().findById(args.userId).withGraphFetched('groups').modifyGraph('groups', builder => {
+          builder.select('groups.id', 'permissions')
+        })
+        if (!usr) {
+          throw new WIKI.Error.UserNotFound()
+        }
+        subject = { permissions: usr.getGlobalPermissions(), groups: _.map(usr.groups, 'id') }
+      } else if (args.groupId > 0) {
+        const grp = await WIKI.models.groups.query().findById(args.groupId)
+        if (!grp) {
+          throw new WIKI.Error.InputInvalid()
+        }
+        subject = { permissions: grp.permissions, groups: [grp.id] }
+      } else {
+        throw new WIKI.Error.InputInvalid()
+      }
+      const pageCtx = { path: page.path, locale: page.localeCode, tags: page.tags }
+      return PAGE_PERMISSIONS.map(permission => {
+        const result = WIKI.auth.explainAccess(subject, permission, pageCtx)
+        return {
+          permission,
+          allowed: result.allowed,
+          reason: result.reason,
+          groupId: result.groupId,
+          groupName: result.groupId ? _.get(WIKI.auth.groups, [result.groupId, 'name'], null) : null,
+          ruleMatch: _.get(result, 'rule.match', null),
+          rulePath: _.get(result, 'rule.path', null),
+          ruleDeny: _.get(result, 'rule.deny', null)
+        }
+      })
+    },
+    /**
+     * FETCH RECENT CHANGES (activity log, newest first, cursor = activity ID)
+     */
+    async recentChanges (obj, args, context, info) {
+      const limit = _.clamp(_.toSafeInteger(args.limit) || 50, 1, 100)
+      const path = _.trim(args.path || '', '/ ')
+      const items = []
+      let cursor = _.toSafeInteger(args.before)
+      let exhausted = false
+      while (items.length < limit && !exhausted) {
+        const batch = await WIKI.models.pageActivity.query()
+          .modify(qb => {
+            if (cursor > 0) { qb.where('id', '<', cursor) }
+            if (args.locale) { qb.where('localeCode', args.locale) }
+            if (path) {
+              qb.where(builder => builder.where('path', path).orWhere('path', 'like', `${path}/%`))
+            }
+          })
+          .orderBy('id', 'desc')
+          .limit(200)
+        exhausted = batch.length < 200
+        if (batch.length < 1) {
+          break
+        }
+        cursor = _.last(batch).id
+        const pagesTags = _.keyBy(await WIKI.models.pages.query()
+          .select('id')
+          .whereIn('id', _.uniq(_.map(batch, 'pageId')))
+          .withGraphFetched('tags'), 'id')
+        for (const event of batch) {
+          if (notificationsHelper.canSeeEvent(context.req.user, event, _.get(pagesTags, [event.pageId, 'tags'], []))) {
+            items.push(event)
+            if (items.length >= limit) {
+              cursor = event.id
+              break
+            }
+          }
+        }
+      }
+      return {
+        items: items.map(e => ({
+          ...e,
+          locale: e.localeCode,
+          previousLocale: e.previousLocaleCode,
+          isSync: Boolean(e.isSync)
+        })),
+        nextCursor: (items.length >= limit || !exhausted) && items.length > 0 ? cursor : null
+      }
+    },
+    /**
+     * FETCH PAGES LINKING TO A PAGE
+     */
+    async backlinks (obj, args, context, info) {
+      if (!WIKI.auth.checkAccess(context.req.user, ['read:pages'], { path: args.path, locale: args.locale })) {
+        throw new WIKI.Error.PageViewForbidden()
+      }
+      const sourceIds = _.uniq(_.map(await WIKI.models.pageLinks.query().select('pageId').where({
+        path: args.path,
+        localeCode: args.locale
+      }), 'pageId'))
+      if (sourceIds.length < 1) {
+        return []
+      }
+      const sources = await WIKI.models.pages.query()
+        .select('id', 'path', 'localeCode', 'title', 'description', 'isPublished', 'isTemplate')
+        .whereIn('id', sourceIds)
+        .withGraphFetched('tags')
+        .orderBy('title')
+      return sources.filter(page => {
+        const pageCtx = { path: page.path, locale: page.localeCode, tags: page.tags }
+        if (!WIKI.auth.checkAccess(context.req.user, ['read:pages'], pageCtx)) {
+          return false
+        }
+        // -> Unpublished pages and templates are only shown to users who can edit them
+        if (!page.isPublished || page.isTemplate) {
+          return WIKI.auth.checkAccess(context.req.user, ['write:pages'], pageCtx)
+        }
+        return true
+      }).map(page => ({
+        id: page.id,
+        path: page.path,
+        locale: page.localeCode,
+        title: page.title,
+        description: page.description
+      }))
     },
     /**
      * FETCH PAGE LINKS
@@ -441,7 +589,7 @@ module.exports = {
      * CHECK FOR EDITING CONFLICT
      */
     async checkConflicts (obj, args, context, info) {
-      let page = await WIKI.models.pages.query().select('path', 'localeCode', 'updatedAt').findById(args.id)
+      const page = await WIKI.models.pages.query().select('path', 'localeCode', 'updatedAt').findById(args.id)
       if (page) {
         if (WIKI.auth.checkAccess(context.req.user, ['write:pages', 'manage:pages'], {
           path: page.path,
@@ -459,7 +607,7 @@ module.exports = {
      * FETCH LATEST VERSION FOR CONFLICT COMPARISON
      */
     async conflictLatest (obj, args, context, info) {
-      let page = await WIKI.models.pages.getPageFromDb(args.id)
+      const page = await WIKI.models.pages.getPageFromDb(args.id)
       if (page) {
         if (WIKI.auth.checkAccess(context.req.user, ['write:pages', 'manage:pages'], {
           path: page.path,
@@ -482,7 +630,7 @@ module.exports = {
     /**
      * CREATE PAGE
      */
-    async create(obj, args, context) {
+    async create (obj, args, context) {
       try {
         const page = await WIKI.models.pages.createPage({
           ...args,
@@ -499,7 +647,7 @@ module.exports = {
     /**
      * UPDATE PAGE
      */
-    async update(obj, args, context) {
+    async update (obj, args, context) {
       try {
         const page = await WIKI.models.pages.updatePage({
           ...args,
@@ -516,7 +664,7 @@ module.exports = {
     /**
      * SAVE DRAFT
      */
-    async saveDraft(obj, args, context) {
+    async saveDraft (obj, args, context) {
       try {
         if (!WIKI.auth.checkAccess(context.req.user, ['write:pages'], {
           locale: args.locale,
@@ -544,7 +692,7 @@ module.exports = {
     /**
      * DISCARD DRAFT
      */
-    async discardDraft(obj, args, context) {
+    async discardDraft (obj, args, context) {
       try {
         await WIKI.models.pageDrafts.query().delete().where({
           authorId: context.req.user.id,
@@ -561,7 +709,7 @@ module.exports = {
     /**
      * CONVERT PAGE
      */
-    async convert(obj, args, context) {
+    async convert (obj, args, context) {
       try {
         await WIKI.models.pages.convertPage({
           ...args,
@@ -577,7 +725,7 @@ module.exports = {
     /**
      * MOVE PAGE
      */
-    async move(obj, args, context) {
+    async move (obj, args, context) {
       try {
         await WIKI.models.pages.movePage({
           ...args,
@@ -593,7 +741,7 @@ module.exports = {
     /**
      * DELETE PAGE
      */
-    async delete(obj, args, context) {
+    async delete (obj, args, context) {
       try {
         await WIKI.models.pages.deletePage({
           ...args,
@@ -649,7 +797,7 @@ module.exports = {
     /**
      * FLUSH PAGE CACHE
      */
-    async flushCache(obj, args, context) {
+    async flushCache (obj, args, context) {
       try {
         await WIKI.models.pages.flushCache()
         WIKI.events.outbound.emit('flushCache')
@@ -663,7 +811,7 @@ module.exports = {
     /**
      * MIGRATE ALL PAGES FROM SOURCE LOCALE TO TARGET LOCALE
      */
-    async migrateToLocale(obj, args, context) {
+    async migrateToLocale (obj, args, context) {
       try {
         const count = await WIKI.models.pages.migrateToLocale(args)
         return {
@@ -677,7 +825,7 @@ module.exports = {
     /**
      * REBUILD TREE
      */
-    async rebuildTree(obj, args, context) {
+    async rebuildTree (obj, args, context) {
       try {
         await WIKI.models.pages.rebuildTree()
         return {
@@ -697,6 +845,8 @@ module.exports = {
           throw new WIKI.Error.PageNotFound()
         }
         await WIKI.models.pages.renderPage(page)
+        // -> Other instances (HA) must drop their cached copy as well
+        WIKI.events.outbound.emit('deletePageFromCache', page.hash)
         return {
           responseResult: graphHelper.generateSuccess('Page rendered successfully.')
         }

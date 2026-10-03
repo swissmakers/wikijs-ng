@@ -81,6 +81,24 @@ type PageQuery {
     locale: String!
   ): [PageLinkItem] @auth(requires: ["manage:system", "read:pages"])
 
+  backlinks(
+    path: String!
+    locale: String!
+  ): [PageBacklinkItem!]! @auth(requires: ["manage:system", "read:pages"])
+
+  explainAccess(
+    pageId: Int!
+    userId: Int
+    groupId: Int
+  ): [PageAccessExplanation!]! @auth(requires: ["manage:system", "manage:groups", "write:groups"])
+
+  recentChanges(
+    before: Int
+    limit: Int
+    locale: String
+    path: String
+  ): PageRecentChanges! @auth(requires: ["manage:system", "read:pages"])
+
   checkConflicts(
     id: Int!
     checkoutDate: Date!
@@ -111,6 +129,7 @@ type PageMutation {
     tags: [String]!
     title: String!
     isTemplate: Boolean
+    allowComments: Boolean
   ): PageResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
   update(
@@ -129,6 +148,7 @@ type PageMutation {
     tags: [String]
     title: String
     isTemplate: Boolean
+    allowComments: Boolean
   ): PageResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
   saveDraft(
@@ -352,6 +372,44 @@ type PageLinkItem {
   path: String!
   title: String!
   links: [String]!
+}
+
+type PageAccessExplanation {
+  permission: String!
+  allowed: Boolean!
+  reason: String!
+  groupId: Int
+  groupName: String
+  ruleMatch: String
+  rulePath: String
+  ruleDeny: Boolean
+}
+
+type PageRecentChanges {
+  items: [PageActivityItem!]!
+  nextCursor: Int
+}
+
+type PageActivityItem {
+  id: Int!
+  pageId: Int!
+  locale: String!
+  path: String!
+  title: String!
+  action: String!
+  previousPath: String
+  previousLocale: String
+  authorName: String!
+  isSync: Boolean!
+  createdAt: Date!
+}
+
+type PageBacklinkItem {
+  id: Int!
+  path: String!
+  locale: String!
+  title: String!
+  description: String
 }
 
 type PageConflictLatest {

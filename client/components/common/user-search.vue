@@ -53,11 +53,6 @@ import _ from 'lodash'
 import gql from 'graphql-tag'
 
 export default {
-  filters: {
-    initials(val) {
-      return val.split(' ').map(v => v.substring(0, 1)).join('')
-    }
-  },
   props: {
     multiple: {
       type: Boolean,
@@ -68,7 +63,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       loading: false,
       searchLoading: false,
@@ -78,12 +73,12 @@ export default {
   },
   computed: {
     dialogOpen: {
-      get() { return this.value },
-      set(value) { this.$emit('input', value) }
+      get () { return this.value },
+      set (value) { this.$emit('input', value) }
     }
   },
   watch: {
-    value(newValue, oldValue) {
+    value (newValue, oldValue) {
       if (newValue && !oldValue) {
         this.search = ''
         this.selectedItems = null
@@ -92,14 +87,14 @@ export default {
     }
   },
   methods: {
-    close() {
+    close () {
       this.$emit('input', false)
     },
-    setUser(usr) {
+    setUser (usr) {
       this.$emit('select', usr)
       this.close()
     },
-    searchFilter(item, queryText, itemText) {
+    searchFilter (item, queryText, itemText) {
       return _.includes(_.toLower(item.email), _.toLower(queryText)) || _.includes(_.toLower(item.name), _.toLower(queryText))
     }
   },
@@ -117,13 +112,13 @@ export default {
           }
         }
       `,
-      variables() {
+      variables () {
         return {
           query: this.search
         }
       },
       fetchPolicy: 'cache-and-network',
-      skip() {
+      skip () {
         return !this.search || this.search.length < 2
       },
       update: (data) => data.users.search,

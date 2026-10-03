@@ -5,31 +5,20 @@ const graphHelper = require('../../helpers/graph')
 
 module.exports = {
   Query: {
-    async rendering() { return {} }
+    async rendering () { return {} }
   },
   Mutation: {
-    async rendering() { return {} }
+    async rendering () { return {} }
   },
   RenderingQuery: {
-    async renderers(obj, args, context, info) {
+    async renderers (obj, args, context, info) {
       let renderers = await WIKI.models.renderers.getRenderers()
       renderers = renderers.map(rdr => {
         const rendererInfo = _.find(WIKI.data.renderers, ['key', rdr.key]) || {}
         return {
           ...rendererInfo,
           ...rdr,
-          config: _.sortBy(_.transform(rdr.config, (res, value, key) => {
-            const configData = _.get(rendererInfo.props, key, false)
-            if (configData) {
-              res.push({
-                key,
-                value: JSON.stringify({
-                  ...configData,
-                  value
-                })
-              })
-            }
-          }, []), 'key')
+          config: graphHelper.moduleConfigToKV(rdr.config, rendererInfo.props)
         }
       })
       // if (args.filter) { renderers = graphHelper.filter(renderers, args.filter) }
@@ -38,15 +27,12 @@ module.exports = {
     }
   },
   RenderingMutation: {
-    async updateRenderers(obj, args, context) {
+    async updateRenderers (obj, args, context) {
       try {
-        for (let rdr of args.renderers) {
+        for (const rdr of args.renderers) {
           await WIKI.models.renderers.query().patch({
             isEnabled: rdr.isEnabled,
-            config: _.reduce(rdr.config, (result, value, key) => {
-              _.set(result, `${value.key}`, _.get(JSON.parse(value.value), 'v', null))
-              return result
-            }, {})
+            config: graphHelper.kvToModuleConfig(rdr.config)
           }).where('key', rdr.key)
         }
         return {

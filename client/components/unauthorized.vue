@@ -23,7 +23,7 @@ export default {
       default: 'view'
     }
   },
-  data() {
+  data () {
     return { }
   }
 }

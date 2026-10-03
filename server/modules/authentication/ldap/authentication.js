@@ -74,7 +74,7 @@ module.exports = {
   }
 }
 
-function getTlsOptions(conf) {
+function getTlsOptions (conf) {
   if (!conf.tlsEnabled) {
     return {}
   }

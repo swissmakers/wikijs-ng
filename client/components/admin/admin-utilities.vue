@@ -37,10 +37,9 @@ export default {
     UtilityAuth: () => import(/* webpackChunkName: "admin" */ './admin-utilities-auth.vue'),
     UtilityContent: () => import(/* webpackChunkName: "admin" */ './admin-utilities-content.vue'),
     UtilityCache: () => import(/* webpackChunkName: "admin" */ './admin-utilities-cache.vue'),
-    UtilityExport: () => import(/* webpackChunkName: "admin" */ './admin-utilities-export.vue'),
-    UtilityImportv1: () => import(/* webpackChunkName: "admin" */ './admin-utilities-importv1.vue')
+    UtilityExport: () => import(/* webpackChunkName: "admin" */ './admin-utilities-export.vue')
   },
-  data() {
+  data () {
     return {
       selectedTool: 'UtilityAuth',
       tools: [
@@ -66,18 +65,6 @@ export default {
           key: 'UtilityCache',
           icon: 'mdi-database-refresh',
           i18nKey: 'cache',
-          isAvailable: true
-        },
-        // {
-        //   key: 'UtilityGraphEndpoint',
-        //   icon: 'mdi-graphql',
-        //   i18nKey: 'graphEndpoint',
-        //   isAvailable: false
-        // },
-        {
-          key: 'UtilityImportv1',
-          icon: 'mdi-database-import',
-          i18nKey: 'importv1',
           isAvailable: true
         }
       ]

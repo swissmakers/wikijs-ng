@@ -49,23 +49,22 @@ type SiteMutation {
     editMenuExternalName: String
     editMenuExternalIcon: String
     editMenuExternalUrl: String
-    featurePageRatings: Boolean
     featurePageComments: Boolean
-    featurePersonalWikis: Boolean
+    featureNotifications: Boolean
     securityOpenRedirect: Boolean
     securityIframe: Boolean
     securityReferrerPolicy: Boolean
     securityTrustProxy: Boolean
-    securitySRI: Boolean
     securityHSTS: Boolean
     securityHSTSDuration: Int
     securityCSP: Boolean
+    securityCSPReportOnly: Boolean
     securityCSPDirectives: String
     uploadMaxFileSize: Int
     uploadMaxFiles: Int
     uploadScanSVG: Boolean
     uploadForceDownload: Boolean
-
+    drawioUrl: String
   ): DefaultResponse @auth(requires: ["manage:system"])
 }
 
@@ -99,20 +98,21 @@ type SiteConfig {
   editMenuExternalName: String
   editMenuExternalIcon: String
   editMenuExternalUrl: String
-  featurePageRatings: Boolean
   featurePageComments: Boolean
-  featurePersonalWikis: Boolean
+  featureNotifications: Boolean
   securityOpenRedirect: Boolean
   securityIframe: Boolean
   securityReferrerPolicy: Boolean
   securityTrustProxy: Boolean
-  securitySRI: Boolean
   securityHSTS: Boolean
   securityHSTSDuration: Int
   securityCSP: Boolean
+  securityCSPReportOnly: Boolean
   securityCSPDirectives: String
+  securityCSPPreview: String
   uploadMaxFileSize: Int
   uploadMaxFiles: Int
   uploadScanSVG: Boolean
   uploadForceDownload: Boolean
+  drawioUrl: String
 }

@@ -1,16 +1,27 @@
 /* global WIKI */
 
+/**
+ * Split a query into search tokens (all tokens must match)
+ *
+ * @param {String} q Query
+ * @returns {Array<String>} Tokens
+ */
+function tokenize (q) {
+  return (q || '').trim().split(/\s+/).filter(t => t.length > 0)
+}
+
 module.exports = {
-  activate() {
+  tokenize,
+  activate () {
     // not used
   },
-  deactivate() {
+  deactivate () {
     // not used
   },
   /**
    * INIT
    */
-  init() {
+  init () {
     // not used
   },
   /**
@@ -19,9 +30,9 @@ module.exports = {
    * @param {String} q Query
    * @param {Object} opts Additional options
    */
-  async query(q, opts) {
+  async query (q, opts) {
     const likeOperator = WIKI.config.db.type === 'postgres' ? 'ILIKE' : 'LIKE'
-    const tokens = q.trim().split(/\s+/).filter(t => t.length > 0)
+    const tokens = tokenize(q)
     const applyFilters = builder => {
       builder.where('isPublished', true)
       builder.andWhere('isTemplate', false)
@@ -73,7 +84,7 @@ module.exports = {
    *
    * @param {Object} page Page to create
    */
-  async created(page) {
+  async created (page) {
     // not used
   },
   /**
@@ -81,7 +92,7 @@ module.exports = {
    *
    * @param {Object} page Page to update
    */
-  async updated(page) {
+  async updated (page) {
     // not used
   },
   /**
@@ -89,7 +100,7 @@ module.exports = {
    *
    * @param {Object} page Page to delete
    */
-  async deleted(page) {
+  async deleted (page) {
     // not used
   },
   /**
@@ -97,13 +108,13 @@ module.exports = {
    *
    * @param {Object} page Page to rename
    */
-  async renamed(page) {
+  async renamed (page) {
     // not used
   },
   /**
    * REBUILD INDEX
    */
-  async rebuild() {
+  async rebuild () {
     // not used
   }
 }

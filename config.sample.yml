@@ -2,7 +2,7 @@
 # Wiki.js NG - CONFIGURATION                                             #
 #######################################################################
 # Full documentation + examples:
-# https://docs.requarks.io/install
+# https://github.com/swissmakers/wikijs-ng
 
 # ---------------------------------------------------------------------
 # Port the server should listen to
@@ -14,9 +14,9 @@ port: 3000
 # Database
 # ---------------------------------------------------------------------
 # Supported Database Engines:
-# - postgres = PostgreSQL 9.5 or later
-# - mysql = MySQL 8.0 or later (5.7.8 partially supported, refer to docs)
-# - mariadb = MariaDB 10.2.7 or later
+# - postgres = PostgreSQL 11 or later (recommended)
+# - mysql = MySQL 8.0 or later
+# - mariadb = MariaDB 10.3 or later
 # - mssql = MS SQL Server 2012 or later
 # - sqlite = SQLite 3.9 or later
 
@@ -45,6 +45,10 @@ db:
 
   # Optional - PostgreSQL only:
   schema: public
+
+  # Optional - MySQL / MariaDB only:
+  # -> Connect through a Unix socket instead of host / port
+  # socketPath: /var/run/mysqld/mysqld.sock
 
   # SQLite only:
   storage: path/to/database.sqlite
@@ -118,8 +122,8 @@ logFormat: default
 # ---------------------------------------------------------------------
 # Offline Mode
 # ---------------------------------------------------------------------
-# If your server cannot access the internet. Set to true and manually
-# download the offline files for sideloading.
+# Skips scheduled jobs flagged as requiring internet access. Wiki.js NG
+# needs no upstream service; translations are bundled (server/locales).
 
 offline: false
 

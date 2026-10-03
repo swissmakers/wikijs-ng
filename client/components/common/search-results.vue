@@ -65,7 +65,7 @@
                 v-list-item-title(v-text='term')
             v-divider(v-if='idx < suggestions.length - 1')
       .text-xs-center.pt-5(v-if='search && search.length > 1')
-        v-btn.mx-2(outlined, color='pink', @click='search = ``')
+        v-btn.mx-2(outlined, color='white', @click='search = ``')
           v-icon(left) mdi-close
           span {{$t('common:header.searchClose')}}
 </template>
@@ -83,7 +83,7 @@ export default {
   components: {
     OrbitSpinner
   },
-  data() {
+  data () {
     return {
       cursor: 0,
       pagination: 1,
@@ -110,22 +110,22 @@ export default {
     restrictPathLabel () {
       return this.$t('common:header.searchRestrictPath', { path: this.currentPath, defaultValue: 'Only under /{{path}}' })
     },
-    results() {
+    results () {
       const currentIndex = (this.pagination - 1) * this.perPage
       return this.response.results ? _.slice(this.response.results, currentIndex, currentIndex + this.perPage) : []
     },
-    hits() {
+    hits () {
       return this.response.totalHits ? this.response.totalHits : 0
     },
-    suggestions() {
+    suggestions () {
       return this.response.suggestions ? this.response.suggestions : []
     },
-    paginationLength() {
+    paginationLength () {
       return (this.response.totalHits > 0) ? Math.ceil(this.response.totalHits / this.perPage) : 0
     }
   },
   watch: {
-    search(newValue, oldValue) {
+    search (newValue, oldValue) {
       this.cursor = 0
       if (!newValue || (newValue && newValue.length < 2)) {
         this.searchIsLoading = false
@@ -133,11 +133,11 @@ export default {
         this.searchIsLoading = true
       }
     },
-    results() {
+    results () {
       this.cursor = 0
     }
   },
-  mounted() {
+  mounted () {
     this.$root.$on('searchMove', (dir) => {
       this.cursor += ((dir === 'up') ? -1 : 1)
       if (this.cursor < -1) {
@@ -159,20 +159,20 @@ export default {
     })
   },
   methods: {
-    setSearchTerm(term) {
+    setSearchTerm (term) {
       this.search = term
     },
-    goToPage(item) {
+    goToPage (item) {
       window.location.assign(`/${item.locale}/${item.path}`)
     },
-    goToPageInNewTab(item) {
+    goToPageInNewTab (item) {
       window.open(`/${item.locale}/${item.path}`, '_blank')
     }
   },
   apollo: {
     response: {
       query: searchPagesQuery,
-      variables() {
+      variables () {
         return {
           query: this.search,
           path: (this.searchRestrictPath && this.currentPath) ? this.currentPath : null,
@@ -182,10 +182,10 @@ export default {
       fetchPolicy: 'network-only',
       debounce: 300,
       throttle: 1000,
-      skip() {
+      skip () {
         return !this.search || this.search.length < 2
       },
-      result() {
+      result () {
         this.pagination = 1
       },
       update: (data) => _.get(data, 'pages.search', {}),
@@ -257,18 +257,28 @@ export default {
   &-items {
     text-align: left;
 
-    .highlighted {
-      background: #FFF linear-gradient(to bottom, #FFF, mc('orange', '100'));
+    .v-list-item:hover {
+      background-color: rgba(mc('theme', 'primary'), .04);
 
       @at-root .theme--dark & {
-        background: mc('grey', '900') linear-gradient(to bottom, mc('orange', '900'), darken(mc('orange', '900'), 15%));
+        background-color: rgba(mc('theme', 'accent'), .08);
+      }
+    }
+
+    .highlighted {
+      background: rgba(mc('theme', 'primary'), .08);
+      box-shadow: inset 3px 0 0 mc('theme', 'primary');
+
+      @at-root .theme--dark & {
+        background: rgba(mc('theme', 'accent'), .18);
+        box-shadow: inset 3px 0 0 mc('theme', 'accent');
       }
     }
   }
 
   &-suggestions {
     .highlighted {
-      background: transparent linear-gradient(to bottom, mc('blue', '500'), mc('blue', '700'));
+      background: mc('theme', 'primary');
     }
   }
 }

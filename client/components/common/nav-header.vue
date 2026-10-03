@@ -21,7 +21,7 @@
       v-flex(xs5, md4)
         v-toolbar.nav-header-inner(color='header', dark, flat, :class='$vuetify.rtl ? `pr-3` : `pl-3`')
           v-avatar(tile, size='34', @click='goHome')
-            v-img.org-logo(:src='logoUrl')
+            v-img.org-logo(:src='headerLogoUrl')
           v-toolbar-title(:class='{ "mx-3": $vuetify.breakpoint.mdAndUp, "mx-1": $vuetify.breakpoint.smAndDown }')
             span.subheading {{title}}
       v-flex(md4, v-if='$vuetify.breakpoint.mdAndUp')
@@ -54,6 +54,11 @@
                 v-btn.ml-2.mr-0(icon, v-on='on', href='/t', :aria-label='$t(`common:header.browseTags`)')
                   v-icon(color='grey') mdi-tag-multiple
               span {{$t('common:header.browseTags')}}
+            v-tooltip(bottom)
+              template(v-slot:activator='{ on }')
+                v-btn.ml-0.mr-0(icon, v-on='on', href='/r', :aria-label='$t(`common:header.recentChanges`, { defaultValue: "Recent changes" })')
+                  v-icon(color='grey') mdi-update
+              span {{$t('common:header.recentChanges', { defaultValue: 'Recent changes' })}}
             v-tooltip(bottom, v-if='canManageAssets')
               template(v-slot:activator='{ on }')
                 v-btn.ml-0.mr-0(icon, v-on='on', href='/a/assets', :aria-label='$t(`common:header.imagesFiles`)')
@@ -127,26 +132,9 @@
                 v-list-item.pl-4(@click='pageEdit', v-if='mode !== `edit` && hasWritePagesPermission')
                   v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-file-document-edit-outline
                   v-list-item-title.body-2 {{$t('common:header.edit')}}
-                v-list-item.pl-4(@click='pageHistory', v-if='mode !== `history` && hasReadHistoryPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-history
-                  v-list-item-content
-                    v-list-item-title.body-2 {{$t('common:header.history')}}
-                v-list-item.pl-4(@click='pageSource', v-if='mode !== `source` && hasReadSourcePermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-code-tags
-                  v-list-item-title.body-2 {{$t('common:header.viewSource')}}
-                v-list-item.pl-4(@click='pageConvert', v-if='hasWritePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-lightning-bolt
-                  v-list-item-title.body-2 {{$t('common:header.convert')}}
-                v-list-item.pl-4(@click='pageDuplicate', v-if='hasWritePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-content-duplicate
-                  v-list-item-title.body-2 {{$t('common:header.duplicate')}}
-                v-list-item.pl-4(@click='pageMove', v-if='hasManagePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='primary') mdi-content-save-move-outline
-                  v-list-item-content
-                    v-list-item-title.body-2 {{$t('common:header.move')}}
-                v-list-item.pl-4(@click='pageDelete', v-if='hasDeletePagesPermission')
-                  v-list-item-avatar(size='24', tile): v-icon(color='red darken-2') mdi-trash-can-outline
-                  v-list-item-title.body-2 {{$t('common:header.delete')}}
+                v-list-item.pl-4(v-for='action of pageActions', :key='action.key', @click='runPageAction(action.key)')
+                  v-list-item-avatar(size='24', tile): v-icon(:color='action.isDanger ? `red darken-2` : `primary`') {{ action.icon }}
+                  v-list-item-title.body-2 {{ action.label }}
             v-divider(vertical)
 
           //- NEW PAGE
@@ -209,13 +197,20 @@
                 v-list-item-action: v-icon(color='red') mdi-logout
                 v-list-item-title.red--text {{$t('common:header.logout')}}
 
-          v-tooltip(v-else, left)
-            template(v-slot:activator='{ on }')
-              v-btn(icon, v-on='on', color='grey darken-3', href='/login', :aria-label='$t(`common:header.login`)')
-                v-icon(color='grey') mdi-account-circle
-            span {{$t('common:header.login')}}
+          template(v-else)
+            v-tooltip(bottom)
+              template(v-slot:activator='{ on }')
+                v-btn(icon, tile, height='64', v-on='on', @click='cycleGuestAppearance', :aria-label='guestAppearanceLabel')
+                  v-icon(color='grey') {{ guestAppearanceIcon }}
+              span {{ guestAppearanceLabel }}
+            v-tooltip(left)
+              template(v-slot:activator='{ on }')
+                v-btn(icon, v-on='on', color='grey darken-3', href='/login', :aria-label='$t(`common:header.login`)')
+                  v-icon(color='grey') mdi-account-circle
+              span {{$t('common:header.login')}}
 
     page-selector(mode='create', v-model='newPageModal', :open-handler='pageNewCreate', :locale='locale')
+    shortcuts-dialog(v-model='shortcutsDialogShown')
     page-selector(mode='move', v-model='movePageModal', :open-handler='pageMoveRename', :path='path', :locale='locale')
     page-selector(mode='create', v-model='duplicateOpts.modal', :open-handler='pageDuplicateHandle', :path='duplicateOpts.path', :locale='duplicateOpts.locale')
     page-delete(v-model='deletePageModal', v-if='path && path.length')
@@ -233,11 +228,17 @@ import { get, sync } from 'vuex-pathify'
 import _ from 'lodash'
 
 import movePageMutation from 'gql/common/common-pages-mutation-move.gql'
+import pageActionsMixin from '@/helpers/page-actions'
+import { installHotkeys } from '@/helpers/hotkeys'
+import { initials } from '@/helpers'
+import { applyAppearance, getGuestAppearance, setGuestAppearance } from '@/helpers/appearance'
 
 /* global siteConfig, siteLangs */
 
 export default {
+  mixins: [pageActionsMixin],
   components: {
+    ShortcutsDialog: () => import('./shortcuts-dialog.vue'),
     PageDelete: () => import('./page-delete.vue'),
     PageConvert: () => import('./page-convert.vue')
   },
@@ -251,12 +252,14 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       menuIsShown: true,
       searchIsShown: true,
       searchAdvMenuShown: false,
       newPageModal: false,
+      shortcutsDialogShown: false,
+      guestAppearance: getGuestAppearance(),
       movePageModal: false,
       convertPageModal: false,
       deletePageModal: false,
@@ -278,6 +281,10 @@ export default {
     isLoading: get('isLoading'),
     title: get('site/title'),
     logoUrl: get('site/logoUrl'),
+    headerLogoUrl () {
+      // -> The bundled logo is brand blue; use its white variant on the navy header
+      return this.logoUrl === '/_assets/svg/logo-swissmakers.svg' ? '/_assets/svg/logo-swissmakers-white.svg' : this.logoUrl
+    },
     path: get('page/path'),
     locale: get('page/locale'),
     mode: get('page/mode'),
@@ -286,6 +293,27 @@ export default {
     pictureUrl: get('user/pictureUrl'),
     isAuthenticated: get('user/authenticated'),
     permissions: get('user/permissions'),
+    guestAppearanceIcon () {
+      switch (this.guestAppearance) {
+        case 'system':
+          return 'mdi-theme-light-dark'
+        case 'dark':
+          return 'mdi-weather-night'
+        case 'light':
+          return 'mdi-weather-sunny'
+        default:
+          return this.$vuetify.theme.dark ? 'mdi-weather-night' : 'mdi-weather-sunny'
+      }
+    },
+    guestAppearanceLabel () {
+      const modes = {
+        light: this.$t('common:header.appearanceLight', { defaultValue: 'Light' }),
+        dark: this.$t('common:header.appearanceDark', { defaultValue: 'Dark' }),
+        system: this.$t('common:header.appearanceSystem', { defaultValue: 'Follow System' })
+      }
+      const mode = modes[this.guestAppearance] || modes[this.$vuetify.theme.dark ? 'dark' : 'light']
+      return `${this.$t('common:header.appearance', { defaultValue: 'Appearance' })}: ${mode}`
+    },
     picture () {
       if (this.pictureUrl && this.pictureUrl.length > 1) {
         return {
@@ -293,14 +321,9 @@ export default {
           url: (this.pictureUrl === 'internal') ? `/_userav/${this.$store.get('user/id')}` : this.pictureUrl
         }
       } else {
-        const nameParts = this.name.toUpperCase().split(' ')
-        let initials = _.head(nameParts).charAt(0)
-        if (nameParts.length > 1) {
-          initials += _.last(nameParts).charAt(0)
-        }
         return {
           kind: 'initials',
-          initials
+          initials: initials(this.name)
         }
       }
     },
@@ -312,16 +335,6 @@ export default {
     },
     hasNewPagePermission () {
       return this.hasAdminPermission || _.intersection(this.permissions, ['write:pages']).length > 0
-    },
-    hasAdminPermission: get('page/effectivePermissions@system.manage'),
-    hasWritePagesPermission: get('page/effectivePermissions@pages.write'),
-    hasManagePagesPermission: get('page/effectivePermissions@pages.manage'),
-    hasDeletePagesPermission: get('page/effectivePermissions@pages.delete'),
-    hasReadSourcePermission: get('page/effectivePermissions@source.read'),
-    hasReadHistoryPermission: get('page/effectivePermissions@history.read'),
-    hasAnyPagePermissions () {
-      return this.hasAdminPermission || this.hasWritePagesPermission || this.hasManagePagesPermission ||
-        this.hasDeletePagesPermission || this.hasReadSourcePermission || this.hasReadHistoryPermission
     }
   },
   created () {
@@ -352,8 +365,50 @@ export default {
       this.pageDelete()
     })
     this.isDevMode = siteConfig.devMode === true
+
+    // -> Keyboard shortcuts (not while editing)
+    this.$root.$on('shortcutSearch', () => {
+      const field = this.$refs.searchField || this.$refs.searchFieldMobile
+      if (field) {
+        this.searchIsShown = true
+        this.$nextTick(() => field.focus())
+      }
+    })
+    this.$root.$on('shortcutEdit', () => {
+      if (this.path && this.mode === 'view' && this.hasWritePagesPermission) {
+        this.pageEdit()
+      }
+    })
+    this.$root.$on('shortcutHistory', () => {
+      if (this.path && this.mode === 'view' && this.hasReadHistoryPermission) {
+        this.pageHistory()
+      }
+    })
+    this.$root.$on('shortcutNewPage', () => {
+      if (this.hasNewPagePermission) {
+        this.pageNew()
+      }
+    })
+    this.$root.$on('shortcutHelp', () => {
+      this.shortcutsDialogShown = true
+    })
+    this.uninstallHotkeys = installHotkeys(this.$root, () => this.mode !== 'edit')
+  },
+  beforeDestroy () {
+    if (this.uninstallHotkeys) {
+      this.uninstallHotkeys()
+    }
   },
   methods: {
+    cycleGuestAppearance () {
+      const order = ['light', 'dark', 'system']
+      const next = this.guestAppearance
+        ? order[(order.indexOf(this.guestAppearance) + 1) % order.length]
+        : (this.$vuetify.theme.dark ? 'light' : 'dark')
+      this.guestAppearance = next
+      setGuestAppearance(next)
+      applyAppearance(next)
+    },
     searchFocus () {
       this.searchIsFocused = true
     },
@@ -375,7 +430,7 @@ export default {
     searchEnter () {
       this.$root.$emit('searchEnter', true)
     },
-    searchMove(dir) {
+    searchMove (dir) {
       this.$root.$emit('searchMove', dir)
     },
     pageNew () {
@@ -383,6 +438,13 @@ export default {
     },
     pageNewCreate ({ path, locale }) {
       window.location.assign(`/e/${locale}/${path}`)
+    },
+    runPageAction (key) {
+      this[key]()
+    },
+    pageExportPdf () {
+      // -> Handled by the page view
+      this.$root.$emit('pageExportPdf')
     },
     pageView () {
       window.location.assign(`/${this.locale}/${this.path}`)
@@ -400,7 +462,7 @@ export default {
       const pathParts = this.path.split('/')
       this.duplicateOpts = {
         locale: this.locale,
-        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + `/new-page` : `new-page`,
+        path: (pathParts.length > 1) ? _.initial(pathParts).join('/') + '/new-page' : 'new-page',
         modal: true
       }
     },
@@ -414,7 +476,7 @@ export default {
       this.movePageModal = true
     },
     async pageMoveRename ({ path, locale }) {
-      this.$store.commit(`loadingStart`, 'page-move')
+      this.$store.commit('loadingStart', 'page-move')
       try {
         const resp = await this.$apollo.mutate({
           mutation: movePageMutation,
@@ -431,7 +493,7 @@ export default {
         }
       } catch (err) {
         this.$store.commit('pushGraphError', err)
-        this.$store.commit(`loadingStop`, 'page-move')
+        this.$store.commit('loadingStop', 'page-move')
       }
     },
     pageDelete () {

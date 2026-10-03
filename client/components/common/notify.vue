@@ -15,7 +15,7 @@
 import { get, sync } from 'vuex-pathify'
 
 export default {
-  data() {
+  data () {
     return { }
   },
   computed: {

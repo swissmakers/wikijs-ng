@@ -6,19 +6,19 @@ const { Transform } = require('node:stream')
 /* global WIKI */
 
 module.exports = {
-  async activate() {
+  async activate () {
     // not used
   },
-  async deactivate() {
+  async deactivate () {
     // not used
   },
   /**
    * INIT
    */
-  async init() {
-    WIKI.logger.info(`(SEARCH/ELASTICSEARCH) Initializing...`)
+  async init () {
+    WIKI.logger.info('(SEARCH/ELASTICSEARCH) Initializing...')
     switch (this.config.apiVersion) {
-      case '8.x':
+      case '8.x': {
         const { Client: Client8 } = require('elasticsearch8')
         this.client = new Client8({
           nodes: this.config.hosts.split(',').map(_.trim),
@@ -28,7 +28,8 @@ module.exports = {
           name: 'wiki-js'
         })
         break
-      case '7.x':
+      }
+      case '7.x': {
         const { Client: Client7 } = require('elasticsearch7')
         this.client = new Client7({
           nodes: this.config.hosts.split(',').map(_.trim),
@@ -38,34 +39,25 @@ module.exports = {
           name: 'wiki-js'
         })
         break
-      case '6.x':
-        const { Client: Client6 } = require('elasticsearch6')
-        this.client = new Client6({
-          nodes: this.config.hosts.split(',').map(_.trim),
-          sniffOnStart: this.config.sniffOnStart,
-          sniffInterval: (this.config.sniffInterval > 0) ? this.config.sniffInterval : false,
-          ssl: getTlsOptions(this.config),
-          name: 'wiki-js'
-        })
-        break
+      }
       default:
-        throw new Error('Unsupported version of elasticsearch! Update your settings in the Administration Area.')
+        throw new Error(`Unsupported Elasticsearch version ${this.config.apiVersion} (supported: 7.x, 8.x). Update your settings in the Administration Area.`)
     }
 
     // -> Create Search Index
     await this.createIndex()
 
-    WIKI.logger.info(`(SEARCH/ELASTICSEARCH) Initialization completed.`)
+    WIKI.logger.info('(SEARCH/ELASTICSEARCH) Initialization completed.')
   },
   /**
    * Create Index
    */
-  async createIndex() {
+  async createIndex () {
     try {
       const indexExists = await this.client.indices.exists({ index: this.config.indexName })
-      // Elasticsearch 6.x / 7.x
+      // Elasticsearch 7.x
       if (this.config.apiVersion !== '8.x' && !indexExists.body) {
-        WIKI.logger.info(`(SEARCH/ELASTICSEARCH) Creating index...`)
+        WIKI.logger.info('(SEARCH/ELASTICSEARCH) Creating index...')
         try {
           const idxBody = {
             properties: {
@@ -82,9 +74,7 @@ module.exports = {
           await this.client.indices.create({
             index: this.config.indexName,
             body: {
-              mappings: (this.config.apiVersion === '6.x') ? {
-                _doc: idxBody
-              } : idxBody,
+              mappings: idxBody,
               settings: {
                 analysis: {
                   analyzer: {
@@ -97,11 +87,11 @@ module.exports = {
             }
           })
         } catch (err) {
-          WIKI.logger.error(`(SEARCH/ELASTICSEARCH) Create Index Error: `, _.get(err, 'meta.body.error', err))
+          WIKI.logger.error('(SEARCH/ELASTICSEARCH) Create Index Error: ', _.get(err, 'meta.body.error', err))
         }
       // Elasticsearch 8.x
       } else if (this.config.apiVersion === '8.x' && !indexExists) {
-        WIKI.logger.info(`(SEARCH/ELASTICSEARCH) Creating index...`)
+        WIKI.logger.info('(SEARCH/ELASTICSEARCH) Creating index...')
         try {
           // 8.x Doesn't support boost in mappings, so we will need to boost at query time.
           const idxBody = {
@@ -132,11 +122,11 @@ module.exports = {
             }
           })
         } catch (err) {
-          WIKI.logger.error(`(SEARCH/ELASTICSEARCH) Create Index Error: `, _.get(err, 'meta.body.error', err))
+          WIKI.logger.error('(SEARCH/ELASTICSEARCH) Create Index Error: ', _.get(err, 'meta.body.error', err))
         }
       }
     } catch (err) {
-      WIKI.logger.error(`(SEARCH/ELASTICSEARCH) Index Check Error: `, _.get(err, 'meta.body.error', err))
+      WIKI.logger.error('(SEARCH/ELASTICSEARCH) Index Check Error: ', _.get(err, 'meta.body.error', err))
     }
   },
   /**
@@ -145,7 +135,7 @@ module.exports = {
    * @param {String} q Query
    * @param {Object} opts Additional options
    */
-  async query(q, opts) {
+  async query (q, opts) {
     try {
       const results = await this.client.search({
         index: this.config.indexName,
@@ -195,16 +185,18 @@ module.exports = {
    * @param id
    * @returns {Promise<*|*[]>}
    */
-  async buildTags(id) {
+  async buildTags (id) {
     const tags = await WIKI.models.pages.query().findById(id).select('*').withGraphJoined('tags')
-    return (tags.tags && tags.tags.length > 0) ? tags.tags.map(function (tag) {
-      return tag.title
-    }) : []
+    return (tags.tags && tags.tags.length > 0)
+      ? tags.tags.map(function (tag) {
+        return tag.title
+      })
+      : []
   },
   /**
    * Build suggest field
    */
-  buildSuggest(page) {
+  buildSuggest (page) {
     return _.reject(_.uniq(_.concat(
       page.title.split(' ').map(s => ({
         input: s,
@@ -225,7 +217,7 @@ module.exports = {
    *
    * @param {Object} page Page to create
    */
-  async created(page) {
+  async created (page) {
     await this.client.index({
       index: this.config.indexName,
       ...(this.config.apiVersion !== '8.x' && { type: '_doc' }),
@@ -247,7 +239,7 @@ module.exports = {
    *
    * @param {Object} page Page to update
    */
-  async updated(page) {
+  async updated (page) {
     await this.client.index({
       index: this.config.indexName,
       ...(this.config.apiVersion !== '8.x' && { type: '_doc' }),
@@ -269,7 +261,7 @@ module.exports = {
    *
    * @param {Object} page Page to delete
    */
-  async deleted(page) {
+  async deleted (page) {
     await this.client.delete({
       index: this.config.indexName,
       ...(this.config.apiVersion !== '8.x' && { type: '_doc' }),
@@ -282,7 +274,7 @@ module.exports = {
    *
    * @param {Object} page Page to rename
    */
-  async renamed(page) {
+  async renamed (page) {
     await this.client.delete({
       index: this.config.indexName,
       ...(this.config.apiVersion !== '8.x' && { type: '_doc' }),
@@ -308,8 +300,8 @@ module.exports = {
   /**
    * REBUILD INDEX
    */
-  async rebuild() {
-    WIKI.logger.info(`(SEARCH/ELASTICSEARCH) Rebuilding Index...`)
+  async rebuild () {
+    WIKI.logger.info('(SEARCH/ELASTICSEARCH) Rebuilding Index...')
     await this.client.indices.delete({ index: this.config.indexName })
     await this.createIndex()
 
@@ -317,7 +309,7 @@ module.exports = {
     const MAX_INDEXING_COUNT = 1000
     const COMMA_BYTES = Buffer.from(',').byteLength
 
-    let chunks = []
+    const chunks = []
     let bytes = 0
 
     const processDocument = async (cb, doc) => {
@@ -325,7 +317,7 @@ module.exports = {
         if (doc) {
           const docBytes = Buffer.from(JSON.stringify(doc)).byteLength
 
-          doc['tags'] = await this.buildTags(doc.realId)
+          doc.tags = await this.buildTags(doc.realId)
           // -> Current batch exceeds size limit, flush
           if (docBytes + COMMA_BYTES + bytes >= MAX_INDEXING_BYTES) {
             await flushBuffer()
@@ -397,11 +389,11 @@ module.exports = {
         flush: async (cb) => processDocument(cb)
       })
     )
-    WIKI.logger.info(`(SEARCH/ELASTICSEARCH) Index rebuilt successfully.`)
+    WIKI.logger.info('(SEARCH/ELASTICSEARCH) Index rebuilt successfully.')
   }
 }
 
-function getTlsOptions(conf) {
+function getTlsOptions (conf) {
   if (!conf.tlsCertPath) {
     return {
       rejectUnauthorized: conf.verifyTLSCertificate

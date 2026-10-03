@@ -20,7 +20,7 @@
                 v-card-text
                   v-select(
                     outlined
-                    :items='installedLocales'
+                    :items='locales'
                     prepend-icon='mdi-web'
                     v-model='selectedLocale'
                     item-value='code'
@@ -38,15 +38,6 @@
                         v-list-item-content
                           v-list-item-title(v-html='data.item.name')
                           v-list-item-subtitle(v-html='data.item.nativeName')
-                  v-divider.mt-3
-                  v-switch(
-                    inset
-                    v-model='autoUpdate'
-                    :label='$t("admin:locale.autoUpdate.label")'
-                    color='primary'
-                    persistent-hint
-                    :hint='namespacing ? $t("admin:locale.autoUpdate.hintWithNS") : $t("admin:locale.autoUpdate.hint")'
-                  )
 
               v-card.wiki-form.mt-3.animated.fadeInUp.wait-p2s
                 v-toolbar(color='primary', dark, dense, flat)
@@ -72,7 +63,7 @@
                   v-select(
                     outlined
                     :disabled='!namespacing'
-                    :items='installedLocales'
+                    :items='locales'
                     prepend-icon='mdi-web'
                     multiple
                     chips
@@ -98,8 +89,8 @@
                           v-checkbox(:input-value='data.attrs.inputValue', color='primary', value)
             v-flex(xl6 lg7 xs12)
               v-card.animated.fadeInUp.wait-p4s
-                v-toolbar(color='teal', dark, dense, flat)
-                  v-toolbar-title.subtitle-1 {{ $t('admin:locale.downloadTitle') }}
+                v-toolbar(color='primary', dark, dense, flat)
+                  v-toolbar-title.subtitle-1 {{ $t('admin:locale.availableTitle', { defaultValue: 'Available Languages' }) }}
                 v-data-table(
                   :headers='headers',
                   :items='locales',
@@ -108,31 +99,26 @@
                   :items-per-page='1000'
                   )
                   template(v-slot:item.code='{ item }')
-                    v-chip.white--text(label, color='teal', small) {{item.code}}
+                    v-chip(label, color='primary', dark, small) {{item.code}}
                   template(v-slot:item.name='{ item }')
                     strong {{item.name}}
                   template(v-slot:item.isRTL='{ item }')
                     v-icon(v-if='item.isRTL') mdi-check
-                  template(v-slot:item.availability='{ item }')
-                    .d-flex.align-center.pl-4
-                      v-progress-circular(:value='item.availability', width='2', size='20', :color='item.availability <= 33 ? `red` : (item.availability <= 66) ? `orange` : `green`')
-                      .caption.mx-2(:class='item.availability <= 33 ? `red--text` : (item.availability <= 66) ? `orange--text` : `green--text`') {{item.availability}}%
-                  template(v-slot:item.isInstalled='{ item }')
-                    v-progress-circular(v-if='item.isDownloading', indeterminate, color='blue', size='20', :width='2')
-                    v-btn(v-else-if='item.isInstalled && item.installDate < item.updatedAt', icon, small, @click='download(item)')
-                      v-icon.blue--text mdi-cached
-                    v-btn(v-else-if='item.isInstalled', icon, small, @click='download(item)')
-                      v-icon.green--text mdi-check-bold
-                    v-btn(v-else, icon, small, @click='download(item)')
-                      v-icon.grey--text mdi-cloud-download
+                  template(v-slot:item.source='{ item }')
+                    span.caption {{ sourceLabel(item) }}
               v-card.wiki-form.mt-3.animated.fadeInUp.wait-p5s
-                v-toolbar(color='teal', dark, dense, flat)
+                v-toolbar(color='primary', dark, dense, flat)
                   v-toolbar-title.subtitle-1 {{ $t('admin:locale.sideload') }}
-                  v-spacer
-                  v-chip(label, color='white', small).teal--text coming soon
                 v-card-text
-                  div {{ $t('admin:locale.sideloadHelp') }}
-                  v-btn.ml-0.mt-3(color='teal', disabled) {{ $t('common:actions.browse') }}
+                  .body-2 {{ $t('admin:locale.sideloadHelp') }}
+                  v-text-field.mt-4(
+                    outlined
+                    readonly
+                    hide-details
+                    prepend-icon='mdi-folder-outline'
+                    :label='$t(`admin:locale.sideloadFolder`, { defaultValue: `Sideload folder` })'
+                    :value='sideloadPath'
+                    )
 </template>
 
 <script>
@@ -141,25 +127,21 @@ import _ from 'lodash'
 /* global WIKI */
 
 import localesQuery from 'gql/admin/locale/locale-query-list.gql'
-import localesDownloadMutation from 'gql/admin/locale/locale-mutation-download.gql'
 import localesSaveMutation from 'gql/admin/locale/locale-mutation-save.gql'
 
 export default {
-  data() {
+  data () {
     return {
       loading: false,
       locales: [],
       selectedLocale: 'en',
-      autoUpdate: false,
       namespacing: false,
-      namespaces: []
+      namespaces: [],
+      sideloadPath: ''
     }
   },
   computed: {
-    installedLocales() {
-      return _.filter(this.locales, ['isInstalled', true])
-    },
-    headers() {
+    headers () {
       return [
         {
           text: this.$t('admin:locale.code'),
@@ -185,58 +167,30 @@ export default {
           width: 10
         },
         {
-          text: this.$t('admin:locale.availability'),
-          align: 'center',
-          value: 'availability',
-          sortable: false,
-          width: 120
-        },
-        {
-          text: this.$t('admin:locale.download'),
-          align: 'center',
-          value: 'isInstalled',
-          sortable: false,
-          width: 100
+          text: this.$t('admin:locale.source', { defaultValue: 'Source' }),
+          align: 'left',
+          value: 'source',
+          sortable: false
         }
       ]
     }
   },
   methods: {
-    async download(lc) {
-      lc.isDownloading = true
-      const respRaw = await this.$apollo.mutate({
-        mutation: localesDownloadMutation,
-        variables: {
-          locale: lc.code
-        }
-      })
-      const resp = _.get(respRaw, 'data.localization.downloadLocale.responseResult', {})
-      if (resp.succeeded) {
-        lc.isDownloading = false
-        lc.isInstalled = true
-        lc.updatedAt = new Date().toISOString()
-        lc.installDate = lc.updatedAt
-        this.$store.commit('showNotification', {
-          message: `Locale ${lc.name} has been installed successfully.`,
-          style: 'success',
-          icon: 'get_app'
-        })
+    sourceLabel (lc) {
+      if (lc.isBundled) {
+        return this.$t('admin:locale.sourceBundled', { defaultValue: 'Bundled' })
+      } else if (lc.isSideloaded) {
+        return this.$t('admin:locale.sourceSideloaded', { defaultValue: 'Sideloaded' })
       } else {
-        this.$store.commit('showNotification', {
-          message: `Error: ${resp.message}`,
-          style: 'error',
-          icon: 'warning'
-        })
+        return this.$t('admin:locale.sourceDatabase', { defaultValue: 'Database (legacy pack)' })
       }
-      this.isDownloading = false
     },
-    async save() {
+    async save () {
       this.loading = true
       const respRaw = await this.$apollo.mutate({
         mutation: localesSaveMutation,
         variables: {
           locale: this.selectedLocale,
-          autoUpdate: this.autoUpdate,
           namespacing: this.namespacing,
           namespaces: this.namespaces
         }
@@ -245,7 +199,7 @@ export default {
       if (resp.succeeded) {
         // Change UI language
         WIKI.$i18n.i18next.changeLanguage(this.selectedLocale)
-        WIKI.$moment.locale(this.selectedLocale)
+        WIKI.$datetime.setLocale(this.selectedLocale)
 
         // Check for RTL
         const curLocale = _.find(this.locales, ['code', this.selectedLocale])
@@ -274,7 +228,7 @@ export default {
     locales: {
       query: localesQuery,
       fetchPolicy: 'network-only',
-      update: (data) => data.localization.locales.map(lc => ({ ...lc, isDownloading: false })),
+      update: (data) => data.localization.locales,
       watchLoading (isLoading) {
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-locale-refresh')
       }
@@ -283,10 +237,6 @@ export default {
       query: localesQuery,
       update: (data) => data.localization.config.locale
     },
-    autoUpdate: {
-      query: localesQuery,
-      update: (data) => data.localization.config.autoUpdate
-    },
     namespacing: {
       query: localesQuery,
       update: (data) => data.localization.config.namespacing
@@ -294,6 +244,10 @@ export default {
     namespaces: {
       query: localesQuery,
       update: (data) => data.localization.config.namespaces
+    },
+    sideloadPath: {
+      query: localesQuery,
+      update: (data) => data.localization.config.sideloadPath
     }
   }
 }

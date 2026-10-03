@@ -14,7 +14,7 @@ const bcryptRegexp = /^\$2[ayb]\$[0-9]{2}\$[A-Za-z0-9./]{53}$/
  * Users model
  */
 module.exports = class User extends Model {
-  static get tableName() { return 'users' }
+  static get tableName () { return 'users' }
 
   static get jsonSchema () {
     return {
@@ -22,26 +22,26 @@ module.exports = class User extends Model {
       required: ['email'],
 
       properties: {
-        id: {type: 'integer'},
-        email: {type: 'string', format: 'email'},
-        name: {type: 'string', minLength: 1, maxLength: 255},
-        providerId: {type: 'string'},
-        password: {type: 'string'},
-        tfaIsActive: {type: 'boolean', default: false},
-        tfaSecret: {type: ['string', 'null']},
-        jobTitle: {type: 'string'},
-        location: {type: 'string'},
-        pictureUrl: {type: 'string'},
-        isSystem: {type: 'boolean'},
-        isActive: {type: 'boolean'},
-        isVerified: {type: 'boolean'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        id: { type: 'integer' },
+        email: { type: 'string', format: 'email' },
+        name: { type: 'string', minLength: 1, maxLength: 255 },
+        providerId: { type: 'string' },
+        password: { type: 'string' },
+        tfaIsActive: { type: 'boolean', default: false },
+        tfaSecret: { type: ['string', 'null'] },
+        jobTitle: { type: 'string' },
+        location: { type: 'string' },
+        pictureUrl: { type: 'string' },
+        isSystem: { type: 'boolean' },
+        isActive: { type: 'boolean' },
+        isVerified: { type: 'boolean' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       groups: {
         relation: Model.ManyToManyRelation,
@@ -82,7 +82,7 @@ module.exports = class User extends Model {
     }
   }
 
-  async $beforeUpdate(opt, context) {
+  async $beforeUpdate (opt, context) {
     await super.$beforeUpdate(opt, context)
 
     this.updatedAt = new Date().toISOString()
@@ -91,7 +91,8 @@ module.exports = class User extends Model {
       await this.generateHash()
     }
   }
-  async $beforeInsert(context) {
+
+  async $beforeInsert (context) {
     await super.$beforeInsert(context)
 
     this.createdAt = new Date().toISOString()
@@ -104,14 +105,14 @@ module.exports = class User extends Model {
   // Instance Methods
   // ------------------------------------------------
 
-  async generateHash() {
+  async generateHash () {
     if (this.password) {
       if (bcryptRegexp.test(this.password)) { return }
       this.password = await bcrypt.hash(this.password, 12)
     }
   }
 
-  async verifyPassword(pwd) {
+  async verifyPassword (pwd) {
     if (await bcrypt.compare(pwd, this.password) === true) {
       return true
     } else {
@@ -119,8 +120,8 @@ module.exports = class User extends Model {
     }
   }
 
-  async generateTFA() {
-    let tfaInfo = tfa.generateSecret({
+  async generateTFA () {
+    const tfaInfo = tfa.generateSecret({
       name: WIKI.config.title,
       account: this.email
     })
@@ -132,29 +133,29 @@ module.exports = class User extends Model {
     return qr.imageSync(`otpauth://totp/${safeTitle}:${this.email}?secret=${tfaInfo.secret}`, { type: 'svg' })
   }
 
-  async enableTFA() {
+  async enableTFA () {
     return WIKI.models.users.query().findById(this.id).patch({
       tfaIsActive: true
     })
   }
 
-  async disableTFA() {
-    return this.$query.patch({
+  async disableTFA () {
+    return this.$query().patch({
       tfaIsActive: false,
       tfaSecret: ''
     })
   }
 
-  verifyTFA(code) {
-    let result = tfa.verifyToken(this.tfaSecret, code)
+  verifyTFA (code) {
+    const result = tfa.verifyToken(this.tfaSecret, code)
     return (result && _.has(result, 'delta') && result.delta === 0)
   }
 
-  getGlobalPermissions() {
+  getGlobalPermissions () {
     return _.uniq(_.flatten(_.map(this.groups, 'permissions')))
   }
 
-  getGroups() {
+  getGroups () {
     return _.uniq(_.map(this.groups, 'id'))
   }
 
@@ -162,7 +163,7 @@ module.exports = class User extends Model {
   // Model Methods
   // ------------------------------------------------
 
-  static async processProfile({ profile, providerKey }) {
+  static async processProfile ({ profile, providerKey }) {
     const provider = _.get(WIKI.auth.strategies, providerKey, {})
     provider.info = _.find(WIKI.data.authentication, ['key', provider.stategyKey])
 
@@ -237,7 +238,7 @@ module.exports = class User extends Model {
       user = await user.$query().patchAndFetch({
         email: primaryEmail,
         name: displayName,
-        pictureUrl: pictureUrl
+        pictureUrl
       })
 
       if (pictureUrl === 'internal') {
@@ -259,11 +260,11 @@ module.exports = class User extends Model {
 
       // Create account
       user = await WIKI.models.users.query().insertAndFetch({
-        providerKey: providerKey,
+        providerKey,
         providerId: _.toString(profile.id),
         email: primaryEmail,
         name: displayName,
-        pictureUrl: pictureUrl,
+        pictureUrl,
         localeCode: WIKI.config.lang.code,
         defaultEditor: 'markdown',
         tfaIsActive: false,
@@ -415,7 +416,7 @@ module.exports = class User extends Model {
   /**
    * Generate a new token for a user
    */
-  static async refreshToken(user) {
+  static async refreshToken (user) {
     if (_.isSafeInteger(user)) {
       user = await WIKI.models.users.query().findById(user).withGraphFetched('groups').modifyGraph('groups', builder => {
         builder.select('groups.id', 'permissions')
@@ -543,11 +544,11 @@ module.exports = class User extends Model {
     await WIKI.mail.send({
       template: 'accountResetPwd',
       to: email,
-      subject: `Password Reset Request`,
+      subject: 'Password Reset Request',
       data: {
         preheadertext: `A password reset was requested for ${WIKI.config.title}`,
         title: `A password reset was requested for ${WIKI.config.title}`,
-        content: `Click the button below to reset your password. If you didn't request this password reset, simply discard this email.`,
+        content: 'Click the button below to reset your password. If you didn\'t request this password reset, simply discard this email.',
         buttonLink: `${WIKI.config.host}/login-reset/${resetToken}`,
         buttonText: 'Reset Password'
       },
@@ -623,11 +624,16 @@ module.exports = class User extends Model {
       throw new WIKI.Error.InputInvalid(validation[0])
     }
 
+    // A welcome email can only be sent with a mail configuration (checked before creating the account)
+    if (sendWelcomeEmail && !WIKI.mail.transport) {
+      throw new WIKI.Error.MailNotConfigured()
+    }
+
     // Check if email already exists
     const usr = await WIKI.models.users.query().findOne({ email, providerKey })
     if (!usr) {
       // Create the account
-      let newUsrData = {
+      const newUsrData = {
         providerKey,
         email,
         name,
@@ -640,7 +646,7 @@ module.exports = class User extends Model {
         mustChangePwd: false
       }
 
-      if (providerKey === `local`) {
+      if (providerKey === 'local') {
         newUsrData.password = passwordRaw
         newUsrData.mustChangePwd = (mustChangePassword === true)
       }
@@ -653,7 +659,7 @@ module.exports = class User extends Model {
       }
 
       if (sendWelcomeEmail) {
-        // Send welcome email
+        // Send welcome email (a failure must not undo the already created account)
         await WIKI.mail.send({
           template: 'accountWelcome',
           to: email,
@@ -661,11 +667,13 @@ module.exports = class User extends Model {
           data: {
             preheadertext: `You've been invited to the wiki ${WIKI.config.title}`,
             title: `You've been invited to the wiki ${WIKI.config.title}`,
-            content: `Click the button below to access the wiki.`,
+            content: 'Click the button below to access the wiki.',
             buttonLink: `${WIKI.config.host}/login`,
             buttonText: 'Login'
           },
           text: `You've been invited to the wiki ${WIKI.config.title}: ${WIKI.config.host}/login`
+        }).catch(err => {
+          WIKI.logger.warn(`Failed to send welcome email to ${email}: ${err.message}`)
         })
       }
     } else {
@@ -681,7 +689,7 @@ module.exports = class User extends Model {
   static async updateUser ({ id, email, name, newPassword, groups, location, jobTitle, timezone, dateFormat, appearance }) {
     const usr = await WIKI.models.users.query().findById(id)
     if (usr) {
-      let usrData = {}
+      const usrData = {}
       if (!_.isEmpty(email) && email !== usr.email) {
         const dupUsr = await WIKI.models.users.query().select('id').where({
           email,
@@ -751,6 +759,9 @@ module.exports = class User extends Model {
       await WIKI.models.pages.query().patch({ creatorId: replaceId }).where('creatorId', id)
 
       await WIKI.models.userKeys.query().delete().where('userId', id)
+      await WIKI.models.pageDrafts.query().delete().where('authorId', id)
+      await WIKI.models.userWatches.query().delete().where('userId', id)
+      await WIKI.models.userBookmarks.query().delete().where('userId', id)
       await WIKI.models.users.query().deleteById(id)
     } else {
       throw new WIKI.Error.UserNotFound()
@@ -889,7 +900,7 @@ module.exports = class User extends Model {
   }
 
   static async getRootUser () {
-    let user = await WIKI.models.users.query().findById(1)
+    const user = await WIKI.models.users.query().findById(1)
     if (!user) {
       WIKI.logger.error('CRITICAL ERROR: Root Administrator user is missing!')
       process.exit(1)

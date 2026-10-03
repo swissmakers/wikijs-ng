@@ -41,7 +41,7 @@ import gql from 'graphql-tag'
 /* global siteConfig, siteLangs */
 
 export default {
-  data() {
+  data () {
     return {
       graphMode: 'htree',
       width: 800,
@@ -60,10 +60,10 @@ export default {
     }
   },
   methods: {
-    goToPage (d) {
+    goToPage (event, d) {
       const id = d.data.id
       if (id) {
-        if (d3.event.ctrlKey || d3.event.metaKey) {
+        if (event.ctrlKey || event.metaKey) {
           const { href } = this.$router.resolve(String(id))
           window.open(href, '_blank')
         } else {
@@ -95,7 +95,7 @@ export default {
     hierarchy (pages) {
       const map = new Map(pages.map(p => [p.path, p]))
       const getPage = path => map.get(path) || {
-        path: path,
+        path,
         title: path.split('/').slice(-1)[0],
         links: []
       }
@@ -139,8 +139,8 @@ export default {
 
       const g = svg.append('g')
 
-      svg.call(d3.zoom().on('zoom', function() {
-        g.attr('transform', d3.event.transform)
+      svg.call(d3.zoom().on('zoom', function (event) {
+        g.attr('transform', event.transform)
       }))
 
       const link = g.append('g')
@@ -151,7 +151,7 @@ export default {
         .join('path')
         .style('mix-blend-mode', 'multiply')
         .attr('d', ([i, o]) => line(i.path(o)))
-        .each(function(d) { d.path = this })
+        .each(function (d) { d.path = this })
 
       g.append('g')
         .attr('font-family', 'sans-serif')
@@ -168,17 +168,17 @@ export default {
         .attr('fill', this.$vuetify.theme.dark ? 'white' : '')
         .attr('cursor', 'pointer')
         .text(d => d.data.title)
-        .each(function(d) { d.text = this })
+        .each(function (d) { d.text = this })
         .on('mouseover', overed)
         .on('mouseout', outed)
-        .on('click', d => this.goToPage(d))
+        .on('click', (event, d) => this.goToPage(event, d))
         .call(text => text.append('title').text(d => `${d.data.path}
           ${d.outgoing.length} outgoing
           ${d.incoming.length} incoming`))
         .clone(true).lower()
         .attr('stroke', this.$vuetify.theme.dark ? '#222' : 'white')
 
-      function overed(d) {
+      function overed (event, d) {
         link.style('mix-blend-mode', null)
         d3.select(this).attr('font-weight', 'bold')
         d3.selectAll(d.incoming.map(d => d.path)).attr('stroke', '#2196F3').raise()
@@ -187,7 +187,7 @@ export default {
         d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr('fill', '#E91E63').attr('font-weight', 'bold')
       }
 
-      function outed(d) {
+      function outed (event, d) {
         link.style('mix-blend-mode', 'multiply')
         d3.select(this).attr('font-weight', null)
         d3.selectAll(d.incoming.map(d => d.path)).attr('stroke', null)
@@ -224,8 +224,8 @@ export default {
       // we apply the translation (`g`), or else zoom is wonky
       const gZoom = svg.append('g')
 
-      svg.call(d3.zoom().on('zoom', function() {
-        gZoom.attr('transform', d3.event.transform)
+      svg.call(d3.zoom().on('zoom', function (event) {
+        gZoom.attr('transform', event.transform)
       }))
 
       const g = gZoom.append('g')
@@ -264,7 +264,7 @@ export default {
         .attr('fill', this.$vuetify.theme.dark ? 'white' : '')
         .attr('cursor', 'pointer')
         .text(d => d.data.title)
-        .on('click', d => this.goToPage(d))
+        .on('click', (event, d) => this.goToPage(event, d))
         .clone(true).lower()
         .attr('stroke', this.$vuetify.theme.dark ? '#222' : 'white')
 
@@ -288,8 +288,8 @@ export default {
 
       const g = svg.append('g')
 
-      svg.call(d3.zoom().on('zoom', function () {
-        g.attr('transform', d3.event.transform)
+      svg.call(d3.zoom().on('zoom', function (event) {
+        g.attr('transform', event.transform)
       }))
 
       // eslint-disable-next-line no-unused-vars
@@ -330,14 +330,14 @@ export default {
         .attr('fill', this.$vuetify.theme.dark ? 'white' : '')
         .attr('cursor', 'pointer')
         .text(d => d.data.title)
-        .on('click', d => this.goToPage(d))
+        .on('click', (event, d) => this.goToPage(event, d))
         .clone(true).lower()
         .attr('stroke', this.$vuetify.theme.dark ? '#222' : 'white')
 
       this.$refs.svgContainer.appendChild(svg.node())
 
-      function autoBox() {
-        const {x, y, width, height} = this.getBBox()
+      function autoBox () {
+        const { x, y, width, height } = this.getBBox()
         return [x, y, width, height]
       }
 

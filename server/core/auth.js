@@ -25,7 +25,7 @@ module.exports = {
   /**
    * Initialize the authentication module
    */
-  init() {
+  init () {
     this.passport = passport
 
     passport.serializeUser((user, done) => {
@@ -40,7 +40,7 @@ module.exports = {
         if (user) {
           done(null, user)
         } else {
-          done(new Error(WIKI.lang.t('auth:errors:usernotfound')), null)
+          done(new WIKI.Error.UserNotFound(), null)
         }
       } catch (err) {
         done(err, null)
@@ -77,8 +77,12 @@ module.exports = {
 
       // Load enabled strategies
       const enabledStrategies = await WIKI.models.authentication.getStrategies()
-      for (let idx in enabledStrategies) {
+      for (const idx in enabledStrategies) {
         const stg = enabledStrategies[idx]
+        if (!_.some(WIKI.data.authentication, ['key', stg.strategyKey])) {
+          WIKI.logger.warn(`Authentication Strategy ${stg.displayName} (${stg.key}): module ${stg.strategyKey} no longer exists [ SKIPPED ]`)
+          continue
+        }
         try {
           const strategy = require(`../modules/authentication/${stg.strategyKey}/authentication.js`)
 
@@ -98,7 +102,7 @@ module.exports = {
         }
       }
     } catch (err) {
-      WIKI.logger.error(`Failed to initialize Authentication Strategies: [ ERROR ]`)
+      WIKI.logger.error('Failed to initialize Authentication Strategies: [ ERROR ]')
       WIKI.logger.error(err)
     }
   },
@@ -111,7 +115,7 @@ module.exports = {
    * @param {Express Next Callback} next
    */
   authenticate (req, res, next) {
-    WIKI.auth.passport.authenticate('jwt', {session: false}, async (err, user, info) => {
+    WIKI.auth.passport.authenticate('jwt', { session: false }, async (err, user, info) => {
       if (err) { return next() }
       let mustRevalidate = false
 
@@ -218,7 +222,7 @@ module.exports = {
    * @param {Array<String>} permissions
    * @param {String|Boolean} path
    */
-  checkAccess(user, permissions = [], page = false) {
+  checkAccess (user, permissions = [], page = false) {
     const userPermissions = user.permissions ? user.permissions : user.getGlobalPermissions()
 
     // System Admin
@@ -238,60 +242,95 @@ module.exports = {
 
     // Check Page Rules
     if (user.groups) {
-      let checkState = {
-        deny: false,
-        match: false,
-        specificity: ''
-      }
-      user.groups.forEach(grp => {
-        const grpId = _.isObject(grp) ? _.get(grp, 'id', 0) : grp
-        _.get(WIKI.auth.groups, `${grpId}.pageRules`, []).forEach(rule => {
-          if (rule.locales && rule.locales.length > 0) {
-            if (!rule.locales.includes(page.locale)) { return }
-          }
-          if (_.intersection(rule.roles, permissions).length > 0) {
-            switch (rule.match) {
-              case 'START':
-                if (_.startsWith(`/${page.path}`, `/${rule.path}`)) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: ['END', 'REGEX', 'EXACT', 'TAG'] })
-                }
-                break
-              case 'END':
-                if (_.endsWith(page.path, rule.path)) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: ['REGEX', 'EXACT', 'TAG'] })
-                }
-                break
-              case 'REGEX':
-                const reg = new RegExp(rule.path)
-                if (reg.test(page.path)) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: ['EXACT', 'TAG'] })
-                }
-                break
-              case 'TAG':
-                _.get(page, 'tags', []).forEach(tag => {
-                  if (tag.tag === rule.path) {
-                    checkState = this._applyPageRuleSpecificity({
-                      rule,
-                      checkState,
-                      higherPriority: ['EXACT']
-                    })
-                  }
-                })
-                break
-              case 'EXACT':
-                if (`/${page.path}` === `/${rule.path}`) {
-                  checkState = this._applyPageRuleSpecificity({ rule, checkState, higherPriority: [] })
-                }
-                break
-            }
-          }
-        })
-      })
-
+      const checkState = this._evaluatePageRules(user, permissions, page)
       return (checkState.match && !checkState.deny)
     }
 
     return false
+  },
+
+  /**
+   * Evaluate the page rules of the user's groups for the given permissions
+   *
+   * @access private
+   * @returns {Object} { match, deny, specificity, rule, groupId } of the deciding rule (match is false if none applies)
+   */
+  _evaluatePageRules (user, permissions, page) {
+    let checkState = {
+      deny: false,
+      match: false,
+      specificity: ''
+    }
+    user.groups.forEach(grp => {
+      const grpId = _.isObject(grp) ? _.get(grp, 'id', 0) : grp
+      _.get(WIKI.auth.groups, `${grpId}.pageRules`, []).forEach(rule => {
+        if (rule.locales && rule.locales.length > 0) {
+          if (!rule.locales.includes(page.locale)) { return }
+        }
+        if (_.intersection(rule.roles, permissions).length > 0) {
+          switch (rule.match) {
+            case 'START':
+              if (_.startsWith(`/${page.path}`, `/${rule.path}`)) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['END', 'REGEX', 'EXACT', 'TAG'] })
+              }
+              break
+            case 'END':
+              if (_.endsWith(page.path, rule.path)) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['REGEX', 'EXACT', 'TAG'] })
+              }
+              break
+            case 'REGEX': {
+              const reg = new RegExp(rule.path)
+              if (reg.test(page.path)) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: ['EXACT', 'TAG'] })
+              }
+              break
+            }
+            case 'TAG':
+              _.get(page, 'tags', []).forEach(tag => {
+                if (tag.tag === rule.path) {
+                  checkState = this._applyPageRuleSpecificity({
+                    rule,
+                    groupId: grpId,
+                    checkState,
+                    higherPriority: ['EXACT']
+                  })
+                }
+              })
+              break
+            case 'EXACT':
+              if (`/${page.path}` === `/${rule.path}`) {
+                checkState = this._applyPageRuleSpecificity({ rule, groupId: grpId, checkState, higherPriority: [] })
+              }
+              break
+          }
+        }
+      })
+    })
+    return checkState
+  },
+
+  /**
+   * Explain the access decision for one permission on a page (permission inspector)
+   *
+   * @param {Object} user User or pseudo-user ({ permissions, groups })
+   * @param {String} permission Permission to check
+   * @param {Object} page Page ({ path, locale, tags })
+   * @returns {Object} { permission, allowed, reason (ADMIN, NO_GLOBAL, NO_RULE, RULE), rule, groupId }
+   */
+  explainAccess (user, permission, page) {
+    const userPermissions = user.permissions ? user.permissions : user.getGlobalPermissions()
+    if (_.includes(userPermissions, 'manage:system')) {
+      return { permission, allowed: true, reason: 'ADMIN', rule: null, groupId: null }
+    }
+    if (!_.includes(userPermissions, permission)) {
+      return { permission, allowed: false, reason: 'NO_GLOBAL', rule: null, groupId: null }
+    }
+    const checkState = this._evaluatePageRules({ ...user, groups: user.groups || [] }, [permission], page)
+    if (!checkState.match) {
+      return { permission, allowed: false, reason: 'NO_RULE', rule: null, groupId: null }
+    }
+    return { permission, allowed: !checkState.deny, reason: 'RULE', rule: checkState.rule, groupId: checkState.groupId }
   },
 
   /**
@@ -301,7 +340,7 @@ module.exports = {
    * @param {Array<String>} includePermissions
    * @param {Array<String>} excludePermissions
    */
-  checkExclusiveAccess(user, includePermissions = [], excludePermissions = []) {
+  checkExclusiveAccess (user, includePermissions = [], excludePermissions = []) {
     const userPermissions = user.permissions ? user.permissions : user.getGlobalPermissions()
 
     // Check Inclusion Permissions
@@ -324,7 +363,7 @@ module.exports = {
    * @param {Array<Number>} groupIds List of group IDs to be assigned
    * @returns {Boolean}
    */
-  async checkAssignUserToGroupAccess(requester, groupIds = []) {
+  async checkAssignUserToGroupAccess (requester, groupIds = []) {
     if (!groupIds || groupIds.length < 1) {
       return true
     }
@@ -365,7 +404,7 @@ module.exports = {
    *
    * @access private
    */
-  _applyPageRuleSpecificity ({ rule, checkState, higherPriority = [] }) {
+  _applyPageRuleSpecificity ({ rule, groupId = null, checkState, higherPriority = [] }) {
     if (rule.path.length === checkState.specificity.length) {
       // Do not override higher priority rules
       if (_.includes(higherPriority, checkState.match)) {
@@ -383,7 +422,9 @@ module.exports = {
     return {
       deny: rule.deny,
       match: rule.match,
-      specificity: rule.path
+      specificity: rule.path,
+      rule,
+      groupId
     }
   },
 
@@ -445,7 +486,7 @@ module.exports = {
   /**
    * Reset Guest User
    */
-  async resetGuestUser() {
+  async resetGuestUser () {
     WIKI.logger.info('Resetting guest account...')
     const guestGroup = await WIKI.models.groups.query().where('id', 2).first()
 
@@ -475,7 +516,7 @@ module.exports = {
   /**
    * Subscribe to HA propagation events
    */
-  subscribeToEvents() {
+  subscribeToEvents () {
     WIKI.events.inbound.on('reloadGroups', () => {
       WIKI.auth.reloadGroups()
     })

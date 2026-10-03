@@ -2,7 +2,7 @@
 
 exports.up = knex => {
   const dbCompat = {
-    charset: (WIKI.config.db.type === `mysql` || WIKI.config.db.type === `mariadb`)
+    charset: (WIKI.config.db.type === 'mysql' || WIKI.config.db.type === 'mariadb')
   }
   return knex.schema
     .createTable('apiKeys', table => {

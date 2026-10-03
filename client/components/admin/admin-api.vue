@@ -41,9 +41,9 @@
                     strong(:class='key.isRevoked ? `red--text` : ``') {{ key.name }}
                     em.caption.ml-1.red--text(v-if='key.isRevoked') (revoked)
                   td.caption {{ key.keyShort }}
-                  td(:style='key.isRevoked ? `text-decoration: line-through;` : ``') {{ key.expiration | moment('LL') }}
-                  td {{ key.createdAt | moment('calendar') }}
-                  td {{ key.updatedAt | moment('calendar') }}
+                  td(:style='key.isRevoked ? `text-decoration: line-through;` : ``') {{ key.expiration | date('LL') }}
+                  td {{ key.createdAt | date('calendar') }}
+                  td {{ key.updatedAt | date('calendar') }}
                   td: v-btn(icon, @click='revoke(key)', :disabled='key.isRevoked'): v-icon(color='error') mdi-cancel
           v-card-text(v-else)
             v-alert.mb-0(icon='mdi-information', :value='true', outlined, color='info') {{$t('admin:api.noKeyInfo')}}
@@ -74,7 +74,7 @@ export default {
     StatusIndicator,
     CreateApiKey
   },
-  data() {
+  data () {
     return {
       enabled: false,
       isToggleLoading: false,

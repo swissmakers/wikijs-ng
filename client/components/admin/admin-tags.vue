@@ -73,8 +73,8 @@
                     )
                   v-card-chin
                     i18next.caption.pl-3(path='admin:tags.date', tag='div')
-                      strong(place='created') {{current.createdAt | moment('from')}}
-                      strong(place='updated') {{current.updatedAt | moment('from')}}
+                      strong(place='created') {{current.createdAt | date('from')}}
+                      strong(place='updated') {{current.updatedAt | date('from')}}
                     v-spacer
                     v-dialog(v-model='deleteTagDialog', max-width='500')
                       template(v-slot:activator='{ on }')
@@ -102,7 +102,7 @@ import _ from 'lodash'
 import gql from 'graphql-tag'
 
 export default {
-  data() {
+  data () {
     return {
       tags: [],
       current: {},
@@ -120,11 +120,11 @@ export default {
     }
   },
   methods: {
-    selectTag(tag) {
+    selectTag (tag) {
       this.current = tag
     },
-    async deleteTag(tag) {
-      this.$store.commit(`loadingStart`, 'admin-tags-delete')
+    async deleteTag (tag) {
+      this.$store.commit('loadingStart', 'admin-tags-delete')
       try {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -159,10 +159,10 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
       this.deleteTagDialog = false
-      this.$store.commit(`loadingStop`, 'admin-tags-delete')
+      this.$store.commit('loadingStop', 'admin-tags-delete')
     },
-    async saveTag(tag) {
-      this.$store.commit(`loadingStart`, 'admin-tags-save')
+    async saveTag (tag) {
+      this.$store.commit('loadingStart', 'admin-tags-save')
       try {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -198,9 +198,9 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-tags-save')
+      this.$store.commit('loadingStop', 'admin-tags-save')
     },
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.tags.refetch()
       this.current = {}
       this.$store.commit('showNotification', {

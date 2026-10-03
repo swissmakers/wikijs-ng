@@ -152,6 +152,7 @@ import 'codemirror/addon/fold/foldcode.js'
 import 'codemirror/addon/fold/foldgutter.js'
 import 'codemirror/addon/fold/foldgutter.css'
 import cmFold from './common/cmFold'
+import { pagePath } from '@/helpers'
 
 // ========================================
 // INIT
@@ -173,7 +174,7 @@ cmFold.register('asciidoc')
 // ========================================
 
 export default {
-  data() {
+  data () {
     return {
       cm: null,
       cursorPos: { ch: 0, line: 1 },
@@ -184,10 +185,10 @@ export default {
     }
   },
   computed: {
-    isMobile() {
+    isMobile () {
       return this.$vuetify.breakpoint.smAndDown
     },
-    isModalShown() {
+    isModalShown () {
       return this.helpShown || this.activeModal !== ''
     },
     locale: get('page/locale'),
@@ -197,20 +198,20 @@ export default {
   },
 
   methods: {
-    toggleModal(key) {
+    toggleModal (key) {
       this.activeModal = (this.activeModal === key) ? '' : key
       this.helpShown = false
     },
-    closeAllModal() {
+    closeAllModal () {
       this.activeModal = ''
       this.helpShown = false
     },
-    onCmInput: _.debounce(function(newContent) {
+    onCmInput: _.debounce(function (newContent) {
       this.processContent(newContent)
     }, 600),
-    processContent(newContent) {
+    processContent (newContent) {
       this.processMarkers(this.cm.firstLine(), this.cm.lastLine())
-      let html = asciidoctor.convert(newContent, {
+      const html = asciidoctor.convert(newContent, {
         standalone: false,
         safe: 'safe',
         attributes: {
@@ -235,14 +236,14 @@ export default {
     /**
      * Insert content at cursor
      */
-    insertAtCursor({ content }) {
+    insertAtCursor ({ content }) {
       const cursor = this.cm.doc.getCursor('head')
       this.cm.doc.replaceRange(content, cursor)
     },
     /**
      * Insert content after current line
      */
-    insertAfter({ content, newLine }) {
+    insertAfter ({ content, newLine }) {
       const curLine = this.cm.doc.getCursor('to').line
       const lineLength = this.cm.doc.getLine(curLine).length
       this.cm.doc.replaceRange(newLine ? `\n${content}\n` : content, { line: curLine, ch: lineLength + 1 })
@@ -250,7 +251,7 @@ export default {
     /**
      * Insert content before current line
      */
-    insertBeforeEachLine({ content, after }) {
+    insertBeforeEachLine ({ content, after }) {
       let lines = []
       if (!this.cm.doc.somethingSelected()) {
         lines.push(this.cm.doc.getCursor('head').line)
@@ -278,10 +279,10 @@ export default {
     /**
      * Update cursor state
      */
-    positionSync(cm) {
+    positionSync (cm) {
       this.cursorPos = cm.getCursor('head')
     },
-    toggleMarkup({ start, end }) {
+    toggleMarkup ({ start, end }) {
       if (!end) { end = start }
       if (!this.cm.doc.somethingSelected()) {
         return this.$store.commit('showNotification', {
@@ -292,21 +293,21 @@ export default {
       }
       this.cm.doc.replaceSelections(this.cm.doc.getSelections().map(s => start + s + end))
     },
-    setHeaderLine(lvl) {
+    setHeaderLine (lvl) {
       const curLine = this.cm.doc.getCursor('head').line
       let lineContent = this.cm.doc.getLine(curLine)
       const lineLength = lineContent.length
       if (_.startsWith(lineContent, '=')) {
         lineContent = lineContent.replace(/^(=+ )/, '')
       }
-      lineContent = _.times(lvl, n => '=').join('') + ` ` + lineContent
+      lineContent = _.times(lvl, n => '=').join('') + ' ' + lineContent
       this.cm.doc.replaceRange(lineContent, { line: curLine, ch: 0 }, { line: curLine, ch: lineLength })
     },
 
     toggleFullscreen () {
       this.cm.setOption('fullScreen', true)
     },
-    refresh() {
+    refresh () {
       this.$nextTick(() => {
         this.cm.refresh()
       })
@@ -317,7 +318,7 @@ export default {
     insertLinkHandler ({ locale, path, title }) {
       const linkText = title || _.last(path.split('/'))
       this.insertAtCursor({
-        content: siteLangs.length > 0 ? `link:/${locale}/${path}[${linkText}]` : `link:/${path}[${linkText}]`
+        content: `link:${pagePath(locale, path)}[${linkText}]`
       })
     },
     processMarkers (from, to) {
@@ -353,7 +354,7 @@ export default {
                     try {
                       const raw = this.cm.doc.getLine(end - 1)
                       this.$store.set('editor/activeModalData', Buffer.from(raw, 'base64').toString())
-                      this.toggleModal(`editorModalDrawio`)
+                      this.toggleModal('editorModalDrawio')
                     } catch (err) {
                       return this.$store.commit('showNotification', {
                         message: 'Failed to process diagram data.',
@@ -382,7 +383,7 @@ export default {
       this.cm.markText(from, to, { replacedWith: markerElm, __kind: kind })
     }
   },
-  mounted() {
+  mounted () {
     this.$store.set('editor/editorKey', 'asciidoc')
 
     if (this.mode === 'create') {
@@ -432,11 +433,11 @@ export default {
       }
     }
     _.set(keyBindings, `${CtrlKey}-B`, c => {
-      this.toggleMarkup({ start: `**` })
+      this.toggleMarkup({ start: '**' })
       return false
     })
     _.set(keyBindings, `${CtrlKey}-I`, c => {
-      this.toggleMarkup({ start: `__` })
+      this.toggleMarkup({ start: '__' })
       return false
     })
 
@@ -453,35 +454,37 @@ export default {
 
     this.$root.$on('editorInsert', opts => {
       switch (opts.kind) {
-        case 'IMAGE':
-          let img = `image::${opts.path}[${opts.text}]`
+        case 'IMAGE': {
+          const img = `image::${opts.path}[${opts.text}]`
           this.insertAtCursor({
             content: img
           })
           break
+        }
         case 'BINARY':
           this.insertAtCursor({
             content: `link:${opts.path}[${opts.text}]`
           })
           break
-        case 'DIAGRAM':
+        case 'DIAGRAM': {
           const selStartLine = this.cm.getCursor('from').line
           const selEndLine = this.cm.getCursor('to').line + 1
           this.cm.doc.replaceSelection('```diagram\n' + opts.text + '\n```\n', 'start')
           this.processMarkers(selStartLine, selEndLine)
           break
+        }
       }
     })
 
     // Handle save conflict
     this.$root.$on('saveConflict', () => {
-      this.toggleModal(`editorModalConflict`)
+      this.toggleModal('editorModalConflict')
     })
     this.$root.$on('overwriteEditorContent', () => {
       this.cm.setValue(this.$store.get('editor/content'))
     })
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.$root.$off('editorInsert')
   }
 }

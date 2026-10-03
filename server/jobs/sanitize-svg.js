@@ -5,7 +5,7 @@ const createDOMPurify = require('dompurify')
 /* global WIKI */
 
 module.exports = async (svgPath) => {
-  WIKI.logger.info(`Sanitizing SVG file upload...`)
+  WIKI.logger.info('Sanitizing SVG file upload...')
 
   try {
     let svgContents = await fs.readFile(svgPath, 'utf8')
@@ -16,9 +16,9 @@ module.exports = async (svgPath) => {
     svgContents = DOMPurify.sanitize(svgContents)
 
     await fs.writeFile(svgPath, svgContents)
-    WIKI.logger.info(`Sanitized SVG file upload: [ COMPLETED ]`)
+    WIKI.logger.info('Sanitized SVG file upload: [ COMPLETED ]')
   } catch (err) {
-    WIKI.logger.error(`Failed to sanitize SVG file upload: [ FAILED ]`)
+    WIKI.logger.error('Failed to sanitize SVG file upload: [ FAILED ]')
     WIKI.logger.error(err.message)
     throw err
   }

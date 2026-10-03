@@ -1,17 +1,20 @@
 const graphHelper = require('../../helpers/graph')
+const cspHelper = require('../../helpers/csp')
 const _ = require('lodash')
 
 /* global WIKI */
 
+const DEFAULT_DRAWIO_URL = 'https://embed.diagrams.net'
+
 module.exports = {
   Query: {
-    async site() { return {} }
+    async site () { return {} }
   },
   Mutation: {
-    async site() { return {} }
+    async site () { return {} }
   },
   SiteQuery: {
-    async config(obj, args, context, info) {
+    async config (obj, args, context, info) {
       return {
         host: WIKI.config.host,
         title: WIKI.config.title,
@@ -24,6 +27,11 @@ module.exports = {
         ...WIKI.config.editShortcuts,
         ...WIKI.config.features,
         ...WIKI.config.security,
+        securityCSPPreview: cspHelper.buildPolicy({
+          security: WIKI.config.security,
+          iconset: WIKI.config.theming.iconset,
+          frameSources: cspHelper.integrationFrameSources(WIKI.config)
+        }).value,
         authAutoLogin: WIKI.config.auth.autoLogin,
         authEnforce2FA: WIKI.config.auth.enforce2FA,
         authHideLocal: WIKI.config.auth.hideLocal,
@@ -34,14 +42,21 @@ module.exports = {
         uploadMaxFileSize: WIKI.config.uploads.maxFileSize,
         uploadMaxFiles: WIKI.config.uploads.maxFiles,
         uploadScanSVG: WIKI.config.uploads.scanSVG,
-        uploadForceDownload: WIKI.config.uploads.forceDownload
+        uploadForceDownload: WIKI.config.uploads.forceDownload,
+        drawioUrl: WIKI.config.integrations.drawioUrl
       }
     }
   },
   SiteMutation: {
-    async updateConfig(obj, args, context) {
+    async updateConfig (obj, args, context) {
       try {
-        if (args.hasOwnProperty('host')) {
+        // -> Validate before changing anything
+        const drawioUrl = _.has(args, 'drawioUrl') ? (_.trimEnd(_.trim(args.drawioUrl), '/') || DEFAULT_DRAWIO_URL) : null
+        if (drawioUrl && !cspHelper.httpOrigin(drawioUrl)) {
+          throw new WIKI.Error.InputInvalid()
+        }
+
+        if (_.has(args, 'host')) {
           let siteHost = _.trim(args.host)
           if (siteHost.endsWith('/')) {
             siteHost = siteHost.slice(0, -1)
@@ -49,27 +64,27 @@ module.exports = {
           WIKI.config.host = siteHost
         }
 
-        if (args.hasOwnProperty('title')) {
+        if (_.has(args, 'title')) {
           WIKI.config.title = _.trim(args.title)
         }
 
-        if (args.hasOwnProperty('company')) {
+        if (_.has(args, 'company')) {
           WIKI.config.company = _.trim(args.company)
         }
 
-        if (args.hasOwnProperty('contentLicense')) {
+        if (_.has(args, 'contentLicense')) {
           WIKI.config.contentLicense = args.contentLicense
         }
 
-        if (args.hasOwnProperty('footerOverride')) {
+        if (_.has(args, 'footerOverride')) {
           WIKI.config.footerOverride = args.footerOverride
         }
 
-        if (args.hasOwnProperty('logoUrl')) {
+        if (_.has(args, 'logoUrl')) {
           WIKI.config.logoUrl = _.trim(args.logoUrl)
         }
 
-        if (args.hasOwnProperty('pageExtensions')) {
+        if (_.has(args, 'pageExtensions')) {
           WIKI.config.pageExtensions = _.trim(args.pageExtensions).split(',').map(p => p.trim().toLowerCase()).filter(p => p !== '')
         }
 
@@ -101,9 +116,8 @@ module.exports = {
         }
 
         WIKI.config.features = {
-          featurePageRatings: _.get(args, 'featurePageRatings', WIKI.config.features.featurePageRatings),
           featurePageComments: _.get(args, 'featurePageComments', WIKI.config.features.featurePageComments),
-          featurePersonalWikis: _.get(args, 'featurePersonalWikis', WIKI.config.features.featurePersonalWikis)
+          featureNotifications: _.get(args, 'featureNotifications', WIKI.config.features.featureNotifications)
         }
 
         WIKI.config.security = {
@@ -111,10 +125,10 @@ module.exports = {
           securityIframe: _.get(args, 'securityIframe', WIKI.config.security.securityIframe),
           securityReferrerPolicy: _.get(args, 'securityReferrerPolicy', WIKI.config.security.securityReferrerPolicy),
           securityTrustProxy: _.get(args, 'securityTrustProxy', WIKI.config.security.securityTrustProxy),
-          securitySRI: _.get(args, 'securitySRI', WIKI.config.security.securitySRI),
           securityHSTS: _.get(args, 'securityHSTS', WIKI.config.security.securityHSTS),
           securityHSTSDuration: _.get(args, 'securityHSTSDuration', WIKI.config.security.securityHSTSDuration),
           securityCSP: _.get(args, 'securityCSP', WIKI.config.security.securityCSP),
+          securityCSPReportOnly: _.get(args, 'securityCSPReportOnly', WIKI.config.security.securityCSPReportOnly),
           securityCSPDirectives: _.get(args, 'securityCSPDirectives', WIKI.config.security.securityCSPDirectives)
         }
 
@@ -125,7 +139,14 @@ module.exports = {
           forceDownload: _.get(args, 'uploadForceDownload', WIKI.config.uploads.forceDownload)
         }
 
-        await WIKI.configSvc.saveToDb(['host', 'title', 'company', 'contentLicense', 'footerOverride', 'seo', 'logoUrl', 'pageExtensions', 'auth', 'editShortcuts', 'features', 'security', 'uploads'])
+        if (drawioUrl) {
+          WIKI.config.integrations = {
+            ...WIKI.config.integrations,
+            drawioUrl
+          }
+        }
+
+        await WIKI.configSvc.saveToDb(['host', 'title', 'company', 'contentLicense', 'footerOverride', 'seo', 'logoUrl', 'pageExtensions', 'auth', 'editShortcuts', 'features', 'security', 'uploads', 'integrations'])
 
         if (WIKI.config.security.securityTrustProxy) {
           WIKI.app.enable('trust proxy')

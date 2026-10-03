@@ -109,7 +109,7 @@ export default {
     GroupRules,
     GroupUsers
   },
-  data() {
+  data () {
     return {
       group: {
         id: 0,
@@ -133,7 +133,7 @@ export default {
     selectPageHandle ({ path, locale }) {
       this.group.redirectOnLogin = `/${locale}/${path}`
     },
-    async updateGroup() {
+    async updateGroup () {
       try {
         await this.$apollo.mutate({
           mutation: gql`
@@ -175,14 +175,14 @@ export default {
         })
         this.$store.commit('showNotification', {
           style: 'success',
-          message: `Group changes have been saved.`,
+          message: 'Group changes have been saved.',
           icon: 'check'
         })
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
     },
-    async deleteGroup() {
+    async deleteGroup () {
       this.deleteGroupDialog = false
       try {
         await this.$apollo.mutate({
@@ -217,7 +217,7 @@ export default {
         this.$store.commit('pushGraphError', err)
       }
     },
-    async refresh() {
+    async refresh () {
       return this.$apollo.queries.group.refetch()
     }
   },
@@ -251,7 +251,7 @@ export default {
           }
         }
       `,
-      variables() {
+      variables () {
         return {
           id: _.toSafeInteger(this.$route.params.id)
         }

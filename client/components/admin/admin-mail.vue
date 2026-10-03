@@ -163,16 +163,28 @@
                       v-icon(left) mdi-send
                       span {{ $t('admin:mail.testSend') }}
 
+              v-card.mt-3.animated.fadeInUp.wait-p4s
+                v-toolbar(color='teal', dark, dense, flat)
+                  v-toolbar-title.subtitle-1 {{ $t('admin:mail.notifications', { defaultValue: 'Page change notifications' }) }}
+                .pa-4
+                  .body-2.grey--text.text--darken-2 {{ $t('admin:mail.notificationsHint', { defaultValue: 'Watchers receive a digest of page changes every 10 minutes. You can send the pending notifications right away.' }) }}
+                v-card-chin
+                  v-spacer
+                  v-btn.px-4(color='teal', dark, @click='sendDigestsNow', :loading='digestLoading')
+                    v-icon(left) mdi-email-fast-outline
+                    span {{ $t('admin:mail.sendDigestsNow', { defaultValue: 'Send pending notifications now' }) }}
+
 </template>
 
 <script>
 import _ from 'lodash'
+import gql from 'graphql-tag'
 import mailConfigQuery from 'gql/admin/mail/mail-query-config.gql'
 import mailUpdateConfigMutation from 'gql/admin/mail/mail-mutation-save-config.gql'
 import mailTestMutation from 'gql/admin/mail/mail-mutation-sendtest.gql'
 
 export default {
-  data() {
+  data () {
     return {
       config: {
         senderName: '',
@@ -190,6 +202,7 @@ export default {
         dkimPrivateKey: ''
       },
       testEmail: '',
+      digestLoading: false,
       testLoading: false
     }
   },
@@ -225,6 +238,34 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
+    },
+    async sendDigestsNow () {
+      this.digestLoading = true
+      try {
+        const resp = await this.$apollo.mutate({
+          mutation: gql`
+            mutation {
+              mail {
+                sendDigestsNow {
+                  responseResult { succeeded errorCode slug message }
+                }
+              }
+            }
+          `
+        })
+        const result = _.get(resp, 'data.mail.sendDigestsNow.responseResult', {})
+        if (!result.succeeded) {
+          throw new Error(result.message || 'An unexpected error occurred.')
+        }
+        this.$store.commit('showNotification', {
+          style: 'success',
+          message: result.message,
+          icon: 'check'
+        })
+      } catch (err) {
+        this.$store.commit('pushGraphError', err)
+      }
+      this.digestLoading = false
     },
     async sendTest () {
       try {

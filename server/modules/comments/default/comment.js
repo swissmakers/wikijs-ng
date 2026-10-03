@@ -4,7 +4,6 @@ const { JSDOM } = require('jsdom')
 const createDOMPurify = require('dompurify')
 const _ = require('lodash')
 const { AkismetClient } = require('akismet-api')
-const moment = require('moment')
 
 /* global WIKI */
 
@@ -17,7 +16,7 @@ const mkdown = md({
   html: false,
   breaks: true,
   linkify: true,
-  highlight(str, lang) {
+  highlight (str, lang) {
     return `<pre><code class="language-${lang}">${_.escape(str)}</code></pre>`
   }
 })
@@ -109,10 +108,19 @@ module.exports = {
     // -> Check for minimum delay between posts
     if (WIKI.data.commentProvider.config.minDelay > 0) {
       const lastComment = await WIKI.models.comments.query().select('updatedAt').findOne('authorId', user.id).orderBy('updatedAt', 'desc')
-      if (lastComment && moment().subtract(WIKI.data.commentProvider.config.minDelay, 'seconds').isBefore(lastComment.updatedAt)) {
+      if (lastComment && Date.now() - WIKI.data.commentProvider.config.minDelay * 1000 < new Date(lastComment.updatedAt)) {
         throw new Error('Your administrator has set a time limit before you can post another comment. Try again later.')
       }
     }
+
+    // -> Hold the comment for moderation if required (moderators are never held)
+    const moderation = WIKI.data.commentProvider.config.moderation || 'off'
+    const isModerator = WIKI.auth.checkAccess(user, ['manage:comments'], {
+      path: page.path,
+      locale: page.localeCode,
+      tags: page.tags
+    })
+    newComment.isApproved = isModerator || moderation === 'off' || (moderation === 'guests' && user.id !== 2)
 
     // -> Save Comment to DB
     const cm = await WIKI.models.comments.query().insert(newComment)
@@ -132,10 +140,10 @@ module.exports = {
     return renderedContent
   },
   /**
-   * Delete an existing comment by ID
+   * Delete an existing comment by ID, including its replies
    */
   async remove ({ id, user }) {
-    return WIKI.models.comments.query().findById(id).delete()
+    return WIKI.models.comments.query().delete().where('id', id).orWhere('replyTo', id)
   },
   /**
    * Get the page ID from a comment ID

@@ -98,27 +98,16 @@
             v-list-item(to='/utilities', color='primary', v-if='hasPermission(`manage:system`)')
               v-list-item-avatar(size='24', tile): v-icon mdi-wrench-outline
               v-list-item-title {{ $t('admin:utilities.title') }}
-            v-list-group(
-              to='/dev'
-              no-action
-              v-if='hasPermission([`manage:system`, `manage:api`])'
-              )
-              v-list-item(slot='activator')
-                v-list-item-avatar(size='24', tile): v-icon mdi-dev-to
-                v-list-item-title {{ $t('admin:dev.title') }}
-
-              v-list-item(to='/dev-flags', color='primary')
-                v-list-item-title {{ $t('admin:dev.flags.title') }}
-              v-list-item(href='/graphql', color='primary')
-                v-list-item-title GraphQL
-              //- v-list-item(to='/dev-graphiql')
-              //-   v-list-item-title {{ $t('admin:dev.graphiql.title') }}
-              //- v-list-item(to='/dev-voyager')
-              //-   v-list-item-title {{ $t('admin:dev.voyager.title') }}
+            v-list-item(to='/dev-flags', color='primary', v-if='hasPermission(`manage:system`)')
+              v-list-item-avatar(size='24', tile): v-icon mdi-flag-outline
+              v-list-item-title {{ $t('admin:dev.flags.title') }}
+            v-list-item(href='/graphql', color='primary', v-if='hasPermission([`manage:system`, `manage:api`])')
+              v-list-item-avatar(size='24', tile): v-icon mdi-graphql
+              v-list-item-title GraphQL
             v-divider.my-2
-          v-list-item(to='/contribute', color='primary')
-            v-list-item-avatar(size='24', tile): v-icon mdi-heart-outline
-            v-list-item-title About
+          v-list-item(to='/about', color='primary')
+            v-list-item-avatar(size='24', tile): v-icon mdi-information-outline
+            v-list-item-title {{ $t('admin:about.title', { defaultValue: 'About' }) }}
 
     v-main(:class='$vuetify.theme.dark ? "grey darken-5" : "grey lighten-5"')
       .admin-content-container
@@ -165,6 +154,7 @@ const router = new VueRouter({
     { path: '/analytics', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-analytics.vue') },
     { path: '/auth', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-auth.vue') },
     { path: '/comments', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-comments.vue') },
+    { path: '/comments/moderation', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-comments-moderation.vue') },
     { path: '/rendering', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-rendering.vue') },
     { path: '/search', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-search.vue') },
     { path: '/storage', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-storage.vue') },
@@ -175,13 +165,14 @@ const router = new VueRouter({
     { path: '/system', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-system.vue') },
     { path: '/utilities', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-utilities.vue') },
     { path: '/dev-flags', component: () => import(/* webpackChunkName: "admin-dev" */ './admin/admin-dev-flags.vue') },
-    { path: '/contribute', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-contribute.vue') }
+    { path: '/about', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-about.vue') },
+    { path: '/contribute', redirect: '/about' }
   ]
 })
 
 export default {
   i18nOptions: { namespaces: 'admin' },
-  data() {
+  data () {
     return {
       adminDrawerShown: true,
       scrollStyle: {
@@ -192,7 +183,7 @@ export default {
           scrollingX: false,
           easing: 'easeOutQuad',
           speed: 1000,
-          verticalNativeBarPos: this.$vuetify.rtl ? `left` : `right`
+          verticalNativeBarPos: this.$vuetify.rtl ? 'left' : 'right'
         },
         rail: {
           gutterOfEnds: '2px'
@@ -212,11 +203,11 @@ export default {
     permissions: get('user/permissions')
   },
   router,
-  created() {
+  created () {
     this.$store.commit('page/SET_MODE', 'admin')
   },
   methods: {
-    hasPermission(prm) {
+    hasPermission (prm) {
       if (_.isArray(prm)) {
         return _.some(prm, p => {
           return _.includes(this.permissions, p)
@@ -231,7 +222,7 @@ export default {
       query: statsQuery,
       fetchPolicy: 'network-only',
       manual: true,
-      result({ data, loading, networkStatus }) {
+      result ({ data, loading, networkStatus }) {
         this.info = data.system.info
       },
       watchLoading (isLoading) {

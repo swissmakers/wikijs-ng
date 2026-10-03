@@ -2,6 +2,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import boot from './modules/boot'
+import { serverRenderedRoot, isRegisteredComponent } from './helpers/mount'
 /* eslint-enable import/first */
 
 window.WIKI = null
@@ -9,11 +10,13 @@ window.boot = boot
 
 Vue.use(Vuetify)
 
-Vue.component('setup', () => import(/* webpackMode: "eager" */ './components/setup.vue'))
+Vue.component('Setup', () => import(/* webpackMode: "eager" */ './components/setup.vue'))
 
-let bootstrap = () => {
+const bootstrap = () => {
+  const rootEl = document.getElementById('root')
   window.WIKI = new Vue({
-    el: '#root',
+    el: rootEl,
+    render: serverRenderedRoot(rootEl, { isComponent: isRegisteredComponent(Vue) }),
     vuetify: new Vuetify({
       theme: {
         themes: {

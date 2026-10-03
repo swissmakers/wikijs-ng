@@ -8,16 +8,17 @@ RUN apk upgrade --no-cache && apk add yarn g++ make cmake python3 --no-cache
 WORKDIR /wiki
 
 COPY ./client ./client
+# -> The client bundle imports a few shared modules from the server
+COPY ./server ./server
 COPY ./dev ./dev
 COPY ./patches ./patches
 COPY ./package.json ./package.json
 COPY ./yarn.lock ./yarn.lock
 COPY ./.babelrc ./.babelrc
-COPY ./.eslintignore ./.eslintignore
-COPY ./.eslintrc.yml ./.eslintrc.yml
 
 ENV CYPRESS_INSTALL_BINARY=0
-ENV NODE_OPTIONS="--no-deprecation"
+# -> Capped heap keeps the webpack build predictable on small hosts and QEMU runners
+ENV NODE_OPTIONS="--no-deprecation --max-old-space-size=2048"
 
 RUN yarn cache clean
 RUN yarn --frozen-lockfile --non-interactive

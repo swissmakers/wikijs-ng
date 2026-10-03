@@ -23,7 +23,7 @@ export default {
       default: false
     }
   },
-  data() {
+  data () {
     return {
       passwordStrength: 0,
       passwordStrengthColor: 'grey',
@@ -31,7 +31,7 @@ export default {
     }
   },
   watch: {
-    value(newValue) {
+    value (newValue) {
       this.checkPasswordStrength(newValue)
     }
   },

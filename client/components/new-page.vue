@@ -27,7 +27,7 @@ export default {
       default: 'home'
     }
   },
-  data() {
+  data () {
     return { }
   }
 }

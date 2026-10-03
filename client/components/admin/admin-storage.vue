@@ -57,13 +57,13 @@
                     v-icon(color='white') mdi-check-circle
                   v-list-item-content
                     v-list-item-title.body-2 {{tgt.title}}
-                    v-list-item-subtitle.green--text.caption {{$t('admin:storage.lastSync', { time: $options.filters.moment(tgt.lastAttempt, 'from') })}}
+                    v-list-item-subtitle.green--text.caption {{$t('admin:storage.lastSync', { time: $options.filters.date(tgt.lastAttempt, 'from') })}}
                 template(v-else)
                   v-list-item-avatar(color='red')
                     v-icon(color='white') mdi-close-circle-outline
                   v-list-item-content
                     v-list-item-title.body-2 {{tgt.title}}
-                    v-list-item-subtitle.red--text.caption {{$t('admin:storage.lastSyncAttempt', { time: $options.filters.moment(tgt.lastAttempt, 'from') })}}
+                    v-list-item-subtitle.red--text.caption {{$t('admin:storage.lastSyncAttempt', { time: $options.filters.date(tgt.lastAttempt, 'from') })}}
                   v-list-item-action
                     v-menu
                       template(v-slot:activator='{ on }')
@@ -218,8 +218,7 @@
 
 <script>
 import _ from 'lodash'
-import moment from 'moment'
-import momentDurationFormatSetup from 'moment-duration-format'
+import datetime from '../../modules/datetime'
 
 import DurationPicker from '../common/duration-picker.vue'
 import { LoopingRhombusesSpinner } from 'epic-spinners'
@@ -229,17 +228,15 @@ import targetsQuery from 'gql/admin/storage/storage-query-targets.gql'
 import targetExecuteActionMutation from 'gql/admin/storage/storage-mutation-executeaction.gql'
 import targetsSaveMutation from 'gql/admin/storage/storage-mutation-save-targets.gql'
 
-momentDurationFormatSetup(moment)
-
 export default {
   components: {
     DurationPicker,
     LoopingRhombusesSpinner
   },
   filters: {
-    startCase(val) { return _.startCase(val) }
+    startCase (val) { return _.startCase(val) }
   },
-  data() {
+  data () {
     return {
       runningAction: false,
       runningActionHandler: '',
@@ -252,20 +249,20 @@ export default {
     }
   },
   computed: {
-    activeTargets() {
+    activeTargets () {
       return _.filter(this.targets, 'isEnabled')
     }
   },
   watch: {
-    selectedTarget(newValue, oldValue) {
+    selectedTarget (newValue, oldValue) {
       this.target = _.find(this.targets, ['key', newValue]) || {}
     },
-    targets(newValue, oldValue) {
+    targets (newValue, oldValue) {
       this.selectedTarget = _.get(_.find(this.targets, ['isEnabled', true]), 'key', 'disk')
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.targets.refetch()
       this.$store.commit('showNotification', {
         message: 'List of storage targets has been refreshed.',
@@ -273,8 +270,8 @@ export default {
         icon: 'cached'
       })
     },
-    async save() {
-      this.$store.commit(`loadingStart`, 'admin-storage-savetargets')
+    async save () {
+      this.$store.commit('loadingStart', 'admin-storage-savetargets')
       await this.$apollo.mutate({
         mutation: targetsSaveMutation,
         variables: {
@@ -284,7 +281,7 @@ export default {
             'config',
             'mode',
             'syncInterval'
-          ])).map(str => ({...str, config: str.config.map(cfg => ({...cfg, value: JSON.stringify({ v: cfg.value.value })}))}))
+          ])).map(str => ({ ...str, config: str.config.map(cfg => ({ ...cfg, value: JSON.stringify({ v: cfg.value.value }) })) }))
         }
       })
       this.$store.commit('showNotification', {
@@ -292,14 +289,14 @@ export default {
         style: 'success',
         icon: 'check'
       })
-      this.$store.commit(`loadingStop`, 'admin-storage-savetargets')
+      this.$store.commit('loadingStop', 'admin-storage-savetargets')
     },
-    getDefaultSchedule(val) {
+    getDefaultSchedule (val) {
       if (!val) { return 'N/A' }
-      return moment.duration(val).format('y [years], M [months], d [days], h [hours], m [minutes]')
+      return datetime.humanizeDuration(val)
     },
-    async executeAction(targetKey, handler) {
-      this.$store.commit(`loadingStart`, 'admin-storage-executeaction')
+    async executeAction (targetKey, handler) {
+      this.$store.commit('loadingStart', 'admin-storage-executeaction')
       this.runningAction = true
       this.runningActionHandler = handler
       try {
@@ -320,7 +317,7 @@ export default {
       }
       this.runningAction = false
       this.runningActionHandler = ''
-      this.$store.commit(`loadingStop`, 'admin-storage-executeaction')
+      this.$store.commit('loadingStop', 'admin-storage-executeaction')
     }
   },
   apollo: {

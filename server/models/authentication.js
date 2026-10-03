@@ -1,8 +1,5 @@
 const Model = require('objection').Model
-const fs = require('fs-extra')
-const path = require('path')
 const _ = require('lodash')
-const yaml = require('js-yaml')
 const commonHelper = require('../helpers/common')
 
 /* global WIKI */
@@ -11,8 +8,8 @@ const commonHelper = require('../helpers/common')
  * Authentication model
  */
 module.exports = class Authentication extends Model {
-  static get tableName() { return 'authentication' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'authentication' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -20,21 +17,21 @@ module.exports = class Authentication extends Model {
       required: ['key'],
 
       properties: {
-        key: {type: 'string'},
-        selfRegistration: {type: 'boolean'}
+        key: { type: 'string' },
+        selfRegistration: { type: 'boolean' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config', 'domainWhitelist', 'autoEnrollGroups']
   }
 
-  static async getStrategy(key) {
+  static async getStrategy (key) {
     return WIKI.models.authentication.query().findOne({ key })
   }
 
-  static async getStrategies() {
+  static async getStrategies () {
     const strategies = await WIKI.models.authentication.query().orderBy('order')
     return strategies.map(str => ({
       ...str,
@@ -43,60 +40,26 @@ module.exports = class Authentication extends Model {
     }))
   }
 
-  static async getStrategiesForLegacyClient() {
-    const strategies = await WIKI.models.authentication.query().select('key', 'selfRegistration')
-    let formStrategies = []
-    let socialStrategies = []
-
-    for (let stg of strategies) {
-      const stgInfo = _.find(WIKI.data.authentication, ['key', stg.key]) || {}
-      if (stgInfo.useForm) {
-        formStrategies.push({
-          key: stg.key,
-          title: stgInfo.title
-        })
-      } else {
-        socialStrategies.push({
-          ...stgInfo,
-          ...stg,
-          icon: await fs.readFile(path.join(WIKI.ROOTPATH, `assets/svg/auth-icon-${stg.key}.svg`), 'utf8').catch(err => {
-            if (err.code === 'ENOENT') {
-              return null
-            }
-            throw err
-          })
-        })
-      }
-    }
-
-    return {
-      formStrategies,
-      socialStrategies
-    }
-  }
-
-  static async refreshStrategiesFromDisk() {
+  static async refreshStrategiesFromDisk () {
     try {
       const dbStrategies = await WIKI.models.authentication.query()
 
       // -> Fetch definitions from disk
-      const authDirs = await fs.readdir(path.join(WIKI.SERVERPATH, 'modules/authentication'))
-      WIKI.data.authentication = []
-      for (let dir of authDirs) {
-        const defRaw = await fs.readFile(path.join(WIKI.SERVERPATH, 'modules/authentication', dir, 'definition.yml'), 'utf8')
-        const def = yaml.load(defRaw)
-        WIKI.data.authentication.push({
-          ...def,
-          props: commonHelper.parseModuleProps(def.props)
-        })
-      }
+      await commonHelper.loadModuleDefinitions({ dirName: 'authentication', dataKey: 'authentication' })
+
+      // -> Remove strategies whose module is gone (disabled only while users still reference them)
+      await commonHelper.removeMissingModules({
+        model: 'authentication',
+        records: dbStrategies,
+        keyField: 'strategyKey',
+        isPresent: strategy => _.some(WIKI.data.authentication, ['key', strategy.strategyKey]),
+        references: [{ table: 'users', column: 'providerKey' }]
+      })
 
       for (const strategy of dbStrategies) {
         let newProps = false
         const strategyDef = _.find(WIKI.data.authentication, ['key', strategy.strategyKey])
         if (!strategyDef) {
-          await WIKI.models.authentication.query().delete().where('key', strategy.key)
-          WIKI.logger.info(`Authentication strategy ${strategy.strategyKey} was removed from disk: [ REMOVED ]`)
           continue
         }
         strategy.config = _.transform(strategyDef.props, (result, value, key) => {
@@ -124,7 +87,7 @@ module.exports = class Authentication extends Model {
 
       WIKI.logger.info(`Loaded ${WIKI.data.authentication.length} authentication strategies: [ OK ]`)
     } catch (err) {
-      WIKI.logger.error(`Failed to scan or load new authentication providers: [ FAILED ]`)
+      WIKI.logger.error('Failed to scan or load new authentication providers: [ FAILED ]')
       WIKI.logger.error(err)
     }
   }

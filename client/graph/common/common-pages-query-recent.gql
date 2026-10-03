@@ -1,0 +1,20 @@
+query ($before: Int, $limit: Int, $locale: String, $path: String) {
+  pages {
+    recentChanges(before: $before, limit: $limit, locale: $locale, path: $path) {
+      items {
+        id
+        pageId
+        locale
+        path
+        title
+        action
+        previousPath
+        previousLocale
+        authorName
+        isSync
+        createdAt
+      }
+      nextCursor
+    }
+  }
+}

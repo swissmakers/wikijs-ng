@@ -8,6 +8,9 @@
             .headline.primary--text.animated.fadeInLeft {{$t('admin:comments.title')}}
             .subtitle-1.grey--text.animated.fadeInLeft.wait-p2s {{$t('admin:comments.subtitle')}}
           v-spacer
+          v-btn.animated.fadeInDown.wait-p2s(outlined, color='primary', to='/comments/moderation')
+            v-icon(left) mdi-account-check-outline
+            span {{ $t('admin:comments.moderation', { defaultValue: 'Comment Moderation' }) }}
           v-btn.mx-3.animated.fadeInDown.wait-p2s(icon, outlined, color='grey', @click='refresh')
             v-icon mdi-refresh
           v-btn.animated.fadeInDown(color='success', @click='save', depressed, large)
@@ -101,7 +104,7 @@ import _ from 'lodash'
 import gql from 'graphql-tag'
 
 export default {
-  data() {
+  data () {
     return {
       providers: [],
       selectedProvider: '',
@@ -109,15 +112,15 @@ export default {
     }
   },
   watch: {
-    selectedProvider(newValue, oldValue) {
+    selectedProvider (newValue, oldValue) {
       this.provider = _.find(this.providers, ['key', newValue]) || {}
     },
-    providers(newValue, oldValue) {
+    providers (newValue, oldValue) {
       this.selectedProvider = _.get(_.find(this.providers, 'isEnabled'), 'key', 'db')
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.providers.refetch()
       this.$store.commit('showNotification', {
         message: this.$t('admin:comments.listRefreshSuccess'),
@@ -125,8 +128,8 @@ export default {
         icon: 'cached'
       })
     },
-    async save() {
-      this.$store.commit(`loadingStart`, 'admin-comments-saveproviders')
+    async save () {
+      this.$store.commit('loadingStart', 'admin-comments-saveproviders')
       try {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -147,7 +150,7 @@ export default {
             providers: this.providers.map(tgt => ({
               isEnabled: tgt.key === this.selectedProvider,
               key: tgt.key,
-              config: tgt.config.map(cfg => ({...cfg, value: JSON.stringify({ v: cfg.value.value })}))
+              config: tgt.config.map(cfg => ({ ...cfg, value: JSON.stringify({ v: cfg.value.value }) }))
             }))
           }
         })
@@ -163,7 +166,7 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-comments-saveproviders')
+      this.$store.commit('loadingStop', 'admin-comments-saveproviders')
     }
   },
   apollo: {

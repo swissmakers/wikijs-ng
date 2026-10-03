@@ -4,7 +4,132 @@ All notable changes to **wikijs-ng** (fork of [Requarks/wiki](https://github.com
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.7.0] - Unreleased
+## [2.8.0] - 2026-10-03
+
+### Added — following changes
+
+- **Watch pages and folders with e-mail digests.** The bell next to the share button watches a page (follows it when moved) or the page and all its subpages; folders can be watched from the folder view or from the profile. Watchers receive one e-mail every 10 minutes summarizing the changes they are allowed to see (created, updated, restored, moved, deleted) — never for their own changes, and never for changes imported by a storage sync (git/disk). Requires a mail configuration; can be switched off in Admin → General → Features. Admins can send pending notifications immediately from Admin → Mail.
+- **Bookmarks**: the star on a page bookmarks it; all bookmarks are listed in the profile.
+- **Recent changes** page (`/r`, header button) with day grouping, folder/language filters and paging, built on a new page activity log. Storage-sync changes are marked as such.
+- **RSS feed** (`/rss.xml`, linked from every page) of the latest changes and an **XML sitemap** (`/sitemap.xml`, announced in `robots.txt`). Both only contain published pages that guests may read and are cached for 5 minutes; the sitemap is disabled when the site is set to `noindex`.
+- Profile: new *Bookmarks* and *Watched Pages* sections.
+
+### Added — moderation, export and admin tools
+
+- **Comment moderation** (built-in comment provider): new *Moderation* setting (off / guests only / everyone) in Admin → Comments. Comments awaiting approval are only visible to their author and to moderators, who approve them inline on the page or in the new queue (Admin → Comments → Comment Moderation). New `comments.moderation` query and `comments.approve` mutation.
+- **Comments per page**: editors can switch comments off for a single page (page properties → *Social*). The comment section is hidden and posting is rejected for that page.
+- **Export as PDF**: new *Export as PDF* page action (and `p` shortcut) that prints the page without navigation, using the browser's print dialog.
+- **Permission inspector** (Admin → Pages → page): pick a user or group and see, for every page permission, whether it is granted and which page rule decides it. New `pages.explainAccess` query.
+- **Keyboard shortcuts** for readers: `/` search, `e` edit, `h` history, `n` new page, `b` bookmark, `w` watch, `p` PDF and `?` for an overview. They can be switched off in the overview (stored per browser).
+- **Follow system appearance**: users can choose *Follow System* as appearance (switches with the operating system's light/dark setting); guests get a light/dark/system toggle in the header (stored per browser).
+- **Self-hosted draw.io**: the draw.io editor URL is configurable in Admin → General → Integrations (default `https://embed.diagrams.net`). The editor only accepts messages from that origin, and the CSP `frame-src` includes it.
+- **Diagram preview follows the renderer settings**: the Markdown editor preview renders PlantUML and Kroki blocks only when the renderer is enabled, using the configured server, image format and markers (Kroki had no preview before; PlantUML always used the public server).
+
+### Changed — editor and browser security
+
+- **Visual editor updated from CKEditor 5 v19 (2020) to v48.** Same toolbar, including the Wiki.js *Insert Assets* and *Link to Page* buttons; existing pages open unchanged. Files inserted from the media manager are linked as downloads (the old build ignored this). CKEditor is used under the GPL: no license server is contacted, and the editor shows the small "Powered by CKEditor" badge required for GPL use.
+- **Content-Security-Policy without `'unsafe-eval'`.** The browser no longer compiles the server-rendered markup as a Vue template: the pages are mounted with render functions on the runtime-only Vue build (`client/helpers/mount.js`). As a side effect, page content can no longer contain Vue template expressions, which closes a whole class of template-injection attacks; tabsets keep working.
+
+### Added — features that were half built
+
+- **Backlinks**: pages show which other pages link to them ("Pages linking here"), filtered by the reader's permissions (unpublished pages and templates only for editors). New `pages.backlinks` GraphQL query.
+- **Comment replies** (built-in comment provider): every comment has a *Reply* action; replies are shown indented below their comment (one level, replies to replies join the same thread). Deleting a comment also deletes its replies, and the confirmation says so.
+- **Self-service two-factor authentication**: users of form-based login methods (local, LDAP, …) can enable 2FA in their profile (QR code or manual key, confirmed with a code; local accounts confirm their password first) and disable it again with a valid code unless 2FA is enforced. New mutations `users.setupTFA`, `confirmTFA` and `disableOwnTFA` (rate limited).
+- **Content Security Policy** (Admin → Security): optional CSP header with a per-request nonce, *Report only* mode (default when enabling it) and additional directives, plus a preview of the effective policy. Scripts added through theme/page code injection, analytics and comment providers receive the nonce automatically. Off by default.
+- **Rerender a single page** from Admin → Pages → Actions (the menu entry was a "coming soon" stub).
+- **Welcome email** option when creating users in Admin → Users (the template was missing). Creating a user with this option now fails up front if mail is not configured, instead of creating the account and then failing.
+- The page footer shows when and by whom a page was created.
+
+### Security
+
+- The site configuration embedded in every page (`siteConfig`) can no longer break out of its `<script>` element (e.g. through a site title containing `</script>`).
+- E-mails use the PNG version of the bundled logo; most mail clients do not display SVG images.
+
+### Changed — localization is fully offline
+
+- **Translations are bundled and never downloaded anymore.** English, German, French and Italian ship in `server/locales/` (listed in `server/locales/locales.yml`); the upstream locale service (`graph.requarks.io`) is no longer contacted at all. Removed: the daily locale sync job, the on-demand locale download (`downloadLocale` mutation, `fetch-graph-locale` job, GraphQL fetch helper), the `graphEndpoint` setting and the *Update Automatically* locale option.
+- **Bundled strings always win.** Previously the daily sync wrote upstream strings into the database, and database strings overrode the bundled files, so upstream text replaced the vendored English/German wording. Bundled locales now ignore database strings (they are cleared at startup); only language packs downloaded by older versions for *other* languages are still read from the database.
+- The bundled `en.yml` / `de.yml` were excluded by `.gitignore` and therefore missing from images built from a fresh checkout; they are now tracked, together with the new `fr.yml` / `it.yml`.
+- **Sideloading** works without offline mode: YAML locale files in `<dataPath>/sideload/locales/` add languages or override single strings (format documented in `server/locales/README.md`). The old `sideload/*.json` import is gone.
+- English is always loaded as the fallback language on the server and in the browser; clients refresh cached translations as soon as the strings change instead of after 24 hours.
+- Admin → Locale lists the available languages with their source (bundled, sideloaded, legacy database pack) and shows the sideload folder instead of the download table and the "coming soon" upload card.
+
+### Changed — no upstream services or branding left
+
+- **Module logos are bundled.** The 46 logos of the analytics, authentication, comment, search and storage modules were hotlinked from the upstream CDN (`static.requarks.io`, `cdn.js.wiki`); they are now shipped (sanitized) in `client/static/svg/modules/` and work offline.
+- **New default logo and favicons** (Swissmakers mark): brand blue on light surfaces, white on the navy header and error screen; favicons, PWA icons and a new SVG favicon are generated from it. Existing installations that still use the old upstream default logo are switched automatically; custom logos are kept.
+- PlantUML diagrams now default to the public `www.plantuml.com` server instead of upstream's `plantuml.requarks.io` — also for existing installations that still had the old default.
+- The upstream cover image was removed from all e-mails, the documentation links pointing to `docs.requarks.io` were replaced, and built-in modules link to the Wiki.js NG repository.
+- Admin → About (formerly *Contribute*, `/a/contribute` redirects) and the *Developer Tools* entries (*Flags*, *GraphQL*) now sit directly in the System section.
+- The page share menu offers *Copy link* and *Send by email* only (Facebook, LinkedIn, Reddit, Telegram, Twitter, Viber, Weibo and WhatsApp were removed).
+- Admin → System shows the configuration file that is actually loaded (`CONFIG_FILE` was ignored).
+
+### Changed — less duplicated code
+
+- **Storage export**: the disk, Git, Azure and S3 targets now share one export routine. Azure Blob Storage and S3 exports previously wrote pages without their tags and editor in the front matter; they now produce the same files as the disk and Git targets.
+- **Analytics code**: every `{{placeholder}}` in a provider's body snippets is now replaced (only the first occurrence was before), and values containing `$` are inserted literally.
+- The time zone pickers (profile and Admin → Users) list every time zone known to the browser with its current UTC offset instead of a hard-coded, partly outdated list.
+- The PlantUML/Kroki diagram fences, the KaTeX/MathJax math parser, the module configuration forms of six admin pages, the page action menus (header and edit button) and the conflict dialogs of the editors each share one implementation now.
+- New unit tests for page permission rules, diagram and math rendering, and the shared helpers (`yarn test`).
+
+### Changed — dependencies
+
+- **moment.js replaced by luxon / native `Intl`** on the server and in the browser (moment, moment-timezone, vue-moment, moment-duration-format and the webpack time zone data plugin are gone). Dates use the browser's locale formats; the personal date format and time zone settings keep working. Recent dates read e.g. "Today, 14:30" instead of "Today at 2:30 PM".
+- **bluebird removed** (native promises), `uuid`, `filesize`, `js-base64`, `body-parser` (Express built-ins) removed, and 11 packages that were not used at all (`graphql-list-fields`, `remove-markdown`, `scim-query-filter-parser`, `xss`, `pg-hstore`, `vue2-animate`, `viz.js`, `vuex-persistedstate`, `filepond-plugin-file-validate-type`, `xterm`, `vue-clipboards`, `hammerjs`, `babel-jest`).
+- Client-only packages (`diff`, `diff2html`, `markdown-it-mark`) and the dev-server file watcher (`chokidar`) moved to the development dependencies, so they are no longer part of the production image.
+- KaTeX chemistry (`\ce`, `\pu`) uses KaTeX's bundled mhchem extension instead of a vendored 1,700-line copy (identical output); the underline plugin is shared between the server renderer and the editor preview.
+- **Elasticsearch 6.x is no longer supported** (end of life since 2022); 7.x and 8.x remain, new configurations default to 8.x.
+- The job scheduler falls back to a daily interval instead of firing continuously when a schedule is not a valid ISO 8601 duration.
+
+### Removed — dead subsystems and legacy code
+
+- **Logging modules** (Airbrake, Bugsnag, Disk, Eventlog, Loggly, Logstash, New Relic, Papertrail, Raygun, Rollbar, Sentry, Syslog): their loader had been commented out, so none of them ever ran. Removed with the `loggers` table, the logging GraphQL API, the live-trail log stream and the whole GraphQL **WebSocket subscription endpoint** (`/graphql-subscriptions`), which only existed for it — plus the `@sentry/node`, `@opentelemetry/core`, `graphql-ws`, `graphql-subscriptions` and `ws` dependencies.
+- **Empty storage modules** Box, Dropbox, Google Drive and OneDrive (every method was empty), the unused optional-extension check (git/pandoc/sharp), and the unused `activated`/`deactivated` storage hooks.
+- **Editor mock-ups** *API Docs*, *Redirection* and *WYSIWYG* (never selectable) and the always-disabled *Insert Block* dialog. Pages that were saved with one of these editors open in the code editor.
+- **Renderers that did nothing**: Asciinema, Blockquotes, Media Players, Twemoji (HTML) and OpenAPI.
+- The Microsoft login module (it was disabled and could not be enabled — use *Azure AD* or *OpenID Connect*) and the Umami v1 analytics module (*Umami* v2 remains).
+- **Internet Explorer 11 support**: the separate legacy login and page views, bundle and polyfills (the build already excluded IE).
+- **Wiki.js 1.x user import** (Admin → Utilities) and its `mongodb` dependency, the unused MongoDB upgrade code, and the Wiki.js 2.0-beta schema migrator — a database still on a 2.0 beta schema now gets a clear error instead.
+- Settings that were saved but never used: page ratings, personal wikis, subresource integrity (SRI), the update channel, CORS options, the logo flags; the single-entry theme picker; the unauthenticated upstream sponsor images.
+
+### Fixed
+
+- **Deleting a page ignored locale-restricted page rules** (the access check read a non-existent `page.locale` field).
+- Admin → Pages → Visualize: clicking, zooming and hovering threw errors since the d3 v7 upgrade.
+- Removing a module (e.g. an editor or authentication strategy) from disk no longer deletes its database row while pages or users still reference it — the row is disabled instead. Pages saved with an editor that no longer exists open in the code editor.
+- `pages.list` applied its limit before the permission filter (lists came back short) and listed unpublished pages and templates to users who can only read them.
+- Comment authors can edit and delete their own comments (moderators with `manage:comments` still manage all); deleting a comment also deletes its replies.
+- Rerendering a page now also clears the cached copy on other instances in HA setups.
+- The welcome email of a new user can no longer fail the (already created) account; the error is logged instead.
+- Disabling 2FA from the model crashed; `/_userav` sent two responses; a missing user during session restore threw a `TypeError` instead of a proper error; the unauthenticated no-op `resetPassword` mutation was removed.
+- The media manager shows and enforces the configured upload limits instead of a hard-coded "Max 10 files, 5 MB each".
+- A failing PostgreSQL/MySQL session setup (e.g. an invalid `db.schema`) left new database connections hanging instead of failing; this also removes a Node.js deprecation warning at startup.
+- Deleting a user who had unsaved drafts failed on PostgreSQL (foreign key); drafts, watches and bookmarks of the user are now removed with the account.
+- **List settings were reset to their defaults on every restart**: narrowing *Page Extensions* (Admin → General) to e.g. only `md`, or clearing it, came back as `md, html, txt` after the next start, because saved lists were merged item by item with the defaults.
+- **Git sync: text assets were never imported.** SVG, TXT, CSV and other text files added or changed in the repository were mistaken for renames and skipped. Assets renamed in git are now moved in the wiki instead of left behind under the old name, git metadata files (`.gitignore`, …) are never imported as assets, and page files deleted in git are removed even if they were empty.
+- Page URLs: only the first unsafe character (`"`, `<`, `>`, `|`, `:`, `*`, `?`, control characters) was stripped from a requested path.
+- The setup wizard stored incomplete defaults for some settings (e.g. login, theme); it now takes all of them from `server/app/data.yml`, which also gained the full mail and SEO defaults.
+- Smaller fixes: the footer link used `ref` instead of `rel`, the sharing menu's default URL was undefined, the Apollo devtools flag never matched, the default page description read a non-existent setting, Let's Encrypt ignored the development flag, the default icon set was the invalid value `md`, and the dev container config used a different database password than the compose file.
+
+### Changed — tests, CI and housekeeping
+
+- **Automated tests**: unit tests now cover page permissions and the permission inspector, the page path helpers, brute-force protection, the git sync lock, search query building, comment posting rules, notifications, feeds, the CSP builder, configuration merging, the diagram renderers (including the editor preview) and the translation files (same keys and placeholders in every language, every key used in the code exists).
+- **CI runs lint and tests** for every push to `main` and `dev` and for pull requests; the container image is only built (from `main`) when they pass.
+- **Git sync integration test** against real repositories (remote changes, wiki commits, leftover worktree changes, conflicting edits, an interrupted rebase, a push race, asset renames and deletions); CI also **smoke-tests the container image** (setup, login, pages, assets) before pushing it (`dev/smoke-test.sh`).
+- The Markdown editor uses the server's math parser instead of a copy; the build no longer prints Vuetify's Sass deprecation warnings, and the remaining ones in our styles are fixed; the GraphQL client no longer logs cache and devtools warnings in the browser console.
+- The code follows the `standard` ESLint style without the ~1900 exceptions parked during the 2.6 upgrade (mostly automatic formatting fixes); Cypress and Jest globals now only apply to their test folders.
+- Removed 51 unused images (fundraising buttons, splash photos, icons of removed features) and 135 unused translation keys of removed features, plus obsolete build files (an ARM Dockerfile for a GitHub workflow that no longer exists, an upstream CI script).
+- `config.sample.yml` lists the actually supported database versions and documents `db.socketPath` (MySQL / MariaDB); `.gitattributes` is reduced to the rules that apply to this repository; pages declare the Apple touch and Safari pinned-tab icons.
+
+### Database
+
+- New migration `2.8.2`: comment approval flag (`comments.isApproved`, existing comments stay approved).
+- New migration `2.8.1`: page activity log (seeded with the latest 500 page changes), user watches and bookmarks; on MySQL / MariaDB the new tables always use `utf8mb4` (page titles with emoji).
+- New migration `2.8.0`: drops the unused `loggers` table and the `graphEndpoint` setting, moves a PlantUML renderer still configured for `plantuml.requarks.io` to `www.plantuml.com`, and replaces the upstream default logo setting with the bundled one. Applied automatically on first start.
+
+## [2.7.0] - Not released separately
+
+Developed on `dev` after 2.6.0 and shipped together with 2.8.0.
 
 ### Added — navigation & content discovery
 
@@ -49,6 +174,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `assetFolders` model: the `parent` relation joined on the wrong column and `getAllPaths()` could crash on a missing parent — both fixed (required for the new folder operations).
 - Tag browsing: multi-tag selection duplicates removed; sort parameter comparison bug fixed.
+- **Leaving Admin → Theme no longer overrides the user's appearance.** The page live-previews the site-level dark mode; on navigating away it restored that site value instead of the user's personal light/dark preference, flipping the UI until the next reload.
+- Search overlay restyled to the brand: the keyboard highlight is a primary-tinted bar (was a white→orange gradient), suggestion highlight and close button follow the theme, and result rows have a hover state.
+- **Print output overhauled**: proper page margins, no page breaks inside code blocks/tables/images where avoidable, headings no longer stranded at page bottoms, scroll containers can't clip content anymore, footer/breadcrumbs/speed-dial hidden, clean white title header, bordered code blocks, and external links print their target URL.
 
 ### Removed — dead weight ("coming soon" stubs)
 
@@ -60,7 +188,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - New migrations `2.7.0` (asset folder/file indexes), `2.7.1` (`pageDrafts` table), `2.7.2` (`pages.isTemplate` column). Applied automatically on first start.
 
-## [2.6.0] - Unreleased
+## [2.6.0] - 2026-08-28
 
 ### Changed — User interface refresh (Swissmakers branding)
 
@@ -85,7 +213,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
-- **Telemetry removed entirely.** The hardened image no longer phones home: the telemetry module, its kernel/setup hooks, the GraphQL mutations and query fields (`setTelemetry`, `resetTelemetryClientId`, `telemetry`, `telemetryClientId`), the admin utility page, the setup-wizard opt-in and the related config defaults are gone. (The version update check and the translation download still contact the upstream service — see the notes in the README if you want to run fully offline.)
+- **Telemetry removed entirely.** The hardened image no longer phones home: the telemetry module, its kernel/setup hooks, the GraphQL mutations and query fields (`setTelemetry`, `resetTelemetryClientId`, `telemetry`, `telemetryClientId`), the admin utility page, the setup-wizard opt-in and the related config defaults are gone. (Translation downloads still used the upstream service in this release; since 2.8.0 all translations are bundled.)
 - **CAS authentication and SFTP storage modules dropped.** Both were built on packages abandoned since 2013/2016 and were the sole source of four findings (`underscore` 1.6.0 critical, `xml2js` 0.4.4, `node-uuid` 1.4.1, `ip-address` 5.9.4 — the last one had no fix available at all). Existing installations that used them will see the strategy/target disappear automatically.
 - Dead dependencies: `image-size`, `markdown-it-external-links`, `markdown-it-mathjax` (none were imported anywhere).
 
@@ -130,10 +258,6 @@ Production symptoms addressed: `spawn git EAGAIN` after prolonged uptime, bi-dir
 - **Asset binary corruption**: git storage wrote uploaded assets with `utf8` encoding, corrupting every binary file — fixed
 - "Add Untracked Changes" / "Import Everything" no longer hang forever when a single file fails (stream callback bug)
 - `render-page` job continued after destroying its DB pool on empty content; page paths containing dots were mangled on git import (`getPagePath` join bug)
-
-### Changed
-
-- Admin → System now compares versions with semver instead of strict equality — a fork version newer than upstream no longer shows a bogus "upgrade available" (which could have pulled the upstream Docker image)
 
 ## [Modernization] - 2026-08-26
 

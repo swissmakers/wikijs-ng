@@ -105,7 +105,7 @@ import enginesSaveMutation from 'gql/admin/search/search-mutation-save-engines.g
 import enginesRebuildMutation from 'gql/admin/search/search-mutation-rebuild-index.gql'
 
 export default {
-  data() {
+  data () {
     return {
       engines: [],
       selectedEngine: '',
@@ -113,15 +113,15 @@ export default {
     }
   },
   watch: {
-    selectedEngine(newValue, oldValue) {
+    selectedEngine (newValue, oldValue) {
       this.engine = _.find(this.engines, ['key', newValue]) || {}
     },
-    engines(newValue, oldValue) {
+    engines (newValue, oldValue) {
       this.selectedEngine = _.get(_.find(this.engines, 'isEnabled'), 'key', 'db')
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.engines.refetch()
       this.$store.commit('showNotification', {
         message: this.$t('admin:search.listRefreshSuccess'),
@@ -129,8 +129,8 @@ export default {
         icon: 'cached'
       })
     },
-    async save() {
-      this.$store.commit(`loadingStart`, 'admin-search-saveengines')
+    async save () {
+      this.$store.commit('loadingStart', 'admin-search-saveengines')
       try {
         const resp = await this.$apollo.mutate({
           mutation: enginesSaveMutation,
@@ -138,7 +138,7 @@ export default {
             engines: this.engines.map(tgt => ({
               isEnabled: tgt.key === this.selectedEngine,
               key: tgt.key,
-              config: tgt.config.map(cfg => ({...cfg, value: JSON.stringify({ v: cfg.value.value })}))
+              config: tgt.config.map(cfg => ({ ...cfg, value: JSON.stringify({ v: cfg.value.value }) }))
             }))
           }
         })
@@ -154,10 +154,10 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-search-saveengines')
+      this.$store.commit('loadingStop', 'admin-search-saveengines')
     },
     async rebuild () {
-      this.$store.commit(`loadingStart`, 'admin-search-rebuildindex')
+      this.$store.commit('loadingStart', 'admin-search-rebuildindex')
       try {
         const resp = await this.$apollo.mutate({
           mutation: enginesRebuildMutation
@@ -174,7 +174,7 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-search-rebuildindex')
+      this.$store.commit('loadingStop', 'admin-search-rebuildindex')
     }
   },
   apollo: {

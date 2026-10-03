@@ -8,7 +8,7 @@ const _ = require('lodash')
  * Comments model
  */
 module.exports = class Comment extends Model {
-  static get tableName() { return 'comments' }
+  static get tableName () { return 'comments' }
 
   static get jsonSchema () {
     return {
@@ -16,19 +16,20 @@ module.exports = class Comment extends Model {
       required: [],
 
       properties: {
-        id: {type: 'integer'},
-        content: {type: 'string'},
-        render: {type: 'string'},
-        name: {type: 'string'},
-        email: {type: 'string'},
-        ip: {type: 'string'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        id: { type: 'integer' },
+        content: { type: 'string' },
+        render: { type: 'string' },
+        name: { type: 'string' },
+        email: { type: 'string' },
+        ip: { type: 'string' },
+        isApproved: { type: 'boolean' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       author: {
         relation: Model.BelongsToOneRelation,
@@ -49,10 +50,11 @@ module.exports = class Comment extends Model {
     }
   }
 
-  $beforeUpdate() {
+  $beforeUpdate () {
     this.updatedAt = new Date().toISOString()
   }
-  $beforeInsert() {
+
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
     this.updatedAt = new Date().toISOString()
   }
@@ -108,6 +110,21 @@ module.exports = class Comment extends Model {
       throw new WIKI.Error.PageNotFound()
     }
 
+    // -> Comments can be turned off per page
+    if (_.get(page, 'extra.commentsDisabled', false) === true) {
+      throw new WIKI.Error.CommentPostForbidden()
+    }
+
+    // -> Replies must target a comment of the same page; threads are kept to one level
+    replyTo = _.toSafeInteger(replyTo)
+    if (replyTo > 0) {
+      const parent = await WIKI.data.commentProvider.getCommentById(replyTo)
+      if (!parent || parent.pageId !== page.id) {
+        throw new WIKI.Error.InputInvalid('Invalid comment to reply to.')
+      }
+      replyTo = parent.replyTo > 0 ? parent.replyTo : parent.id
+    }
+
     // -> Process by comment provider
     return WIKI.data.commentProvider.create({
       page,
@@ -115,36 +132,52 @@ module.exports = class Comment extends Model {
       content,
       user: {
         ...user,
-        ...(user.id === 2) ? {
-          name: guestName,
-          email: guestEmail
-        } : {},
+        ...(user.id === 2)
+          ? {
+              name: guestName,
+              email: guestEmail
+            }
+          : {},
         ip
       }
     })
   }
 
   /**
-   * Update an Existing Comment
+   * Load the page of a comment and check that the user may change the comment:
+   * moderators (manage:comments) may change any comment, authors their own.
    */
-  static async updateComment ({ id, content, user, ip }) {
-    // -> Load Page
+  static async getPageForCommentChange ({ id, user }) {
     const pageId = await WIKI.data.commentProvider.getPageIdFromCommentId(id)
     if (!pageId) {
       throw new WIKI.Error.CommentNotFound()
     }
     const page = await WIKI.models.pages.getPageFromDb(pageId)
-    if (page) {
-      if (!WIKI.auth.checkAccess(user, ['manage:comments'], {
-        path: page.path,
-        locale: page.localeCode,
-        tags: page.tags
-      })) {
-        throw new WIKI.Error.CommentManageForbidden()
-      }
-    } else {
+    if (!page) {
       throw new WIKI.Error.PageNotFound()
     }
+    const pageCtx = {
+      path: page.path,
+      locale: page.localeCode,
+      tags: page.tags
+    }
+    if (WIKI.auth.checkAccess(user, ['manage:comments'], pageCtx)) {
+      return page
+    }
+    if (user && user.id !== 2 && WIKI.auth.checkAccess(user, ['write:comments'], pageCtx)) {
+      const comment = await WIKI.data.commentProvider.getCommentById(id)
+      if (comment && comment.authorId === user.id) {
+        return page
+      }
+    }
+    throw new WIKI.Error.CommentManageForbidden()
+  }
+
+  /**
+   * Update an Existing Comment
+   */
+  static async updateComment ({ id, content, user, ip }) {
+    const page = await WIKI.models.comments.getPageForCommentChange({ id, user })
 
     // -> Process by comment provider
     return WIKI.data.commentProvider.update({
@@ -162,23 +195,7 @@ module.exports = class Comment extends Model {
    * Delete an Existing Comment
    */
   static async deleteComment ({ id, user, ip }) {
-    // -> Load Page
-    const pageId = await WIKI.data.commentProvider.getPageIdFromCommentId(id)
-    if (!pageId) {
-      throw new WIKI.Error.CommentNotFound()
-    }
-    const page = await WIKI.models.pages.getPageFromDb(pageId)
-    if (page) {
-      if (!WIKI.auth.checkAccess(user, ['manage:comments'], {
-        path: page.path,
-        locale: page.localeCode,
-        tags: page.tags
-      })) {
-        throw new WIKI.Error.CommentManageForbidden()
-      }
-    } else {
-      throw new WIKI.Error.PageNotFound()
-    }
+    const page = await WIKI.models.comments.getPageForCommentChange({ id, user })
 
     // -> Process by comment provider
     await WIKI.data.commentProvider.remove({

@@ -46,8 +46,8 @@
                 td.admin-pages-path
                   v-chip(label, small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`') {{ props.item.locale }}
                   span.ml-2.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') / {{ props.item.path }}
-                td {{ props.item.createdAt | moment('calendar') }}
-                td {{ props.item.updatedAt | moment('calendar') }}
+                td {{ props.item.createdAt | date('calendar') }}
+                td {{ props.item.updatedAt | date('calendar') }}
             template(slot='no-data')
               v-alert.ma-3(icon='mdi-alert', :value='true', outlined, color='grey')
                 em.caption {{$t('profile:pages.emptyList')}}
@@ -56,10 +56,10 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
+import pagesListQuery from 'gql/common/common-pages-query-list.gql'
 
 export default {
-  data() {
+  data () {
     return {
       selectedPage: {},
       pagination: 1,
@@ -82,7 +82,7 @@ export default {
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.pages.refetch()
       this.$store.commit('showNotification', {
         message: this.$t('profile:pages.refreshSuccess'),
@@ -90,31 +90,13 @@ export default {
         icon: 'cached'
       })
     },
-    goToPage(id) {
-      window.location.assign(`/i/` + id)
+    goToPage (id) {
+      window.location.assign('/i/' + id)
     }
   },
   apollo: {
     pages: {
-      query: gql`
-        query($creatorId: Int, $authorId: Int) {
-          pages {
-            list(creatorId: $creatorId, authorId: $authorId) {
-              id
-              locale
-              path
-              title
-              description
-              contentType
-              isPublished
-              isPrivate
-              privateNS
-              createdAt
-              updatedAt
-            }
-          }
-        }
-      `,
+      query: pagesListQuery,
       variables () {
         return {
           creatorId: this.$store.get('user/id'),

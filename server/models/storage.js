@@ -1,8 +1,5 @@
 const Model = require('objection').Model
-const path = require('path')
-const fs = require('fs-extra')
 const _ = require('lodash')
-const yaml = require('js-yaml')
 const commonHelper = require('../helpers/common')
 const configHelper = require('../helpers/config')
 
@@ -12,8 +9,8 @@ const configHelper = require('../helpers/config')
  * Storage model
  */
 module.exports = class Storage extends Model {
-  static get tableName() { return 'storage' }
-  static get idColumn() { return 'key' }
+  static get tableName () { return 'storage' }
+  static get idColumn () { return 'key' }
 
   static get jsonSchema () {
     return {
@@ -21,112 +18,55 @@ module.exports = class Storage extends Model {
       required: ['key', 'isEnabled'],
 
       properties: {
-        key: {type: 'string'},
-        isEnabled: {type: 'boolean'},
-        mode: {type: 'string'}
+        key: { type: 'string' },
+        isEnabled: { type: 'boolean' },
+        mode: { type: 'string' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['config', 'state']
   }
 
-  static async getTargets() {
+  static async getTargets () {
     return WIKI.models.storage.query()
   }
 
-  static async refreshTargetsFromDisk() {
-    let trx
-    try {
-      const dbTargets = await WIKI.models.storage.query()
-
-      // -> Fetch definitions from disk
-      const storageDirs = await fs.readdir(path.join(WIKI.SERVERPATH, 'modules/storage'))
-      let diskTargets = []
-      for (let dir of storageDirs) {
-        const def = await fs.readFile(path.join(WIKI.SERVERPATH, 'modules/storage', dir, 'definition.yml'), 'utf8')
-        diskTargets.push(yaml.load(def))
-      }
-      WIKI.data.storage = diskTargets.map(target => ({
-        ...target,
-        isAvailable: _.get(target, 'isAvailable', false),
-        props: commonHelper.parseModuleProps(target.props)
-      }))
-
-      // -> Insert new targets
-      let newTargets = []
-      for (let target of WIKI.data.storage) {
-        if (!_.some(dbTargets, ['key', target.key])) {
-          newTargets.push({
-            key: target.key,
-            isEnabled: false,
-            mode: target.defaultMode || 'push',
-            syncInterval: target.schedule || 'P0D',
-            config: _.transform(target.props, (result, value, key) => {
-              _.set(result, key, value.default)
-              return result
-            }, {}),
-            state: {
-              status: 'pending',
-              message: '',
-              lastAttempt: null
-            }
-          })
-        } else {
-          const targetConfig = _.get(_.find(dbTargets, ['key', target.key]), 'config', {})
-          await WIKI.models.storage.query().patch({
-            config: _.transform(target.props, (result, value, key) => {
-              if (!_.has(result, key)) {
-                _.set(result, key, value.default)
-              }
-              return result
-            }, targetConfig)
-          }).where('key', target.key)
+  static async refreshTargetsFromDisk () {
+    return commonHelper.refreshModulesFromDisk({
+      dirName: 'storage',
+      dataKey: 'storage',
+      model: 'storage',
+      label: 'storage targets',
+      mapDefinition: def => ({ isAvailable: _.get(def, 'isAvailable', false) }),
+      buildInsert: def => ({
+        mode: def.defaultMode || 'push',
+        syncInterval: def.schedule || 'P0D',
+        state: {
+          status: 'pending',
+          message: '',
+          lastAttempt: null
         }
-      }
-      if (newTargets.length > 0) {
-        trx = await WIKI.models.Objection.transaction.start(WIKI.models.knex)
-        for (let target of newTargets) {
-          await WIKI.models.storage.query(trx).insert(target)
-        }
-        await trx.commit()
-        WIKI.logger.info(`Loaded ${newTargets.length} new storage targets: [ OK ]`)
-      } else {
-        WIKI.logger.info(`No new storage targets found: [ SKIPPED ]`)
-      }
-
-      // -> Delete removed targets
-      for (const target of dbTargets) {
-        if (!_.some(WIKI.data.storage, ['key', target.key])) {
-          await WIKI.models.storage.query().where('key', target.key).del()
-          WIKI.logger.info(`Removed target ${target.key} because it is no longer present in the modules folder: [ OK ]`)
-        }
-      }
-    } catch (err) {
-      WIKI.logger.error(`Failed to scan or load new storage providers: [ FAILED ]`)
-      WIKI.logger.error(err)
-      if (trx) {
-        trx.rollback()
-      }
-    }
+      })
+    })
   }
 
   /**
    * Initialize active storage targets
    */
-  static async initTargets() {
+  static async initTargets () {
     this.targets = await WIKI.models.storage.query().where('isEnabled', true).orderBy('key')
     try {
       // -> Stop and delete existing jobs
-      const prevjobs = _.remove(WIKI.scheduler.jobs, job => job.name === `sync-storage`)
+      const prevjobs = _.remove(WIKI.scheduler.jobs, job => job.name === 'sync-storage')
       if (prevjobs.length > 0) {
         prevjobs.forEach(job => { job.stop().catch(() => {}) })
       }
 
       // -> Initialize targets
       const failedTargets = []
-      for (let target of this.targets) {
+      for (const target of this.targets) {
         const targetDef = _.find(WIKI.data.storage, ['key', target.key])
         target.fn = require(`../modules/storage/${target.key}/storage`)
         target.fn.config = target.config
@@ -144,14 +84,14 @@ module.exports = class Storage extends Model {
           }).where('key', target.key)
 
           // -> Set recurring sync job
-          if (targetDef.schedule && target.syncInterval !== `P0D`) {
+          if (targetDef.schedule && target.syncInterval !== 'P0D') {
             let syncInterval = target.syncInterval
             if (!configHelper.isValidDurationString(syncInterval)) {
               WIKI.logger.warn(`Invalid sync interval '${syncInterval}' for storage target ${target.key}. Falling back to default (${targetDef.schedule}).`)
               syncInterval = targetDef.schedule
             }
             WIKI.scheduler.registerJob({
-              name: `sync-storage`,
+              name: 'sync-storage',
               immediate: false,
               schedule: syncInterval,
               repeat: true
@@ -159,9 +99,9 @@ module.exports = class Storage extends Model {
           }
 
           // -> Set internal recurring sync job
-          if (targetDef.internalSchedule && targetDef.internalSchedule !== `P0D` && configHelper.isValidDurationString(targetDef.internalSchedule)) {
+          if (targetDef.internalSchedule && targetDef.internalSchedule !== 'P0D' && configHelper.isValidDurationString(targetDef.internalSchedule)) {
             WIKI.scheduler.registerJob({
-              name: `sync-storage`,
+              name: 'sync-storage',
               immediate: false,
               schedule: targetDef.internalSchedule,
               repeat: true
@@ -192,9 +132,9 @@ module.exports = class Storage extends Model {
     }
   }
 
-  static async pageEvent({ event, page }) {
+  static async pageEvent ({ event, page }) {
     try {
-      for (let target of this.targets) {
+      for (const target of this.targets) {
         await target.fn[event](page)
       }
     } catch (err) {
@@ -203,9 +143,9 @@ module.exports = class Storage extends Model {
     }
   }
 
-  static async assetEvent({ event, asset }) {
+  static async assetEvent ({ event, asset }) {
     try {
-      for (let target of this.targets) {
+      for (const target of this.targets) {
         await target.fn[`asset${_.capitalize(event)}`](asset)
       }
     } catch (err) {
@@ -214,7 +154,7 @@ module.exports = class Storage extends Model {
     }
   }
 
-  static async getLocalLocations({ asset }) {
+  static async getLocalLocations ({ asset }) {
     const locations = []
     const promises = this.targets.map(async (target) => {
       try {
@@ -231,7 +171,7 @@ module.exports = class Storage extends Model {
     return locations
   }
 
-  static async executeAction(targetKey, handler) {
+  static async executeAction (targetKey, handler) {
     try {
       const target = _.find(this.targets, ['key', targetKey])
       if (target) {

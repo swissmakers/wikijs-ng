@@ -1,0 +1,1050 @@
+admin:
+  adminArea: Administrationsbereich
+  analytics:
+    providerConfiguration: Anbieter-Konfiguration
+    providerNoConfiguration: Dieser Anbieter verfügt über keine Konfigurationsoptionen, die angepasst werden können.
+    providers: Anbieter
+    refreshSuccess: Liste der Anbieter erfolgreich aktualisiert.
+    saveSuccess: Die Analytics-Konfiguration wurde erfolgreich gespeichert
+    subtitle: Analyse- und Tracking-Tools zum Wiki hinzufügen
+    title: Analytics
+  api:
+    disableButton: API deaktivieren
+    disabled: API deaktiviert
+    enableButton: API aktivieren
+    enabled: API aktiviert
+    expiration180d: 180 Tage
+    expiration1y: 1 Jahr
+    expiration30d: 30 Tage
+    expiration3y: 3 Jahre
+    expiration90d: 90 Tage
+    headerCreated: Erstellt
+    headerExpiration: Ablauf
+    headerKeyEnding: Schlüssel-Ende
+    headerLastUpdated: Zuletzt aktualisiert
+    headerName: Name
+    headerRevoke: Widerrufen
+    newKeyButton: Neuer API-Schlüssel
+    newKeyCopyWarn: Kopieren Sie den unten gezeigten Schlüssel als {{bold}}
+    newKeyCopyWarnBold: es wird NICHT noch einmal angezeigt werden
+    newKeyExpiration: Ablauf
+    newKeyExpirationHint: Sie können einen Schlüssel unabhängig vom Ablaufdatum jederzeit widerrufen.
+    newKeyFullAccess: Voller Zugriff
+    newKeyGroup: Gruppe
+    newKeyGroupError: Es muss eine Gruppe ausgewählt sein.
+    newKeyGroupHint: Der API-Schlüssel hat die gleichen Berechtigungen wie die ausgewählte Gruppe.
+    newKeyGroupPermissions: oder Gruppenberechtigungen verwenden...
+    newKeyGuestGroupError: Die Gästegruppe kann nicht für API-Schlüssel verwendet werden.
+    newKeyName: Name
+    newKeyNameError: Name fehlt oder ist ungültig.
+    newKeyNameHint: Zweck dieses Schlüssels
+    newKeyPermissionScopes: Berechtigungsbereiche
+    newKeySuccess: API-Schlüssel erfolgreich erstellt.
+    newKeyTitle: Neuer API-Schlüssel
+    noKeyInfo: Es wurden noch keine API-Schlüssel generiert.
+    refreshSuccess: Liste der API-Schlüssel wurde aktualisiert.
+    revoke: Widerrufen
+    revokeConfirm: API-Schlüssel widerrufen?
+    revokeConfirmText: Soll der Schlüssel {{name}} wirklich widerrufen werden? Diese Aktion kann nicht rückgängig gemacht werden!
+    revokeSuccess: Der Schlüssel wurde erfolgreich widerrufen.
+    subtitle: Schlüssel für den API-Zugriff verwalten
+    title: API-Zugriff
+    toggleStateDisabledSuccess: API wurde erfolgreich deaktiviert.
+    toggleStateEnabledSuccess: API wurde erfolgreich aktiviert.
+  auth:
+    activeStrategies: Strategien
+    addStrategy: Strategie hinzufügen
+    allowedWebOrigins: Zulässige Web Origins
+    autoEnrollGroups: Der Gruppe zuweisen
+    autoEnrollGroupsHint: Automatisches zuweisen von neuen Benutzer:innen zu diesen Gruppen.
+    callbackUrl: Callback-URL / Redirect-URI
+    configReference: Konfigurationsreferenz
+    configReferenceSubtitle: Einige Methoden können erfordern, dass bestimmte Konfigurationswerte bei deinem Provider gesetzt werden. Diese sind nur als Referenz vorgesehen und werden von der aktuellen Methode möglicherweise nicht benötigt.
+    displayName: Angezeigter Name
+    displayNameHint: Der Titel, der dem Endbenutzer für diese Authentifizierungsstrategie angezeigt wird.
+    domainsWhitelist: Beschränkung auf bestimmte E-Mail-Domains
+    domainsWhitelistHint: Eine Liste der Domains, die zur Registrierung berechtigt sind. Die E-Mail-Adresse des Benutzers muss mit einer dieser Adressen übereinstimmen, um Zugriff zu erhalten.
+    jwtAudience: JWT Audience
+    jwtAudienceHint: Die in JWT verwendete  Audience URN wird beim Anmelden vergeben. Normalerweise der Name der Domain. (z.B. urn:wiki.domain.de)
+    loginUrl: Login-URL
+    logoutUrl: Logout-URL
+    refreshSuccess: Die Liste der Strategien wurde aktualisiert.
+    registration: Registrierung
+    saveSuccess: Authentifizierungskonfiguration erfolgreich gespeichert.
+    selfRegistration: Selbstregistrierung zulassen
+    selfRegistrationHint: Jede:r durch diese Strategie autorisierte Benutzer:in darf auf das Wiki zugreifen.
+    siteUrlNotSetup: Du musst zuerst eine gültige {{siteUrl}} setzen! Klicke auf {{general}} in der linken Seitenleiste.
+    strategyConfiguration: Strategie-Konfiguration
+    strategyIsEnabled: Aktiv
+    strategyIsEnabledHint: Können Benutzer sich mit dieser Methode anmelden?
+    subtitle: Die Authentifizierungseinstellungen des Wikis konfigurieren
+    title: Authentifizierung
+    tokenEndpointAuthMethod: Token-Endpunkt-Authentifizierungsmethode
+    tokenExpiration: Token Ablaufdatum
+    tokenExpirationHint: 'Die Gültigkeitsdauer eines Tokens, bis dieser erneuert werden muss. (Standard: 30min)'
+    tokenRenewalPeriod: Token-Erneuerungszeitraum
+    tokenRenewalPeriodHint: 'Der maximale Zeitraum, in dem ein Token nach Ablauf verlängert werden kann. (Standard: 14 Tage)'
+  comments:
+    configSaveSuccess: Kommentar-Einstellungen wurden erfolgreich gespeichert
+    provider: Anbieter
+    providerConfig: Anbieter-Konfiguration
+    providerNoConfig: Dieser Anbieter verfügt über keine Konfigurationsoptionen, die angepasst werden können.
+    subtitle: Füge Diskussionen zu deinen Wiki Seiten hinzu
+    title: Kommentare
+    moderation: Kommentar-Moderation
+    moderationSubtitle: Zur Freigabe zurückgehaltene Kommentare prüfen
+    pendingOnly: Nur ausstehende
+    moderationEmpty: Keine Kommentare zu prüfen.
+    listRefreshSuccess: Liste der Kommentaranbieter wurde aktualisiert.
+  dashboard:
+    groups: Gruppen
+    lastLogins: Letzte Anmeldungen
+    pages: Seiten
+    recentPages: Letzte Seiten
+    subtitle: Wiki.js
+    title: Dashboard
+    users: Benutzer
+  dev:
+    flags:
+      title: Flags
+  general:
+    companyName: Name des Unternehmens / der Organisation
+    companyNameHint: Name, der bei der Anzeige des Copyright-Vermerks in der Fußzeile verwendet werden soll. Lassen Sie das Feld leer, um es auszublenden.
+    contentLicense: Inhaltslizenz
+    contentLicenseHint: Lizenz, die in der Fußzeile aller Inhaltsseiten angezeigt wird.
+    displayEditMenuBar: Bearbeiten Menüleiste anzeigen
+    displayEditMenuBarHint: Bearbeiten Menüleiste in der Seitenüberschrift anzeigen
+    displayEditMenuBtn: Bearbeiten Button anzeigen
+    displayEditMenuBtnHint: Button zum Bearbeiten der aktuellen Seite anzeigen
+    displayEditMenuExternalBtn: Externen Bearbeiten Button anzeigen
+    displayEditMenuExternalBtnHint: Button anzeigen, welcher auf ein externes Repository (z. B. GitHub) verweist, wo Benutzer einen PR für die aktuelle Seite bearbeiten oder einreichen können.
+    editFab: Schnellaktionsbuttonmenü bearbeiten
+    editFabHint: Schnellaktionsbutton mit Schnellauswahlmenü im unteren rechten Bildschirmeck anzeigen.
+    editMenuBar: Bearbeiten Menüleiste
+    editMenuExternalIcon: Button Icon
+    editMenuExternalIconHint: 'Symbol, welches auf dem Bearbeiten-Button angezeigt werden soll. Zum Beispiel: mdi-github, um das GitHub-Symbol anzuzeigen.'
+    editMenuExternalName: Button Seitenname
+    editMenuExternalNameHint: Der Name der externen Website, die auf der Bearbeiten-Button angezeigt werden soll. Das Präfix "bearbeiten" darf nicht enthalten sein.
+    editMenuExternalUrl: Button URL
+    editMenuExternalUrlHint: Externe Repository URL zu dieser Seite. Benutzte den {filename} Platzhalter an der Stelle an welcher der Dateiname eingesetzt werden soll. (z. B. https://github.com/foo/bar/blob/main/{filename} )
+    editShortcuts: Verknüpfungen bearbeiten
+    footerCopyright: Fußzeile Copyright
+    footerOverride: Fußzeilentext überschreiben
+    footerOverrideHint: Überschreiben Sie optional den Fußzeilentext mit einer benutzerdefinierten Nachricht. Nützlich, wenn keine der oben genannten Lizenzen geeignet ist.
+    general: Allgemeines
+    logo: Logo
+    logoUrl: Logo URL
+    logoUrlHint: Wähle ein Bild, welches als Logo verwendet werden soll. SVG, PNG, JPG werden unterstützt, in einem quadratischen Seitenverhältnis, 34x34 Pixel oder größer. Klicke auf die Schaltfläche rechts, um ein neues Bild hochzuladen.
+    metaRobots: Meta Robots
+    metaRobotsHint: 'Standard: Index, Follow. Kann auch auf Seitenbasis eingestellt werden.'
+    pageExtensions: Seitenerweiterungen
+    pageExtensionsHint: Eine durch Kommas getrennte Liste von URL-Erweiterungen, die als Seiten behandelt werden. Wenn Sie beispielsweise md hinzufügen, wird /foobar.md genauso behandelt wie /foobar.
+    saveSuccess: Konfiguration erfolgreich gespeichert.
+    siteDescription: Seitenbeschreibung
+    siteDescriptionHint: Standardbeschreibung, wenn für eine Seite keine angegeben ist.
+    siteInfo: Seiteninformation
+    siteTitle: Titel der Website
+    siteTitleHint: Wird in der oberen Leiste angezeigt und an den Meta-Titel aller Seiten angehängt.
+    siteTitleInvalidChars: Seitentitel enthält ungültige Zeichen.
+    siteUrl: Seiten-URL
+    siteUrlHint: Vollständige URL zum Wiki, ohne den abschließenden Schrägstrich. (z.B. https://wiki.example.com)
+    subtitle: Haupteinstellungen des Wikis
+    title: Allgemeines
+    featureNotifications: Seiten beobachten & E-Mail-Benachrichtigungen
+    featureNotificationsHint: Benutzer können Seiten und Ordner beobachten und erhalten eine E-Mail-Zusammenfassung der Änderungen (erfordert eine E-Mail-Konfiguration).
+    integrations: Integrationen
+    drawioUrl: draw.io-Editor-URL
+    drawioUrlHint: URL des im Markdown-Editor eingebetteten draw.io-Editors (diagrams.net). Verweisen Sie auf eine selbst gehostete Instanz, damit Diagramme in Ihrem Netzwerk bleiben.
+  groups:
+    title: Gruppen
+  locale:
+    activeNamespaces:
+      hint: Liste der Lokalisierungen, die für mehrsprachige Namensräume aktiviert sind. Die oben definierte Basis-Lokalisierung wird unabhängig von dieser Auswahl immer eingeschlossen.
+      label: Aktive Namensräume
+    base:
+      hint: Alle UI-Textelemente werden in der gewählten Sprache angezeigt.
+      label: Seiten Lokalisierung
+      labelWithNS: Basis-Lokalisierung
+    code: Code
+    name: Name
+    namespaces:
+      hint: Aktiviert mehrere Sprachversionen derselben Seite.
+      label: Mehrsprachige Namensräume
+    namespacing: Mehrsprachiger Namensraum
+    namespacingPrefixWarning:
+      subtitle: Pfade ohne Lokalisierungs-Code werden automatisch zur oben definierten Basis-Lokalisierung umgeleitet.
+      title: Der Lokalisierungs-Code wird allen Pfaden vorangestellt. (z.B. /{{langCode}}/seitenname)
+    nativeName: Muttersprachlicher Name
+    rtl: Rechts-nach-links
+    settings: Spracheinstellungen
+    sideload: Eigene & zusätzliche Sprachen
+    sideloadHelp: Englisch, Deutsch, Französisch und Italienisch sind in Wiki.js NG enthalten. Um eine weitere Sprache hinzuzufügen oder einzelne Texte zu überschreiben, legen Sie YAML-Sprachdateien im folgenden Ordner ab und starten Sie Wiki.js neu.
+    subtitle: Lege Lokalisierungsoptionen für das Wiki fest
+    title: Lokalisierung
+    availableTitle: Verfügbare Sprachen
+    source: Quelle
+    sourceBundled: Mitgeliefert
+    sourceSideloaded: Nachgeladen
+    sourceDatabase: Datenbank (altes Sprachpaket)
+    sideloadFolder: Ordner für eigene Sprachdateien
+  mail:
+    configuration: Konfiguration
+    dkim: DKIM (optional)
+    dkimDomainName: Domain Name
+    dkimHint: DKIM (DomainKeys Identified Mail) bietet eine Sicherheitsebene für alle E-Mails, die von Wiki.js gesendet werden, indem es den Empfänger:innen die Möglichkeit bietet, den Domänennamen zu validieren und die Authentizität der Nachricht zu gewährleisten.
+    dkimKeySelector: Schlüssel-Selektor
+    dkimPrivateKey: Privater Schlüssel
+    dkimPrivateKeyHint: Privater Schlüssel für den Selektor im PEM-Format
+    dkimUse: DKIM verwenden
+    saveSuccess: Konfiguration erfolgreich gespeichert.
+    sendTestSuccess: Eine Test-E-Mail wurde erfolgreich gesendet.
+    sender: Absender
+    senderEmail: Absender E-Mail
+    senderName: Absender Name
+    smtp: SMTP-Einstellungen
+    smtpHost: Server
+    smtpName: Client identifizierender Hostname
+    smtpNameHint: Ein optionaler Name, der an den SMTP-Server gesendet wird, um Ihren Mailer zu identifizieren. Leer lassen, um den Server-Hostnamen zu verwenden. Für Google Workspace-Kunden sollte dies Ihr Hauptdomainname sein.
+    smtpPort: Port
+    smtpPortHint: Normalerweise 465 (empfohlen), 587 oder 25.
+    smtpPwd: Passwort
+    smtpTLS: Sicher (TLS)
+    smtpTLSHint: Sollte bei Verwendung von Port 465 aktiviert werden, andernfalls ausgeschaltet (587 oder 25).
+    smtpUser: Benutzername
+    smtpVerifySSL: SSL-Zertifikat überprüfen
+    smtpVerifySSLHint: Bei einigen Hosts muss die Überprüfung des SSL-Zertifikats deaktiviert sein. Lassen Sie diese Option für ordnungsgemäße Sicherheit aktiviert.
+    subtitle: E-Mail-Einstellungen konfigurieren
+    test: Eine Test-E-Mail senden
+    testHint: Sende eine Test-E-Mail, um sicherzustellen, dass die SMTP-Konfiguration funktioniert.
+    testRecipient: E-Mail-Adresse des Empfängers
+    testSend: E-Mail senden
+    title: E-Mail
+    notifications: Benachrichtigungen bei Seitenänderungen
+    notificationsHint: Beobachter erhalten alle 10 Minuten eine Zusammenfassung der Seitenänderungen. Ausstehende Benachrichtigungen können sofort versendet werden.
+    sendDigestsNow: Ausstehende Benachrichtigungen jetzt senden
+  nav:
+    modules: Module
+    site: Seite
+    system: System
+    users: Benutzer
+  navigation:
+    copyFromLocale: Kopiere von Lokalisierung...
+    copyFromLocaleInfoText: Wähle die Lokalisierung aus, von der Elemente kopiert werden sollen. Elemente werden an die aktuelle Liste der Elemente in der aktiven Lokalisierung angehängt.
+    delete: Lösche {{kind}}
+    divider: Trennlinie
+    edit: Bearbeite {{kind}}
+    emptyList: Die Navigation ist leer
+    header: Kopfzeile
+    link: Link
+    mode: Navigationsmodus
+    modeCustom:
+      description: Statisches Navigationsmenü + Seiten-Baumanzeige Button
+      title: Benutzerdefinierte Navigation
+    modeNone:
+      description: Seitennavigation deaktivieren
+      title: Keine
+    modeSiteTree:
+      description: Klassische Baumnavigation
+      title: Seiten-Baumanzeige
+    modeStatic:
+      description: Nur statisches Navigationsmenü
+      title: Statische Navigation
+    navType:
+      external: Externer Link
+      externalblank: Externer Link (neues Fenster)
+      home: Startseite
+      page: Seite
+      searchQuery: Suchanfrage
+    noItemsText: Klicke den Hinzufügen-Button, um dein erstes Navigationselement hinzuzufügen.
+    noSelectionText: Wähle links ein Navigationselement aus.
+    saveSuccess: Navigation erfolgreich gespeichert.
+    selectPageButton: Seite auswählen...
+    sourceLocale: Ursprungs-Lokalisierung
+    sourceLocaleHint: Die Lokalisierung, aus welcher Navigationselemente kopiert werden.
+    subtitle: Verwalten der Seitennavigation
+    title: Navigation
+    untitled: '{{kind}} ohne Titel'
+    visibilityMode:
+      all: Für alle sichtbar
+      restricted: Sichtbar für ausgewählte Gruppen...
+  pages:
+    title: Seiten
+    rerender: Neu rendern
+    rerenderSuccess: Seite erfolgreich neu gerendert.
+    accessInspector: Zugriffsprüfung
+    accessInspectorHint: Prüfen, was ein Benutzer oder eine Gruppe auf dieser Seite darf und welche Seitenregel darüber entscheidet.
+    accessGroup: Gruppe
+    accessUser: Benutzer
+    accessUserSearch: Benutzer nach Name oder E-Mail suchen
+    accessPermission: Berechtigung
+    accessResult: Ergebnis
+    accessReason: Entschieden durch
+    accessReasonAdmin: Administrator (manage:system)
+    accessReasonNoGlobal: Berechtigung ist keiner der Gruppen erteilt
+    accessReasonNoRule: Keine Seitenregel trifft auf diese Seite zu
+  rendering:
+    subtitle: Konfiguriere die Pipeline für die Seitendarstellung
+    title: Rendering
+  search:
+    configSaveSuccess: Suchmaschinenkonfiguration erfolgreich gespeichert.
+    engineConfig: Engine-Konfiguration
+    engineNoConfig: Diese Engine hat keine Konfigurationsoptionen, die verändert werden können.
+    indexRebuildSuccess: Index erfolgreich neu aufgebaut.
+    listRefreshSuccess: Die Liste der Suchmaschinen wurde aktualisiert.
+    rebuildIndex: Index neu aufbauen
+    searchEngine: Suchmaschine
+    subtitle: Die Suchfunktionen des Wikis konfigurieren
+    title: Suchmaschine
+  security:
+    bypassLogin: Anmeldebildschirm umgehen
+    bypassLoginHint: Benutzer wird automatisch zum ersten Authentifizierungsanbieter umgeleitet.
+    enforce2fa: 2FA erzwingen
+    enforce2faHint: Erzwinge alle Benutzer die 2FA-Authentifizierung zu verwenden, wenn ein Authentifizierungsanbieter mit einem Benutzer- / Kennwortformular verwendet wird.
+    hideLocalLogin: Lokalen Authentifizierungsanbieter ausblenden
+    hideLocalLoginHint: Lokalen Authentifizierungsanbieter nicht auf dem Anmeldebildschirm anzeigen. Füge "?all" zur URL hinzu, um ihn vorübergehend zu verwenden.
+    jwt: JWT-Konfiguration
+    login: Anmeldung
+    loginBgUrl: Login Hintergrundbild URL
+    loginBgUrlHint: Gib an, welches Bild als Login-Hintergrund verwendet werden soll. PNG und JPG werden unterstützt, 1920×1080 px empfohlen. Lass das Feld für die Voreinstellung leer. Klicke auf die Schaltfläche rechts, um ein neues Bild hochzuladen. Beachte, dass die Gruppe "Gäste" Lesezugriff auf das ausgewählte Bild haben muss!
+    loginScreen: Anmeldebildschirm
+    loginSecurity: Sicherheit
+    maxUploadBatch: Max. Dateien pro Upload
+    maxUploadBatchHint: Wie viele Dateien können in einem Durchgang hochgeladen werden?
+    maxUploadBatchSuffix: Dateien
+    maxUploadSize: Max. Upload-Größe
+    maxUploadSizeHint: Die maximale Größe für eine einzelne Datei.
+    maxUploadSizeSuffix: Bytes
+    subtitle: Konfigurieren von Sicherheitseinstellungen
+    title: Sicherheit
+    uploads: Uploads
+    uploadsInfo: Diese Einstellungen betreffen nur Wiki.js. Wenn Sie einen Reverse-Proxy (z.B. nginx, apache, Cloudflare) verwenden, müssen Sie auch dessen Einstellungen entsprechend ändern.
+    csp: Content Security Policy (CSP)
+    cspHint: Schränkt ein, welche Skripte, Styles, Bilder und Frames der Browser laden darf. Eingefügter Code, Analytics und Kommentar-Anbieter erhalten die Nonce der Richtlinie automatisch.
+    cspReportOnly: Nur melden
+    cspReportOnlyHint: Verstösse werden nur in der Browser-Konsole gemeldet statt blockiert. Prüfen Sie die Konsole auf allen Seiten, bevor Sie dies ausschalten.
+    cspDirectives: Zusätzliche Direktiven
+    cspDirectivesHint: Eine Direktive pro Zeile, z. B. connect-src https://analytics.example.com. Die Quellen werden zur Standardrichtlinie hinzugefügt.
+    cspPreview: 'Wirksame Richtlinie:'
+  ssl:
+    currentState: Aktueller Status
+    domain: Domain
+    expiration: Ablauf des Zertifikats
+    httpPort: HTTP-Port
+    httpPortRedirect: HTTP-Anforderungen an HTTPS umleiten
+    httpPortRedirectSaveSuccess: HTTP-Umleitung erfolgreich geändert.
+    httpPortRedirectTurnOff: Ausschalten
+    httpPortRedirectTurnOn: Einschalten
+    httpsPort: HTTPS-Port
+    ports: Ports
+    provider: Anbieter
+    providerCustomCertificate: Benutzerdefiniertes Zertifikat
+    providerDisabled: Deaktiviert
+    providerLetsEncrypt: Let's Encrypt
+    renewCertificate: Zertifikat erneuern
+    renewCertificateLoadingSubtitle: Verlassen Sie diese Seite nicht.
+    renewCertificateLoadingTitle: Zertifikat wird erneuert …
+    renewCertificateSuccess: Zertifikat erfolgreich erneuert.
+    status: Zertifikat-Status
+    subscriberEmail: Abonnenten-Email
+    subtitle: Verwalten der SSL-Konfiguration
+    title: SSL
+  storage:
+    actionRun: Ausführen
+    actions: Aktionen
+    actionsInactiveWarn: Du musst dieses Speicherziel aktivieren und die Änderungen anwenden, bevor Aktionen ausgeführt werden können.
+    errorMsg: Fehlermeldung
+    lastSync: Letzte Synchronisation {{time}}
+    lastSyncAttempt: Der letzte Versuch war {{time}}.
+    noConfigOption: Dieses Speicherziel hat keine Konfigurationsoptionen, die angepasst werden können.
+    noTarget: Es existiert kein aktives Speicherziel.
+    status: Status
+    subtitle: Backup- und Synchronisierungsziele für den Inhalt festlegen
+    syncDirBi: Bidirektional
+    syncDirBiHint: Im bidirektionalen Modus wird der Inhalt zunächst aus dem Speicherziel gezogen. Jeder neuere Inhalt überschreibt lokale Inhalte. Neuer Inhalt seit der letzten Synchronisierung wird dann auf das Speicherziel übertragen und überschreibt alle Inhalte auf dem Ziel, falls vorhanden.
+    syncDirPull: Vom Ziel herunterladen
+    syncDirPullHint: Der Inhalt wird immer vom Speicherziel abgerufen und überschreibt den bereits vorhandenen lokalen Inhalt. Diese Auswahl ist normalerweise für den Import von Inhalten zur einmaligen Verwendung reserviert. Vorsicht bei dieser Option, da lokale Inhalte immer überschrieben werden!
+    syncDirPush: Zum Ziel hochladen
+    syncDirPushHint: Inhalte werden immer auf das Speicherziel kopiert, alle vorhandenen Inhalte werden überschreiben. Dies ist die sicherste Wahl für Backup-Szenarien.
+    syncDirection: Synchronisationsrichtung
+    syncDirectionSubtitle: Wähle, wie die Inhaltssynchronisierung für dieses Speicherziel durchgeführt wird.
+    syncSchedule: Synchronisierungszeitplan
+    syncScheduleCurrent: Derzeit gesetzt auf alle {{schedule}}.
+    syncScheduleDefault: Der Standard ist alle {{schedule}}.
+    syncScheduleHint: Aus Performance-Gründen synchronisiert dieses Speicherziel Änderungen nicht bei jeder Änderung, sondern nach einem intervallbasierten Zeitplan. Lege fest, in welchem Intervall die Synchronisation stattfinden soll.
+    targetConfig: Zielkonfiguration
+    targetState: Dieses Speicherziel ist {{state}}
+    targetStateActive: aktiv
+    targetStateInactive: inaktiv
+    targets: Ziele
+    title: Speicher
+    unsupported: Nicht unterstützt
+  system:
+    configFile: Konfigurationsdatei
+    cpuCores: CPU Kerne
+    currentVersion: Aktuelle Version
+    dbPartialSupport: Die Datenbankversion wird nicht vollständig unterstützt. Einige Funktionen sind möglicherweise eingeschränkt oder funktionieren nicht wie erwartet.
+    hostInfo: Host-Informationen
+    hostname: Hostname
+    os: Betriebssystem
+    refreshSuccess: Systeminformationen wurden aktualisiert.
+    subtitle: Informationen über dein System
+    title: Systeminformationen
+    totalRAM: RAM insgesamt
+    workingDirectory: Arbeitsverzeichnis
+  tags:
+    date: Erstellt {{created}} und zuletzt aktualisiert {{updated}} .
+    delete: Dieses Tag löschen
+    deleteConfirm: Tag löschen?
+    deleteConfirmText: Soll das Tag {{tag}} wirklich gelöscht? Das Tag wird auch von allen Seiten entfernt.
+    deleteSuccess: Tag erfolgreich gelöscht.
+    edit: Tag bearbeiten
+    emptyList: Keine Tags zum Anzeigen.
+    filter: Filter...
+    noItemsText: Füge einen Tag zu einer Seite hinzu, um zu beginnen.
+    noSelectionText: Wähle einen Tag aus der Liste links aus.
+    refreshSuccess: Tags wurden aktualisiert.
+    saveSuccess: Tag wurde erfolgreich gespeichert.
+    subtitle: Seiten-Tags verwalten
+    tag: Tag
+    title: Schlagwörter
+    viewLinkedPages: Verknüpfte Seiten anzeigen
+  theme:
+    bodyHtmlInjection: Body HTML Injektion
+    bodyHtmlInjectionHint: HTML-Code, der direkt vor dem schließenden Body-Tag eingefügt werden soll.
+    codeInjection: Code Injektion
+    cssOverride: CSS überschreiben
+    cssOverrideHint: CSS-Code, der nach dem Standard-CSS des Systems eingefügt werden soll. Erwägen Sie, benutzerdefinierte Designs zu verwenden, wenn Sie sehr viel eigenen CSS-Code haben. Wenn zu viel CSS-Code einfügt wird, wird die Leistung beim Laden von Seiten beeinträchtigt! CSS wird automatisch minimiert.
+    cssOverrideWarning: '{{caution}} Wenn Styles für Seiteninhalte hinzugefügt werden, muss diese auf die {{cssClass}} Klasse eingrenzt werden. Andernfalls könnte das Layout des Editors beschädigt werden!'
+    cssOverrideWarningCaution: 'VORSICHT:'
+    darkMode: Dunkler Modus
+    darkModeHint: Nicht für Barrierefreiheit empfohlen. Wird möglicherweise nicht von allen Themen unterstützt.
+    headHtmlInjection: Head HTML Injektion
+    headHtmlInjectionHint: HTML-Code, der direkt vor dem schließenden Head-Tag eingefügt werden soll. Normalerweise für Skript-Tags.
+    iconset: Icon Satz
+    iconsetHint: Satz von Icons, die für die Seitenleistennavigation verwendet werden sollen.
+    options: Theme Optionen
+    subtitle: Ändert das Aussehen und Verhalten des Wikis
+    title: Theme
+  users:
+    active: Aktiv
+    authProvider: Anbieter
+    authProviderId: Anbieter ID
+    authentication: Authentifizierung
+    basicInfo: Grundlegende Informationen
+    changePassword: Passwort ändern
+    deleteConfirmReplaceWarn: Alle Inhalte (Seiten, Uploads, Kommentare usw.), die von diesem Benutzer erstellt wurden, werden dem unten ausgewählten Benutzer zugeordnet. Es wird empfohlen, einen Dummy-Zielbenutzer (z.B. „Gelöschter Benutzer“) zu erstellen, wenn der Inhalt keinem aktuell aktiven Benutzer zugeordnet werden soll.
+    deleteConfirmText: Soll der Benutzer {{username}} gelöscht werden?
+    deleteConfirmTitle: Benutzer löschen?
+    displayName: Anzeigename
+    edit: Benutzer bearbeiten
+    email: E-Mail
+    extendedMetadata: Erweiterte Metadaten
+    groupAssign: Zuweisen
+    groupAssignNotice: Beachte, dass hier keine Benutzer den Gruppen "Administratoren" oder "Gäste" zugewiesen werden können.
+    groups: Benutzergruppen
+    id: ID {{id}}
+    inactive: Inaktiv
+    jobTitle: Job Titel
+    location: Ort
+    newPassword: Neues Passwort
+    noGroupAssigned: Der Nutzer ist noch keiner Gruppe zugewiesen. Es muss mindestens eine Gruppe zugewiesen werden.
+    password: Passwort
+    selectGroup: Gruppe wählen …
+    tfa: Zwei-Faktor-Authentifizierung (2FA)
+    timezone: Zeitzone
+    title: Benutzer
+    toggle2FA: 2FA umschalten
+    unverified: Unverifiziert
+    updateUser: Benutzer aktualisieren
+    userActivateSuccess: Benutzer wurde erfolgreich aktiviert.
+    userAlreadyAssignedToGroup: Benutzer ist bereits Mitglied dieser Gruppe!
+    userDeactivateSuccess: Benutzer erfolgreich deaktiviert.
+    userTFADisableSuccess: 2FA wurde erfolgreich deaktiviert.
+    userTFAEnableSuccess: 2FA wurde erfolgreich aktiviert.
+    userUpdateSuccess: Benutzer erfolgreich aktualisiert.
+    userVerifySuccess: Benutzer wurde erfolgreich verifiziert.
+    verified: Verifiziert
+    sendWelcomeEmail: Willkommens-E-Mail senden
+    userDeleteSuccess: Benutzer wurde gelöscht.
+  utilities:
+    authSubtitle: Werkzeuge für Authentifizierung / Benutzer
+    authTitle: Authentifizierung
+    cacheSubtitle: Cache verschiedener Komponenten leeren
+    cacheTitle: Cache leeren
+    contentSubtitle: Werkzeuge für Seiten
+    contentTitle: Inhalt
+    exportSubtitle: Inhalte für Sicherung / Migration als tarball speichern
+    exportTitle: Auf Festplatte exportieren
+    subtitle: Wartung und verschiedene Werkzeuge
+    title: Dienstprogramme
+    tools: Werkzeuge
+  assets:
+    title: Dateien
+    subtitle: Hochgeladene Dateien und Ordner verwalten
+    folders: Ordner
+    newFolder: Neuer Ordner
+    folderName: Ordnername
+    folderEmpty: Dieser Ordner ist leer.
+    uploadHint: Dateien hierhin ziehen oder klicken zum Auswählen...
+    headerFilename: Dateiname
+    headerType: Typ
+    headerFileSize: Grösse
+    headerUpdated: Aktualisiert
+    moveFolderTarget: 'Zielordner auswählen:'
+    moveAssetTarget: 'Zielordner auswählen:'
+    deleteFolderConfirm: Soll dieser Ordner wirklich gelöscht werden?
+    deleteFolderContents: Auch alle enthaltenen Dateien und Unterordner löschen
+    deleteFolderContentsWarn: Alle enthaltenen Dateien werden unwiderruflich gelöscht!
+    deleteAssetConfirm: Sollen die folgenden Dateien wirklich gelöscht werden?
+    refreshSuccess: Dateiliste erfolgreich aktualisiert.
+    folderCreateSuccess: Ordner erfolgreich erstellt.
+    folderRenameSuccess: Ordner erfolgreich umbenannt.
+    folderMoveSuccess: Ordner erfolgreich verschoben.
+    folderDeleteSuccess: Ordner erfolgreich gelöscht.
+    renameSuccess: Datei erfolgreich umbenannt.
+    moveSuccess: Datei erfolgreich verschoben.
+    deleteSuccess: Datei erfolgreich gelöscht.
+    noUploadError: Es muss zuerst eine Datei zum Hochladen ausgewählt werden!
+    uploadFailed: Hochladen fehlgeschlagen
+  about:
+    title: Über
+auth:
+  actions:
+    login: Anmeldung
+    register: Registrieren
+  changePwd:
+    loading: Ändere Passwort …
+    newPasswordPlaceholder: Neues Passwort
+    newPasswordVerifyPlaceholder: Neues Passwort bestätigen
+    proceed: Passwort ändern
+    subtitle: Neues Passwort wählen
+  enterCredentials: Gib deine Anmeldedaten ein
+  fields:
+    email: E-Mail-Adresse
+    name: Name
+    password: Passwort
+    username: Benutzername
+    verifyPassword: Passwort bestätigen
+  forgotPasswordCancel: Abbrechen
+  forgotPasswordLink: Hast du dein Passwort vergessen?
+  forgotPasswordLoading: Kennwortzurücksetzung wird angefordert.
+  forgotPasswordSubtitle: 'E-Mail-Adresse eingeben, um Anweisungen zum Zurücksetzen des Passworts zu erhalten:'
+  forgotPasswordSuccess: Überprüfe deine E-Mails auf Anweisungen zum Zurücksetzen des Passworts!
+  forgotPasswordTitle: Passwort vergessen
+  genericError: Authentifizierung ist nicht verfügbar.
+  invalidEmail: E-Mail-Adresse ist ungültig.
+  invalidEmailUsername: Gültige E-Mail / Benutzernamen eingeben.
+  invalidPassword: Gültiges Passwort eingeben.
+  loginSuccess: Anmeldung erfolgreich! Weiterleitung...
+  missingEmail: Fehlende E-Mail-Adresse.
+  missingName: Der Name fehlt.
+  missingPassword: Fehlendes Passwort.
+  nameTooLong: Der Name ist zu lang.
+  nameTooShort: Der Name ist zu kurz.
+  passwordNotMatch: Die Passwörter stimmen nicht überein.
+  passwordTooShort: Das Passwort ist zu kurz.
+  pleaseWait: Bitte warten
+  registerCheckEmail: Überprüfe deine E-Mails, um dein Konto zu aktivieren.
+  registerSubTitle: Fülle das untenstehende Formular aus, um dein Konto zu erstellen.
+  registerSuccess: Der Account wurde erfolgreich erstellt!
+  registerTitle: Erstelle eine Account
+  registering: Konto wird erstellt...
+  selectAuthProvider: Authentifizierungsanbieter auswählen
+  sendResetPassword: Passwort zurücksetzen
+  signingIn: Anmelden...
+  switchToLogin:
+    link: Stattdessen einloggen
+    text: Du hast schon einen Account? {{link}}
+  switchToRegister:
+    link: Erstelle einen Account
+  tfa:
+    placeholder: XXXXXX
+    verifyToken: Überprüfen
+  tfaFormTitle: 'Gib den von deinem vertrauenswürdigen Gerät generierten Sicherheitscode ein:'
+  tfaSetupInstrFirst: '1) Scanne den untenstehenden QR-Code aus Ihrer mobilen 2FA-Anwendung:'
+  tfaSetupInstrSecond: '2) Gebe den von einem vertrauenswürdigen Gerät generierten Sicherheitscode ein:'
+  tfaSetupTitle: Ein Administrator hat die Zwei-Faktor-Authentifizierung (2FA) für dein Konto aktiviert.
+common:
+  actions:
+    add: Hinzufügen
+    apply: Anwenden
+    browse: Durchsuchen…
+    cancel: Abbrechen
+    clear: Leeren
+    close: Schließen
+    confirm: Bestätigen
+    convert: Konvertieren
+    copy: Kopieren
+    create: Erstellen
+    delete: Löschen
+    discard: Verwerfen
+    discardChanges: Änderungen verwerfen
+    download: Herunterladen
+    edit: Bearbeiten
+    exit: Verlassen
+    fetch: Holen
+    generate: Generieren
+    insert: Einfügen
+    move: Verschieben
+    ok: OK
+    optimize: Optimieren
+    page: Seite
+    preview: Vorschau
+    proceed: Fortfahren
+    properties: Eigenschaften
+    refresh: Aktualisieren
+    rename: Umbenennen
+    returnToTop: Zurück nach oben
+    save: Speichern
+    saveChanges: Änderungen speichern
+    select: Auswählen
+    upload: Hochladen
+    goBack: Zurück
+    view: Ansehen
+  comments:
+    beFirst: Verfasse den ersten Kommentar.
+    contentMissingError: Kommentar ist leer oder zu kurz!
+    deleteConfirmTitle: Löschen bestätigen
+    deletePermanentWarn: Diese Aktion kann nicht rückgängig gemacht werden!
+    deleteSuccess: Kommentar wurde erfolgreich gelöscht.
+    deleteWarn: Soll dieser Kommentar wirklich endgültig gelöscht werden?
+    fieldContent: Inhalt kommentieren
+    fieldEmail: Deine E-Mail-Adresse
+    fieldName: Dein Name
+    loading: Lade Kommentare...
+    markdownFormat: Markdown-Format
+    modified: geändert {{reldate}}
+    newComment: Neuer Kommentar
+    newPlaceholder: Neuen Kommentar schreiben...
+    none: Noch keine Kommentare.
+    postComment: OK
+    postSuccess: Neuer Kommentar erfolgreich gepostet.
+    postingAs: Kommentiere als {{name}}
+    sdTitle: Kommentieren
+    title: Kommentare
+    updateComment: Kommentar aktualisieren
+    updateSuccess: Kommentar wurde erfolgreich aktualisiert.
+    viewDiscussion: Diskussion ansehen
+    reply: Antworten
+    postReply: Antworten
+    replyPlaceholder: Antwort schreiben...
+    deleteRepliesWarn: Die {{count}} Antworten darauf werden ebenfalls gelöscht.
+    pending: Wartet auf Freigabe
+    approve: Freigeben
+    postPending: Ihr Kommentar wurde gespeichert und wird nach der Freigabe durch einen Moderator sichtbar.
+  duration:
+    days: Tag(e)
+    every: Alle
+    hours: Stunde(n)
+    minutes: Minute(n)
+    months: Monat(e)
+    years: Jahr(e)
+  error:
+    unexpected: Es ist ein unerwarteter Fehler aufgetreten.
+  footer:
+    copyright: © {{year}} {{company}}. Alle Rechte vorbehalten.
+    license: Der Inhalt ist unter der {{license}} von {{company}} verfügbar.
+    poweredBy: Powered by
+  header:
+    account: Konto
+    admin: Administration
+    browseTags: Nach Schlagwörtern filtern
+    convert: Konvertieren
+    currentPage: Aktuelle Seite
+    delete: Löschen
+    duplicate: Duplizieren
+    edit: Bearbeiten
+    history: Verlauf
+    home: Startseite
+    imagesFiles: Bilder & Dateien
+    language: Sprache
+    login: Anmelden
+    logout: Abmelden
+    move: Verschieben / Umbenennen
+    newPage: Neue Seite
+    pageActions: Seitenaktionen
+    profile: Profil
+    search: Suche...
+    searchClose: Schließen
+    searchDidYouMean: Meintest du...
+    searchHint: Geben Sie mindestens 2 Zeichen ein, um mit der Suche zu beginnen…
+    searchLoading: Suchen...
+    searchNoResult: Keine Seiten, die der Suchanfrage entsprechen.
+    searchResultsCount: Es wurde(n) {{total}} Ergebnis(se) gefunden
+    view: Ansicht
+    viewSource: Quellcode anzeigen
+    searchRestrictLocale: Nur {{locale}}
+    searchRestrictPath: Nur unter /{{path}}
+    recentChanges: Letzte Änderungen
+    appearance: Darstellung
+    appearanceLight: Hell
+    appearanceDark: Dunkel
+    appearanceSystem: Systemeinstellung folgen
+  license:
+    alr: Alle Rechte vorbehalten
+    cc0: Public Domain
+    ccby: Creative Commons Lizenz (Namensnennung)
+    ccbync: Creative Commons Lizenz (Namensnennung – nicht kommerziell)
+    ccbyncnd: Creative Commons Lizenz (Namensnennung – nicht kommerziell – keine Bearbeitung)
+    ccbyncsa: Creative Commons Lizenz (Namensnennung – nicht kommerziell – Weitergabe unter gleichen Bedingungen)
+    ccbynd: Creative Commons Lizenz (Namensnennung – keine Bearbeitung)
+    ccbysa: Creative Commons Lizenz (Namensnennung – Weitergabe unter gleichen Bedingungen)
+    none: Keine
+  newpage:
+    create: Seite erstellen
+    goback: Zurück
+    subtitle: Möchtest du die Seite jetzt erstellen?
+    title: Diese Seite existiert noch nicht.
+  notfound:
+    gohome: Startseite
+    subtitle: Diese Seite existiert nicht.
+    title: Nicht gefunden
+    searchHint: 'Tipp: Verwenden Sie die Suchleiste auf der Startseite, um zu finden, wonach Sie gesucht haben.'
+  page:
+    bookmark: Lesezeichen
+    convert: Seite konvertieren
+    convertSubtitle: Der Inhalt dieser Seite wird in das Format des ausgewählten Editors konvertiert. Bitte beachten Sie, dass einige Formatierungsoptionen und nicht-gerenderte Inhalte eventuell bei der Konvertierung verloren gehen könnten. Die aktuelle Version wird im Seitenverlauf gespeichert und kann jederzeit wiederhergestellt werden.
+    convertTitle: 'Wähle den Editor, den du zukünftig für die Seite {{title}} verwenden möchten:'
+    delete: Seite löschen
+    deleteSubtitle: Die Seite kann im Administrationsbereich wiederhergestellt werden.
+    deleteTitle: Soll die Seite {{title}} gelöscht werden?
+    editExternal: Auf {{name}} bearbeiten
+    editPage: Seite bearbeiten
+    global: Global
+    id: ID {{id}}
+    lastEditedBy: Zuletzt bearbeitet von
+    loading: Seite wird geladen…
+    printFormat: Druckformat
+    private: Privat
+    published: Veröffentlicht
+    returnNormalView: Zurück zur normalen Ansicht
+    share: Teilen
+    tags: Schlagwörter
+    tagsMatching: Seiten mit übereinstimmenden Tags
+    toc: Inhaltsverzeichnis
+    unpublished: Unveröffentlicht
+    unpublishedWarning: Diese Seite ist nicht veröffentlicht.
+    versionId: Versions-ID {{id}}
+    viewingSource: Quelltext der Seite {{path}}
+    viewingSourceVersion: Betrachte Quellcode vom {{date}} der Seite {{path}}
+    copyLink: Link kopieren
+    shareByEmail: Per E-Mail senden
+    linkCopied: Link in die Zwischenablage kopiert.
+    linkCopyFailed: Kopieren in die Zwischenablage fehlgeschlagen.
+    createdOnBy: Erstellt am {{date}} von {{name}}
+    backlinks: Seiten, die hierher verlinken
+    unbookmark: Lesezeichen entfernen
+    watch: Beobachten
+    watchPage: Diese Seite beobachten
+    watchSubtree: Diese Seite und ihre Unterseiten beobachten
+    stopWatching: Nicht mehr beobachten
+    watchCovered: Bereits abgedeckt durch Ihre Beobachtung von {{path}}.
+    exportPdf: Als PDF exportieren
+  pageSelector:
+    createTitle: Neuen Seitenpfad auswählen
+    folderEmptyWarning: Dieser Order ist leer.
+    moveTitle: Seite verschieben / umbenennen
+    pages: Seiten
+    selectTitle: Seite auswählen
+    virtualFolders: Virtuelle Ordner
+    searchPlaceholder: Seiten nach Titel suchen...
+    noResults: Keine passenden Seiten gefunden.
+    recent: Zuletzt
+  password:
+    average: Durchschnittlich
+    strong: Stark
+    veryStrong: Sehr stark
+    veryWeak: Sehr schwach
+    weak: Schwach
+  sidebar:
+    browse: Durchsuchen
+    currentDirectory: Aktuelles Verzeichnis
+    mainMenu: Hauptmenü
+    root: (root)
+  unauthorized:
+    action:
+      create: Du darfst diese Seite nicht erstellen.
+      download: Du darfst den Seiteninhalt nicht herunterladen.
+      downloadVersion: Du darfst den Inhalt dieser Seitenversion nicht herunterladen.
+      edit: Du darfst diese Seite nicht bearbeiten.
+      history: Du darfst dir die Seitenhistorie nicht ansehen.
+      source: Du darfst dir den Seitenquellcode nicht ansehen.
+      sourceVersion: Du darfst den Quellcode dieser Seitenversion nicht betrachten.
+      view: Du darfst diese Seite nicht ansehen.
+    goback: Zurück
+    login: Anmelden als...
+    title: Nicht autorisiert
+  user:
+    search: Benutzer suchen
+    searchPlaceholder: Benutzer suchen ...
+  welcome:
+    createhome: Startseite erstellen
+    goadmin: Administration
+    subtitle: Los geht's! Erstelle die Startseite.
+    title: Willkommen in deinem Wiki!
+  folderView:
+    createPage: Diese Seite erstellen
+    folders: Ordner
+    pages: Seiten
+    empty: Dieser Ordner enthält keine für Sie sichtbaren Seiten.
+    watch: Diesen Ordner beobachten
+  notifications:
+    action:
+      created: erstellt
+      updated: bearbeitet
+      restored: wiederhergestellt
+      moved: verschoben
+      deleted: gelöscht
+    more: +{{count}} weitere Seiten
+    digestTitle: Änderungen an beobachteten Seiten ({{count}})
+    manageWatches: Beobachtete Seiten verwalten
+  recent:
+    title: Letzte Änderungen
+    locale: Sprache
+    pathFilter: Ordner (z. B. docs/setup)
+    empty: Noch keine Änderungen.
+    sync: Speicher-Sync
+    loadMore: Mehr laden
+  shortcuts:
+    title: Tastenkürzel
+    search: Suchen
+    edit: Seite bearbeiten
+    history: Seitenverlauf
+    newPage: Neue Seite
+    bookmark: Lesezeichen setzen
+    watch: Seite beobachten
+    pdf: Als PDF exportieren
+    help: Tastenkürzel anzeigen
+    disable: Einzeltasten-Kürzel deaktivieren
+editor:
+  assets:
+    deleteAsset: Datei löschen
+    deleteAssetConfirm: Soll diese Datei gelöscht werden?
+    deleteAssetWarn: Diese Aktion kann nicht rückgängig gemacht werden!
+    deleteSuccess: Datei erfolgreich gelöscht
+    fileCount: '{{count}} Datei(en)'
+    folderCreateSuccess: Datei-Ordner erfolgreich erstellt.
+    folderEmpty: Dieser Ordner ist leer
+    folderName: Ordnername
+    headerActions: Aktionen
+    headerAdded: Hinzugefügt
+    headerFileSize: Dateigröße
+    headerFilename: Dateiname
+    headerId: ID
+    headerType: Typ
+    imageAlign: Bildausrichtung
+    newFolder: Neuer Ordner
+    noUploadError: Es muss eine Datei zum hochladen ausgewählt sein.
+    refreshSuccess: Liste der Dateien wurde erfolgreich aktualisiert.
+    renameAsset: Datei umbenennen
+    renameAssetSubtitle: 'Geben Sie den neuen Namen für diese Datei ein:'
+    renameSuccess: Datei erfolgreich umbenannt.
+    title: Dateien
+    uploadAssets: Datei(en) hochladen
+    uploadAssetsDropZone: Dateien durchsuchen oder hier ablegen ...
+    uploadFailed: Datei-Upload fehlgeschlagen.
+    uploadLimits: Max. {{maxFiles}} Dateien, je {{maxSize}}
+    folderNameRulesHint: Nur Kleinbuchstaben, Zahlen, Binde- und Unterstriche, mindestens 2 Zeichen. Darf nicht wie ein Sprachcode aussehen (z. B. en oder de-ch).
+  backToEditor: Zurück zum Editor
+  ckeditor:
+    stats: '{{chars}} Zeichen, {{words}} Wörter'
+    linkToPage: Link zu Seite
+  conflict:
+    editable: (editierbar)
+    infoGeneric: Eine neuere Version dieser Seite wurde von {{authorName}}, {{date}} gespeichert
+    leftPanelInfo: Deine aktuelle Bearbeitung, basierend auf der Seitenversion von {{date}}
+    localVersion: Lokale Version {{refEditable}}
+    overwrite:
+      description: Soll Ihre aktuelle Version durch den neuesten Remote-Inhalt ersetzt werden? {{refEditsLost}}
+      editsLost: Deine aktuellen Änderungen gehen verloren.
+      title: Mit Remote-Version überschreiben?
+    pageDescription: 'Beschreibung:'
+    pageTitle: 'Titel:'
+    readonly: (schreibgeschützt)
+    remoteVersion: Remote-Version {{refReadOnly}}
+    rightPanelInfo: Zuletzt bearbeitet von {{authorName}} , {{date}}
+    title: Konflikt beim Speichern auflösen
+    useLocal: Lokal verwenden
+    useLocalHint: Inhalt im linken Bereich verwenden
+    useRemote: Remote verwenden
+    useRemoteHint: Verwerfen lokaler Änderungen und Verwenden der neuesten Version
+    viewLatestVersion: Neueste Version anzeigen
+    warning: Konflikt beim Speichern! Ein anderer Benutzer hat diese Seite bereits geändert.
+    whatToDo: Was möchtest du tun?
+    whatToDoLocal: Verwende die aktuellste lokale Version und ignoriere die neuesten Änderungen.
+    whatToDoRemote: Verwenden der Remote-Version (neueste) und Verwerfen deiner Änderungen.
+  markup:
+    blockquote: Blockzitat
+    blockquoteError: Fehler Blockzitat
+    blockquoteInfo: Info Blockzitat
+    blockquoteSuccess: Erfolg Blockzitat
+    blockquoteWarning: Warnung Blockzitat
+    bold: Fett
+    distractionFreeMode: Ablenkungsfreier Modus
+    heading: Überschrift {{level}}
+    horizontalBar: Horizontale Linie
+    inlineCode: Eingebetteter Code
+    insertAssets: Datei(en) einfügen
+    insertCodeBlock: Codeblock einfügen
+    insertDiagram: Diagramm einfügen
+    insertLink: Link einfügen
+    insertMathExpression: Einfügen eines mathematischen Ausdrucks
+    insertVideoAudio: Video / Audio einfügen
+    italic: Kursiv
+    keyboardKey: Tastaturtaste
+    markdownFormattingHelp: Markdown-Formatierungshilfe
+    noSelectionError: Der Text muss zuerst ausgewählt werden!
+    orderedList: Geordnete Liste
+    strikethrough: Durchgestrichen
+    subscript: Tiefgestellt
+    superscript: Hochgestellt
+    togglePreviewPane: Vorschaufenster ein- / ausblenden
+    toggleSpellcheck: Rechtschreibprüfung umschalten
+    unorderedList: Ungeordnete Liste
+  page: Seite
+  props:
+    allowComments: Kommentare erlauben
+    allowCommentsHint: Aktiviere die Kommentarfunktion auf dieser Seite.
+    categorization: Kategorisierung
+    css: CSS
+    cssHint: CSS wird beim Speichern automatisch verkleinert. Fügen Sie keine einschließenden Style-Tags ein, sondern nur den eigentlichen CSS-Code.
+    html: HTML
+    htmlHint: Der Javascript-Code muss in HTML-Skript-Tags eingeschlossen werden.
+    info: Info
+    locale: Lokalisierung
+    pageInfo: Seiteninformation
+    pageProperties: Seiteneigenschaften
+    path: Pfad
+    pathHint: Füge keine führenden oder nachfolgenden Schrägstriche ein.
+    publishEnd: Ende der Veröffentlichung am ...
+    publishEndHint: Leer lassen für kein Enddatum
+    publishStart: Veröffentlichen ab ...
+    publishStartHint: Leer lassen für kein Startdatum
+    publishState: Veröffentlichungsstatus
+    publishToggle: Veröffentlicht
+    publishToggleHint: Unveröffentlichte Seiten sind weiterhin sichtbar für Benutzer, die über Schreibberechtigungen für diese Seite verfügen.
+    scheduling: Terminierung
+    scripts: Skripte
+    shortDescription: Kurzbeschreibung
+    shortDescriptionHint: Wird unter dem Titel angezeigt
+    social: Social
+    socialFeatures: Soziale Funktionen
+    styles: Stile
+    tags: Schlagwörter
+    tagsHint: Verwende Schlagwörter, um Seiten zu kategorisieren und leichter zu finden.
+    title: Titel
+    templateToggle: Als Vorlage verwenden
+    templateToggleHint: Diese Seite beim Erstellen neuer Seiten als Vorlage anbieten. Vorlagen erscheinen nicht in den Suchergebnissen.
+  save:
+    createSuccess: Seite erfolgreich erstellt.
+    pleaseWait: Bitte warten...
+    processing: Verarbeitung
+    saved: Gespeichert
+    updateSuccess: Seite erfolgreich aktualisiert.
+  select:
+    title: Welcher Editor soll für diese Seite verwendet werden?
+    templates: Vorlagen
+  unsaved:
+    body: Es gibt ungesicherte Änderungen. Soll der Editor geschlossen werden? Alle ungesicherten Änderungen gehen verloren.
+    title: Nicht gespeicherte Änderungen verwerfen?
+  unsavedWarning: Es gibt nicht gespeicherte Änderungen. Soll der Editor wirklich geschlossen werden?
+  draft:
+    found: Ein ungespeicherter Entwurf dieser Seite wurde gefunden.
+    restore: Wiederherstellen
+    discard: Verwerfen
+history:
+  restore:
+    confirmButton: Wiederherstellen
+    confirmText: Soll der Seiteninhalt vom {{date}} wiederhergestellt werden? Diese Version wird an die erste Stelle der Versionshistorie kopiert. Neuere Versionen bleiben in der Historie erhalten.
+    confirmTitle: Seitenversion wiederherstellen?
+    success: Seitenversion erfolgreich wiederhergestellt!
+profile:
+  activity:
+    joinedOn: Beitritt am
+    lastLoginOn: Letzte Anmeldung am
+    lastUpdatedOn: Profil zuletzt aktualisiert am
+    pagesCreated: Seiten erstellt
+    title: Aktivität
+  appearance: Aussehen
+  appearanceDark: Dunkel
+  appearanceDefault: Seiten-Standard
+  appearanceLight: Hell
+  auth:
+    changePassSuccess: Passwort erfolgreich geändert.
+    changePassword: Passwort ändern
+    currentPassword: Aktuelles Passwort
+    newPassword: Neues Passwort
+    provider: Anbieter
+    title: Authentifizierung
+    verifyPassword: Neues Passwort bestätigen
+    tfa:
+      title: Zwei-Faktor-Authentifizierung (2FA)
+      enabled: Aktiv
+      disabled: Inaktiv
+      hint: Verlangt bei der Anmeldung einen Code aus einer Authenticator-App auf Ihrem Telefon.
+      enforced: 2FA ist für alle Benutzer dieses Wikis vorgeschrieben.
+      enable: 2FA aktivieren
+      disable: 2FA deaktivieren
+      scan: Scannen Sie diesen QR-Code mit Ihrer Authenticator-App und geben Sie den angezeigten Code ein.
+      manualKey: 'Oder diesen Schlüssel manuell eingeben:'
+      code: Sicherheitscode
+      confirm: Bestätigen und aktivieren
+  dateFormat: Datumsformat
+  displayName: Anzeigename
+  groups:
+    title: Gruppen
+  jobTitle: Job Titel
+  localeDefault: Standard-Lokalisierung
+  location: Ort
+  myInfo: Meine Informationen
+  pages:
+    emptyList: Keine Seiten zum Anzeigen.
+    headerCreatedAt: Erstellt
+    headerPath: Pfad
+    headerTitle: Titel
+    headerUpdatedAt: Zuletzt aktualisiert
+    refreshSuccess: Seitenliste wurde aktualisiert.
+    subtitle: Liste der Seiten, die ich erstellt oder zuletzt geändert habe
+    title: Seiten
+    filterPlaceholder: Meine Seiten filtern...
+  preferences: Einstellungen
+  save:
+    success: Profil erfolgreich gespeichert.
+  subtitle: Meine persönlichen Informationen
+  timezone: Zeitzone
+  title: Profil
+  viewPublicProfile: Öffentliches Profil anzeigen
+  watches:
+    title: Beobachtete Seiten
+    subtitle: Bei Änderungen eine E-Mail-Zusammenfassung erhalten
+    disabled: E-Mail-Benachrichtigungen sind in diesem Wiki derzeit nicht verfügbar.
+    addFolder: Ordner beobachten (z. B. docs/setup)
+    add: Beobachten
+    deletedPage: Gelöschte Seite
+    folderHint: Dieser Ordner und alle seine Seiten
+    empty: Sie beobachten noch keine Seite. Verwenden Sie die Glocke auf einer Seite, um sie zu beobachten.
+  bookmarks:
+    title: Lesezeichen
+    subtitle: Mit einem Stern markierte Seiten
+    empty: Noch keine Lesezeichen. Verwenden Sie den Stern auf einer Seite, um sie zu merken.
+  appearanceSystem: Systemeinstellung folgen
+tags:
+  clearSelection: Auswahl aufheben
+  currentSelection: Aktuelle Auswahl
+  locale: Lokalisierung
+  localeAny: Alle
+  noResults: Es konnte keine Seite mit den ausgewählten Tags gefunden werden.
+  noResultsWithFilter: Es konnte keine Seite gefunden werden, die den aktuellen Filteroptionen entspricht.
+  orderBy: Sortieren nach
+  orderByField:
+    ID: ID
+    creationDate: Erstellungsdatum
+    lastModified: Zuletzt geändert
+    path: Pfad
+    title: Titel
+  pageLastUpdated: Zuletzt aktualisiert {{date}}
+  retrievingResultsLoading: Seitenergebnisse werden abgerufen ...
+  searchWithinResultsPlaceholder: Suche in den Ergebnissen...
+  selectOneMoreTags: Wählen Sie einen oder mehrere Tags aus
+  selectOneMoreTagsHint: Wählen Sie einen oder mehrere Tags auf der linken Seite aus.
+  filterTagsPlaceholder: Tags filtern...

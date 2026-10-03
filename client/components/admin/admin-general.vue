@@ -129,6 +129,14 @@
                     persistent-hint
                     hint='Allow users to leave comments on pages.'
                     )
+                  v-switch(
+                    inset
+                    :label='$t(`admin:general.featureNotifications`, { defaultValue: "Watch pages & e-mail notifications" })'
+                    color='indigo'
+                    v-model='config.featureNotifications'
+                    persistent-hint
+                    :hint='$t(`admin:general.featureNotificationsHint`, { defaultValue: "Users can watch pages and folders and receive an e-mail digest of the changes (requires a mail configuration)." })'
+                    )
 
               v-card.mt-5.animated.fadeInUp.wait-p6s
                 v-toolbar(color='primary', dark, dense, flat)
@@ -140,6 +148,20 @@
                     v-model='config.pageExtensions'
                     prepend-icon='mdi-format-text-wrapping-overflow'
                     :hint='$t(`admin:general.pageExtensionsHint`)'
+                    persistent-hint
+                    )
+
+              v-card.mt-5.animated.fadeInUp.wait-p6s
+                v-toolbar(color='primary', dark, dense, flat)
+                  v-toolbar-title.subtitle-1 {{$t('admin:general.integrations', { defaultValue: 'Integrations' })}}
+                v-card-text
+                  v-text-field(
+                    outlined
+                    :label='$t(`admin:general.drawioUrl`, { defaultValue: "draw.io Editor URL" })'
+                    v-model='config.drawioUrl'
+                    prepend-icon='mdi-chart-timeline-variant'
+                    placeholder='https://embed.diagrams.net'
+                    :hint='$t(`admin:general.drawioUrlHint`, { defaultValue: "URL of the draw.io (diagrams.net) editor embedded in the Markdown editor. Point it to a self-hosted instance to keep diagrams on your network." })'
                     persistent-hint
                     )
 
@@ -228,14 +250,16 @@ import editorStore from '../../store/editor'
 
 const titleRegex = /[<>"]/i
 
-WIKI.$store.registerModule('editor', editorStore)
+if (!WIKI.$store.hasModule('editor')) {
+  WIKI.$store.registerModule('editor', editorStore)
+}
 
 export default {
   i18nOptions: { namespaces: 'editor' },
   components: {
     editorModalMedia: () => import(/* webpackChunkName: "editor", webpackMode: "lazy" */ '../editor/editor-modal-media.vue')
   },
-  data() {
+  data () {
     return {
       config: {
         host: '',
@@ -249,9 +273,8 @@ export default {
         footerOverride: '',
         logoUrl: '',
         featureAnalytics: false,
-        featurePageRatings: false,
         featurePageComments: false,
-        featurePersonalWikis: false,
+        featureNotifications: false,
         featureTinyPNG: false,
         pageExtensions: '',
         editFab: false,
@@ -260,7 +283,8 @@ export default {
         editMenuExternalBtn: false,
         editMenuExternalName: '',
         editMenuExternalIcon: '',
-        editMenuExternalUrl: ''
+        editMenuExternalUrl: '',
+        drawioUrl: ''
       },
       metaRobots: [
         { text: 'Index', value: 'index' },
@@ -303,7 +327,7 @@ export default {
         return
       }
       try {
-        await this.$apollo.mutate({
+        const resp = await this.$apollo.mutate({
           mutation: gql`
             mutation (
               $host: String
@@ -317,9 +341,8 @@ export default {
               $footerOverride: String
               $logoUrl: String
               $pageExtensions: String
-              $featurePageRatings: Boolean
               $featurePageComments: Boolean
-              $featurePersonalWikis: Boolean
+              $featureNotifications: Boolean
               $editFab: Boolean
               $editMenuBar: Boolean
               $editMenuBtn: Boolean
@@ -327,6 +350,7 @@ export default {
               $editMenuExternalName: String
               $editMenuExternalIcon: String
               $editMenuExternalUrl: String
+              $drawioUrl: String
             ) {
               site {
                 updateConfig(
@@ -341,9 +365,8 @@ export default {
                   footerOverride: $footerOverride
                   logoUrl: $logoUrl
                   pageExtensions: $pageExtensions
-                  featurePageRatings: $featurePageRatings
                   featurePageComments: $featurePageComments
-                  featurePersonalWikis: $featurePersonalWikis
+                  featureNotifications: $featureNotifications
                   editFab: $editFab
                   editMenuBar: $editMenuBar
                   editMenuBtn: $editMenuBtn
@@ -351,6 +374,7 @@ export default {
                   editMenuExternalName: $editMenuExternalName
                   editMenuExternalIcon: $editMenuExternalIcon
                   editMenuExternalUrl: $editMenuExternalUrl
+                  drawioUrl: $drawioUrl
                 ) {
                   responseResult {
                     succeeded
@@ -374,21 +398,25 @@ export default {
             footerOverride: _.get(this.config, 'footerOverride', ''),
             logoUrl: _.get(this.config, 'logoUrl', ''),
             pageExtensions: _.get(this.config, 'pageExtensions', ''),
-            featurePageRatings: _.get(this.config, 'featurePageRatings', false),
             featurePageComments: _.get(this.config, 'featurePageComments', false),
-            featurePersonalWikis: _.get(this.config, 'featurePersonalWikis', false),
+            featureNotifications: _.get(this.config, 'featureNotifications', false),
             editFab: _.get(this.config, 'editFab', false),
             editMenuBar: _.get(this.config, 'editMenuBar', false),
             editMenuBtn: _.get(this.config, 'editMenuBtn', false),
             editMenuExternalBtn: _.get(this.config, 'editMenuExternalBtn', false),
             editMenuExternalName: _.get(this.config, 'editMenuExternalName', ''),
             editMenuExternalIcon: _.get(this.config, 'editMenuExternalIcon', ''),
-            editMenuExternalUrl: _.get(this.config, 'editMenuExternalUrl', '')
+            editMenuExternalUrl: _.get(this.config, 'editMenuExternalUrl', ''),
+            drawioUrl: _.get(this.config, 'drawioUrl', '')
           },
           watchLoading (isLoading) {
             this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-site-update')
           }
         })
+        const result = _.get(resp, 'data.site.updateConfig.responseResult', {})
+        if (!result.succeeded) {
+          throw new Error(result.message)
+        }
         this.$store.commit('showNotification', {
           style: 'success',
           message: this.$t('admin:general.saveSuccess'),
@@ -416,7 +444,7 @@ export default {
       this.config.logoUrl = opts.path
     })
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.$root.$off('editorInsert')
   },
   apollo: {
@@ -436,9 +464,8 @@ export default {
               footerOverride
               logoUrl
               pageExtensions
-              featurePageRatings
               featurePageComments
-              featurePersonalWikis
+              featureNotifications
               editFab
               editMenuBar
               editMenuBtn
@@ -446,6 +473,7 @@ export default {
               editMenuExternalName
               editMenuExternalIcon
               editMenuExternalUrl
+              drawioUrl
             }
           }
         }

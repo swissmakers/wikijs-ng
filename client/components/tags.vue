@@ -27,7 +27,7 @@
               v-list-item-title {{tag.title}}
               v-list-item-action.my-0(v-if='tag.count')
                 v-chip(x-small, label, outlined) {{tag.count}}
-    v-content.grey(:class='$vuetify.theme.dark ? `darken-4-d5` : `lighten-3`')
+    v-main.grey(:class='$vuetify.theme.dark ? `darken-4-d5` : `lighten-3`')
       v-toolbar(color='primary', dark, flat, height='58')
         template(v-if='selection.length > 0')
           .overline.mr-3.animated.fadeInLeft {{$t('tags:currentSelection')}}
@@ -149,7 +149,7 @@
                       .body-1: strong.primary--text {{item.title}}
                       v-spacer
                       i18next.caption(tag='div', path='tags:pageLastUpdated')
-                        span(place='date') {{item.updatedAt | moment('from')}}
+                        span(place='date') {{item.updatedAt | date('from')}}
                     .body-2.grey--text {{item.description || '---'}}
                     v-divider.my-2
                     .d-flex.flex-row.align-center
@@ -179,7 +179,7 @@ const router = new VueRouter({
 
 export default {
   i18nOptions: { namespaces: 'tags' },
-  data() {
+  data () {
     return {
       tags: [],
       selection: [],
@@ -207,7 +207,7 @@ export default {
           scrollingX: false,
           easing: 'easeOutQuad',
           speed: 1000,
-          verticalNativeBarPos: this.$vuetify.rtl ? `left` : `right`
+          verticalNativeBarPos: this.$vuetify.rtl ? 'left' : 'right'
         },
         rail: {
           gutterOfEnds: '2px'
@@ -263,7 +263,7 @@ export default {
   },
   mounted () {
     this.locales = _.concat(
-      [{name: this.$t('tags:localeAny'), code: 'any'}],
+      [{ name: this.$t('tags:localeAny'), code: 'any' }],
       (siteLangs.length > 0 ? siteLangs : [])
     )
     if (this.$route.query.lang) {
@@ -296,17 +296,17 @@ export default {
       return _.includes(this.selection, tag)
     },
     rebuildURL () {
-      let urlObj = {
+      const urlObj = {
         path: '/' + this.selection.join('/')
       }
-      if (this.locale !== `any`) {
+      if (this.locale !== 'any') {
         _.set(urlObj, 'query.lang', this.locale)
       }
-      if (this.orderBy !== `title`) {
+      if (this.orderBy !== 'title') {
         _.set(urlObj, 'query.sort', this.orderBy.toLowerCase())
       }
       if (this.orderByDirection !== 0) {
-        _.set(urlObj, 'query.dir', this.orderByDirection === 0 ? `asc` : `desc`)
+        _.set(urlObj, 'query.dir', this.orderByDirection === 0 ? 'asc' : 'desc')
       }
       this.$router.push(urlObj)
     },

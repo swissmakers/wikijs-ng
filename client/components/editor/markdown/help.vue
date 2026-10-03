@@ -120,12 +120,12 @@
                 v-flex(xs6)
                   v-card.editor-markdown-help-source(flat)
                     v-card-text
-                      div [Link Text](https://wiki.js.org)
+                      div [Link Text](https://example.com)
                 v-icon mdi-chevron-right
                 v-flex
                   v-card.editor-markdown-help-result(flat)
                     v-card-text
-                      .caption: a(href='https://wiki.js.org', target='_blank') Link Text
+                      .caption: a(href='https://example.com', target='_blank') Link Text
               .body-2.mt-3 Superscript
               v-layout(row)
                 v-flex(xs6)
@@ -280,8 +280,8 @@
 <script>
 export default {
   computed: {
-    ctrlKey() { return /Mac/.test(navigator.platform) ? 'Cmd' : 'Ctrl' },
-    altKey() { return /Mac/.test(navigator.platform) ? 'Option' : 'Alt' }
+    ctrlKey () { return /Mac/.test(navigator.platform) ? 'Cmd' : 'Ctrl' },
+    altKey () { return /Mac/.test(navigator.platform) ? 'Option' : 'Alt' }
   }
 }
 </script>

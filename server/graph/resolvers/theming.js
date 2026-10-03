@@ -6,20 +6,13 @@ const CleanCSS = require('clean-css')
 
 module.exports = {
   Query: {
-    async theming() { return {} }
+    async theming () { return {} }
   },
   Mutation: {
-    async theming() { return {} }
+    async theming () { return {} }
   },
   ThemingQuery: {
-    async themes(obj, args, context, info) {
-      return [{ // TODO
-        key: 'default',
-        title: 'Default',
-        author: 'requarks.io'
-      }]
-    },
-    async config(obj, args, context, info) {
+    async config (obj, args, context, info) {
       return {
         theme: WIKI.config.theming.theme,
         iconset: WIKI.config.theming.iconset,
@@ -32,7 +25,7 @@ module.exports = {
     }
   },
   ThemingMutation: {
-    async setConfig(obj, args, context, info) {
+    async setConfig (obj, args, context, info) {
       try {
         if (!_.isEmpty(args.injectCSS)) {
           args.injectCSS = new CleanCSS({

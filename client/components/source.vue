@@ -1,10 +1,10 @@
 <template lang='pug'>
   v-app(:dark='$vuetify.theme.dark').source
     nav-header
-    v-content
+    v-main
       v-toolbar(color='primary', dark)
         i18next.subheading(v-if='versionId > 0', path='common:page.viewingSourceVersion', tag='div')
-          strong(place='date', :title='$options.filters.moment(versionDate, `LLL`)') {{versionDate | moment('lll')}}
+          strong(place='date', :title='$options.filters.date(versionDate, `LLL`)') {{versionDate | date('lll')}}
           strong(place='path') /{{path}}
         i18next.subheading(v-else, path='common:page.viewingSource', tag='div')
           strong(place='path') /{{path}}
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { decodePermissions } from '@/helpers'
 export default {
   props: {
     pageId: {
@@ -55,7 +56,7 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {}
   },
   created () {
@@ -66,11 +67,11 @@ export default {
     this.$store.commit('page/SET_MODE', 'source')
 
     if (this.effectivePermissions) {
-      this.$store.set('page/effectivePermissions', JSON.parse(Buffer.from(this.effectivePermissions, 'base64').toString()))
+      this.$store.set('page/effectivePermissions', decodePermissions(this.effectivePermissions))
     }
   },
   methods: {
-    goLive() {
+    goLive () {
       window.location.assign(`/${this.locale}/${this.path}`)
     },
     goHistory () {

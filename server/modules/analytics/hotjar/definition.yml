@@ -2,7 +2,7 @@ key: hotjar
 title: Hotjar
 description: Hotjar is the fast & visual way to understand your users, providing everything your team needs to uncover insights and make the right changes to your site.
 author: requarks.io
-logo: https://static.requarks.io/logo/hotjar.svg
+logo: /_assets/svg/modules/hotjar.svg
 website: https://www.hotjar.com
 isAvailable: true
 props:

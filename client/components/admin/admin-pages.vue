@@ -69,8 +69,8 @@
                 td.admin-pages-path
                   v-chip(label, small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`') {{ props.item.locale }}
                   span.ml-2.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') / {{ props.item.path }}
-                td {{ props.item.createdAt | moment('calendar') }}
-                td {{ props.item.updatedAt | moment('calendar') }}
+                td {{ props.item.createdAt | date('calendar') }}
+                td {{ props.item.updatedAt | date('calendar') }}
             template(slot='no-data')
               v-alert.ma-3(icon='mdi-alert', :value='true', outlined) No pages to display.
           .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')
@@ -79,10 +79,10 @@
 
 <script>
 import _ from 'lodash'
-import pagesQuery from 'gql/admin/pages/pages-query-list.gql'
+import pagesQuery from 'gql/common/common-pages-query-list.gql'
 
 export default {
-  data() {
+  data () {
     return {
       selectedPage: {},
       pagination: 1,
@@ -129,7 +129,7 @@ export default {
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.pages.refetch()
       this.$store.commit('showNotification', {
         message: 'Page list has been refreshed.',
@@ -137,7 +137,7 @@ export default {
         icon: 'cached'
       })
     },
-    newpage() {
+    newpage () {
       this.pageSelectorShown = true
     }
   },

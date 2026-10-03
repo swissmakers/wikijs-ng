@@ -1,12 +1,35 @@
-name: Build multi-arch image and push to Harbor and Docker Hub when new commit to main-branch
+name: Test, then build the multi-arch image and push it to Harbor, Docker Hub and GHCR (main branch)
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
+  pull_request:
   workflow_dispatch:
 
 jobs:
+  test:
+    runs-on: linux_amd64
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        env:
+          CYPRESS_INSTALL_BINARY: 0
+        run: |
+          npm install --global yarn@1
+          yarn install --frozen-lockfile --non-interactive
+
+      - name: Lint and unit tests
+        run: yarn test
+
   build:
+    needs: test
+    # Images are only built from main (or manually)
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     runs-on: linux_amd64
     steps:
       - uses: actions/checkout@v4
@@ -66,6 +89,11 @@ jobs:
             -f dev/build/Dockerfile \
             .
           podman manifest inspect "$LOCAL_MANIFEST"
+
+      - name: Smoke test the image
+        env:
+          LOCAL_MANIFEST: localhost/wikijs-ng:${{ github.sha }}
+        run: dev/smoke-test.sh "$LOCAL_MANIFEST"
 
       - name: Push to Swissmakers Registry
         if: ${{ secrets.HARBOR_REGISTRY && secrets.HARBOR_PROJECT }}

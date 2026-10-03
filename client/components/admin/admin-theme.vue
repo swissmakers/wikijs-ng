@@ -19,21 +19,6 @@
                   v-toolbar-title.subtitle-1 {{$t('admin:theme.title')}}
                 v-card-text
                   v-select(
-                    :items='themes'
-                    outlined
-                    prepend-icon='mdi-palette'
-                    v-model='config.theme'
-                    :label='$t(`admin:theme.siteTheme`)'
-                    persistent-hint
-                    :hint='$t(`admin:theme.siteThemeHint`)'
-                    )
-                    template(slot='item', slot-scope='data')
-                      v-list-item-avatar
-                        v-icon.blue--text(dark) mdi-image-filter-frames
-                      v-list-item-content
-                        v-list-item-title(v-html='data.item.text')
-                        v-list-item-sub-title(v-html='data.item.author')
-                  v-select.mt-3(
                     :items='iconsets'
                     outlined
                     prepend-icon='mdi-paw'
@@ -66,32 +51,6 @@
                     hint='Select whether the table of contents is shown on the left, right or not at all.'
                     )
             v-flex(lg6 xs12)
-              //- v-card.animated.fadeInUp.wait-p2s
-              //-   v-toolbar(color='teal', dark, dense, flat)
-              //-     v-toolbar-title.subtitle-1 {{$t('admin:theme.downloadThemes')}}
-              //-     v-spacer
-              //-     v-chip(label, color='white', small).teal--text coming soon
-              //-   v-data-table(
-              //-     :headers='headers',
-              //-     :items='themes',
-              //-     hide-default-footer,
-              //-     item-key='value',
-              //-     :items-per-page='1000'
-              //-   )
-              //-     template(v-slot:item='thm')
-              //-       td
-              //-         strong {{thm.item.text}}
-              //-       td
-              //-         span {{ thm.item.author }}
-              //-       td.text-xs-center
-              //-         v-progress-circular(v-if='thm.item.isDownloading', indeterminate, color='blue', size='20', :width='2')
-              //-         v-btn(v-else-if='thm.item.isInstalled && thm.item.installDate < thm.item.updatedAt', icon)
-              //-           v-icon.blue--text mdi-cached
-              //-         v-btn(v-else-if='thm.item.isInstalled', icon)
-              //-           v-icon.green--text mdi-check-bold
-              //-         v-btn(v-else, icon)
-              //-           v-icon.grey--text mdi-cloud-download
-
               v-card.animated.fadeInUp.wait-p2s
                 v-toolbar(color='primary', dark, dense, flat)
                   v-toolbar-title.subtitle-1 {{$t(`admin:theme.codeInjection`)}}
@@ -131,17 +90,17 @@
 <script>
 import _ from 'lodash'
 import { sync } from 'vuex-pathify'
+import { applyAppearance } from '@/helpers/appearance'
 
 import themeConfigQuery from 'gql/admin/theme/theme-query-config.gql'
 import themeSaveMutation from 'gql/admin/theme/theme-mutation-save.gql'
 
+/* global siteConfig */
+
 export default {
-  data() {
+  data () {
     return {
       loading: false,
-      themes: [
-        { text: 'Default', author: 'requarks.io', value: 'default', isInstalled: true, installDate: '', updatedAt: '' }
-      ],
       iconsets: [
         { text: 'Material Design Icons (default)', value: 'mdi' },
         { text: 'Font Awesome 5', value: 'fa' },
@@ -161,27 +120,6 @@ export default {
   },
   computed: {
     darkMode: sync('site/dark'),
-    headers() {
-      return [
-        {
-          text: this.$t('admin:theme.downloadName'),
-          align: 'left',
-          value: 'text'
-        },
-        {
-          text: this.$t('admin:theme.downloadAuthor'),
-          align: 'left',
-          value: 'author'
-        },
-        {
-          text: this.$t('admin:theme.downloadDownload'),
-          align: 'center',
-          value: 'value',
-          sortable: false,
-          width: 100
-        }
-      ]
-    },
     tocPositions () {
       return [
         { text: 'Left (default)', value: 'left' },
@@ -195,17 +133,19 @@ export default {
       this.$vuetify.theme.dark = newValue
     }
   },
-  mounted() {
+  mounted () {
     this.darkModeInitial = this.darkMode
   },
-  beforeDestroy() {
+  beforeDestroy () {
+    // Restore the saved site-level setting in the store, but apply the user's
+    // effective appearance to the UI (personal preference wins over site default)
     this.darkMode = this.darkModeInitial
-    this.$vuetify.theme.dark = this.darkModeInitial
+    applyAppearance(this.$store.get('user/appearance'))
   },
   methods: {
     async save () {
       this.loading = true
-      this.$store.commit(`loadingStart`, 'admin-theme-save')
+      this.$store.commit('loadingStart', 'admin-theme-save')
       try {
         const respRaw = await this.$apollo.mutate({
           mutation: themeSaveMutation,
@@ -222,6 +162,7 @@ export default {
         const resp = _.get(respRaw, 'data.theming.setConfig.responseResult', {})
         if (resp.succeeded) {
           this.darkModeInitial = this.darkMode
+          siteConfig.darkMode = this.darkMode
           this.$store.commit('showNotification', {
             message: 'Theme settings updated successfully.',
             style: 'success',
@@ -233,7 +174,7 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-theme-save')
+      this.$store.commit('loadingStop', 'admin-theme-save')
       this.loading = false
     }
   },

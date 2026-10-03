@@ -3,14 +3,13 @@ const http = require('http')
 const https = require('https')
 const { ApolloServer } = require('@apollo/server')
 const { expressMiddleware } = require('@as-integrations/express4')
-const { WebSocketServer } = require('ws')
-const { useServer } = require('graphql-ws/lib/use/ws')
-const Promise = require('bluebird')
 const _ = require('lodash')
-const jwt = require('jsonwebtoken')
-const cookie = require('cookie')
 
 /* global WIKI */
+
+const closeServer = server => new Promise((resolve, reject) => {
+  server.close(err => err ? reject(err) : resolve())
+})
 
 module.exports = {
   servers: {
@@ -18,7 +17,6 @@ module.exports = {
     http: null,
     https: null
   },
-  subscriptionServers: [],
   graphSchema: null,
   connections: new Map(),
   le: null,
@@ -28,7 +26,6 @@ module.exports = {
   async startHTTP () {
     WIKI.logger.info(`HTTP Server on port: [ ${WIKI.config.port} ]`)
     this.servers.http = http.createServer(WIKI.app)
-    this.startSubscriptions(this.servers.http)
 
     this.servers.http.listen(WIKI.config.port, WIKI.config.bindIP)
     this.servers.http.on('error', (error) => {
@@ -53,7 +50,7 @@ module.exports = {
     })
 
     this.servers.http.on('connection', conn => {
-      let connKey = `http:${conn.remoteAddress}:${conn.remotePort}`
+      const connKey = `http:${conn.remoteAddress}:${conn.remotePort}`
       this.connections.set(connKey, conn)
       conn.on('close', () => {
         this.connections.delete(connKey)
@@ -90,7 +87,6 @@ module.exports = {
       return process.exit(1)
     }
     this.servers.https = https.createServer(tlsOpts, WIKI.app)
-    this.startSubscriptions(this.servers.https)
 
     this.servers.https.listen(WIKI.config.ssl.port, WIKI.config.bindIP)
     this.servers.https.on('error', (error) => {
@@ -115,7 +111,7 @@ module.exports = {
     })
 
     this.servers.https.on('connection', conn => {
-      let connKey = `https:${conn.remoteAddress}:${conn.remotePort}`
+      const connKey = `https:${conn.remoteAddress}:${conn.remotePort}`
       this.connections.set(connKey, conn)
       conn.on('close', () => {
         this.connections.delete(connKey)
@@ -140,57 +136,11 @@ module.exports = {
     }))
   },
   /**
-   * Attach GraphQL Subscriptions handler (graphql-ws) to a server
-   */
-  startSubscriptions (server) {
-    const wss = new WebSocketServer({
-      server,
-      path: '/graphql-subscriptions'
-    })
-    useServer({
-      schema: this.graphSchema,
-      onConnect: (ctx) => {
-        let token = _.get(ctx.connectionParams, 'token', null)
-
-        if (!token) {
-          const cookieHeader = _.get(ctx.extra, 'request.headers.cookie', '')
-          if (cookieHeader) {
-            const cookies = cookie.parse(cookieHeader)
-            token = cookies.jwt || null
-          }
-        }
-
-        if (!token) {
-          return false
-        }
-
-        try {
-          const user = jwt.verify(token, WIKI.config.certs.public, {
-            audience: WIKI.config.auth.audience,
-            issuer: 'urn:wiki.js',
-            algorithms: ['RS256']
-          })
-
-          if (!_.includes(user.permissions, 'manage:system')) {
-            return false
-          }
-
-          ctx.extra.user = user
-          return true
-        } catch (err) {
-          return false
-        }
-      },
-      context: (ctx) => ({ user: ctx.extra.user })
-    }, wss)
-    this.subscriptionServers.push(wss)
-  },
-  /**
    * Close all active connections
    */
   closeConnections (mode = 'all') {
     for (const [key, conn] of this.connections) {
-      if (mode !== `all` && key.indexOf(`${mode}:`) !== 0) {
+      if (mode !== 'all' && key.indexOf(`${mode}:`) !== 0) {
         continue
       }
       conn.destroy()
@@ -205,16 +155,12 @@ module.exports = {
    */
   async stopServers () {
     this.closeConnections()
-    for (const wss of this.subscriptionServers) {
-      wss.close()
-    }
-    this.subscriptionServers = []
     if (this.servers.http) {
-      await Promise.fromCallback(cb => { this.servers.http.close(cb) })
+      await closeServer(this.servers.http)
       this.servers.http = null
     }
     if (this.servers.https) {
-      await Promise.fromCallback(cb => { this.servers.https.close(cb) })
+      await closeServer(this.servers.https)
       this.servers.https = null
     }
     if (this.servers.graph) {
@@ -230,14 +176,14 @@ module.exports = {
     switch (srv) {
       case 'http':
         if (this.servers.http) {
-          await Promise.fromCallback(cb => { this.servers.http.close(cb) })
+          await closeServer(this.servers.http)
           this.servers.http = null
         }
         this.startHTTP()
         break
       case 'https':
         if (this.servers.https) {
-          await Promise.fromCallback(cb => { this.servers.https.close(cb) })
+          await closeServer(this.servers.https)
           this.servers.https = null
         }
         this.startHTTPS()

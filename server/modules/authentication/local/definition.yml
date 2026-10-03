@@ -2,9 +2,9 @@ key: local
 title: Local Database
 description: Built-in authentication for Wiki.js NG
 author: requarks.io
-logo: https://static.requarks.io/logo/wikijs.svg
+logo: /_assets/svg/modules/wikijs-ng.svg
 color: primary
-website: https://wiki.js.org
+website: https://github.com/swissmakers/wikijs-ng
 isAvailable: true
 useForm: true
 usernameType: email

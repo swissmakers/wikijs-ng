@@ -1,4 +1,4 @@
-const moment = require('moment')
+const { Duration } = require('luxon')
 const childProcess = require('child_process')
 const _ = require('lodash')
 const configHelper = require('../helpers/config')
@@ -32,7 +32,7 @@ function releaseWorkerSlot () {
 }
 
 class Job {
-  constructor({
+  constructor ({
     name,
     immediate = false,
     schedule = 'P1D',
@@ -43,7 +43,12 @@ class Job {
     this.finished = Promise.resolve()
     this.name = name
     this.immediate = immediate
-    this.schedule = moment.duration(schedule)
+    this.schedule = Duration.fromISO(schedule)
+    if (!this.schedule.isValid) {
+      // -> An invalid duration would make setTimeout fire immediately, over and over
+      WIKI.logger.warn(`Job ${name}: invalid schedule "${schedule}", using P1D instead.`)
+      this.schedule = Duration.fromISO('P1D')
+    }
     this.repeat = repeat
     this.worker = worker
   }
@@ -53,7 +58,7 @@ class Job {
    *
    * @param {Object} data Job Data
    */
-  start(data) {
+  start (data) {
     this.queue.jobs.push(this)
     if (this.immediate) {
       this.invoke(data)
@@ -67,8 +72,8 @@ class Job {
    *
    * @param {Object} data Job Data
    */
-  enqueue(data) {
-    this.timeout = setTimeout(this.invoke.bind(this), this.schedule.asMilliseconds(), data)
+  enqueue (data) {
+    this.timeout = setTimeout(this.invoke.bind(this), this.schedule.toMillis(), data)
   }
 
   /**
@@ -76,11 +81,11 @@ class Job {
    *
    * @param {Object} data Job Data
    */
-  async invoke(data) {
+  async invoke (data) {
     try {
       if (this.worker) {
         await acquireWorkerSlot()
-        const proc = childProcess.fork(`server/core/worker.js`, [
+        const proc = childProcess.fork('server/core/worker.js', [
           `--job=${this.name}`,
           `--data=${data}`
         ], {
@@ -127,7 +132,7 @@ class Job {
   /**
    * Stop any future job invocation from occuring
    */
-  async stop() {
+  async stop () {
     clearTimeout(this.timeout)
     this.queue.jobs = this.queue.jobs.filter(x => x !== this)
     return this.finished
@@ -136,10 +141,10 @@ class Job {
 
 module.exports = {
   jobs: [],
-  init() {
+  init () {
     return this
   },
-  start() {
+  start () {
     _.forOwn(WIKI.data.jobs, (queueParams, queueName) => {
       if (WIKI.config.offline && queueParams.offlineSkip) {
         WIKI.logger.warn(`Skipping job ${queueName} because offline mode is enabled. [SKIPPED]`)
@@ -150,18 +155,18 @@ module.exports = {
       this.registerJob({
         name: _.kebabCase(queueName),
         immediate: _.get(queueParams, 'onInit', false),
-        schedule: schedule,
+        schedule,
         repeat: _.get(queueParams, 'repeat', false),
         worker: _.get(queueParams, 'worker', false)
       })
     })
   },
-  registerJob(opts, data) {
+  registerJob (opts, data) {
     const job = new Job(opts, this)
     job.start(data)
     return job
   },
-  async stop() {
+  async stop () {
     return Promise.all(this.jobs.map(job => job.stop()))
   }
 }

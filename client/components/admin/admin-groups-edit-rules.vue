@@ -207,7 +207,7 @@ export default {
       default: () => ({})
     }
   },
-  data() {
+  data () {
     return {
       roles: [
         { text: 'Read Pages', value: 'read:pages', icon: 'mdi-file-eye-outline' },
@@ -259,13 +259,13 @@ export default {
   },
   computed: {
     group: {
-      get() { return this.value },
-      set(val) { this.$set('input', val) }
+      get () { return this.value },
+      set (val) { this.$set('input', val) }
     },
-    locales() { return siteLangs }
+    locales () { return siteLangs }
   },
   methods: {
-    addRule(group) {
+    addRule (group) {
       this.group.pageRules.push({
         id: nanoid(),
         path: '',
@@ -275,10 +275,10 @@ export default {
         locales: []
       })
     },
-    removeRule(ruleId) {
+    removeRule (ruleId) {
       this.group.pageRules.splice(_.findIndex(this.group.pageRules, ['id', ruleId]), 1)
     },
-    applyPreset(preset) {
+    applyPreset (preset) {
       for (const rule of preset.rules) {
         this.group.pageRules.push({
           ...rule,
@@ -291,7 +291,7 @@ export default {
         icon: 'check'
       })
     },
-    exportRules() {
+    exportRules () {
       const blob = new Blob([JSON.stringify(this.group.pageRules, null, 2)], { type: 'application/json' })
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
@@ -301,10 +301,10 @@ export default {
       document.body.removeChild(link)
       URL.revokeObjectURL(link.href)
     },
-    importRules() {
+    importRules () {
       this.$refs.importRulesInput.click()
     },
-    importRulesFileChanged(ev) {
+    importRulesFileChanged (ev) {
       const file = _.get(ev, 'target.files[0]', null)
       if (!file) { return }
       const reader = new FileReader()

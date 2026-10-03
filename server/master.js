@@ -1,5 +1,4 @@
 const autoload = require('auto-load')
-const bodyParser = require('body-parser')
 const compression = require('compression')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
@@ -9,6 +8,7 @@ const { ConnectSessionKnexStore } = require('connect-session-knex')
 const favicon = require('serve-favicon')
 const path = require('path')
 const _ = require('lodash')
+const cspHelper = require('./helpers/csp')
 
 /* global WIKI */
 
@@ -18,7 +18,7 @@ module.exports = async () => {
   // ----------------------------------------
 
   WIKI.auth = require('./core/auth').init()
-  WIKI.lang = require('./core/localization').init()
+  WIKI.lang = await require('./core/localization').init()
   WIKI.mail = require('./core/mail').init()
   WIKI.system = require('./core/system').init()
 
@@ -92,7 +92,7 @@ module.exports = async () => {
   // GraphQL Server
   // ----------------------------------------
 
-  app.use(bodyParser.json({ limit: WIKI.config.bodyParserLimit || '1mb' }))
+  app.use(express.json({ limit: WIKI.config.bodyParserLimit || '1mb' }))
   await WIKI.servers.startGraphQL()
 
   // ----------------------------------------
@@ -108,7 +108,7 @@ module.exports = async () => {
   app.set('views', path.join(WIKI.SERVERPATH, 'views'))
   app.set('view engine', 'pug')
 
-  app.use(bodyParser.urlencoded({ extended: false, limit: '1mb' }))
+  app.use(express.urlencoded({ extended: false, limit: '1mb' }))
 
   // ----------------------------------------
   // Localization
@@ -126,7 +126,7 @@ module.exports = async () => {
   app.locals.config = WIKI.config
   app.locals.pageMeta = {
     title: '',
-    description: WIKI.config.description,
+    description: WIKI.config.seo.description,
     image: '',
     url: '/'
   }
@@ -156,10 +156,14 @@ module.exports = async () => {
       company: WIKI.config.company,
       contentLicense: WIKI.config.contentLicense,
       footerOverride: WIKI.config.footerOverride,
-      logoUrl: WIKI.config.logoUrl
+      logoUrl: WIKI.config.logoUrl,
+      localeVersion: WIKI.lang.version,
+      uploadMaxFiles: WIKI.config.uploads.maxFiles,
+      uploadMaxFileSize: WIKI.config.uploads.maxFileSize,
+      notifications: WIKI.config.features.featureNotifications !== false && Boolean(WIKI.mail.transport)
     }
     res.locals.langs = await WIKI.models.locales.getNavLocales({ cache: true })
-    res.locals.analyticsCode = await WIKI.models.analytics.getCode({ cache: true })
+    res.locals.analyticsCode = cspHelper.nonceSnippets(await WIKI.models.analytics.getCode({ cache: true }), res)
     next()
   })
 

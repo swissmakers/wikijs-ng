@@ -12,26 +12,17 @@ const commonHelper = require('../helpers/common')
 router.get('/login', async (req, res, next) => {
   _.set(res.locals, 'pageMeta.title', 'Login')
 
-  if (req.query.legacy || (req.get('user-agent') && req.get('user-agent').indexOf('Trident') >= 0)) {
-    const { formStrategies, socialStrategies } = await WIKI.models.authentication.getStrategiesForLegacyClient()
-    res.render('legacy/login', {
-      err: false,
-      formStrategies,
-      socialStrategies
-    })
-  } else {
-    // -> Bypass Login
-    if (WIKI.config.auth.autoLogin && !req.query.all) {
-      const stg = await WIKI.models.authentication.query().orderBy('order').first()
-      const stgInfo = _.find(WIKI.data.authentication, ['key', stg.strategyKey])
-      if (!stgInfo.useForm) {
-        return res.redirect(`/login/${stg.key}`)
-      }
+  // -> Bypass Login
+  if (WIKI.config.auth.autoLogin && !req.query.all) {
+    const stg = await WIKI.models.authentication.query().orderBy('order').first()
+    const stgInfo = _.find(WIKI.data.authentication, ['key', stg.strategyKey])
+    if (!stgInfo.useForm) {
+      return res.redirect(`/login/${stg.key}`)
     }
-    // -> Show Login
-    const bgUrl = !_.isEmpty(WIKI.config.auth.loginBgUrl) ? WIKI.config.auth.loginBgUrl : ''
-    res.render('login', { bgUrl, hideLocal: WIKI.config.auth.hideLocal })
   }
+  // -> Show Login
+  const bgUrl = !_.isEmpty(WIKI.config.auth.loginBgUrl) ? WIKI.config.auth.loginBgUrl : ''
+  res.render('login', { bgUrl, hideLocal: WIKI.config.auth.hideLocal })
 })
 
 /**
@@ -59,7 +50,7 @@ router.all('/login/:strategy/callback', async (req, res, next) => {
     }, { req, res })
     res.cookie('jwt', authResult.jwt, commonHelper.getCookieOpts())
 
-    const loginRedirect = req.cookies['loginRedirect']
+    const loginRedirect = req.cookies.loginRedirect
     const isValidRedirect = loginRedirect && loginRedirect.startsWith('/') && !loginRedirect.startsWith('//') && !loginRedirect.includes('://')
     if (loginRedirect === '/' && authResult.redirect) {
       res.clearCookie('loginRedirect')
@@ -79,34 +70,6 @@ router.all('/login/:strategy/callback', async (req, res, next) => {
     }
   } catch (err) {
     next(err)
-  }
-})
-
-/**
- * LEGACY - Login form handling
- */
-router.post('/login', bruteforce.prevent, async (req, res, next) => {
-  _.set(res.locals, 'pageMeta.title', 'Login')
-  if (req.query.legacy || (req.get('user-agent') && req.get('user-agent').indexOf('Trident') >= 0)) {
-    try {
-      const authResult = await WIKI.models.users.login({
-        strategy: req.body.strategy,
-        username: req.body.user,
-        password: req.body.pass
-      }, { req, res })
-      req.brute.reset()
-      res.cookie('jwt', authResult.jwt, commonHelper.getCookieOpts())
-      res.redirect('/')
-    } catch (err) {
-      const { formStrategies, socialStrategies } = await WIKI.models.authentication.getStrategiesForLegacyClient()
-      res.render('legacy/login', {
-        err,
-        formStrategies,
-        socialStrategies
-      })
-    }
-  } else {
-    res.redirect('/login')
   }
 })
 

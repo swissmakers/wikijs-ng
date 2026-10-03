@@ -1,7 +1,6 @@
 /* global WIKI */
 
 const Model = require('objection').Model
-const moment = require('moment')
 const ms = require('ms')
 const jwt = require('jsonwebtoken')
 
@@ -9,7 +8,7 @@ const jwt = require('jsonwebtoken')
  * Users model
  */
 module.exports = class ApiKey extends Model {
-  static get tableName() { return 'apiKeys' }
+  static get tableName () { return 'apiKeys' }
 
   static get jsonSchema () {
     return {
@@ -17,34 +16,35 @@ module.exports = class ApiKey extends Model {
       required: ['name', 'key'],
 
       properties: {
-        id: {type: 'integer'},
-        name: {type: 'string'},
-        key: {type: 'string'},
-        expiration: {type: 'string'},
-        isRevoked: {type: 'boolean'},
-        createdAt: {type: 'string'},
-        validUntil: {type: 'string'}
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        key: { type: 'string' },
+        expiration: { type: 'string' },
+        isRevoked: { type: 'boolean' },
+        createdAt: { type: 'string' },
+        validUntil: { type: 'string' }
       }
     }
   }
 
-  async $beforeUpdate(opt, context) {
+  async $beforeUpdate (opt, context) {
     await super.$beforeUpdate(opt, context)
 
-    this.updatedAt = moment.utc().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
-  async $beforeInsert(context) {
+
+  async $beforeInsert (context) {
     await super.$beforeInsert(context)
 
-    this.createdAt = moment.utc().toISOString()
-    this.updatedAt = moment.utc().toISOString()
+    this.createdAt = new Date().toISOString()
+    this.updatedAt = new Date().toISOString()
   }
 
   static async createNewKey ({ name, expiration, fullAccess, group }) {
     const entry = await WIKI.models.apiKeys.query().insert({
       name,
       key: 'pending',
-      expiration: moment.utc().add(ms(expiration), 'ms').toISOString(),
+      expiration: new Date(Date.now() + ms(expiration)).toISOString(),
       isRevoked: true
     })
 

@@ -1,12 +1,9 @@
 const _ = require('lodash')
 const getos = require('getos')
 const os = require('os')
-const filesize = require('filesize')
 const path = require('path')
 const fs = require('fs-extra')
 const graphHelper = require('../../helpers/graph')
-const crypto = require('crypto')
-const nanoid = require('nanoid/non-secure').customAlphabet('1234567890abcdef', 10)
 
 const getosAsync = require('util').promisify(getos)
 
@@ -34,13 +31,6 @@ module.exports = {
       }, [])
     },
     async info () { return {} },
-    async extensions () {
-      const exts = Object.values(WIKI.extensions.ext).map(ext => _.pick(ext, ['key', 'title', 'description', 'isInstalled']))
-      for (let ext of exts) {
-        ext.isCompatible = await WIKI.extensions.ext[ext.key].isCompatible()
-      }
-      return exts
-    },
     async exportStatus () {
       return {
         status: WIKI.system.exportStatus.status,
@@ -62,141 +52,6 @@ module.exports = {
       }
     },
     /**
-     * Import Users from a v1 installation
-     */
-    async importUsersFromV1(obj, args, context) {
-      try {
-        const MongoClient = require('mongodb').MongoClient
-        if (args.mongoDbConnString && args.mongoDbConnString.length > 10) {
-          // -> Connect to DB
-
-          const client = await MongoClient.connect(args.mongoDbConnString, {
-            appName: `Wiki.js NG ${WIKI.version} Migration Tool`
-          })
-          const dbUsers = client.db().collection('users')
-          const userCursor = dbUsers.find({ email: { '$ne': 'guest' } })
-
-          const curDateISO = new Date().toISOString()
-
-          let failed = []
-          let usersCount = 0
-          let groupsCount = 0
-          let assignableGroups = []
-          let reuseGroups = []
-
-          // -> Create SINGLE group
-
-          if (args.groupMode === `SINGLE`) {
-            const singleGroup = await WIKI.models.groups.query().insert({
-              name: `Import_${curDateISO}`,
-              permissions: WIKI.data.groups.defaultPermissions,
-              pageRules: WIKI.data.groups.defaultPageRules
-            })
-            groupsCount++
-            assignableGroups.push(singleGroup.id)
-          }
-
-          // -> Iterate all users
-
-          while (await userCursor.hasNext()) {
-            const usr = await userCursor.next()
-
-            let usrGroup = []
-            if (args.groupMode === `MULTI`) {
-              // -> Check if global admin
-
-              if (_.some(usr.rights, ['role', 'admin'])) {
-                usrGroup.push(1)
-              } else {
-                // -> Check if identical group already exists
-
-                const currentRights = _.sortBy(_.map(usr.rights, r => _.pick(r, ['role', 'path', 'exact', 'deny'])), ['role', 'path', 'exact', 'deny'])
-                const ruleSetId = crypto.createHash('sha1').update(JSON.stringify(currentRights)).digest('base64')
-                const existingGroup = _.find(reuseGroups, ['hash', ruleSetId])
-                if (existingGroup) {
-                  usrGroup.push(existingGroup.groupId)
-                } else {
-                  // -> Build new group
-
-                  const pageRules = _.map(usr.rights, r => {
-                    let roles = ['read:pages', 'read:assets', 'read:comments', 'write:comments']
-                    if (r.role === `write`) {
-                      roles = _.concat(roles, ['write:pages', 'manage:pages', 'read:source', 'read:history', 'write:assets', 'manage:assets'])
-                    }
-                    return {
-                      id: nanoid(),
-                      roles: roles,
-                      match: r.exact ? 'EXACT' : 'START',
-                      deny: r.deny,
-                      path: (r.path.indexOf('/') === 0) ? r.path.substring(1) : r.path,
-                      locales: []
-                    }
-                  })
-
-                  const perms = _.chain(pageRules).reject('deny').map('roles').union().flatten().value()
-
-                  // -> Create new group
-
-                  const newGroup = await WIKI.models.groups.query().insert({
-                    name: `Import_${curDateISO}_${groupsCount + 1}`,
-                    permissions: perms,
-                    pageRules: pageRules
-                  })
-                  reuseGroups.push({
-                    groupId: newGroup.id,
-                    hash: ruleSetId
-                  })
-                  groupsCount++
-                  usrGroup.push(newGroup.id)
-                }
-              }
-            }
-
-            // -> Create User
-
-            try {
-              await WIKI.models.users.createNewUser({
-                providerKey: usr.provider,
-                email: usr.email,
-                name: usr.name,
-                passwordRaw: usr.password,
-                groups: (usrGroup.length > 0) ? usrGroup : assignableGroups,
-                mustChangePassword: false,
-                sendWelcomeEmail: false
-              })
-              usersCount++
-            } catch (err) {
-              failed.push({
-                provider: usr.provider,
-                email: usr.email,
-                error: err.message
-              })
-              WIKI.logger.warn(`${usr.email}: ${err}`)
-            }
-          }
-
-          // -> Reload group permissions
-
-          if (args.groupMode !== `NONE`) {
-            await WIKI.auth.reloadGroups()
-            WIKI.events.outbound.emit('reloadGroups')
-          }
-
-          client.close()
-          return {
-            responseResult: graphHelper.generateSuccess('Import completed.'),
-            usersCount: usersCount,
-            groupsCount: groupsCount,
-            failed: failed
-          }
-        } else {
-          throw new Error('MongoDB Connection String is missing or invalid.')
-        }
-      } catch (err) {
-        return graphHelper.generateError(err)
-      }
-    },
-    /**
      * Set HTTPS Redirection State
      */
     async setHTTPSRedirection (obj, args, context) {
@@ -213,7 +68,7 @@ module.exports = {
       try {
         if (!WIKI.config.ssl.enabled) {
           throw new WIKI.Error.SystemSSLDisabled()
-        } else if (WIKI.config.ssl.provider !== `letsencrypt`) {
+        } else if (WIKI.config.ssl.provider !== 'letsencrypt') {
           throw new WIKI.Error.SystemSSLRenewInvalidProvider()
         } else if (!WIKI.servers.le) {
           throw new WIKI.Error.SystemSSLLEUnavailable()
@@ -264,7 +119,7 @@ module.exports = {
   },
   SystemInfo: {
     configFile () {
-      return path.join(process.cwd(), 'config.yml')
+      return WIKI.CONFIGPATH || path.join(WIKI.ROOTPATH, 'config.yml')
     },
     cpuCores () {
       return os.cpus().length
@@ -279,14 +134,16 @@ module.exports = {
       let version = 'Unknown Version'
       switch (WIKI.config.db.type) {
         case 'mariadb':
-        case 'mysql':
+        case 'mysql': {
           const resultMYSQL = await WIKI.models.knex.raw('SELECT VERSION() as version;')
           version = _.get(resultMYSQL, '[0][0].version', 'Unknown Version')
           break
-        case 'mssql':
+        }
+        case 'mssql': {
           const resultMSSQL = await WIKI.models.knex.raw('SELECT @@VERSION as version;')
           version = _.get(resultMSSQL, '[0].version', 'Unknown Version')
           break
+        }
         case 'postgres':
           version = _.get(WIKI.models, 'knex.client.version', 'Unknown Version')
           break
@@ -334,13 +191,13 @@ module.exports = {
       return os.platform()
     },
     ramTotal () {
-      return filesize(os.totalmem())
+      return `${(os.totalmem() / Math.pow(1024, 3)).toFixed(2)} GB`
     },
     sslDomain () {
-      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? WIKI.config.ssl.domain : null
+      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === 'letsencrypt' ? WIKI.config.ssl.domain : null
     },
     sslExpirationDate () {
-      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? _.get(WIKI.config.letsencrypt, 'payload.expires', null) : null
+      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === 'letsencrypt' ? _.get(WIKI.config.letsencrypt, 'payload.expires', null) : null
     },
     sslProvider () {
       return WIKI.config.ssl.enabled ? WIKI.config.ssl.provider : null
@@ -349,7 +206,7 @@ module.exports = {
       return 'OK'
     },
     sslSubscriberEmail () {
-      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === `letsencrypt` ? WIKI.config.ssl.subscriberEmail : null
+      return WIKI.config.ssl.enabled && WIKI.config.ssl.provider === 'letsencrypt' ? WIKI.config.ssl.subscriberEmail : null
     },
     workingDirectory () {
       return process.cwd()

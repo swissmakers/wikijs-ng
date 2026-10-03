@@ -4,7 +4,7 @@ const Model = require('objection').Model
  * Groups model
  */
 module.exports = class Group extends Model {
-  static get tableName() { return 'groups' }
+  static get tableName () { return 'groups' }
 
   static get jsonSchema () {
     return {
@@ -12,21 +12,21 @@ module.exports = class Group extends Model {
       required: ['name'],
 
       properties: {
-        id: {type: 'integer'},
-        name: {type: 'string'},
-        isSystem: {type: 'boolean'},
-        redirectOnLogin: {type: 'string'},
-        createdAt: {type: 'string'},
-        updatedAt: {type: 'string'}
+        id: { type: 'integer' },
+        name: { type: 'string' },
+        isSystem: { type: 'boolean' },
+        redirectOnLogin: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' }
       }
     }
   }
 
-  static get jsonAttributes() {
+  static get jsonAttributes () {
     return ['permissions', 'pageRules']
   }
 
-  static get relationMappings() {
+  static get relationMappings () {
     return {
       users: {
         relation: Model.ManyToManyRelation,
@@ -43,10 +43,11 @@ module.exports = class Group extends Model {
     }
   }
 
-  $beforeUpdate() {
+  $beforeUpdate () {
     this.updatedAt = new Date().toISOString()
   }
-  $beforeInsert() {
+
+  $beforeInsert () {
     this.createdAt = new Date().toISOString()
     this.updatedAt = new Date().toISOString()
   }

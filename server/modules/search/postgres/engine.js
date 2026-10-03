@@ -5,22 +5,22 @@ const { Transform } = require('node:stream')
 /* global WIKI */
 
 module.exports = {
-  async activate() {
+  async activate () {
     if (WIKI.config.db.type !== 'postgres') {
       throw new WIKI.Error.SearchActivationFailed('Must use PostgreSQL database to activate this engine!')
     }
   },
-  async deactivate() {
-    WIKI.logger.info(`(SEARCH/POSTGRES) Dropping index tables...`)
+  async deactivate () {
+    WIKI.logger.info('(SEARCH/POSTGRES) Dropping index tables...')
     await WIKI.models.knex.schema.dropTable('pagesWords')
     await WIKI.models.knex.schema.dropTable('pagesVector')
-    WIKI.logger.info(`(SEARCH/POSTGRES) Index tables have been dropped.`)
+    WIKI.logger.info('(SEARCH/POSTGRES) Index tables have been dropped.')
   },
   /**
    * INIT
    */
-  async init() {
-    WIKI.logger.info(`(SEARCH/POSTGRES) Initializing...`)
+  async init () {
+    WIKI.logger.info('(SEARCH/POSTGRES) Initializing...')
 
     // -> Ensure pg_trgm extension is available (required for similarity search)
     await WIKI.models.knex.raw('CREATE EXTENSION IF NOT EXISTS pg_trgm')
@@ -28,7 +28,7 @@ module.exports = {
     // -> Create Search Index
     const indexExists = await WIKI.models.knex.schema.hasTable('pagesVector')
     if (!indexExists) {
-      WIKI.logger.info(`(SEARCH/POSTGRES) Creating Pages Vector table...`)
+      WIKI.logger.info('(SEARCH/POSTGRES) Creating Pages Vector table...')
       await WIKI.models.knex.schema.createTable('pagesVector', table => {
         table.increments()
         table.string('path')
@@ -42,15 +42,15 @@ module.exports = {
     // -> Create Words Index
     const wordsExists = await WIKI.models.knex.schema.hasTable('pagesWords')
     if (!wordsExists) {
-      WIKI.logger.info(`(SEARCH/POSTGRES) Creating Words Suggestion Index...`)
+      WIKI.logger.info('(SEARCH/POSTGRES) Creating Words Suggestion Index...')
       await WIKI.models.knex.raw(`
         CREATE TABLE "pagesWords" AS SELECT word FROM ts_stat(
           'SELECT to_tsvector(''simple'', "title") || to_tsvector(''simple'', "description") || to_tsvector(''simple'', "content") FROM "pagesVector"'
         )`)
-      await WIKI.models.knex.raw(`CREATE INDEX "pageWords_idx" ON "pagesWords" USING GIN (word gin_trgm_ops)`)
+      await WIKI.models.knex.raw('CREATE INDEX "pageWords_idx" ON "pagesWords" USING GIN (word gin_trgm_ops)')
     }
 
-    WIKI.logger.info(`(SEARCH/POSTGRES) Initialization completed.`)
+    WIKI.logger.info('(SEARCH/POSTGRES) Initialization completed.')
   },
   /**
    * QUERY
@@ -58,7 +58,7 @@ module.exports = {
    * @param {String} q Query
    * @param {Object} opts Additional options
    */
-  async query(q, opts) {
+  async query (q, opts) {
     try {
       let suggestions = []
       let qry = `
@@ -66,8 +66,8 @@ module.exports = {
         FROM "pagesVector", to_tsquery(?,?) query
         WHERE (query @@ "tokens" OR path ILIKE ?)
       `
-      let qryEnd = `ORDER BY ts_rank(tokens, query) DESC`
-      let qryParams = [this.config.dictLanguage, tsquery(q), `%${q.toLowerCase()}%`]
+      const qryEnd = 'ORDER BY ts_rank(tokens, query) DESC'
+      const qryParams = [this.config.dictLanguage, tsquery(q), `%${q.toLowerCase()}%`]
 
       if (opts.locale) {
         qry = `${qry} AND locale = ?`
@@ -83,7 +83,7 @@ module.exports = {
       `, qryParams)
       if (results.rows.length < 5) {
         try {
-          const suggestResults = await WIKI.models.knex.raw(`SELECT word, word <-> ? AS rank FROM "pagesWords" WHERE similarity(word, ?) > 0.2 ORDER BY rank LIMIT 5;`, [q, q])
+          const suggestResults = await WIKI.models.knex.raw('SELECT word, word <-> ? AS rank FROM "pagesWords" WHERE similarity(word, ?) > 0.2 ORDER BY rank LIMIT 5;', [q, q])
           suggestions = suggestResults.rows.map(r => r.word)
         } catch (err) {
           WIKI.logger.warn(`Search Engine Suggestion Error (pg_trgm extension may be missing): ${err.message}`)
@@ -104,7 +104,7 @@ module.exports = {
    *
    * @param {Object} page Page to create
    */
-  async created(page) {
+  async created (page) {
     await WIKI.models.knex.raw(`
       INSERT INTO "pagesVector" (path, locale, title, description, "tokens") VALUES (
         ?, ?, ?, ?, (setweight(to_tsvector('${this.config.dictLanguage}', ?), 'A') || setweight(to_tsvector('${this.config.dictLanguage}', ?), 'B') || setweight(to_tsvector('${this.config.dictLanguage}', ?), 'C'))
@@ -116,7 +116,7 @@ module.exports = {
    *
    * @param {Object} page Page to update
    */
-  async updated(page) {
+  async updated (page) {
     await WIKI.models.knex.raw(`
       UPDATE "pagesVector" SET
         title = ?,
@@ -132,7 +132,7 @@ module.exports = {
    *
    * @param {Object} page Page to delete
    */
-  async deleted(page) {
+  async deleted (page) {
     await WIKI.models.knex('pagesVector').where({
       locale: page.localeCode,
       path: page.path
@@ -143,7 +143,7 @@ module.exports = {
    *
    * @param {Object} page Page to rename
    */
-  async renamed(page) {
+  async renamed (page) {
     await WIKI.models.knex('pagesVector').where({
       locale: page.localeCode,
       path: page.path
@@ -155,8 +155,8 @@ module.exports = {
   /**
    * REBUILD INDEX
    */
-  async rebuild() {
-    WIKI.logger.info(`(SEARCH/POSTGRES) Rebuilding Index...`)
+  async rebuild () {
+    WIKI.logger.info('(SEARCH/POSTGRES) Rebuilding Index...')
     await WIKI.models.knex('pagesVector').truncate()
     await WIKI.models.knex('pagesWords').truncate()
 
@@ -187,6 +187,6 @@ module.exports = {
         )
       `)
 
-    WIKI.logger.info(`(SEARCH/POSTGRES) Index rebuilt successfully.`)
+    WIKI.logger.info('(SEARCH/POSTGRES) Index rebuilt successfully.')
   }
 }

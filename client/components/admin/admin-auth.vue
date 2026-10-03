@@ -219,7 +219,7 @@
 <script>
 import _ from 'lodash'
 import gql from 'graphql-tag'
-import { v4 as uuid } from 'uuid'
+import { nanoid } from 'nanoid/non-secure'
 
 import groupsQuery from 'gql/admin/auth/auth-query-groups.gql'
 import hostQuery from 'gql/admin/auth/auth-query-host.gql'
@@ -231,9 +231,9 @@ export default {
     draggable
   },
   filters: {
-    startCase(val) { return _.startCase(val) }
+    startCase (val) { return _.startCase(val) }
   },
-  data() {
+  data () {
     return {
       groups: [],
       strategies: [],
@@ -246,15 +246,15 @@ export default {
     }
   },
   watch: {
-    selectedStrategy(newValue, oldValue) {
+    selectedStrategy (newValue, oldValue) {
       this.strategy = _.find(this.activeStrategies, ['key', newValue]) || {}
     },
-    activeStrategies(newValue, oldValue) {
+    activeStrategies (newValue, oldValue) {
       this.selectedStrategy = 'local'
     }
   },
   methods: {
-    async refresh() {
+    async refresh () {
       await this.$apollo.queries.strategies.refetch()
       await this.$apollo.queries.activeStrategies.refetch()
       this.$store.commit('showNotification', {
@@ -265,7 +265,7 @@ export default {
     },
     addStrategy (str) {
       const newStr = {
-        key: uuid(),
+        key: nanoid(),
         strategy: str,
         config: str.props.map(c => ({
           key: c.key,
@@ -289,8 +289,8 @@ export default {
     deleteStrategy () {
       this.activeStrategies = _.reject(this.activeStrategies, ['key', this.strategy.key])
     },
-    async save() {
-      this.$store.commit(`loadingStart`, 'admin-auth-savestrategies')
+    async save () {
+      this.$store.commit('loadingStart', 'admin-auth-savestrategies')
       try {
         const resp = await this.$apollo.mutate({
           mutation: gql`
@@ -314,7 +314,7 @@ export default {
               displayName: str.displayName,
               order: idx,
               isEnabled: str.isEnabled,
-              config: str.config.map(cfg => ({...cfg, value: JSON.stringify({ v: cfg.value.value })})),
+              config: str.config.map(cfg => ({ ...cfg, value: JSON.stringify({ v: cfg.value.value }) })),
               selfRegistration: str.selfRegistration,
               domainWhitelist: str.domainWhitelist,
               autoEnrollGroups: str.autoEnrollGroups
@@ -333,7 +333,7 @@ export default {
       } catch (err) {
         this.$store.commit('pushGraphError', err)
       }
-      this.$store.commit(`loadingStop`, 'admin-auth-savestrategies')
+      this.$store.commit('loadingStop', 'admin-auth-savestrategies')
     }
   },
   apollo: {
@@ -360,7 +360,7 @@ export default {
       fetchPolicy: 'network-only',
       update: (data) => _.get(data, 'authentication.strategies', []).map(str => ({
         ...str,
-        isDisabled: !str.isAvailable || str.key === `local`,
+        isDisabled: !str.isAvailable || str.key === 'local',
         props: _.sortBy(str.props.map(cfg => ({
           key: cfg.key,
           ...JSON.parse(cfg.value)
