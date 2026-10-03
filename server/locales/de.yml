@@ -848,6 +848,7 @@ editor:
   backToEditor: Zurück zum Editor
   ckeditor:
     stats: '{{chars}} Zeichen, {{words}} Wörter'
+    linkToPage: Link zu Seite
   conflict:
     editable: (editierbar)
     infoGeneric: Eine neuere Version dieser Seite wurde von {{authorName}}, {{date}} gespeichert

@@ -1,7 +1,7 @@
 <template lang='pug'>
   v-app(:dark='$vuetify.theme.dark').history
     nav-header
-    v-content
+    v-main
       v-toolbar(color='primary', dark)
         .subheading Viewing history of #[strong /{{path}}]
         template(v-if='$vuetify.breakpoint.mdAndUp')

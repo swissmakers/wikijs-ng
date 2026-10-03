@@ -1,6 +1,14 @@
+/* global WIKI */
+
 exports.up = async knex => {
+  // -> MySQL / MariaDB: page titles and paths may contain emoji, independent of the database default charset
+  const dbCompat = {
+    charset: (WIKI.config.db.type === 'mysql' || WIKI.config.db.type === 'mariadb')
+  }
+
   // -> Page activity log (recent changes, RSS, watch notifications)
   await knex.schema.createTable('pageActivity', table => {
+    if (dbCompat.charset) { table.charset('utf8mb4') }
     table.increments('id').primary()
     table.integer('pageId').unsigned().notNullable()
     table.string('localeCode', 10).notNullable()
@@ -24,6 +32,7 @@ exports.up = async knex => {
 
   // -> Pages / folders watched by users
   await knex.schema.createTable('userWatches', table => {
+    if (dbCompat.charset) { table.charset('utf8mb4') }
     table.increments('id').primary()
     table.integer('userId').unsigned().notNullable().references('id').inTable('users').onDelete('CASCADE')
     table.string('kind', 10).notNullable()
@@ -37,6 +46,7 @@ exports.up = async knex => {
 
   // -> Bookmarked pages
   await knex.schema.createTable('userBookmarks', table => {
+    if (dbCompat.charset) { table.charset('utf8mb4') }
     table.increments('id').primary()
     table.integer('userId').unsigned().notNullable().references('id').inTable('users').onDelete('CASCADE')
     table.integer('pageId').unsigned().notNullable()

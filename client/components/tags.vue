@@ -27,7 +27,7 @@
               v-list-item-title {{tag.title}}
               v-list-item-action.my-0(v-if='tag.count')
                 v-chip(x-small, label, outlined) {{tag.count}}
-    v-content.grey(:class='$vuetify.theme.dark ? `darken-4-d5` : `lighten-3`')
+    v-main.grey(:class='$vuetify.theme.dark ? `darken-4-d5` : `lighten-3`')
       v-toolbar(color='primary', dark, flat, height='58')
         template(v-if='selection.length > 0')
           .overline.mr-3.animated.fadeInLeft {{$t('tags:currentSelection')}}

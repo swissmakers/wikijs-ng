@@ -26,6 +26,7 @@ import datetime from './modules/datetime'
 
 import { initials, bytes } from './helpers'
 import { initAppearance, getGuestAppearance } from './helpers/appearance'
+import { serverRenderedRoot, isRegisteredComponent } from './helpers/mount'
 
 // ====================================
 // Initialize Global Vars
@@ -102,8 +103,17 @@ const graphQLLink = ApolloLink.from([
 
 window.graphQL = new ApolloClient({
   link: graphQLLink,
-  cache: new InMemoryCache(),
-  connectToDevTools: (process.env.NODE_ENV === 'development')
+  cache: new InMemoryCache({
+    // -> The GraphQL API groups its fields in namespace objects without an ID: merge their fields
+    typePolicies: Object.fromEntries([
+      'AnalyticsQuery', 'AssetQuery', 'AuthenticationQuery', 'BookmarkQuery', 'CommentQuery', 'GroupQuery',
+      'LocalizationQuery', 'MailQuery', 'NavigationQuery', 'PageQuery', 'RenderingQuery', 'SearchQuery',
+      'SiteQuery', 'StorageQuery', 'SystemQuery', 'ThemingQuery', 'UserQuery', 'WatchQuery'
+    ].map(type => [type, { merge: true }]))
+  }),
+  devtools: {
+    enabled: process.env.NODE_ENV === 'development'
+  }
 })
 
 // ====================================
@@ -157,6 +167,7 @@ Vue.component('Welcome', () => import(/* webpackChunkName: "welcome" */ './compo
 
 Vue.component('NavFooter', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/nav-footer.vue'))
 Vue.component('Page', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/page.vue'))
+Vue.component('Tabset', () => import(/* webpackChunkName: "theme" */ './themes/' + siteConfig.theme + '/components/tabset.vue'))
 
 const bootstrap = () => {
   // ====================================
@@ -179,9 +190,18 @@ const bootstrap = () => {
 
   const darkModeEnabled = initAppearance(store.get('user/authenticated') ? store.get('user/appearance') : getGuestAppearance())
 
+  // -> Render the server-provided mount point without compiling templates in the browser
+  const rootEl = document.getElementById('root')
+  const renderRoot = serverRenderedRoot(rootEl, {
+    isComponent: isRegisteredComponent(Vue),
+    slotRules: {
+      page: { contents: ['tabset'], comments: ['comments'] }
+    }
+  })
+
   window.WIKI = new Vue({
-    el: '#root',
-    components: {},
+    el: rootEl,
+    render: renderRoot,
     apolloProvider,
     store,
     i18n,

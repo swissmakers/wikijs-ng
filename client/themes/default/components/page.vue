@@ -283,7 +283,6 @@
 
 <script>
 import { StatusIndicator } from 'vue-status-indicator'
-import Tabset from './tabset.vue'
 import NavSidebar from './nav-sidebar.vue'
 import PageBreadcrumbs from '@/components/common/page-breadcrumbs.vue'
 import PageBacklinks from './page-backlinks.vue'
@@ -294,10 +293,6 @@ import Prism from 'prismjs'
 import mermaid from 'mermaid'
 import { get, sync } from 'vuex-pathify'
 import _ from 'lodash'
-import ClipboardJS from 'clipboard'
-import Vue from 'vue'
-
-Vue.component('Tabset', Tabset)
 
 Prism.plugins.autoloader.languages_path = '/_assets/js/prism/'
 Prism.plugins.NormalizeWhitespace.setDefaults({
@@ -307,31 +302,6 @@ Prism.plugins.NormalizeWhitespace.setDefaults({
   'right-trim': true,
   'remove-initial-line-feed': true,
   'tabs-to-spaces': 2
-})
-Prism.plugins.toolbar.registerButton('copy-to-clipboard', (env) => {
-  const linkCopy = document.createElement('button')
-  linkCopy.textContent = 'Copy'
-
-  const clip = new ClipboardJS(linkCopy, {
-    text: () => { return env.code }
-  })
-
-  clip.on('success', () => {
-    linkCopy.textContent = 'Copied!'
-    resetClipboardText()
-  })
-  clip.on('error', () => {
-    linkCopy.textContent = 'Press Ctrl+C to copy'
-    resetClipboardText()
-  })
-
-  return linkCopy
-
-  function resetClipboardText () {
-    setTimeout(() => {
-      linkCopy.textContent = 'Copy'
-    }, 5000)
-  }
 })
 
 export default {

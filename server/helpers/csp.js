@@ -7,12 +7,12 @@ const NONCE = '{nonce}'
 /**
  * Default Content-Security-Policy.
  * - 'strict-dynamic' trusts scripts loaded by nonced scripts (webpack chunks, Prism, analytics loaders)
- * - 'unsafe-eval' is required by the Vue runtime template compiler (the page markup is compiled in the browser)
+ * - no 'unsafe-eval': the client mounts the server markup with render functions (client/helpers/mount.js)
  * - inline styles are needed by Vuetify, mermaid and rendered content
  */
 const DEFAULT_DIRECTIVES = {
   'default-src': ["'self'"],
-  'script-src': ["'self'", `'nonce-${NONCE}'`, "'strict-dynamic'", "'unsafe-eval'"],
+  'script-src': ["'self'", `'nonce-${NONCE}'`, "'strict-dynamic'"],
   'style-src': ["'self'", "'unsafe-inline'"],
   'img-src': ["'self'", 'data:', 'blob:', 'https:'],
   'font-src': ["'self'", 'data:'],

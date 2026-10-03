@@ -1,7 +1,7 @@
 <template lang='pug'>
   v-app(:dark='$vuetify.theme.dark').source
     nav-header
-    v-content
+    v-main
       v-toolbar(color='primary', dark)
         i18next.subheading(v-if='versionId > 0', path='common:page.viewingSourceVersion', tag='div')
           strong(place='date', :title='$options.filters.date(versionDate, `LLL`)') {{versionDate | date('lll')}}

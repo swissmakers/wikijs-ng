@@ -6,7 +6,7 @@ describe('helpers/csp/buildPolicy', () => {
   it('builds a report-only policy by default with the nonce', () => {
     const policy = csp.buildPolicy({ nonce: 'abc123', security: {} })
     expect(policy.headerName).toBe('Content-Security-Policy-Report-Only')
-    expect(directive(policy.value, 'script-src')).toBe("script-src 'self' 'nonce-abc123' 'strict-dynamic' 'unsafe-eval'")
+    expect(directive(policy.value, 'script-src')).toBe("script-src 'self' 'nonce-abc123' 'strict-dynamic'")
     expect(directive(policy.value, 'object-src')).toBe("object-src 'none'")
     expect(policy.value).not.toContain('frame-ancestors')
   })

@@ -32,8 +32,6 @@ import { get } from 'vuex-pathify'
 
 /* global siteConfig */
 
-const RESULT_FIELDS = 'responseResult { succeeded errorCode slug message }'
-
 export default {
   props: {
     pageId: {
@@ -128,7 +126,7 @@ export default {
       return result
     },
     async toggleBookmark () {
-      const result = await this.mutate(gql`mutation ($pageId: Int!) { bookmarks { toggle(pageId: $pageId) { ${RESULT_FIELDS} isBookmarked } } }`, { pageId: this.pageId }, 'data.bookmarks.toggle')
+      const result = await this.mutate(gql`mutation ($pageId: Int!) { bookmarks { toggle(pageId: $pageId) { responseResult { succeeded errorCode slug message } isBookmarked } } }`, { pageId: this.pageId }, 'data.bookmarks.toggle')
       if (result) {
         this.isBookmarked = result.isBookmarked
       }
@@ -139,18 +137,18 @@ export default {
       }
     },
     async watchPage () {
-      if (await this.mutate(gql`mutation ($pageId: Int!) { watches { watchPage(pageId: $pageId) { ${RESULT_FIELDS} } } }`, { pageId: this.pageId }, 'data.watches.watchPage')) {
+      if (await this.mutate(gql`mutation ($pageId: Int!) { watches { watchPage(pageId: $pageId) { responseResult { succeeded errorCode slug message } } } }`, { pageId: this.pageId }, 'data.watches.watchPage')) {
         this.refresh()
       }
     },
     async watchPath () {
-      if (await this.mutate(gql`mutation ($locale: String!, $path: String!) { watches { watchPath(locale: $locale, path: $path) { ${RESULT_FIELDS} } } }`, { locale: this.locale, path: this.path }, 'data.watches.watchPath')) {
+      if (await this.mutate(gql`mutation ($locale: String!, $path: String!) { watches { watchPath(locale: $locale, path: $path) { responseResult { succeeded errorCode slug message } } } }`, { locale: this.locale, path: this.path }, 'data.watches.watchPath')) {
         this.refresh()
       }
     },
     async stopWatching () {
       for (const id of _.compact([this.status.pageWatchId, this.status.pathWatchId])) {
-        await this.mutate(gql`mutation ($id: Int!) { watches { remove(id: $id) { ${RESULT_FIELDS} } } }`, { id }, 'data.watches.remove')
+        await this.mutate(gql`mutation ($id: Int!) { watches { remove(id: $id) { responseResult { succeeded errorCode slug message } } } }`, { id }, 'data.watches.remove')
       }
       this.refresh()
     }

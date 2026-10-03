@@ -55,6 +55,7 @@ module.exports = {
   },
   resolve: common.resolve,
   stats: common.stats,
+  ignoreWarnings: common.ignoreWarnings,
   target: 'web',
   watch: true
 }

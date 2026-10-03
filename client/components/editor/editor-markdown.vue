@@ -222,7 +222,7 @@ import Prism from 'prismjs'
 import mermaid from 'mermaid'
 
 // Helpers
-import katexHelper from './common/katex'
+import mathHelper from '../../../server/helpers/markdown-math'
 import tabsetHelper from './markdown/tabset'
 import cmFold from './common/cmFold'
 import { pagePath } from '@/helpers'
@@ -332,7 +332,7 @@ if (editorIntegrations.kroki) {
 // ========================================
 
 const macros = {}
-md.inline.ruler.after('escape', 'katex_inline', katexHelper.katexInline)
+md.inline.ruler.after('escape', 'katex_inline', mathHelper.inlineRule('katex_inline'))
 md.renderer.rules.katex_inline = (tokens, idx) => {
   try {
     return katex.renderToString(tokens[idx].content, {
@@ -343,7 +343,7 @@ md.renderer.rules.katex_inline = (tokens, idx) => {
     return tokens[idx].content
   }
 }
-md.block.ruler.after('blockquote', 'katex_block', katexHelper.katexBlock, {
+md.block.ruler.after('blockquote', 'katex_block', mathHelper.blockRule('katex_block'), {
   alt: ['paragraph', 'reference', 'blockquote', 'list']
 })
 md.renderer.rules.katex_block = (tokens, idx) => {

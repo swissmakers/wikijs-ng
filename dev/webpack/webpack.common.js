@@ -174,8 +174,11 @@ module.exports = {
     symlinks: true,
     alias: {
       '@': path.join(process.cwd(), 'client'),
-      vue$: 'vue/dist/vue.esm.js',
-      gql: path.join(process.cwd(), 'client/graph')
+      // -> Runtime-only build: no template compiler in the browser (CSP without 'unsafe-eval')
+      vue$: 'vue/dist/vue.runtime.esm.js',
+      gql: path.join(process.cwd(), 'client/graph'),
+      // -> Lazy-loaded editor translations (a dynamic import cannot go through the package's exports map)
+      'ckeditor5-translations': path.join(process.cwd(), 'node_modules/ckeditor5/dist/translations')
     },
     extensions: [
       '.js',
@@ -196,5 +199,9 @@ module.exports = {
   stats: {
     children: false,
     entrypoints: false
-  }
+  },
+  // -> Sass deprecation warnings raised inside Vuetify 2's own stylesheets (not fixable here)
+  ignoreWarnings: [
+    { module: /node_modules[\\/]vuetify[\\/]/, message: /deprecation/i }
+  ]
 }

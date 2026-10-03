@@ -169,7 +169,6 @@
     "@babel/preset-env": "7.29.7",
     "@mdi/font": "5.8.55",
     "@panter/vue-i18next": "0.15.2",
-    "@requarks/ckeditor5": "19.0.1-wiki.2",
     "animate-sass": "0.8.2",
     "animated-number-vue": "1.0.0",
     "autoprefixer": "10.5.4",
@@ -181,6 +180,7 @@
     "canvas-confetti": "1.3.1",
     "cash-dom": "8.1.3",
     "chokidar": "3.5.3",
+    "ckeditor5": "48.5.2",
     "clipboard": "2.0.11",
     "codemirror": "5.65.21",
     "codemirror-asciidoc": "1.0.4",
@@ -266,7 +266,8 @@
   "jest": {
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/server"
+      "<rootDir>/server",
+      "<rootDir>/client/test"
     ]
   },
   "pugLintConfig": {

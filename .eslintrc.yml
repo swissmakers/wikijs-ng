@@ -24,5 +24,6 @@ overrides:
       - plugin:cypress/recommended
   - files:
       - 'server/test/**'
+      - 'client/test/**'
     env:
       jest: true

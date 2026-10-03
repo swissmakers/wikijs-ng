@@ -17,11 +17,59 @@
 <script>
 import _ from 'lodash'
 import { get, sync } from 'vuex-pathify'
-import DecoupledEditor from '@requarks/ckeditor5'
-// import DecoupledEditor from '../../../../wiki-ckeditor5/build/ckeditor'
+import {
+  DecoupledEditor, Plugin, ButtonView, IconBrowseFiles, IconDocument,
+  Essentials, Paragraph, Heading, Autoformat, TextTransformation, PasteFromOffice, WordCount,
+  Bold, Italic, Underline, Strikethrough, Subscript, Superscript, Code, Highlight, RemoveFormat,
+  FontSize, FontFamily, Alignment, List, TodoList, SpecialCharacters, SpecialCharactersEssentials,
+  Link, BlockQuote, CodeBlock, HorizontalLine, MediaEmbed,
+  Table, TableToolbar, TableProperties, TableCellProperties,
+  Image, ImageCaption, ImageStyle, ImageToolbar, ImageResize, ImageTextAlternative
+} from 'ckeditor5'
+import 'ckeditor5/ckeditor5.css'
 import EditorConflict from './ckeditor/conflict.vue'
 import { html as beautify } from 'js-beautify/js/lib/beautifier.min.js'
 import { pagePath } from '@/helpers'
+
+/**
+ * Wiki.js toolbar buttons: insert assets from the media manager, link to a wiki page
+ */
+class WikiTools extends Plugin {
+  static get pluginName () {
+    return 'WikiTools'
+  }
+
+  init () {
+    const editor = this.editor
+    const addButton = (name, icon, label, onExecute) => {
+      editor.ui.componentFactory.add(name, locale => {
+        const button = new ButtonView(locale)
+        button.set({ label, icon, tooltip: true })
+        button.on('execute', () => onExecute())
+        return button
+      })
+    }
+    const wiki = editor.config.get('wiki')
+    addButton('insertAsset', IconBrowseFiles, wiki.labels.insertAsset, wiki.onInsertAsset)
+    addButton('linkToPage', IconDocument, wiki.labels.linkToPage, wiki.onLinkToPage)
+  }
+}
+
+/**
+ * UI translations of the editor (lazy loaded, English is built in)
+ */
+async function loadTranslations (locale) {
+  const lang = _.toLower(locale)
+  if (!lang || lang === 'en') {
+    return []
+  }
+  try {
+    const translations = await import(/* webpackChunkName: "ckeditor5-i18n-[request]", webpackInclude: /[\\/][a-z]{2}(-[a-z]+)?\.js$/ */ `ckeditor5-translations/${lang}.js`)
+    return [translations.default]
+  } catch (err) {
+    return []
+  }
+}
 
 export default {
   components: {
@@ -64,21 +112,54 @@ export default {
   async mounted () {
     this.$store.set('editor/editorKey', 'ckeditor')
 
+    const translations = await loadTranslations(this.locale)
     this.editor = await DecoupledEditor.create(this.$refs.editor, {
+      // -> CKEditor 5 is used under the GPL (the wiki is AGPL-3.0); no license server is contacted
+      licenseKey: 'GPL',
+      plugins: [
+        Essentials, Paragraph, Heading, Autoformat, TextTransformation, PasteFromOffice, WordCount,
+        Bold, Italic, Underline, Strikethrough, Subscript, Superscript, Code, Highlight, RemoveFormat,
+        FontSize, FontFamily, Alignment, List, TodoList, SpecialCharacters, SpecialCharactersEssentials,
+        Link, BlockQuote, CodeBlock, HorizontalLine, MediaEmbed,
+        Table, TableToolbar, TableProperties, TableCellProperties,
+        Image, ImageCaption, ImageStyle, ImageToolbar, ImageResize, ImageTextAlternative,
+        WikiTools
+      ],
+      toolbar: {
+        items: [
+          'heading', '|', 'fontSize', 'fontFamily', '|',
+          'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript', 'highlight', '|',
+          'alignment', '|', 'numberedList', 'bulletedList', 'todoList', '|',
+          'specialCharacters', 'linkToPage', 'link', 'blockQuote', 'insertAsset', 'insertTable', 'code', 'codeBlock', 'mediaEmbed', 'horizontalLine', '|',
+          'removeFormat', '|', 'undo', 'redo'
+        ],
+        shouldNotGroupWhenFull: false
+      },
+      heading: {
+        options: [
+          { model: 'paragraph', title: 'Paragraph', class: '' },
+          ..._.range(1, 7).map(level => ({ model: `heading${level}`, view: `h${level}`, title: `Heading ${level}`, class: '' }))
+        ]
+      },
+      image: {
+        toolbar: ['imageStyle:alignLeft', 'imageStyle:block', 'imageStyle:alignRight', '|', 'toggleImageCaption', 'imageTextAlternative']
+      },
+      table: {
+        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableCellProperties', 'tableProperties']
+      },
+      link: {
+        decorators: {
+          isDownloadable: {
+            mode: 'manual',
+            label: 'Downloadable',
+            attributes: { download: '' }
+          }
+        }
+      },
       language: this.locale,
+      // -> Only when there is one: CKEditor fails on an empty translations list (e.g. English)
+      ...translations.length > 0 && { translations },
       placeholder: 'Type the page content here',
-      disableNativeSpellChecker: false,
-      // TODO: Mention autocomplete
-      //
-      // mention: {
-      //   feeds: [
-      //     {
-      //       marker: '@',
-      //       feed: [ '@Barney', '@Lily', '@Marshall', '@Robin', '@Ted' ],
-      //       minimumCharacters: 1
-      //     }
-      //   ]
-      // },
       wordCount: {
         onUpdate: stats => {
           this.stats = {
@@ -86,13 +167,24 @@ export default {
             words: stats.words
           }
         }
+      },
+      wiki: {
+        labels: {
+          insertAsset: this.$t('editor:markup.insertAssets', { defaultValue: 'Insert Assets' }),
+          linkToPage: this.$t('editor:ckeditor.linkToPage', { defaultValue: 'Link to Page' })
+        },
+        onInsertAsset: () => {
+          this.activeModal = 'editorModalMedia'
+        },
+        onLinkToPage: () => {
+          this.insertLink()
+        }
       }
     })
     this.$refs.toolbarContainer.appendChild(this.editor.ui.view.toolbar.element)
 
-    if (this.mode !== 'create') {
-      this.editor.setData(this.$store.get('editor/content'))
-    }
+    // -> Existing content, or the template / version a new page starts from
+    this.editor.setData(this.$store.get('editor/content') || '')
 
     this.editor.model.document.on('change:data', _.debounce(evt => {
       this.$store.set('editor/content', beautify(this.editor.getData(), { indent_size: 2, end_with_newline: true }))
@@ -101,7 +193,7 @@ export default {
     this.$root.$on('editorInsert', opts => {
       switch (opts.kind) {
         case 'IMAGE':
-          this.editor.execute('imageInsert', {
+          this.editor.execute('insertImage', {
             source: opts.path
           })
           break
@@ -111,7 +203,7 @@ export default {
           })
           break
         case 'DIAGRAM':
-          this.editor.execute('imageInsert', {
+          this.editor.execute('insertImage', {
             source: `data:image/svg+xml;base64,${opts.text}`
           })
           break
@@ -176,7 +268,8 @@ $editor-height-mobile: calc(100vh - 56px - 16px);
     }
   }
 
-  .contents {
+  // -> More specific than the page view's `.theme--dark .v-main .contents code` (the editable also has .contents)
+  .contents.ck-editor__editable {
     table {
       margin: inherit;
     }
@@ -203,7 +296,7 @@ $editor-height-mobile: calc(100vh - 56px - 16px);
     overflow-y: auto;
     overflow-x: hidden;
     padding: 2rem;
-    box-shadow: 0 0 5px hsla(0, 0, 0, .1);
+    box-shadow: 0 0 5px rgba(0, 0, 0, .1);
     margin: 1rem auto 0;
     width: calc(100vw - 256px - 16vw);
     min-height: calc(100vh - 64px - 24px - 1rem - 40px);

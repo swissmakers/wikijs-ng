@@ -316,6 +316,10 @@ module.exports = {
    */
   async processFiles (files, user) {
     for (const item of files) {
+      // -> Git metadata (.gitignore, .gitattributes, ...) is not wiki content
+      if (/(^|\/)\.git/.test(item.relPath)) {
+        continue
+      }
       const contentType = pageHelper.getContentType(item.relPath)
       const fileExists = await fs.pathExists(item.file.path)
       if (!item.binary && contentType) {
@@ -335,7 +339,7 @@ module.exports = {
             destinationLocale: contentPath.locale,
             skipStorage: true
           })
-        } else if (!fileExists && !item.importAll && item.deletions > 0 && item.insertions === 0) {
+        } else if (!fileExists && !item.importAll) {
           // Page was deleted by git, can safely mark as deleted in DB
           WIKI.logger.info(`(STORAGE/GIT) Page marked as deleted: ${item.relPath}`)
 
@@ -364,35 +368,14 @@ module.exports = {
       } else {
         // -> Asset
 
-        if (fileExists && !item.importAll && ((item.before === item.after) || (item.deletions === 0 && item.insertions === 0))) {
-          // Asset was renamed by git, so rename in DB
+        if (fileExists && !item.importAll && item.oldPath && item.relPath !== item.oldPath) {
+          // Asset was moved / renamed by git: drop the old record, the new path is imported below
           WIKI.logger.info(`(STORAGE/GIT) Asset marked as renamed: from ${item.oldPath} to ${item.relPath}`)
-
-          const fileHash = assetHelper.generateHash(item.relPath)
-          const assetToRename = await WIKI.models.assets.query().findOne({ hash: fileHash })
-          if (assetToRename) {
-            await WIKI.models.assets.query().patch({
-              filename: item.relPath,
-              hash: fileHash
-            }).findById(assetToRename.id)
-            await assetToRename.deleteAssetCache()
-          } else {
-            WIKI.logger.info(`(STORAGE/GIT) Asset was not found in the DB, nothing to rename: ${item.relPath}`)
-          }
-          continue
-        } else if (!fileExists && !item.importAll && ((item.before > 0 && item.after === 0) || (item.deletions > 0 && item.insertions === 0))) {
+          await this.removeAsset(item.oldPath)
+        } else if (!fileExists && !item.importAll) {
           // Asset was deleted by git, can safely mark as deleted in DB
           WIKI.logger.info(`(STORAGE/GIT) Asset marked as deleted: ${item.relPath}`)
-
-          const fileHash = assetHelper.generateHash(item.relPath)
-          const assetToDelete = await WIKI.models.assets.query().findOne({ hash: fileHash })
-          if (assetToDelete) {
-            await WIKI.models.knex('assetData').where('id', assetToDelete.id).del()
-            await WIKI.models.assets.query().deleteById(assetToDelete.id)
-            await assetToDelete.deleteAssetCache()
-          } else {
-            WIKI.logger.info(`(STORAGE/GIT) Asset was not found in the DB, nothing to delete: ${item.relPath}`)
-          }
+          await this.removeAsset(item.relPath)
           continue
         }
 
@@ -409,6 +392,19 @@ module.exports = {
           WIKI.logger.warn(err)
         }
       }
+    }
+  },
+  /**
+   * Remove an asset (by its repository path) from the DB
+   */
+  async removeAsset (relPath) {
+    const asset = await WIKI.models.assets.query().findOne({ hash: assetHelper.generateHash(relPath) })
+    if (asset) {
+      await WIKI.models.knex('assetData').where('id', asset.id).del()
+      await WIKI.models.assets.query().deleteById(asset.id)
+      await asset.deleteAssetCache()
+    } else {
+      WIKI.logger.info(`(STORAGE/GIT) Asset was not found in the DB: ${relPath}`)
     }
   },
   /**

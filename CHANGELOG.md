@@ -25,6 +25,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Self-hosted draw.io**: the draw.io editor URL is configurable in Admin → General → Integrations (default `https://embed.diagrams.net`). The editor only accepts messages from that origin, and the CSP `frame-src` includes it.
 - **Diagram preview follows the renderer settings**: the Markdown editor preview renders PlantUML and Kroki blocks only when the renderer is enabled, using the configured server, image format and markers (Kroki had no preview before; PlantUML always used the public server).
 
+### Changed — editor and browser security
+
+- **Visual editor updated from CKEditor 5 v19 (2020) to v48.** Same toolbar, including the Wiki.js *Insert Assets* and *Link to Page* buttons; existing pages open unchanged. Files inserted from the media manager are linked as downloads (the old build ignored this). CKEditor is used under the GPL: no license server is contacted, and the editor shows the small "Powered by CKEditor" badge required for GPL use.
+- **Content-Security-Policy without `'unsafe-eval'`.** The browser no longer compiles the server-rendered markup as a Vue template: the pages are mounted with render functions on the runtime-only Vue build (`client/helpers/mount.js`). As a side effect, page content can no longer contain Vue template expressions, which closes a whole class of template-injection attacks; tabsets keep working.
+
 ### Added — features that were half built
 
 - **Backlinks**: pages show which other pages link to them ("Pages linking here"), filtered by the reader's permissions (unpublished pages and templates only for editors). New `pages.backlinks` GraphQL query.
@@ -101,6 +106,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - A failing PostgreSQL/MySQL session setup (e.g. an invalid `db.schema`) left new database connections hanging instead of failing; this also removes a Node.js deprecation warning at startup.
 - Deleting a user who had unsaved drafts failed on PostgreSQL (foreign key); drafts, watches and bookmarks of the user are now removed with the account.
 - **List settings were reset to their defaults on every restart**: narrowing *Page Extensions* (Admin → General) to e.g. only `md`, or clearing it, came back as `md, html, txt` after the next start, because saved lists were merged item by item with the defaults.
+- **Git sync: text assets were never imported.** SVG, TXT, CSV and other text files added or changed in the repository were mistaken for renames and skipped. Assets renamed in git are now moved in the wiki instead of left behind under the old name, git metadata files (`.gitignore`, …) are never imported as assets, and page files deleted in git are removed even if they were empty.
 - Page URLs: only the first unsafe character (`"`, `<`, `>`, `|`, `:`, `*`, `?`, control characters) was stripped from a requested path.
 - The setup wizard stored incomplete defaults for some settings (e.g. login, theme); it now takes all of them from `server/app/data.yml`, which also gained the full mail and SEO defaults.
 - Smaller fixes: the footer link used `ref` instead of `rel`, the sharing menu's default URL was undefined, the Apollo devtools flag never matched, the default page description read a non-existent setting, Let's Encrypt ignored the development flag, the default icon set was the invalid value `md`, and the dev container config used a different database password than the compose file.
@@ -109,6 +115,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - **Automated tests**: unit tests now cover page permissions and the permission inspector, the page path helpers, brute-force protection, the git sync lock, search query building, comment posting rules, notifications, feeds, the CSP builder, configuration merging, the diagram renderers (including the editor preview) and the translation files (same keys and placeholders in every language, every key used in the code exists).
 - **CI runs lint and tests** for every push to `main` and `dev` and for pull requests; the container image is only built (from `main`) when they pass.
+- **Git sync integration test** against real repositories (remote changes, wiki commits, leftover worktree changes, conflicting edits, an interrupted rebase, a push race, asset renames and deletions); CI also **smoke-tests the container image** (setup, login, pages, assets) before pushing it (`dev/smoke-test.sh`).
+- The Markdown editor uses the server's math parser instead of a copy; the build no longer prints Vuetify's Sass deprecation warnings, and the remaining ones in our styles are fixed; the GraphQL client no longer logs cache and devtools warnings in the browser console.
 - The code follows the `standard` ESLint style without the ~1900 exceptions parked during the 2.6 upgrade (mostly automatic formatting fixes); Cypress and Jest globals now only apply to their test folders.
 - Removed 51 unused images (fundraising buttons, splash photos, icons of removed features) and 135 unused translation keys of removed features, plus obsolete build files (an ARM Dockerfile for a GitHub workflow that no longer exists, an upstream CI script).
 - `config.sample.yml` lists the actually supported database versions and documents `db.socketPath` (MySQL / MariaDB); `.gitattributes` is reduced to the rules that apply to this repository; pages declare the Apple touch and Safari pinned-tab icons.
@@ -116,7 +124,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Database
 
 - New migration `2.8.2`: comment approval flag (`comments.isApproved`, existing comments stay approved).
-- New migration `2.8.1`: page activity log (seeded with the latest 500 page changes), user watches and bookmarks.
+- New migration `2.8.1`: page activity log (seeded with the latest 500 page changes), user watches and bookmarks; on MySQL / MariaDB the new tables always use `utf8mb4` (page titles with emoji).
 - New migration `2.8.0`: drops the unused `loggers` table and the `graphEndpoint` setting, moves a PlantUML renderer still configured for `plantuml.requarks.io` to `www.plantuml.com`, and replaces the upstream default logo setting with the bundled one. Applied automatically on first start.
 
 ## [2.7.0] - Not released separately

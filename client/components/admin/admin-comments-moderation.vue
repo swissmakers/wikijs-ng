@@ -49,8 +49,6 @@ import _ from 'lodash'
 import gql from 'graphql-tag'
 import { pagePath } from '@/helpers'
 
-const RESULT = 'responseResult { succeeded errorCode slug message }'
-
 export default {
   data () {
     return {
@@ -77,10 +75,10 @@ export default {
       }
     },
     approve (cm) {
-      return this.run(gql`mutation ($id: Int!) { comments { approve(id: $id) { ${RESULT} } } }`, cm.id, 'data.comments.approve.responseResult')
+      return this.run(gql`mutation ($id: Int!) { comments { approve(id: $id) { responseResult { succeeded errorCode slug message } } } }`, cm.id, 'data.comments.approve.responseResult')
     },
     remove (cm) {
-      return this.run(gql`mutation ($id: Int!) { comments { delete(id: $id) { ${RESULT} } } }`, cm.id, 'data.comments.delete.responseResult')
+      return this.run(gql`mutation ($id: Int!) { comments { delete(id: $id) { responseResult { succeeded errorCode slug message } } } }`, cm.id, 'data.comments.delete.responseResult')
     }
   },
   apollo: {

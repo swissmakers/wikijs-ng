@@ -90,6 +90,11 @@ jobs:
             .
           podman manifest inspect "$LOCAL_MANIFEST"
 
+      - name: Smoke test the image
+        env:
+          LOCAL_MANIFEST: localhost/wikijs-ng:${{ github.sha }}
+        run: dev/smoke-test.sh "$LOCAL_MANIFEST"
+
       - name: Push to Swissmakers Registry
         if: ${{ secrets.HARBOR_REGISTRY && secrets.HARBOR_PROJECT }}
         env:

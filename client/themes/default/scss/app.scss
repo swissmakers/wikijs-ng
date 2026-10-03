@@ -1235,7 +1235,7 @@
         @for $n from 0 through 12 {
           &.offset-#{$size}-#{$n} {
             margin-left: 0;
-            margin-right: ($n / 12 * 100) * 1%;
+            margin-right: calc(#{$n} / 12 * 100%);
           }
         }
       }

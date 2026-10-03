@@ -57,6 +57,8 @@ Everything is configurable through environment variables (`WIKI_IMAGE`,
 `WIKI_TEST_PORT`, `WIKI_PODMAN`, `DB_*` for an external test database — never a
 production one); see the script header.
 
+`dev/smoke-test.sh <image>` runs the automated check CI does after every image build: it starts the image with a throwaway SQLite database, completes the setup, logs in and loads a few pages and assets.
+
 # Building the container image with Podman
 
 Quick reference for building and running the container image on your own machine. The CI equivalent lives in `.gitea/workflows/build-harbor.yml`.
