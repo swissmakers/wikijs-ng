@@ -19,12 +19,12 @@ const EXTERNAL = path.join(ROOT, 'external')
 const LOCAL = path.join(ROOT, 'wiki-repo')
 const GITCONFIG = path.join(ROOT, 'gitconfig')
 
-// -> Isolated git identity, unaffected by the user's global / system config
+// -> Isolated git identity, unaffected by the user's global / system config.
+//    Passed explicitly: child processes get the real process environment, not Jest's per-test copy.
 fs.outputFileSync(GITCONFIG, '[user]\n  name = External\n  email = external@example.com\n[init]\n  defaultBranch = main\n')
-process.env.GIT_CONFIG_GLOBAL = GITCONFIG
-process.env.GIT_CONFIG_NOSYSTEM = '1'
+const GIT_ENV = { ...process.env, GIT_CONFIG_GLOBAL: GITCONFIG, GIT_CONFIG_NOSYSTEM: '1' }
 
-const git = (cwd, ...args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
+const git = (cwd, ...args) => execFileSync('git', args, { cwd, env: GIT_ENV, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
 const external = (...args) => git(EXTERNAL, ...args)
 const externalCommit = (file, content, message) => {
   fs.outputFileSync(path.join(EXTERNAL, file), content)
