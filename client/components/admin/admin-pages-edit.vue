@@ -81,37 +81,37 @@
           v-list.py-0(two-line, dense)
             v-list-item
               v-list-item-content
-                v-list-item-title: .overline.grey--text Title
+                v-list-item-title: .overline.wiki-muted Title
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.title }}
             v-divider
             v-list-item
               v-list-item-content
-                v-list-item-title: .overline.grey--text Description
+                v-list-item-title: .overline.wiki-muted Description
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.description || '-' }}
             v-divider
             v-list-item
               v-list-item-content
-                v-list-item-title: .overline.grey--text Locale
+                v-list-item-title: .overline.wiki-muted Locale
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.locale }}
             v-divider
             v-list-item
               v-list-item-content
-                v-list-item-title: .overline.grey--text Path
+                v-list-item-title: .overline.wiki-muted Path
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.path }}
             v-divider
             v-list-item
               v-list-item-content
-                v-list-item-title: .overline.grey--text Editor
+                v-list-item-title: .overline.wiki-muted Editor
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.editor || '?' }}
             v-divider
             v-list-item
               v-list-item-content
-                v-list-item-title: .overline.grey--text Content Type
+                v-list-item-title: .overline.wiki-muted Content Type
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.contentType || '?' }}
             v-divider
             v-list-item
               v-list-item-content
-                v-list-item-title: .overline.grey--text Page Hash
+                v-list-item-title: .overline.wiki-muted Page Hash
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.hash }}
 
       v-flex(xs12, lg6)
@@ -125,7 +125,7 @@
                 v-btn(icon, :to='`/users/` + page.creatorId')
                   v-icon(color='grey') mdi-account
               v-list-item-content
-                v-list-item-title: .overline.grey--text Creator
+                v-list-item-title: .overline.wiki-muted Creator
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.creatorName }} #[em.caption ({{ page.creatorEmail }})]
               v-list-item-action
                 v-list-item-action-text {{ page.createdAt | date('calendar') }}
@@ -135,7 +135,7 @@
                 v-btn(icon, :to='`/users/` + page.authorId')
                   v-icon(color='grey') mdi-account
               v-list-item-content
-                v-list-item-title: .overline.grey--text Last Editor
+                v-list-item-title: .overline.wiki-muted Last Editor
                 v-list-item-subtitle.body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-2` : `grey--text text--darken-3`') {{ page.authorName }} #[em.caption ({{ page.authorEmail }})]
               v-list-item-action
                 v-list-item-action-text {{ page.updatedAt | date('calendar') }}

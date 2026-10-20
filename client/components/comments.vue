@@ -40,9 +40,9 @@
           v-model='guestEmail'
           :aria-label='$t(`common:comments.fieldEmail`)'
         )
-    .d-flex.align-center.pt-3(v-if='permissions.write')
-      v-icon.mr-1(color='blue-grey') mdi-language-markdown-outline
-      .caption.blue-grey--text {{$t('common:comments.markdownFormat')}}
+    .comments-composer-actions.d-flex.align-center.pt-3(v-if='permissions.write')
+      v-icon.mr-1(color='var(--wiki-muted)') mdi-language-markdown-outline
+      .caption.wiki-muted {{$t('common:comments.markdownFormat')}}
       v-spacer
       .caption.mr-3(v-if='isAuthenticated')
         i18next(tag='span', path='common:comments.postingAs')
@@ -62,9 +62,9 @@
         indeterminate
         size='20'
         width='1'
-        color='blue-grey'
+        color='var(--wiki-muted)'
       )
-      .caption.blue-grey--text.pl-3: em {{$t('common:comments.loading')}}
+      .caption.wiki-muted.pl-3: em {{$t('common:comments.loading')}}
     v-timeline(
       dense
       v-else-if='comments && comments.length > 0'
@@ -88,9 +88,9 @@
               v-icon(small, @click='deleteCommentConfirm(cm)') mdi-delete
             .comments-post-name.caption
               strong {{cm.authorName}}
-              v-chip.ml-2(v-if='!cm.isApproved', x-small, label, color='orange', dark) {{ $t('common:comments.pending', { defaultValue: 'Awaiting approval' }) }}
-              v-btn.ml-2(v-if='!cm.isApproved && permissions.manage', x-small, depressed, color='success', @click='approveComment(cm)') {{ $t('common:comments.approve', { defaultValue: 'Approve' }) }}
-            .comments-post-date.overline.grey--text {{cm.createdAt | date('from') }} #[em(v-if='cm.createdAt !== cm.updatedAt') - {{$t('common:comments.modified', { reldate: $options.filters.date(cm.updatedAt, 'from') })}}]
+              v-chip.comments-pending.ml-2(v-if='!cm.isApproved', x-small, label) {{ $t('common:comments.pending', { defaultValue: 'Awaiting approval' }) }}
+              v-btn.ml-2(v-if='!cm.isApproved && permissions.manage', x-small, depressed, color='green darken-3', dark, @click='approveComment(cm)') {{ $t('common:comments.approve', { defaultValue: 'Approve' }) }}
+            .comments-post-date.overline.wiki-muted {{cm.createdAt | date('from') }} #[em(v-if='cm.createdAt !== cm.updatedAt') - {{$t('common:comments.modified', { reldate: $options.filters.date(cm.updatedAt, 'from') })}}]
             .comments-post-content.mt-3(v-if='commentEditId !== cm.id', v-html='cm.render')
             .comments-post-editcontent.mt-3(v-else)
               v-textarea(
@@ -104,11 +104,10 @@
                 color='blue-grey darken-2'
                 background-color='var(--wiki-background)'
               )
-              .d-flex.align-center.pt-3
+              .comments-composer-actions.d-flex.align-center.pt-3
                 v-spacer
                 v-btn.mr-3(
-                  dark
-                  color='blue-grey darken-2'
+                  color='var(--wiki-muted)'
                   @click='editCommentCancel'
                   outlined
                   )
@@ -123,7 +122,7 @@
                   v-icon(left) mdi-comment
                   span.text-none {{$t('common:comments.updateComment')}}
             .comments-post-replybtn.mt-2(v-if='permissions.write && commentEditId !== cm.id && replyToId !== cm.id')
-              v-btn.px-1(text, x-small, color='blue-grey', @click='startReply(cm)')
+              v-btn.px-1(text, x-small, color='var(--wiki-link)', @click='startReply(cm)')
                 v-icon(left, x-small) mdi-reply
                 span.text-none {{$t('common:comments.reply', { defaultValue: 'Reply' })}}
             .comments-post-replyform.mt-3(v-if='replyToId === cm.id')
@@ -140,14 +139,14 @@
                 :placeholder='$t(`common:comments.replyPlaceholder`, { defaultValue: `Write a reply...` })'
                 background-color='var(--wiki-background)'
               )
-              .d-flex.align-center.pt-2
+              .comments-composer-actions.d-flex.align-center.pt-2
                 v-spacer
-                v-btn.mr-2(text, small, color='blue-grey', @click='cancelReply') {{$t('common:actions.cancel')}}
+                v-btn.mr-2(text, small, color='var(--wiki-muted)', @click='cancelReply') {{$t('common:actions.cancel')}}
                 v-btn(small, dark, depressed, color='blue-grey darken-2', @click='postReply', :loading='isBusy')
                   v-icon(left, small) mdi-reply
                   span.text-none {{$t('common:comments.postReply', { defaultValue: 'Reply' })}}
-    .pt-5.text-center.body-2.blue-grey--text(v-else-if='permissions.write') {{$t('common:comments.beFirst')}}
-    .text-center.body-2.blue-grey--text(v-else) {{$t('common:comments.none')}}
+    .pt-5.text-center.body-2.wiki-muted(v-else-if='permissions.write') {{$t('common:comments.beFirst')}}
+    .text-center.body-2.wiki-muted(v-else) {{$t('common:comments.none')}}
 
     v-dialog(v-model='deleteCommentDialogShown', max-width='500')
       v-card
@@ -610,6 +609,21 @@ export default {
 </script>
 
 <style lang="scss">
+.comments-composer-actions {
+  flex-wrap: wrap;
+  row-gap: 12px;
+}
+
+.comments-pending.v-chip {
+  background-color: #f4ddb3;
+  color: #654714;
+
+  @at-root .theme--dark & {
+    background-color: #4c3c23;
+    color: #e3c58e;
+  }
+}
+
 .comments-post {
   position: relative;
 

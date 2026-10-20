@@ -43,7 +43,7 @@ echo ">> Taking screenshots..."
 rm -rf "$SHOTS_DIR"
 # -> Editor terminals (e.g. VS Code) export ELECTRON_RUN_AS_NODE, which keeps Cypress' Electron from starting
 (cd "$REPO_DIR" && env -u ELECTRON_RUN_AS_NODE npx cypress run \
-  --spec dev/cypress/integration/screenshots.spec.js \
+  --spec dev/cypress/integration/admin-settings.spec.js,dev/cypress/integration/screenshots.spec.js \
   --config "baseUrl=${BASE},video=false,viewportWidth=1600,viewportHeight=900" \
   --env "jwt=${JWT}")
 

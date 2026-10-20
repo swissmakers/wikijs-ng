@@ -805,7 +805,8 @@ export default {
         }
       },
       fetchPolicy: 'network-only',
-      update: (data) => data.users.single,
+      // Keep editable profile fields and group membership out of Apollo's cache.
+      update: (data) => _.cloneDeep(data.users.single),
       watchLoading (isLoading) {
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-users-refresh')
       }

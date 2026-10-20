@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app(v-scroll='upBtnScroll', :dark='$vuetify.theme.dark', :class='$vuetify.rtl ? `is-rtl` : `is-ltr`')
+  v-app.wiki-page(v-scroll='upBtnScroll', :dark='$vuetify.theme.dark', :class='[$vuetify.rtl ? `is-rtl` : `is-ltr`, `toc-${tocPosition}`]')
     nav-header(v-if='!printView')
     v-navigation-drawer.wiki-sidebar(
       v-if='navMode !== `NONE` && !printView'
@@ -38,24 +38,15 @@
             .caption.red--text {{$t('common:page.unpublished')}}
             status-indicator.ml-3(negative, pulse)
       v-container.wiki-page-header.pa-0(fluid)
-        v-row.page-header-section.py-4(no-gutters, align-content='center')
-          v-col.page-col-content.is-page-header(
-            :offset-xl='tocPosition === `left` ? 2 : 0'
-            :offset-lg='tocPosition === `left` ? 3 : 0'
-            :xl='tocPosition === `right` ? 10 : false'
-            :lg='tocPosition === `right` ? 9 : false'
-            style='margin-top: auto; margin-bottom: auto;'
-            :class='$vuetify.rtl ? `pr-4` : `pl-4`'
-            )
+        v-row.page-header-section(no-gutters, align-content='center')
+          v-col.page-col-content.is-page-header
             .page-header-headings
-              .text-h4.page-header-title {{title}}
-              .body-2.wiki-muted.mt-1 {{description}}
+              h1.page-header-title {{title}}
+              .page-header-description.wiki-muted.mt-2(v-if='description') {{description}}
               .page-header-tags.mt-2(v-if='tags.length > 0')
                 v-chip.mr-1(
                   label
                   small
-                  outlined
-                  color='primary'
                   v-for='(tag, idx) in tags'
                   :href='`/t/` + tag.tag'
                   :key='`tag-` + tag.tag'
@@ -65,8 +56,6 @@
                 v-chip(
                   label
                   small
-                  outlined
-                  color='primary'
                   v-if='tags.length > 1'
                   :href='`/t/` + tags.map(t => t.tag).join(`/`)'
                   :aria-label='$t(`common:page.tagsMatching`)'
@@ -93,55 +82,49 @@
                 )
                 v-icon.mr-2(small) {{ editShortcutsObj.editMenuExternalIcon }}
                 span.text-none {{$t(`common:page.editExternal`, { name: editShortcutsObj.editMenuExternalName })}}
-      v-container.pl-5.pt-4(fluid, grid-list-xl)
-        v-layout(row)
+      v-container.wiki-document-layout(fluid)
+        v-layout.page-layout(row)
           v-flex.page-col-sd(
             v-if='tocPosition !== `off` && $vuetify.breakpoint.lgAndUp'
-            :order-xs1='tocPosition !== `right`'
-            :order-xs2='tocPosition === `right`'
-            lg3
-            xl2
             )
             v-card.page-toc-card.mb-5(v-if='tocDecoded.length')
-              .overline.pa-5.pb-0(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:page.toc')}}
-              v-list.pb-3(dense, nav, :class='$vuetify.theme.dark ? `darken-3-d3` : ``')
+              .page-sidebar-heading {{$t('common:page.toc')}}
+              v-list(dense, nav)
                 template(v-for='(tocItem, tocIdx) in tocDecoded')
                   v-list-item.page-toc-item(
                     @click='$vuetify.goTo(tocItem.anchor, scrollOpts)'
                     :class='activeAnchor === tocItem.anchor ? `is-active` : ``'
                     )
-                    v-list-item-title.px-3 {{tocItem.title}}
+                    v-list-item-title {{tocItem.title}}
                   template(v-for='tocSubItem in tocItem.children')
                     v-list-item.page-toc-item.is-sub(
                       @click='$vuetify.goTo(tocSubItem.anchor, scrollOpts)'
                       :class='activeAnchor === tocSubItem.anchor ? `is-active` : ``'
                       )
-                      v-list-item-title.px-3.pl-6.caption.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-1`') {{tocSubItem.title}}
+                      v-list-item-title {{tocSubItem.title}}
 
             v-card.page-comments-card.mb-5(v-if='commentsEnabled && commentsPerms.read')
-              .pa-5
-                .overline.pb-2.blue-grey--text.d-flex.align-center(:class='$vuetify.theme.dark ? `text--lighten-3` : `text--darken-2`')
+              div
+                .page-sidebar-heading.d-flex.align-center
                   span {{$t('common:comments.sdTitle')}}
                 .d-flex
                   v-btn.text-none(
                     @click='goToComments()'
-                    :color='$vuetify.theme.dark ? `blue-grey` : `blue-grey darken-2`'
-                    outlined
+                    text
                     style='flex: 1 1 100%;'
                     small
                     )
-                    span.blue-grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') {{$t('common:comments.viewDiscussion')}}
+                    span {{$t('common:comments.viewDiscussion')}}
                   v-tooltip(right, v-if='commentsPerms.write')
                     template(v-slot:activator='{ on }')
                       v-btn.ml-2(
                         @click='goToComments(true)'
                         v-on='on'
-                        outlined
+                        text
                         small
-                        :color='$vuetify.theme.dark ? `blue-grey` : `blue-grey darken-2`'
                         :aria-label='$t(`common:comments.newComment`)'
                         )
-                        v-icon(:color='$vuetify.theme.dark ? `blue-grey lighten-1` : `blue-grey darken-2`', dense) mdi-comment-plus
+                        v-icon(dense) mdi-comment-plus
                     span {{$t('common:comments.newComment')}}
 
             v-card.page-shortcuts-card(flat)
@@ -171,13 +154,7 @@
                   span {{$t('common:page.exportPdf', { defaultValue: 'Export as PDF' })}}
                 v-spacer
 
-          v-flex.page-col-content(
-            xs12
-            :lg9='tocPosition !== `off`'
-            :xl10='tocPosition !== `off`'
-            :order-xs1='tocPosition === `right`'
-            :order-xs2='tocPosition !== `right`'
-            )
+          v-flex.page-col-content
             v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasAnyPagePermissions && editShortcutsObj.editFab')
               template(v-slot:activator='{ on: onEditActivator }')
                 v-speed-dial(
@@ -218,10 +195,10 @@
               span {{$t('common:page.editPage')}}
             v-alert.mb-5(v-if='!isPublished', color='red', outlined, icon='mdi-minus-circle', dense)
               .caption {{$t('common:page.unpublishedWarning')}}
-            v-expansion-panels.mb-4(v-if='tocDecoded.length && tocPosition !== `off` && $vuetify.breakpoint.mdAndDown && !printView', flat)
+            v-expansion-panels.page-mobile-toc.mb-6(v-if='tocDecoded.length && tocPosition !== `off` && $vuetify.breakpoint.mdAndDown && !printView', flat)
               v-expansion-panel
                 v-expansion-panel-header
-                  .overline(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:page.toc')}}
+                  .page-sidebar-heading {{$t('common:page.toc')}}
                 v-expansion-panel-content
                   v-list(dense, nav)
                     template(v-for='(tocItem, tocIdx) in tocDecoded')
@@ -229,16 +206,16 @@
                         v-list-item-title {{tocItem.title}}
                       template(v-for='tocSubItem in tocItem.children')
                         v-list-item(@click='$vuetify.goTo(tocSubItem.anchor, scrollOpts)')
-                          v-list-item-title.pl-4.caption.grey--text {{tocSubItem.title}}
+                          v-list-item-title.pl-4.caption.wiki-muted {{tocSubItem.title}}
             .contents(ref='container')
               slot(name='contents')
-            .page-author-footer.mt-8.d-flex.align-center(v-if='!printView')
-              v-avatar.mr-3(color='primary', size='36')
-                span.white--text.subtitle-2 {{ authorInitials }}
+            .page-author-footer.d-flex.align-center(v-if='!printView')
+              v-avatar.page-author-avatar.mr-3(size='36')
+                span.subtitle-2 {{ authorInitials }}
               div
-                .caption.grey--text {{$t('common:page.lastEditedBy')}}
-                .body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-1` : `grey--text text--darken-3`') {{ authorName }} · {{ updatedAt | date('calendar') }}
-                .caption.grey--text(v-if='createdLabel') {{ createdLabel }}
+                .caption.wiki-muted {{$t('common:page.lastEditedBy')}}
+                .body-2 {{ authorName }} · {{ updatedAt | date('calendar') }}
+                .caption.wiki-muted(v-if='createdLabel') {{ createdLabel }}
               v-spacer
               v-btn(
                 text
@@ -252,7 +229,7 @@
             page-backlinks.mt-6(v-if='!printView', :locale='locale', :path='path')
             .comments-container#discussion(v-if='commentsEnabled && commentsPerms.read && !printView')
               .comments-header
-                v-icon.mr-2(dark) mdi-comment-text-outline
+                v-icon.mr-2 mdi-comment-text-outline
                 span {{$t('common:comments.title')}}
               .comments-main
                 slot(name='comments')
@@ -621,43 +598,261 @@ export default {
 
 <style lang="scss">
 
-.page-header-title {
-  color: mc('theme', 'navy');
-  font-weight: 500;
-  letter-spacing: -.5px !important;
-
-  @at-root .theme--dark & {
-    color: mc('grey', '300');
+// The document and its title share one grid; navigation stays outside the reading column.
+.v-application.wiki-page.theme--light, .v-application.wiki-page.theme--dark {
+  .v-main, .v-main__wrap {
+    background-color: var(--wiki-surface);
   }
-}
 
-.page-toc-item {
-  border-left: 2px solid transparent;
-  border-radius: 0 !important;
+  .wiki-page-header, .wiki-document-layout {
+    width: 100%;
+    max-width: 1236px;
+    margin-inline: auto;
+    padding-inline: 32px !important;
+    background-color: var(--wiki-surface);
+  }
 
-  &.is-active {
-    border-left-color: mc('theme', 'primary');
+  .wiki-document-layout {
+    padding-top: 0;
+    padding-bottom: 56px;
+  }
+
+  .page-layout, .page-header-section {
+    display: grid;
+    grid-template-columns: minmax(0, 920px);
+    justify-content: center;
+    margin: 0;
+  }
+
+  .page-header-section {
+    padding-block: 32px 28px;
+  }
+
+  .page-col-content {
+    min-width: 0;
+    width: 100%;
+    padding: 0;
+  }
+
+  .page-header-title {
+    margin: 0;
+    color: var(--wiki-text);
+    font-size: 2rem;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -.5px;
+    overflow-wrap: break-word;
+  }
+
+  .page-header-description {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .page-header-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    .v-chip {
+      background-color: var(--wiki-surface-alt);
+      color: var(--wiki-muted);
+      border: 0;
+      border-radius: 3px;
+      height: 24px;
+      font-size: 12px;
+    }
+  }
+
+  .page-edit-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+
+    .v-btn {
+      background-color: var(--wiki-surface-alt);
+      color: var(--wiki-text);
+      border-radius: 3px;
+    }
+  }
+
+  .page-col-sd {
+    align-self: start;
+    position: sticky;
+    top: 88px;
+    max-height: calc(100vh - 112px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--wiki-border) transparent;
+  }
+
+  .page-toc-card.v-card, .page-comments-card.v-card, .page-shortcuts-card.v-card {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+
+    .v-list, .v-toolbar {
+      background-color: transparent;
+    }
+  }
+
+  .page-sidebar-heading {
+    margin-bottom: 12px;
+    color: var(--wiki-muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .page-toc-card .v-list {
+    padding: 0;
+  }
+
+  .page-toc-item {
+    min-height: 34px;
+    margin-bottom: 0 !important;
+    padding: 7px 12px;
+    border-inline-start: 2px solid var(--wiki-border);
+    border-radius: 0 !important;
 
     .v-list-item__title {
-      color: mc('theme', 'primary');
+      color: var(--wiki-muted);
+      white-space: normal;
+      font-size: 13px;
+      line-height: 1.5;
     }
 
-    @at-root .theme--dark & {
-      border-left-color: mc('theme', 'accent');
+    &.is-sub {
+      padding-inline-start: 24px;
+    }
+
+    &.is-active {
+      border-inline-start-color: var(--wiki-link);
 
       .v-list-item__title {
-        color: mc('theme', 'accent');
+        color: var(--wiki-text);
+        font-weight: 600;
       }
     }
   }
-}
 
-.page-author-footer {
-  border-top: 1px solid mc('grey', '300');
-  padding-top: 16px;
+  .page-comments-card {
+    padding-top: 8px;
 
-  @at-root .theme--dark & {
-    border-top-color: mc('grey', '700');
+    .v-btn {
+      color: var(--wiki-muted);
+      padding-inline: 0;
+      justify-content: flex-start;
+    }
+  }
+
+  .page-shortcuts-card {
+    border-top: 1px solid var(--wiki-border) !important;
+
+    .v-toolbar__content {
+      padding-inline: 0;
+    }
+
+    // Five actions must fit the 220px contents column, including watch/bookmark.
+    .v-btn--icon {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  .page-mobile-toc {
+    border-block: 1px solid var(--wiki-border);
+    border-radius: 0;
+
+    .v-expansion-panel {
+      background-color: transparent;
+    }
+
+    .v-expansion-panel-header {
+      padding: 16px 0;
+      min-height: 48px;
+    }
+
+    .page-sidebar-heading {
+      margin-bottom: 0;
+    }
+  }
+
+  .page-author-footer {
+    border-top: 1px solid var(--wiki-border);
+    margin-top: 40px;
+    padding-top: 20px;
+    gap: 4px;
+
+    .page-author-avatar {
+      background-color: var(--wiki-surface-alt);
+      color: var(--wiki-muted);
+    }
+  }
+
+  .page-backlinks .overline.grey--text {
+    color: var(--wiki-muted) !important;
+  }
+
+  .comments-container {
+    margin-top: 40px;
+  }
+
+  @media screen and (min-width: 1264px) {
+    &.toc-left, &.toc-right {
+      .page-layout, .page-header-section {
+        column-gap: 32px;
+      }
+    }
+
+    &.toc-left {
+      .page-layout, .page-header-section {
+        grid-template-columns: 220px minmax(0, 920px);
+      }
+
+      .page-col-content {
+        grid-column: 2;
+        grid-row: 1;
+      }
+    }
+
+    &.toc-right {
+      .page-layout, .page-header-section {
+        grid-template-columns: minmax(0, 920px) 220px;
+      }
+
+      .page-col-sd {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .page-col-content {
+        grid-column: 1;
+        grid-row: 1;
+      }
+    }
+  }
+
+  @media screen and (max-width: 600px) {
+    .wiki-page-header, .wiki-document-layout {
+      padding-inline: 20px !important;
+    }
+
+    .page-header-section {
+      padding-block: 24px;
+    }
+
+    .page-header-title {
+      font-size: 1.75rem;
+    }
+
+    .page-author-footer {
+      flex-wrap: wrap;
+    }
   }
 }
 
@@ -667,65 +862,16 @@ export default {
   }
 }
 
-.page-col-sd {
-  align-self: flex-start;
-  position: sticky;
-  top: 64px;
-  max-height: calc(100vh - 64px);
-  overflow-y: auto;
-  -ms-overflow-style: none;
-}
+@media print {
+  .v-application.wiki-page.theme--light, .v-application.wiki-page.theme--dark {
+    .wiki-page-header, .wiki-document-layout {
+      max-width: none;
+      padding: 0 !important;
+    }
 
-.page-col-sd::-webkit-scrollbar {
-  display: none;
-}
-
-.page-header-section {
-  position: relative;
-
-  > .is-page-header {
-    position: relative;
-  }
-
-  .page-header-headings {
-    min-height: 52px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-  }
-
-  .page-edit-shortcuts {
-    position: absolute;
-    bottom: -33px;
-    right: 10px;
-
-    .v-btn {
-      border-right: 1px solid #DDD !important;
-      border-bottom: 1px solid #DDD !important;
-      border-radius: 0;
-      color: #777;
-      background-color: #FFF !important;
-
-      @at-root .theme--dark & {
-        background-color: #222 !important;
-        border-right-color: #444 !important;
-        border-bottom-color: #444 !important;
-        color: #CCC;
-      }
-
-      .v-icon {
-        color: mc('blue', '700');
-      }
-
-      &:first-child {
-        border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px;
-      }
-
-      &:last-child {
-        border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
-      }
+    .page-header-section {
+      display: block;
+      padding-block: 0 20px;
     }
   }
 }

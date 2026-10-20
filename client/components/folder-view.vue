@@ -32,54 +32,50 @@
     v-main
       v-toolbar.wiki-breadcrumbs(flat, dense, v-if='$vuetify.breakpoint.smAndUp')
         page-breadcrumbs(:locale='locale', :path='path', current-disabled)
-      v-container.wiki-page-header.pa-0(fluid)
-        v-row.page-header-section(no-gutters, align-content='center')
-          v-col.is-page-header.py-4(:class='$vuetify.rtl ? `pr-4` : `pl-4`')
-            .d-flex.align-center
-              v-icon.mr-3(size='40', color='primary') mdi-folder-open-outline
-              div
-                .headline.wiki-title {{folderTitle}}
-                .caption.wiki-muted /{{path}}
-              v-spacer
-              v-btn.mr-3(
-                v-if='canWatch'
-                color='primary'
-                outlined
-                :loading='isWatchLoading'
-                @click='watchFolder'
-                )
-                v-icon(left) mdi-bell-plus-outline
-                span {{$t('common:folderView.watch', { defaultValue: 'Watch this folder' })}}
-              v-btn.mr-3(
-                v-if='hasWritePagesPermission'
-                color='primary'
-                depressed
-                :href='createPageUrl'
-                )
-                v-icon(left) mdi-plus
-                span {{$t('common:folderView.createPage', { defaultValue: 'Create this page' })}}
-      v-container.pt-5(fluid, grid-list-xl)
+      v-container.wiki-directory-header(fluid)
+        .d-flex.align-center
+          div
+            .headline.wiki-title {{folderTitle}}
+            .caption.wiki-muted.mt-1 /{{path}}
+          .d-flex.directory-actions
+            v-btn(
+              v-if='canWatch'
+              outlined
+              :loading='isWatchLoading'
+              @click='watchFolder'
+              )
+              v-icon(left) mdi-bell-plus-outline
+              span {{$t('common:folderView.watch', { defaultValue: 'Watch this folder' })}}
+            v-btn(
+              v-if='hasWritePagesPermission'
+              color='primary'
+              depressed
+              :href='createPageUrl'
+              )
+              v-icon(left) mdi-plus
+              span {{$t('common:folderView.createPage', { defaultValue: 'Create this page' })}}
+      v-container.wiki-directory-content(fluid, grid-list-xl)
         v-progress-linear(v-if='isLoading', indeterminate, color='primary')
         template(v-else)
           template(v-if='folders.length')
-            .overline.pb-2(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:folderView.folders', { defaultValue: 'Folders' })}}
+            .overline.pb-2 {{$t('common:folderView.folders', { defaultValue: 'Folders' })}}
             v-row(dense)
-              v-col(cols='12', sm='6', md='4', lg='3', v-for='item of folders', :key='`folder-` + item.id')
+              v-col(cols='12', sm='6', md='6', lg='4', v-for='item of folders', :key='`folder-` + item.id')
                 v-card.folder-view-card(flat, :href='itemUrl(item)')
                   v-card-text.d-flex.align-center
                     v-icon.mr-3(color='primary') mdi-folder
                     .subtitle-2.text-truncate {{item.title}}
           template(v-if='pages.length')
-            .overline.pb-2.pt-4(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:folderView.pages', { defaultValue: 'Pages' })}}
+            .overline.pb-2.pt-4 {{$t('common:folderView.pages', { defaultValue: 'Pages' })}}
             v-row(dense)
-              v-col(cols='12', sm='6', md='4', lg='3', v-for='item of pages', :key='`page-` + item.id')
+              v-col(cols='12', sm='6', v-for='item of pages', :key='`page-` + item.id')
                 v-card.folder-view-card(flat, :href='itemUrl(item)')
                   v-card-text
                     .d-flex.align-center
                       v-icon.mr-3(color='grey darken-1') mdi-text-box-outline
                       .subtitle-2.text-truncate {{item.title}}
-                    .caption.grey--text.mt-2.folder-view-card-description(v-if='item.description') {{item.description}}
-                    .caption.grey--text.text--lighten-1.mt-1(v-if='item.updatedAt') {{item.updatedAt | date('calendar')}}
+                    .caption.wiki-muted.mt-2.folder-view-card-description(v-if='item.description') {{item.description}}
+                    .caption.wiki-muted.mt-1(v-if='item.updatedAt') {{item.updatedAt | date('calendar')}}
           v-row(v-if='!folders.length && !pages.length', justify='center')
             v-col(cols='12', md='6')
               v-card.text-center.pa-8(outlined)

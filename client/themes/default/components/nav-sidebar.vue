@@ -228,18 +228,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.sidebar-header-light {
-  background-color: mc('theme', 'primary-dark');
-}
-
-.theme--light .sidebar-btn {
-  background-color: mc('theme', 'primary-dark') !important;
-  color: #FFF !important;
-
-  .v-icon {
-    color: #FFF !important;
-  }
-}
-</style>

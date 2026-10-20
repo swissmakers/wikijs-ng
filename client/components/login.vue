@@ -186,7 +186,7 @@
     //- TFA FORM
     //-------------------------------------------------
     v-dialog(v-model='isTFAShown', max-width='500', persistent)
-      v-card
+      v-card(light)
         .login-tfa.text-center.pa-5.grey--text.text--darken-3
           img(src='_assets/svg/icon-pin-pad.svg')
           .subtitle-2 {{$t('auth:tfaFormTitle')}}
@@ -216,7 +216,7 @@
     //- SETUP TFA FORM
     //-------------------------------------------------
     v-dialog(v-model='isTFASetupShown', max-width='600', persistent)
-      v-card
+      v-card(light)
         .login-tfa.text-center.pa-5.grey--text.text--darken-3
           .subtitle-1.primary--text {{$t('auth:tfaSetupTitle')}}
           v-divider.my-5
@@ -786,6 +786,11 @@ export default {
       max-width: 100%;
       flex-shrink: 0;
       padding: 30px 28px 24px;
+
+      input::placeholder {
+        color: #60656f;
+        opacity: 1;
+      }
     }
 
     &-head {

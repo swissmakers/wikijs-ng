@@ -1,11 +1,14 @@
 <template lang='pug'>
   v-app.admin
     nav-header(hide-search)
+      template(slot='actions', v-if='$vuetify.breakpoint.smAndDown')
+        v-btn(icon, @click='adminDrawerShown = !adminDrawerShown', :aria-label='$t(`admin:adminArea`)', aria-controls='admin-navigation', :aria-expanded='String(adminDrawerShown)')
+          v-icon mdi-menu
       template(slot='mid')
         v-spacer
         .overline.grey--text {{$t('admin:adminArea')}}
         v-spacer
-    v-navigation-drawer.pb-0.admin-sidebar.wiki-sidebar(v-model='adminDrawerShown', app, fixed, clipped, :right='$vuetify.rtl', permanent, width='300')
+    v-navigation-drawer.pb-0.admin-sidebar.wiki-sidebar(id='admin-navigation', v-model='adminDrawerShown', app, fixed, clipped, :right='$vuetify.rtl', :permanent='$vuetify.breakpoint.mdAndUp', :temporary='$vuetify.breakpoint.smAndDown', width='300')
       vue-scroll(:ops='scrollStyle')
         v-list.radius-0(dense, nav)
           v-list-item(to='/dashboard', color='primary')
@@ -174,7 +177,7 @@ export default {
   i18nOptions: { namespaces: 'admin' },
   data () {
     return {
-      adminDrawerShown: true,
+      adminDrawerShown: this.$vuetify.breakpoint.mdAndUp,
       scrollStyle: {
         vuescroll: {},
         scrollPanel: {
@@ -201,6 +204,11 @@ export default {
   computed: {
     info: sync('admin/info'),
     permissions: get('user/permissions')
+  },
+  watch: {
+    '$vuetify.breakpoint.mdAndUp' (isDesktop) {
+      this.adminDrawerShown = isDesktop
+    }
   },
   router,
   created () {

@@ -112,7 +112,7 @@ Ask in the comments below or contact the platform team.
     title: 'Docker Installation',
     description: 'Run Wiki.js NG as a container',
     tags: ['installation', 'containers'],
-    content: `Keep your team's knowledge available with a repeatable container deployment. This guide covers the recommended setup for our internal workspace.
+    content: `Keep your team's knowledge available with a repeatable container deployment. This guide covers the recommended setup for the Swissmakers Wiki.
 
 > **Before you begin** — provision a PostgreSQL database and a persistent data volume. The image supports both \`linux/amd64\` and \`linux/arm64\`.
 {.is-info}
@@ -131,6 +131,27 @@ Open \`http://localhost:3000\` and complete the setup wizard.
 ## Persistent data
 
 Mount \`/wiki/data\` to keep uploads, the Git repository and sideloaded locales across restarts.
+
+## Configuration reference
+
+| Setting | Purpose | Example |
+| --- | --- | --- |
+| \`DB_TYPE\` | Database engine | \`postgres\` |
+| \`DB_HOST\` | Database endpoint | \`db.internal.example.com\` |
+| \`DB_NAME\` | Wiki database | \`wiki\` |
+| \`/wiki/data\` | Persistent volume | \`/srv/wiki/data\` |
+
+> **Back up before upgrading.** Keep a database snapshot and a copy of the data volume. Test the restore procedure in a separate environment.
+{.is-warning}
+
+> **Access is restricted.** Keep the database on your private network and store credentials in your secrets manager.
+{.is-danger}
+
+### Deployment checklist
+
+1. Confirm the database and volume are available.
+2. Start the container and complete the setup wizard.
+3. Configure authentication and verify access with a team member.
 
 ## Next steps
 
