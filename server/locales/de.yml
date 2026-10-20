@@ -509,6 +509,9 @@ admin:
   about:
     title: Über
 auth:
+  workspaceLabel: Team-Wiki
+  workspaceTitle: Die Wissensdatenbank deines Teams
+  workspaceDescription: Finde die Antworten, die du brauchst, und teile dein Wissen.
   actions:
     login: Anmeldung
     register: Registrieren

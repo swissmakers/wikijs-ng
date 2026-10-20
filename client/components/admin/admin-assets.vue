@@ -3,7 +3,8 @@
     v-layout(row, wrap)
       v-flex(xs12)
         .admin-header
-          img.animated.fadeInUp(src='/_assets/svg/icon-file.svg', alt='Assets', style='width: 80px;')
+          .workspace-header-icon
+            v-icon(size='26') mdi-folder-multiple-outline
           .admin-header-title
             .headline.primary--text.animated.fadeInLeft {{$t('admin:assets.title', { defaultValue: 'Assets' })}}
             .subtitle-1.grey--text.animated.fadeInLeft.wait-p4s {{$t('admin:assets.subtitle', { defaultValue: 'Manage uploaded files and folders' })}}
@@ -56,7 +57,7 @@
                 ) {{ item.name }}
       v-flex(xs12, md8, lg9)
         v-card.animated.fadeInUp.wait-p2s
-          v-toolbar(flat, :color='$vuetify.theme.dark ? `grey darken-3` : `grey lighten-4`', dense)
+          v-toolbar.wiki-surface-toolbar(flat, dense)
             .body-2 /{{ currentFolderPath }}
             v-spacer
             template(v-if='selectedAssets.length > 0')

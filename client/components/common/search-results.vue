@@ -35,7 +35,7 @@
         .subheading {{$t('common:header.searchNoResult')}}
       template(v-if='search && search.length >= 2 && results && results.length > 0')
         v-subheader.white--text {{$t('common:header.searchResultsCount', { total: response.totalHits })}}
-        v-list.search-results-items.radius-7.py-0(two-line, dense)
+        v-list.search-results-items.py-0(two-line, dense, tile)
           template(v-for='(item, idx) of results')
             v-list-item(@click='goToPage(item)', @click.middle="goToPageInNewTab(item)", :key='item.id', :class='idx === cursor ? `highlighted` : ``')
               v-list-item-avatar(tile)
@@ -56,7 +56,7 @@
         )
       template(v-if='suggestions && suggestions.length > 0')
         v-subheader.white--text.mt-3 {{$t('common:header.searchDidYouMean')}}
-        v-list.search-results-suggestions.radius-7(dense, dark)
+        v-list.search-results-suggestions(dense, dark, tile)
           template(v-for='(term, idx) of suggestions')
             v-list-item(:key='term', @click='setSearchTerm(term)', :class='idx + results.length === cursor ? `highlighted` : ``')
               v-list-item-avatar
@@ -108,7 +108,8 @@ export default {
       return this.$t('common:header.searchRestrictLocale', { locale: this.currentLocale.toUpperCase(), defaultValue: 'Only {{locale}}' })
     },
     restrictPathLabel () {
-      return this.$t('common:header.searchRestrictPath', { path: this.currentPath, defaultValue: 'Only under /{{path}}' })
+      // Vue renders this label as text and handles HTML escaping.
+      return this.$t('common:header.searchRestrictPath', { path: this.currentPath, defaultValue: 'Only under /{{path}}', interpolation: { escapeValue: false } })
     },
     results () {
       const currentIndex = (this.pagination - 1) * this.perPage
@@ -205,7 +206,7 @@ export default {
   overflow-y: auto;
   width: 100%;
   height: calc(100% - 64px);
-  background-color: rgba(0,0,0,.9);
+  background-color: rgba(9, 18, 31, .94);
   z-index: 100;
   text-align: center;
   animation: searchResultsReveal .6s ease;

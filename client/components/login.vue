@@ -1,11 +1,20 @@
 <template lang="pug">
   v-app
-    .login(:style='bgUrl ? `background-image: url(` + bgUrl + `);` : ``')
-      .login-sd
+    .login(:style='{ backgroundImage: `url(${JSON.stringify(bgUrl || "/_assets/img/login-office.jpg")})` }')
+      .login-intro
+        .login-brand
+          v-avatar(tile, size='32')
+            v-img(:src='brandLogoUrl', contain)
+          span {{ siteTitle }}
+        .login-intro-content
+          .login-eyebrow {{ $t('auth:workspaceLabel') }}
+          h1 {{ $t('auth:workspaceTitle') }}
+          p {{ $t('auth:workspaceDescription') }}
+      v-sheet.login-sd(light)
         .login-head
           v-avatar.login-head-logo(tile, size='42')
             v-img(:src='logoUrl', contain)
-          .text-h6.login-head-title {{ siteTitle }}
+          .text-h5.login-head-title {{ siteTitle }}
         v-alert.mx-3.mb-0(
           v-model='errorShown'
           transition='slide-y-reverse-transition'
@@ -171,6 +180,8 @@
               :loading='isLoading'
               ) {{ $t('auth:changePwd.proceed') }}
 
+      a.login-photo-credit(v-if='!bgUrl', href='https://unsplash.com/photos/V5vF94h52r0', target='_blank', rel='noopener noreferrer') Fabian Kleiser / Unsplash
+
     //-------------------------------------------------
     //- TFA FORM
     //-------------------------------------------------
@@ -297,6 +308,9 @@ export default {
       return this.strategies.length > 1
     },
     logoUrl () { return siteConfig.logoUrl },
+    brandLogoUrl () {
+      return this.logoUrl === '/_assets/svg/logo-swissmakers.svg' ? '/_assets/svg/logo-swissmakers-white.svg' : this.logoUrl
+    },
     filteredStrategies () {
       const qParams = new URLSearchParams(window.location.search)
       if (this.hideLocal && !qParams.has('all')) {
@@ -689,39 +703,99 @@ export default {
 <style lang="scss">
   .login {
     background-color: mc('theme', 'navy');
-    background-image: linear-gradient(135deg, mc('theme', 'navy') 0%, mc('theme', 'primary-dark') 70%, mc('theme', 'primary') 100%);
     background-size: cover;
     background-position: center center;
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    position: relative;
+    isolation: isolate;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: clamp(40px, 8vw, 140px);
+    padding: 72px 7vw;
 
-    &-sd {
-      background-color: #FFF;
-      border-radius: 10px;
-      box-shadow: 0 12px 40px rgba(0, 12, 28, .45);
-      width: 420px;
-      max-width: calc(100vw - 32px);
-      max-height: calc(100vh - 32px);
-      overflow-y: auto;
-      padding: 8px 8px 20px 8px;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(100deg, rgba(8, 22, 42, .92), rgba(11, 31, 53, .62) 55%, rgba(11, 31, 53, .3));
+    }
 
-      @include until($tablet) {
-        width: 100%;
-        margin: 16px;
+    &-intro {
+      color: #fff;
+      width: 520px;
+      max-width: 45%;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -.3px;
+    }
+
+    &-intro-content {
+      margin: auto 0;
+      padding: 64px 0;
+
+      h1 {
+        font-size: clamp(36px, 3.4vw, 54px);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -1.5px;
+        max-width: 520px;
       }
+
+      p {
+        color: #d0ddeb;
+        font-size: 18px;
+        line-height: 1.7;
+        max-width: 400px;
+        margin: 24px 0 0;
+      }
+    }
+
+    &-eyebrow {
+      color: #b5cce9;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    &-sd.v-sheet {
+      --wiki-surface: #fff;
+      --wiki-text: #243449;
+      --wiki-muted: #62748a;
+      color-scheme: light;
+      background-color: #fff;
+      color: #243449;
+      border: 0;
+      border-radius: 8px;
+      box-shadow: 0 24px 80px rgba(3, 14, 30, .3);
+      width: 440px;
+      max-width: 100%;
+      flex-shrink: 0;
+      padding: 30px 28px 24px;
     }
 
     &-head {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 28px 12px 4px 12px;
+      padding: 12px 12px 4px;
 
       &-logo {
-        margin-bottom: 10px;
+        margin-bottom: 18px;
       }
 
       &-title {
@@ -731,9 +805,9 @@ export default {
     }
 
     &-subtitle {
-      padding: 18px 12px 6px 12px;
-      color: mc('grey', '700');
-      font-weight: 500;
+      padding: 12px 12px 16px;
+      color: #62748a;
+      font-weight: 400;
       text-align: center;
     }
 
@@ -753,6 +827,14 @@ export default {
 
     &-form {
       padding: 12px;
+
+      .v-input__slot {
+        min-height: 48px;
+      }
+
+      .v-btn--is-elevated {
+        box-shadow: none;
+      }
     }
 
     &-main {
@@ -777,5 +859,51 @@ export default {
         margin: 0 auto;
       }
     }
+
+    &-photo-credit {
+      position: absolute;
+      bottom: 20px;
+      right: 24px;
+      font-size: 11px;
+      color: #e1eaf5 !important;
+      text-decoration: none;
+    }
+
+    @media (max-width: 960px) {
+      padding: 40px 24px 64px;
+      gap: 32px;
+
+      &-intro {
+        max-width: 40%;
+      }
+
+      &-intro-content h1 {
+        font-size: 36px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      flex-direction: column;
+      gap: 28px;
+
+      &-intro {
+        width: 440px;
+        max-width: 100%;
+        align-self: center;
+      }
+
+      &-intro-content {
+        display: none;
+      }
+
+      &-sd.v-sheet {
+        padding: 24px 16px;
+      }
+    }
+  }
+
+  .v-application .login .primary--text {
+    color: #205eac !important;
+    caret-color: #205eac !important;
   }
 </style>

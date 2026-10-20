@@ -10,7 +10,7 @@
       hide-details
       v-model='newcomment'
       color='blue-grey darken-2'
-      :background-color='$vuetify.theme.dark ? `grey darken-5` : `white`'
+      background-color='var(--wiki-background)'
       v-if='permissions.write'
       :aria-label='$t(`common:comments.fieldContent`)'
     )
@@ -19,7 +19,7 @@
         v-text-field(
           outlined
           color='blue-grey darken-2'
-          :background-color='$vuetify.theme.dark ? `grey darken-5` : `white`'
+          background-color='var(--wiki-background)'
           :placeholder='$t(`common:comments.fieldName`)'
           hide-details
           dense
@@ -31,7 +31,7 @@
         v-text-field(
           outlined
           color='blue-grey darken-2'
-          :background-color='$vuetify.theme.dark ? `grey darken-5` : `white`'
+          background-color='var(--wiki-background)'
           :placeholder='$t(`common:comments.fieldEmail`)'
           hide-details
           type='email'
@@ -81,7 +81,7 @@
         template(v-slot:icon)
           v-avatar(color='blue-grey', :size='cm.isReply ? 32 : 48')
             span.white--text(:class='cm.isReply ? `caption` : `title`') {{cm.initials}}
-        v-card.elevation-1
+        v-card(flat)
           v-card-text
             .comments-post-actions(v-if='canChange(cm) && !isBusy && commentEditId === 0')
               v-icon.mr-3(small, @click='editComment(cm)') mdi-pencil
@@ -102,7 +102,7 @@
                 hide-details
                 v-model='commentEditContent'
                 color='blue-grey darken-2'
-                :background-color='$vuetify.theme.dark ? `grey darken-5` : `white`'
+                background-color='var(--wiki-background)'
               )
               .d-flex.align-center.pt-3
                 v-spacer
@@ -138,7 +138,7 @@
                 v-model='replyContent'
                 color='blue-grey darken-2'
                 :placeholder='$t(`common:comments.replyPlaceholder`, { defaultValue: `Write a reply...` })'
-                :background-color='$vuetify.theme.dark ? `grey darken-5` : `white`'
+                background-color='var(--wiki-background)'
               )
               .d-flex.align-center.pt-2
                 v-spacer
@@ -662,7 +662,7 @@ export default {
       color: #FFF;
       font-weight: 400;
       font-size: .85rem;
-      font-family: Roboto Mono, monospace;
+      font-family: $code-font-family;
     }
   }
 }

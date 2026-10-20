@@ -509,6 +509,9 @@ admin:
   about:
     title: À propos
 auth:
+  workspaceLabel: Wiki d'équipe
+  workspaceTitle: La base de connaissances de votre équipe
+  workspaceDescription: Trouvez les réponses dont vous avez besoin et partagez vos connaissances.
   actions:
     login: S'identifier
     register: S'inscrire

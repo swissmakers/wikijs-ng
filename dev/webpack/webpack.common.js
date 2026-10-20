@@ -17,6 +17,8 @@ const sassLoader = (indentedSyntax) => ({
   options: {
     implementation: require('sass'),
     sourceMap: false,
+    // Vuetify's Sass also needs the native font stack for its typography utilities.
+    ...indentedSyntax && { additionalData: '@import "@/scss/base/typography.scss"\n' },
     sassOptions: {
       quietDeps: true,
       ...indentedSyntax && { indentedSyntax: true }

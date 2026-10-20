@@ -1,8 +1,22 @@
 html {
+  font-family: $body-font-family;
   box-sizing: border-box;
   height: 100%;
   overflow-y: auto !important;
 }
+
+body, input, textarea, select, button {
+  font-family: inherit;
+}
+
+code, pre, kbd, samp, .CodeMirror {
+  font-family: $code-font-family;
+}
+
+.v-application {
+  --ck-font-face: #{$body-font-family};
+}
+
 *, *:before, *:after {
   box-sizing: inherit;
 }

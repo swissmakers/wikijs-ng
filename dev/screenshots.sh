@@ -51,7 +51,7 @@ mkdir -p "$OUT_DIR"
 for file in "$SHOTS_DIR"/*.png; do
   name="$(basename "$file")"
   if [ "$name" = "login.png" ]; then
-    # -> The full-screen gradient is ~1 MB as PNG
+    # -> Store the photographic login background efficiently.
     python3 -c 'import sys; from PIL import Image; Image.open(sys.argv[1]).convert("RGB").save(sys.argv[2], quality=88, optimize=True)' \
       "$file" "$OUT_DIR/login.jpg"
   else

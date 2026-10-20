@@ -1,10 +1,9 @@
 <template lang="pug">
   v-app(:dark='$vuetify.theme.dark', :class='$vuetify.rtl ? `is-rtl` : `is-ltr`')
     nav-header
-    v-navigation-drawer(
+    v-navigation-drawer.wiki-sidebar(
       v-if='navMode !== `NONE`'
-      :class='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`'
-      dark
+      :dark='$vuetify.theme.dark'
       app
       clipped
       mobile-breakpoint='600'
@@ -13,7 +12,7 @@
       :right='$vuetify.rtl'
       )
       vue-scroll(:ops='scrollStyle')
-        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`', :items='sidebarDecoded', :nav-mode='navMode')
+        nav-sidebar(color='wiki-sidebar-list', :dark='$vuetify.theme.dark', :items='sidebarDecoded', :nav-mode='navMode')
 
     v-fab-transition(v-if='navMode !== `NONE`')
       v-btn(
@@ -31,17 +30,16 @@
         v-icon mdi-menu
 
     v-main
-      v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-3`', flat, dense, v-if='$vuetify.breakpoint.smAndUp')
+      v-toolbar.wiki-breadcrumbs(flat, dense, v-if='$vuetify.breakpoint.smAndUp')
         page-breadcrumbs(:locale='locale', :path='path', current-disabled)
-      v-divider
-      v-container.grey.pa-0(fluid, :class='$vuetify.theme.dark ? `darken-4-l3` : `lighten-4`')
+      v-container.wiki-page-header.pa-0(fluid)
         v-row.page-header-section(no-gutters, align-content='center')
           v-col.is-page-header.py-4(:class='$vuetify.rtl ? `pr-4` : `pl-4`')
             .d-flex.align-center
               v-icon.mr-3(size='40', color='primary') mdi-folder-open-outline
               div
-                .headline.grey--text(:class='$vuetify.theme.dark ? `text--lighten-2` : `text--darken-3`') {{folderTitle}}
-                .caption.grey--text.text--darken-1 /{{path}}
+                .headline.wiki-title {{folderTitle}}
+                .caption.wiki-muted /{{path}}
               v-spacer
               v-btn.mr-3(
                 v-if='canWatch'
@@ -60,7 +58,6 @@
                 )
                 v-icon(left) mdi-plus
                 span {{$t('common:folderView.createPage', { defaultValue: 'Create this page' })}}
-      v-divider
       v-container.pt-5(fluid, grid-list-xl)
         v-progress-linear(v-if='isLoading', indeterminate, color='primary')
         template(v-else)
@@ -68,7 +65,7 @@
             .overline.pb-2(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:folderView.folders', { defaultValue: 'Folders' })}}
             v-row(dense)
               v-col(cols='12', sm='6', md='4', lg='3', v-for='item of folders', :key='`folder-` + item.id')
-                v-card.folder-view-card(outlined, hover, :href='itemUrl(item)')
+                v-card.folder-view-card(flat, :href='itemUrl(item)')
                   v-card-text.d-flex.align-center
                     v-icon.mr-3(color='primary') mdi-folder
                     .subtitle-2.text-truncate {{item.title}}
@@ -76,7 +73,7 @@
             .overline.pb-2.pt-4(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:folderView.pages', { defaultValue: 'Pages' })}}
             v-row(dense)
               v-col(cols='12', sm='6', md='4', lg='3', v-for='item of pages', :key='`page-` + item.id')
-                v-card.folder-view-card(outlined, hover, :href='itemUrl(item)')
+                v-card.folder-view-card(flat, :href='itemUrl(item)')
                   v-card-text
                     .d-flex.align-center
                       v-icon.mr-3(color='grey darken-1') mdi-text-box-outline

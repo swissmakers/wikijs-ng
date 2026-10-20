@@ -1,9 +1,8 @@
 <template lang="pug">
   div
-    .pa-3.d-flex(v-if='navMode === `MIXED`', :class='$vuetify.theme.dark ? `grey darken-5` : `sidebar-header-light`')
+    .pa-3.d-flex.wiki-sidebar-switcher(v-if='navMode === `MIXED`')
       v-btn.sidebar-btn(
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : ``'
         style='min-width:0;'
         @click='goHome'
         :aria-label='$t(`common:header.home`)'
@@ -12,7 +11,6 @@
       v-btn.ml-3.sidebar-btn(
         v-if='currentMode === `custom`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : ``'
         style='flex: 1 1 100%;'
         @click='switchMode(`browse`)'
         )
@@ -21,7 +19,6 @@
       v-btn.ml-3.sidebar-btn(
         v-else-if='currentMode === `browse`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : ``'
         style='flex: 1 1 100%;'
         @click='switchMode(`custom`)'
         )

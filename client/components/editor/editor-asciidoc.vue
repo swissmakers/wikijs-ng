@@ -669,7 +669,7 @@ $editor-ascii-height-mobile: calc(100vh - 112px - 16px);
 
   .CodeMirror {
     height: auto;
-    font-family: 'Roboto Mono', monospace;
+    font-family: $code-font-family;
     font-size: .9rem;
 
     .cm-header-1 {

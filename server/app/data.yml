@@ -71,7 +71,7 @@ defaults:
     theming:
       theme: 'default'
       iconset: 'mdi'
-      darkMode: false
+      darkMode: true
       tocPosition: 'left'
     auth:
       autoLogin: false
