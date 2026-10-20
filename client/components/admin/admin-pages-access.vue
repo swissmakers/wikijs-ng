@@ -4,7 +4,7 @@
       v-icon.mr-2 mdi-shield-search
       span {{ $t('admin:pages.accessInspector', { defaultValue: 'Access Inspector' }) }}
     v-card-text
-      .caption.grey--text.mb-3 {{ $t('admin:pages.accessInspectorHint', { defaultValue: 'Check what a user or a group may do on this page, and which page rule decides it.' }) }}
+      .caption.wiki-muted.mb-3 {{ $t('admin:pages.accessInspectorHint', { defaultValue: 'Check what a user or a group may do on this page, and which page rule decides it.' }) }}
       v-row(dense)
         v-col(cols='12', md='4')
           v-btn-toggle(v-model='mode', mandatory, dense, color='primary')

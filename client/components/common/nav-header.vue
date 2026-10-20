@@ -1,12 +1,11 @@
 <template lang='pug'>
-  v-app-bar.nav-header(color='header', dark, app, :clipped-left='!$vuetify.rtl', :clipped-right='$vuetify.rtl', fixed, flat, :extended='searchIsShown && $vuetify.breakpoint.smAndDown')
-    v-toolbar(color='primary', flat, slot='extension', v-if='searchIsShown && $vuetify.breakpoint.smAndDown')
+  v-app-bar.nav-header(color='header', :dark='$vuetify.theme.dark', :light='!$vuetify.theme.dark', app, :clipped-left='!$vuetify.rtl', :clipped-right='$vuetify.rtl', fixed, flat, :extended='searchIsShown && $vuetify.breakpoint.smAndDown')
+    v-toolbar(color='header', flat, slot='extension', v-if='searchIsShown && $vuetify.breakpoint.smAndDown')
       v-text-field(
         ref='searchFieldMobile'
         v-model='search'
         clearable
-        background-color='primary'
-        color='white'
+        color='primary'
         :label='$t(`common:header.search`)'
         single-line
         solo
@@ -19,20 +18,20 @@
       )
     v-layout(row)
       v-flex(xs5, md4)
-        v-toolbar.nav-header-inner(color='header', dark, flat, :class='$vuetify.rtl ? `pr-3` : `pl-3`')
+        v-toolbar.nav-header-inner(color='header', :dark='$vuetify.theme.dark', :light='!$vuetify.theme.dark', flat, :class='$vuetify.rtl ? `pr-3` : `pl-3`')
           v-avatar(tile, size='34', @click='goHome')
             v-img.org-logo(:src='headerLogoUrl')
           v-toolbar-title(:class='{ "mx-3": $vuetify.breakpoint.mdAndUp, "mx-1": $vuetify.breakpoint.smAndDown }')
             span.subheading {{title}}
       v-flex(md4, v-if='$vuetify.breakpoint.mdAndUp')
-        v-toolbar.nav-header-inner(color='header', dark, flat)
+        v-toolbar.nav-header-inner(color='header', :dark='$vuetify.theme.dark', :light='!$vuetify.theme.dark', flat)
           slot(name='mid')
             transition(name='navHeaderSearch', v-if='searchIsShown')
               v-text-field(
                 ref='searchField',
                 v-if='searchIsShown && $vuetify.breakpoint.mdAndUp',
                 v-model='search',
-                color='white',
+                color='primary',
                 :label='$t(`common:header.search`)',
                 single-line,
                 solo
@@ -65,9 +64,9 @@
                   v-icon(color='grey') mdi-folder-multiple-image
               span {{$t('common:header.imagesFiles')}}
       v-flex(xs7, md4)
-        v-toolbar.nav-header-inner.pr-4(color='header', dark, flat)
+        v-toolbar.nav-header-inner.pr-4(color='header', :dark='$vuetify.theme.dark', :light='!$vuetify.theme.dark', flat)
           v-spacer
-          .navHeaderLoading.mr-3
+          .navHeaderLoading.mr-3(:class='{ "is-loading": isLoading }')
             v-progress-circular(indeterminate, color='blue', :size='22', :width='2' v-show='isLoading')
 
           slot(name='actions')
@@ -282,8 +281,8 @@ export default {
     title: get('site/title'),
     logoUrl: get('site/logoUrl'),
     headerLogoUrl () {
-      // -> The bundled logo is brand blue; use its white variant on the navy header
-      return this.logoUrl === '/_assets/svg/logo-swissmakers.svg' ? '/_assets/svg/logo-swissmakers-white.svg' : this.logoUrl
+      // Use the white brand mark only on dark headers.
+      return this.$vuetify.theme.dark && this.logoUrl === '/_assets/svg/logo-swissmakers.svg' ? '/_assets/svg/logo-swissmakers-white.svg' : this.logoUrl
     },
     path: get('page/path'),
     locale: get('page/locale'),
@@ -546,6 +545,58 @@ export default {
   &-inner {
     .v-toolbar__content {
       padding: 0;
+    }
+  }
+
+  @media (max-width: 600px) {
+    > .v-toolbar__content {
+      padding-inline: 8px;
+
+      > .layout {
+        flex-wrap: nowrap;
+        margin: 0;
+        min-width: 0;
+
+        > .flex:first-child {
+          flex: 1 1 auto;
+          max-width: none;
+          min-width: 0;
+        }
+
+        > .flex:last-child {
+          flex: 0 0 auto;
+          max-width: none;
+        }
+      }
+    }
+
+    .nav-header-inner {
+      padding-inline: 0 !important;
+
+      .v-btn--icon {
+        width: 36px;
+      }
+
+      .v-btn:not(.v-btn--icon) {
+        min-width: 36px;
+        padding-inline: 8px;
+      }
+
+      .v-divider { display: none; }
+    }
+
+    .v-toolbar__title { font-size: 15px; }
+
+    .navHeaderLoading {
+      display: none;
+
+      &.is-loading {
+        display: block;
+        position: absolute;
+        top: 3px;
+        inset-inline-end: 3px;
+        transform: scale(.5);
+      }
     }
   }
 

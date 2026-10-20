@@ -15,30 +15,20 @@
 }
 
 .v-main .contents {
-  color: mc('grey', '800');
-  padding: .5rem 0 50px;
+  color: var(--wiki-text);
+  padding: 0;
   position: relative;
+  font-size: 1rem;
+  line-height: 1.75;
+  overflow-wrap: break-word;
 
   > div > *:first-child {
     margin-top: 0;
   }
 
-  @at-root .theme--dark & {
-    color: var(--wiki-text);
-  }
-
-  // ---------------------------------
-  // READABILITY
-  // ---------------------------------
-
-  p, li {
-    line-height: 1.7;
-  }
-
-  h1, h2, h3 {
-    margin-top: 1.5em;
-    margin-bottom: .5em;
-    letter-spacing: -.25px;
+  // Keep prose readable while tables and code can use the available document width.
+  > div > p, > div > ul, > div > ol {
+    max-width: 84ch;
   }
 
   // ---------------------------------
@@ -46,7 +36,13 @@
   // ---------------------------------
 
   a {
-    color: mc('theme', 'primary');
+    color: var(--wiki-link);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+
+    &:hover {
+      text-decoration: underline;
+    }
 
     &.is-internal-link.is-invalid-page {
       color: mc('red', '700');
@@ -56,60 +52,50 @@
       }
     }
 
-    &.is-external-link {
-      padding-right: 3px;
-
-      &::after {
-        font-family: 'Material Design Icons', sans-serif;
-        font-size: 24px/1;
-        padding-left: 3px;
-        display: inline-block;
-        content: '\F03CC';
-        color: mc('grey', '500');
-        text-decoration: none;
-      }
-    }
-
-    @at-root .theme--dark & {
-      color: var(--wiki-link);
+    &.is-external-link::after {
+      font-family: 'Material Design Icons', sans-serif;
+      font-size: .85em;
+      line-height: 1;
+      padding-inline-start: 3px;
+      display: inline-block;
+      content: '\F03CC';
+      color: var(--wiki-muted);
+      text-decoration: none;
     }
   }
 
   // ---------------------------------
-  // HEADERS
+  // HEADINGS AND PARAGRAPHS
   // ---------------------------------
 
   h1, h2, h3, h4, h5, h6 {
     position: relative;
+    color: var(--wiki-text);
     line-height: 1.35;
     font-weight: 600;
+    letter-spacing: -.015em;
+    scroll-margin-top: 88px;
 
-    &::after {
-      display: none;
-    }
-
-    &:first-child {
-      padding-top: 0;
-    }
-
-    &:hover {
-      .toc-anchor {
-        display: block;
-      }
+    &:hover .toc-anchor, &:focus-within .toc-anchor {
+      opacity: 1;
     }
 
     .toc-anchor {
-      display: none;
+      opacity: 0;
       position: absolute;
-      right: 1rem;
-      bottom: .5rem;
-      font-size: 1.25rem;
+      inset-inline-end: 0;
+      bottom: .15em;
+      font-size: 1rem;
       text-decoration: none;
-      color: mc('grey', '500');
+      color: var(--wiki-muted);
+
+      &:focus-visible {
+        opacity: 1;
+      }
     }
 
     & + h2, & + h3, & + h4, & + h5, & + h6 {
-      margin-top: 8px;
+      margin-top: 1rem;
     }
 
     & + hr.footnotes-sep {
@@ -118,143 +104,41 @@
   }
 
   h1 {
-    padding: 0;
-    color: var(--wiki-text);
-    margin-top: 2rem;
-    position: relative;
-
-    @at-root .theme--dark & {
-      color: var(--wiki-text);
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: var(--wiki-border);
-      border-radius: 3px;
-
-      @at-root .theme--dark & {
-        background: var(--wiki-border);
-      }
-
-      @at-root .is-rtl & {
-        background: linear-gradient(to left, mc('theme', 'primary'), rgba(mc('theme', 'primary'), 0));
-      }
-      @at-root .theme--dark.is-rtl & {
-        background: linear-gradient(to left, mc('grey', '600'), rgba(mc('grey', '600'), 0));
-      }
-    }
+    font-size: 1.875rem;
+    margin: 2rem 0 1rem;
   }
+
   h2 {
-    margin: 1rem 0 0 0;
-    color: var(--wiki-text);
-    position: relative;
-
-    @at-root .theme--dark & {
-      color: var(--wiki-text);
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: var(--wiki-border);
-
-      @at-root .theme--dark & {
-        background: var(--wiki-border);
-      }
-
-      @at-root .is-rtl & {
-        background: linear-gradient(to left, mc('grey', '700'), rgba(mc('grey', '700'), 0));
-      }
-      @at-root .theme--dark.is-rtl & {
-        background: linear-gradient(to left, mc('grey', '300'), rgba(mc('grey', '700'), 0));
-      }
-    }
+    font-size: 1.5rem;
+    margin: 2.25rem 0 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--wiki-border);
   }
+
   h3 {
-    margin: 8px 0 0 0;
-    color: var(--wiki-text);
-    position: relative;
-
-    @at-root .theme--dark & {
-      color: var(--wiki-text);
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: none;
-    }
+    font-size: 1.2rem;
+    margin: 1.75rem 0 .75rem;
   }
+
   h4, h5, h6 {
     font-size: 1rem;
-    margin: 8px 0 0 0;
-    color: var(--wiki-text);
-    position: relative;
-
-    @at-root .theme--dark & {
-      color: var(--wiki-text);
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(to right, mc('grey', '500'), rgba(mc('grey', '500'), 0) 70%);
-    }
-  }
-  h5 {
-    &::after {
-      background: linear-gradient(to right, mc('grey', '500'), rgba(mc('grey', '500'), 0) 50%);
-    }
-  }
-  h6 {
-    &::after {
-      background: linear-gradient(to right, mc('grey', '500'), rgba(mc('grey', '500'), 0) 30%);
-    }
+    margin: 1.5rem 0 .5rem;
   }
 
-  // ---------------------------------
-  // PARAGRAPHS
-  // ---------------------------------
+  h5, h6 {
+    color: var(--wiki-muted);
+  }
 
   p {
-    padding: 1rem 0 0 0;
-    margin: 0;
-
-    @at-root .contents > div > p:first-child {
-      padding-top: 0;
-    }
-
-    @at-root .v-application & {
-      margin-bottom: 0;
-    }
+    padding: 0;
+    margin: 1rem 0;
   }
 
   hr {
-    margin: 1rem 0;
+    margin: 2rem 0;
     height: 1px;
     border: none;
-    background-color: mc('grey', '400');
-
-    @at-root .theme--dark & {
-      background-color: mc('grey', '700');
-    }
+    background-color: var(--wiki-border);
   }
 
   .emoji {
@@ -276,31 +160,24 @@
   }
 
   blockquote {
-    padding: 0 1rem 1rem 3.5rem;
-    background-color: mc('blue-grey', '50');
-    border-left: 4px solid mc('blue-grey', '500');
+    padding: .875rem 1.25rem;
+    background-color: var(--wiki-surface-alt);
+    border-inline-start: 3px solid var(--wiki-muted);
     border-radius: 0;
-    margin: 1rem 0;
+    margin: 1.5rem 0;
     position: relative;
+    color: var(--wiki-text);
 
-    @at-root .theme--dark & {
-      background-color: #243447;
-      border-color: #7792ae;
+    > :first-child {
+      margin-top: 0;
     }
 
-    &::before {
-      display: inline-block;
-      font: normal normal normal 24px/1 "Material Design Icons", sans-serif;
-      position: absolute;
-      margin-top: -12px;
-      top: 50%;
-      left: 16px;
-      content: "\F0757";
-      color: var(--wiki-muted);
+    > :last-child {
+      margin-bottom: 0;
     }
 
     > p:first-child .emoji {
-      margin-right: .5rem;
+      margin-inline-end: .5rem;
     }
 
     &.valign-center > p {
@@ -308,91 +185,90 @@
       align-items: center;
     }
 
+    &.is-info, &.is-warning, &.is-danger, &.is-success {
+      padding-inline-start: 3rem;
+
+      &::before {
+        display: inline-block;
+        font: normal normal normal 20px/1 "Material Design Icons", sans-serif;
+        position: absolute;
+        top: 1.15rem;
+        inset-inline-start: 14px;
+      }
+    }
+
     &.is-info {
-      background-color: mc('blue', '50');
-      border-color: mc('blue', '300');
-      color: mc('blue', '900');
+      background-color: #edf3f9;
+      border-color: #4679ab;
 
       &::before {
         content: "\F02FC";
-      }
-
-      code:not([class^="language-"]) {
-        background-color: mc('blue', '50');
-        color: mc('blue', '800');
+        color: #4679ab;
       }
 
       @at-root .theme--dark & {
-        background-color: #213851;
-        color: mc('blue', '50');
-        border-color: #80afea;
+        background-color: #293139;
+        border-color: #86a4c2;
+
+        &::before { color: #86a4c2; }
       }
     }
+
     &.is-warning {
-      background-color: mc('orange', '50');
-      border-color: mc('orange', '300');
-      color: darken(mc('orange', '900'), 10%);
+      background-color: #faf4e8;
+      border-color: #a16c18;
 
       &::before {
         content: "\F0026";
-      }
-
-      code:not([class^="language-"]) {
-        background-color: mc('orange', '50');
-        color: mc('orange', '800');
+        color: #a16c18;
       }
 
       @at-root .theme--dark & {
-        background-color: #3b3326;
-        color: mc('orange', '100');
-        border-color: #d5a052;
-        box-shadow: 0 0 2px 0 mc('grey', '900');
+        background-color: #353127;
+        border-color: #c5a467;
+
+        &::before { color: #c5a467; }
       }
     }
+
     &.is-danger {
-      background-color: mc('red', '50');
-      border-color: mc('red', '300');
-      color: mc('red', '900');
+      background-color: #faf0ef;
+      border-color: #b45350;
 
       &::before {
         content: "\F0159";
-      }
-
-      code:not([class^="language-"]) {
-        background-color: mc('red', '50');
-        color: mc('red', '800');
+        color: #b45350;
       }
 
       @at-root .theme--dark & {
-        background-color: #402e36;
-        color: mc('red', '100');
-        border-color: #c77878;
+        background-color: #382c2d;
+        border-color: #ca9391;
+
+        &::before { color: #ca9391; }
       }
     }
+
     &.is-success {
-      background-color: mc('green', '50');
-      border-color: mc('green', '300');
-      color: mc('green', '900');
+      background-color: #edf5ef;
+      border-color: #4f805e;
 
       &::before {
         content: "\F0E1E";
-      }
-
-      code:not([class^="language-"]) {
-        background-color: mc('green', '50');
-        color: mc('green', '800');
+        color: #4f805e;
       }
 
       @at-root .theme--dark & {
-        background-color: #253b35;
-        color: mc('green', '50');
-        border-color: #76b59a;
+        background-color: #29342e;
+        border-color: #8cb298;
+
+        &::before { color: #8cb298; }
       }
     }
 
-    @at-root .theme--dark & code:not([class^="language-"]) {
-      background-color: rgba(255, 255, 255, .08);
+    code:not([class^="language-"]) {
+      background-color: transparent;
       color: inherit;
+      padding-inline: 2px;
     }
   }
 
@@ -401,235 +277,133 @@
   // ---------------------------------
 
   .admonitionblock {
-    margin: 1rem 0;
-    position: relative;
+    --admonition-background: var(--wiki-surface-alt);
+    --admonition-accent: var(--wiki-muted);
+    margin: 1.5rem 0;
 
     table {
-      border: none;
-      background-color: transparent;
-      width: 100%;
+      margin: 0;
+      background-color: var(--admonition-background);
+      border-inline-start: 3px solid var(--admonition-accent);
+    }
+
+    td.icon, td.content {
+      border: 0;
+      border-radius: 0;
+      color: var(--wiki-text);
     }
 
     td.icon {
-      border-bottom-left-radius: 7px;
-      border-top-left-radius: 7px;
       text-align: center;
-      width: 56px;
+      vertical-align: middle;
+      width: 48px;
+      padding-inline: 12px;
 
       &::before {
         display: inline-block;
-        font: normal normal normal 24px/1 "Material Design Icons", sans-serif !important;
+        color: var(--admonition-accent);
+        font: normal normal normal 20px/1 "Material Design Icons", sans-serif !important;
       }
     }
 
-    td.content {
-      border-bottom-right-radius: 7px;
-      border-top-right-radius: 7px;
-    }
+    @each $kind, $background, $accent, $dark-background, $dark-accent, $icon in (
+      ('note', #edf3f9, #4679ab, #293139, #86a4c2, "\F02FC"),
+      ('tip', #edf5ef, #4f805e, #29342e, #8cb298, "\F0335"),
+      ('warning', #faf4e8, #a16c18, #353127, #c5a467, "\F0026"),
+      ('caution', #f4eff6, #866294, #332d38, #b29cbd, "\F0238"),
+      ('important', #faf0ef, #b45350, #382c2d, #ca9391, "\F0159")
+    ) {
+      &.#{$kind} {
+        --admonition-background: #{$background};
+        --admonition-accent: #{$accent};
+        background-color: transparent !important;
 
-    &.note {
-      td.icon {
-        background-color: mc('blue', '300');
-        color: mc('blue', '50');
-        &::before {
-          content: "\F02FC";
-        }
-      }
-      td.content {
-        color: darken(mc('blue', '900'), 10%);
-        background-color: mc('blue', '50');
+        td.icon::before { content: $icon; }
 
         @at-root .theme--dark & {
-          background-color: mc('blue', '900');
-          color: mc('blue', '50');
-        }
-      }
-    }
-    &.tip {
-      td.icon {
-        background-color: mc('green', '300');
-        color: mc('green', '50');
-        &::before {
-          content: "\F0335";
-        }
-      }
-      td.content {
-        color: darken(mc('green', '900'), 10%);
-        background-color: mc('green', '50');
-
-        @at-root .theme--dark & {
-          background-color: mc('green', '900');
-          color: mc('green', '50');
-        }
-      }
-    }
-    &.warning {
-      background-color: transparent !important;
-
-      td.icon {
-        background-color: mc('orange', '300');
-        color: #FFF;
-        &::before {
-          content: "\F0026";
-        }
-      }
-      td.content {
-        color: darken(mc('orange', '900'), 10%);
-        background-color: mc('orange', '50');
-
-        @at-root .theme--dark & {
-          background-color: darken(mc('orange', '900'), 5%);
-          color: mc('orange', '100');
-        }
-      }
-    }
-    &.caution {
-      td.icon {
-        background-color: mc('purple', '300');
-        color: mc('purple', '50');
-        &::before {
-          content: "\f0238";
-        }
-      }
-      td.content {
-        color: darken(mc('purple', '900'), 10%);
-        background-color: mc('purple', '50');
-
-        @at-root .theme--dark & {
-          background-color: mc('purple', '900');
-          color: mc('purple', '100');
-        }
-      }
-    }
-    &.important {
-      td.icon {
-        background-color: mc('red', '300');
-        color: mc('red', '50');
-        &::before {
-          content: "\F0159";
-        }
-      }
-      td.content {
-        color: darken(mc('red', '900'), 10%);
-        background-color: mc('red', '50');
-
-        @at-root .theme--dark & {
-          background-color: mc('red', '900');
-          color: mc('red', '100');
+          --admonition-background: #{$dark-background};
+          --admonition-accent: #{$dark-accent};
         }
       }
     }
   }
 
   .exampleblock {
-    > .title {
-      font-style: italic;
-      font-size: 1rem !important;
-      color: #7a2717;
+    margin: 1.5rem 0;
 
-      @at-root .theme--dark & {
-        color: mc('brown', '300');
-      }
+    > .title {
+      font-size: .875rem !important;
+      color: var(--wiki-muted);
+      margin-bottom: .5rem;
+      font-weight: 600;
     }
+
     > .content {
-      border: 1px solid mc('grey', '200');
-      border-radius: 7px;
-      margin-bottom: 12px;
-      padding: 16px;
+      border-inline-start: 3px solid var(--wiki-border);
+      background-color: var(--wiki-surface-alt);
+      padding: 1rem;
     }
   }
+
   // ---------------------------------
   // LISTS
   // ---------------------------------
 
   ol, ul:not(.tabset-tabs) {
-    padding-top: 1rem;
-    width: 100%;
+    margin: 1rem 0;
+    padding-inline-start: 1.5rem;
 
-    @at-root .is-rtl & {
-      padding-left: 0;
-      padding-right: 1rem;
+    li {
+      padding-inline-start: .25rem;
     }
 
     li > ul, li > ol {
-      padding-top: .5rem;
-      padding-left: 1rem;
-
-      @at-root .is-rtl & {
-        padding-left: 0;
-        padding-right: 1rem;
-      }
+      margin-block: .375rem;
+      padding-inline-start: 1.5rem;
     }
 
     li + li {
-      margin-top: .5rem;
+      margin-top: .375rem;
+    }
+
+    li > p {
+      margin-block: .5rem;
+    }
+
+    li::marker {
+      color: var(--wiki-muted);
     }
 
     &.links-list {
-      padding-left: 0;
-      list-style-type: none;
-
-      @at-root .is-rtl & {
-        padding-right: 0;
-      }
+      padding-inline-start: 0;
+      list-style: none;
 
       li {
-        background-color: mc('grey', '50');
-        background-image: linear-gradient(to bottom, #FFF, mc('grey', '50'));
-        border-right: 1px solid mc('grey', '200');
-        border-bottom: 1px solid mc('grey', '200');
-        border-left: 5px solid mc('grey', '300');
-        box-shadow: 0 3px 8px 0 rgba(116, 129, 141, 0.1);
-        padding: 1rem;
-        border-radius: 5px;
-        font-weight: 500;
+        border-bottom: 1px solid var(--wiki-border);
+        margin: 0;
+        padding: 1rem 0;
 
-        @at-root .is-rtl & {
-          border-left-width: 1px;
-          border-right-width: 5px;
-        }
-
-        &:hover {
-          background-image: linear-gradient(to bottom, #FFF, lighten(mc('blue', '50'), 4%));
-          border-left-color: mc('blue', '500');
-          cursor: pointer;
-
-          @at-root .is-rtl & {
-            border-left-color: mc('grey', '200');
-            border-right-width: mc('blue', '500');
-          }
-        }
-
-        &::before {
-          content: '';
-          display: none;
+        &:first-child {
+          border-top: 1px solid var(--wiki-border);
         }
 
         > a {
           display: block;
+          font-weight: 600;
           text-decoration: none;
-          margin: -1rem;
-          padding: 1rem;
+
+          &:hover { text-decoration: underline; }
 
           > em {
             font-weight: 400;
             font-style: normal;
-            color: mc('grey', '700');
-            display: inline-block;
-            padding-left: .5rem;
-            border-left: 1px solid mc('grey', '300');
-            margin-left: .5rem;
-
-            @at-root .theme--dark & {
-              color: #B0B0B0;
-              border-left-color: mc('grey', '700');
-            }
+            color: var(--wiki-muted);
+            padding-inline-start: .5rem;
 
             &.is-block {
               display: block;
-              padding-left: 0;
-              margin-left: 0;
-              border-left: none;
+              padding-inline-start: 0;
+              margin-top: .25rem;
             }
           }
         }
@@ -637,102 +411,23 @@
         > em {
           font-weight: 400;
           font-style: normal;
-        }
-
-        @at-root .theme--dark & {
-          background-color: mc('grey', '50');
-          background-image: linear-gradient(to bottom, lighten(mc('grey', '900'), 5%), mc('grey', '900'));
-          border-right: 1px solid mc('grey', '900');
-          border-bottom: 1px solid mc('grey', '900');
-          border-left: 5px solid mc('grey', '700');
-          box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1);
-
-          @at-root .theme--dark.is-rtl & {
-            border-left-width: 1px;
-            border-right-width: 5px;
-          }
-
-          &:hover {
-            background-image: linear-gradient(to bottom, lighten(mc('grey', '900'), 2%), darken(mc('grey', '900'), 3%));
-            border-left-color: mc('indigo', '300');
-            cursor: pointer;
-
-            @at-root .theme--dark.is-rtl & {
-              border-left-color: mc('grey', '900');
-              border-right-width: mc('indigo', '300');
-            }
-          }
+          color: var(--wiki-muted);
         }
       }
     }
 
     &.grid-list {
-      margin: 1rem 0 0 0;
-      background-color: #FFF;
-      border: 1px solid mc('grey', '200');
-      padding: 1px;
-      display: inline-block;
-      list-style-type: none;
-
-      @at-root .theme--dark & {
-        background-color: #000;
-        border: 1px solid mc('grey', '800');
-      }
+      margin: 1rem 0;
+      padding: 0;
+      list-style: none;
 
       li {
-        background-color: mc('grey', '50');
-        padding: .6rem 1rem;
-        display: block;
+        background-color: var(--wiki-surface-alt);
+        padding: .625rem 1rem;
+        margin: 0;
 
-        &:nth-child(odd) {
-          background-color: mc('grey', '100');
-        }
-
-        & + li {
-          margin-top: 0;
-        }
-
-        &::before {
-          content: '';
-          display: none;
-        }
-
-        @at-root .theme--dark & {
-          background-color: mc('grey', '900');
-
-          &:nth-child(odd) {
-            background-color: darken(mc('grey', '900'), 5%);
-          }
-        }
-      }
-    }
-  }
-
-  ul:not(.tabset-tabs):not(.contains-task-list) {
-    list-style: none;
-    > li::before {
-      position: absolute;
-      left: -1.1rem;
-      content: '\25b8';
-      color: mc('grey', '600');
-      width: 1.35rem;
-
-      @at-root .is-rtl & {
-        right: -1.1rem;
-        content: '\25C3';
-      }
-    }
-  }
-  ol, ul:not(.tabset-tabs) {
-    > li {
-      position: relative;
-      > p {
-        display:inline-block;
-        vertical-align:top;
-        padding-top:0;
-
-        &:first-child {
-          width: 100%;
+        &:nth-child(even) {
+          background-color: transparent;
         }
       }
     }
@@ -760,43 +455,37 @@
   // ---------------------------------
 
   code {
-    background-color: mc('indigo', '50');
-    padding: 0 5px;
-    color: mc('indigo', '800');
+    background-color: var(--wiki-surface-alt);
+    padding: 2px 5px;
+    border-radius: 3px;
+    color: var(--wiki-text);
     font-family: $code-font-family;
     font-weight: normal;
-    font-size: 1rem;
+    font-size: .875em;
     box-shadow: none;
 
     &::before, &::after {
       display: none;
     }
-
-    @at-root .theme--dark & {
-      background-color: var(--wiki-surface-alt);
-      color: #c4d6ef;
-    }
   }
 
-  .prismjs{
+  .prismjs {
     border: 0;
-    border-radius: 0;
-    box-shadow: initial;
-    background-color: mc('grey', '900');
-    padding: 1rem 1rem 1rem 3rem;
-    margin: 1rem 0;
-
-    @at-root .theme--dark & {
-      background-color: var(--wiki-code);
-    }
+    border-radius: 3px;
+    box-shadow: none;
+    background-color: #202124;
+    padding: 1.125rem 1.25rem 1.125rem 3rem;
+    margin: 1.25rem 0;
+    overflow-wrap: normal;
 
     > code {
       background-color: transparent;
       padding: 0;
-      color: #FFF;
-      box-shadow: initial;
+      color: #f0f0f1;
+      box-shadow: none;
       display: block;
-      font-size: .85rem;
+      font-size: .875rem;
+      line-height: 1.65;
       font-family: $code-font-family;
 
       &:after, &:before {
@@ -879,157 +568,53 @@
   // ---------------------------------
 
   table {
-    margin: .5rem 0;
+    width: 100%;
+    margin: 1.25rem 0;
+    border-collapse: collapse;
     border-spacing: 0;
-    border-radius: 5px;
-    border: 1px solid mc('grey', '300');
+    font-size: .9375rem;
+    line-height: 1.6;
+    text-align: start;
 
-    @at-root .theme--dark & {
-      border-color: mc('grey', '600');
+    th, td {
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--wiki-border);
+      vertical-align: top;
+    }
+
+    th {
+      background-color: var(--wiki-surface-alt);
+      color: var(--wiki-text);
+      font-weight: 600;
+      text-align: start;
+    }
+
+    td {
+      color: var(--wiki-text);
+    }
+
+    p {
+      margin-block: .25rem;
     }
 
     &.dense {
       td, th {
-        font-size: .85rem;
-        padding: .5rem;
-      }
-    }
-
-    th {
-      padding: .75rem;
-      border-bottom: 2px solid mc('grey', '500');
-      color: mc('grey', '600');
-      background-color: mc('grey', '100');
-
-      @at-root .theme--dark & {
-        background-color: darken(mc('grey', '900'), 8%);
-        border-bottom-color: mc('grey', '600');
-        color: mc('grey', '500');
-      }
-
-      &:first-child {
-        border-top-left-radius: 7px;
-      }
-      &:last-child {
-        border-top-right-radius: 7px;
-      }
-    }
-
-    td {
-      padding: .75rem;
-    }
-
-    tr {
-      td {
-        border-bottom: 1px solid mc('grey', '300');
-        border-right: 1px solid mc('grey', '100');
-
-        @at-root .theme--dark & {
-          border-bottom-color: mc('grey', '700');
-          border-right-color: mc('grey', '800');
-        }
-
-        &:nth-child(even) {
-          background-color: mc('grey', '50');
-
-          @at-root .theme--dark & {
-            background-color: darken(mc('grey', '900'), 4%);
-          }
-        }
-
-        &:last-child {
-          border-right: none;
-        }
-      }
-
-      &:nth-child(even) {
-        td {
-          background-color: mc('grey', '50');
-
-          @at-root .theme--dark & {
-            background-color: darken(mc('grey', '800'), 8%);
-          }
-
-          &:nth-child(even) {
-            background-color: mc('grey', '100');
-
-            @at-root .theme--dark & {
-              background-color: darken(mc('grey', '800'), 10%);
-            }
-          }
-        }
-      }
-
-      &:last-child {
-        td {
-          border-bottom: none;
-
-          &:first-child {
-            border-bottom-left-radius: 7px;
-          }
-          &:last-child {
-            border-bottom-right-radius: 7px;
-          }
-        }
+        font-size: .875rem;
+        padding: .5rem .75rem;
       }
     }
   }
 
   figure.table {
-    margin: 0;
+    margin: 1.25rem 0;
+    overflow-x: auto;
 
     > table {
-      background-color: #FFF;
       margin: 0;
-      border-collapse: collapse;
-      box-shadow: 0 0 5px 0 rgba(0, 0, 0, .07);
-
-      @at-root .theme--dark & {
-        background-color: darken(mc('grey', '900'), 3%);
-      }
-
-      td, th {
-        border: 1px solid mc('blue-grey', '100');
-        box-shadow: inset -1px -1px 0 0 #FFF, inset 1px 0 0 #FFF;
-        padding: .5rem .75rem;
-        border-radius: 0 !important;
-
-        @at-root .theme--dark & {
-          border-color: mc('grey', '700');
-          box-shadow: inset -1px -1px 0 0 rgba(0,0,0, .5);
-        }
-      }
-
-      th {
-        background-color: lighten(mc('blue-grey', '50'), 1%);
-        font-weight: 700;
-        color: mc('blue-grey', '700');
-
-        @at-root .theme--dark & {
-          background-color: mc('grey', '800');
-          color: mc('grey', '400');
-        }
-      }
-
-      thead th {
-        border-bottom: 2px solid mc('blue-grey', '100');
-
-        @at-root .theme--dark & {
-          border-bottom: none;
-        }
-      }
-
-      tbody th {
-        background-color: lighten(mc('blue-grey', '50'), 4%);
-
-        @at-root .theme--dark & {
-          background-color: darken(mc('grey', '800'), 8%);
-        }
-      }
     }
   }
 
-  // -> Add horizontal scrollbar when table is too wide
+  // Wide data tables scroll within the document, never the full page.
   .table-container {
     width: 100%;
     overflow-x: auto;
@@ -1087,16 +672,10 @@
       margin: 0 auto;
     }
     figcaption {
-      padding: 4px 1rem;
+      padding: .5rem 0;
       text-align: center;
-      font-size: 12px;
-      color: mc('grey', '700');
-      background-color: mc('grey', '100');
-
-      @at-root .theme--dark & {
-        color: mc('grey', '400');
-        background-color: mc('grey', '800');
-      }
+      font-size: .8125rem;
+      color: var(--wiki-muted);
     }
   }
 
@@ -1113,69 +692,39 @@
   // ---------------------------------
 
   details {
-    background-color: mc('grey', '50');
-    margin: 1rem 2rem;
-    border: 1px solid mc('grey', '300');
-    border-radius: 7px;
-
-    > p {
-      padding-left: 0;
-    }
+    margin: 1.5rem 0;
+    padding: 0 1rem;
+    background-color: var(--wiki-surface-alt);
+    border-inline-start: 3px solid var(--wiki-border);
 
     > summary {
-      border-radius: 7px;
-      background-color: mc('grey', '50');
       cursor: pointer;
       display: list-item;
-      align-items: center;
-      padding: 0.4rem 1rem;
-      transition: background-color .4s ease;
+      padding: .75rem 0;
+      font-weight: 600;
+      color: var(--wiki-text);
 
-      &:focus {
-        outline: none;
-        background-color: mc('grey', '100');
+      &:focus-visible {
+        outline: 2px solid var(--wiki-link);
+        outline-offset: 3px;
       }
 
-      > h1, h2, h3, h4, h5, h6 {
-        width: 95%;
-        display: inline-block;
-
-        &:first-child {
-          margin-top: 0;
-        }
-
-        &:only-child::after {
-          display: none;
-        }
+      > h1, > h2, > h3, > h4, > h5, > h6 {
+        display: inline;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: inherit;
       }
     }
 
     &[open] {
-      padding: 1rem;
-
-      > summary {
-        background-color: mc('grey', '100');
-        border-bottom: 1px solid mc('grey', '300');
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        margin: -1rem -1rem 1rem -1rem;
-      }
+      padding-bottom: .75rem;
     }
 
-    @at-root .theme--dark & {
-      background-color: mc('grey', '900');
-      border-color: mc('grey', '700');
-
-      > summary {
-        background-color: mc('grey', '900');
-        border-color: mc('grey', '700');
-      }
-
-      &[open] > summary {
-        background-color: lighten(mc('grey', '900'), 5%);
-      }
+    > :last-child {
+      margin-bottom: 0;
     }
-
   }
 
   // ---------------------------------
@@ -1269,50 +818,26 @@
 
 .comments {
   &-container {
-    border-radius: 7px;
+    border-top: 1px solid var(--wiki-border);
+    border-radius: 0;
   }
 
   &-header {
-    color: #FFF;
-    padding: 8px 20px;
-    font-size: 16px;
-    font-weight: 500;
-    background-color: mc('blue-grey', '500');
-    border-radius: 7px 7px 0 0;
+    display: flex;
+    align-items: center;
+    color: var(--wiki-text);
+    padding: 24px 0 16px;
+    font-size: 1.25rem;
+    font-weight: 600;
 
-    @at-root .theme--dark & {
-      background-color: lighten(mc('blue-grey', '900'), 5%);
+    .v-icon {
+      color: var(--wiki-muted);
     }
   }
 
   &-main {
-    background-color: mc('blue-grey', '50');
-    border-radius: 0 0 7px 7px;
-    padding: 20px;
-
-    @at-root .theme--dark & {
-      background-color: darken(mc('grey', '900'), 5%);
-    }
-  }
-}
-
-// ---------------
-// RTL FIXES
-// Vuetify GH Issue: https://github.com/vuetifyjs/vuetify/issues/6317
-// ---------------
-
-.is-rtl {
-  .page-col-content.is-page-header {
-    @each $size, $width in $grid-breakpoints {
-      @media (min-width: $width) {
-        @for $n from 0 through 12 {
-          &.offset-#{$size}-#{$n} {
-            margin-left: 0;
-            margin-right: calc(#{$n} / 12 * 100%);
-          }
-        }
-      }
-    }
+    padding: 0;
+    color: var(--wiki-text);
   }
 }
 
@@ -1422,6 +947,15 @@
       td, th {
         overflow-wrap: break-word;
       }
+    }
+
+    .table-container, figure.table {
+      overflow: visible;
+    }
+
+    .admonitionblock {
+      --admonition-background: #fff !important;
+      --admonition-accent: #777 !important;
     }
 
     // -> Force light rendering even when printing from dark mode

@@ -8,7 +8,7 @@
             .headline.primary--text.animated.fadeInLeft {{$t('admin:theme.title')}}
             .subtitle-1.grey--text.animated.fadeInLeft.wait-p2s {{$t('admin:theme.subtitle')}}
           v-spacer
-          v-btn.animated.fadeInRight(color='success', depressed, @click='save', large, :loading='loading')
+          v-btn.animated.fadeInRight(color='success', depressed, @click='save', large, :loading='loading', data-test='theme-save')
             v-icon(left) mdi-check
             span {{$t('common:actions.apply')}}
         v-form.pt-3
@@ -23,6 +23,7 @@
                     outlined
                     prepend-icon='mdi-paw'
                     v-model='config.iconset'
+                    data-test='theme-iconset'
                     :label='$t(`admin:theme.iconset`)'
                     persistent-hint
                     :hint='$t(`admin:theme.iconsetHint`)'
@@ -46,6 +47,7 @@
                     outlined
                     prepend-icon='mdi-border-vertical'
                     v-model='config.tocPosition'
+                    data-test='theme-toc-position'
                     label='Table of Contents Position'
                     persistent-hint
                     hint='Select whether the table of contents is shown on the left, right or not at all.'
@@ -57,6 +59,7 @@
                 v-card-text
                   v-textarea.is-monospaced(
                     v-model='config.injectCSS'
+                    data-test='theme-inject-css'
                     :label='$t(`admin:theme.cssOverride`)'
                     outlined
                     color='primary'
@@ -69,6 +72,7 @@
                     code(place='cssClass') .contents
                   v-textarea.is-monospaced.mt-3(
                     v-model='config.injectHead'
+                    data-test='theme-inject-head'
                     :label='$t(`admin:theme.headHtmlInjection`)'
                     outlined
                     color='primary'
@@ -78,6 +82,7 @@
                     )
                   v-textarea.is-monospaced.mt-2(
                     v-model='config.injectBody'
+                    data-test='theme-inject-body'
                     :label='$t(`admin:theme.bodyHtmlInjection`)'
                     outlined
                     color='primary'
@@ -163,6 +168,8 @@ export default {
         if (resp.succeeded) {
           this.darkModeInitial = this.darkMode
           siteConfig.darkMode = this.darkMode
+          // Refresh the query cache and editor from the saved (normalized) values.
+          await this.$apollo.queries.config.refetch()
           this.$store.commit('showNotification', {
             message: 'Theme settings updated successfully.',
             style: 'success',
@@ -182,7 +189,9 @@ export default {
     config: {
       query: themeConfigQuery,
       fetchPolicy: 'network-only',
-      update: (data) => data.theming.config,
+      // Apollo query results are immutable. Form fields need their own draft;
+      // writing into the cached result leaves the old values in save requests.
+      update: (data) => _.cloneDeep(data.theming.config),
       watchLoading (isLoading) {
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-theme-refresh')
       }

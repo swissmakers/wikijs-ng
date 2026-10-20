@@ -20,6 +20,9 @@ const sassLoader = (indentedSyntax) => ({
     // Vuetify's Sass also needs the native font stack for its typography utilities.
     ...indentedSyntax && { additionalData: '@import "@/scss/base/typography.scss"\n' },
     sassOptions: {
+      // A Sass BOM can become part of the first selector when CSS chunks are
+      // concatenated/minified, silently preventing that selector from matching.
+      charset: false,
       quietDeps: true,
       ...indentedSyntax && { indentedSyntax: true }
     }

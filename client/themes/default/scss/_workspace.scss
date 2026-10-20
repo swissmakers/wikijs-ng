@@ -1,62 +1,69 @@
-// Shared surfaces keep pages, profile and administration in the same workspace.
+// Shared application surfaces. Explicit local light/dark components retain their own theme.
 .v-application.theme--light, .v-application.theme--dark {
-  --wiki-background: #f5f7fa;
+  --wiki-background: #f4f5f6;
   --wiki-surface: #ffffff;
-  --wiki-surface-alt: #edf2f7;
-  --wiki-sidebar: #f8fafc;
-  --wiki-border: #dce3ec;
-  --wiki-text: #243449;
-  --wiki-muted: #62748a;
-  --wiki-link: #205eac;
-  --wiki-action: #205eac;
-  --wiki-selected: #e6effb;
-  --wiki-code: #111c2b;
+  --wiki-surface-alt: #eef0f2;
+  --wiki-sidebar: #f0f1f3;
+  --wiki-border: #d9dce1;
+  --wiki-text: #25272c;
+  --wiki-muted: #60656f;
+  --wiki-link: #235d9f;
+  --wiki-action: #2f65a5;
+  --wiki-selected: #e1e7ef;
+  --wiki-code: #f2f3f5;
+  --wiki-search-backdrop: rgba(244, 245, 246, .98);
+  color-scheme: light;
 
   &:where(.theme--dark) {
-    --wiki-background: #182230;
-    --wiki-surface: #202d3d;
-    --wiki-surface-alt: #263548;
-    --wiki-sidebar: #131e2c;
-    --wiki-border: #34465b;
-    --wiki-text: #e2eaf4;
-    --wiki-muted: #a5b4c7;
-    --wiki-link: #93bdf5;
-    --wiki-action: #285e9b;
-    --wiki-selected: #263f60;
-    --wiki-code: #111a27;
+    --wiki-background: #1f2023;
+    --wiki-surface: #27282c;
+    --wiki-surface-alt: #303136;
+    --wiki-sidebar: #191a1d;
+    --wiki-border: #3e4046;
+    --wiki-text: #e7e8ec;
+    --wiki-muted: #b1b3bc;
+    --wiki-link: #a5c7ed;
+    --wiki-action: #376ca9;
+    --wiki-selected: #343c48;
+    --wiki-code: #202124;
+    --wiki-search-backdrop: rgba(31, 32, 35, .98);
     color-scheme: dark;
 
-    .v-main .grey--text, .v-main .blue-grey--text {
-      color: var(--wiki-muted) !important;
+    // Primary fills and primary text need different contrast on dark surfaces.
+    .primary--text {
+      color: var(--wiki-link) !important;
+      caret-color: var(--wiki-link) !important;
     }
   }
 
-  &, .v-application--wrap, .v-main {
+  &.v-application, .v-application--wrap, .v-main {
     background-color: var(--wiki-background);
     color: var(--wiki-text);
   }
 
-  .v-card:not(.v-card--colored), .v-sheet.v-list, .v-data-table {
-    background-color: var(--wiki-surface);
-    color: var(--wiki-text);
+  .v-card.theme--light, .v-list.theme--light, .v-data-table.theme--light {
+    background-color: #fff;
+    color: #25272c;
+    color-scheme: light;
   }
 
-  // The wiki reads as a document and directory, with open sections.
-  .v-main .v-card {
-    border-radius: 0;
-    box-shadow: none;
+  .v-card.theme--dark, .v-list.theme--dark, .v-data-table.theme--dark {
+    background-color: #27282c;
+    color: #e7e8ec;
+    color-scheme: dark;
+  }
+
+  .theme--light.primary--text, .theme--light .primary--text {
+    color: #235d9f !important;
+    caret-color: #235d9f !important;
   }
 
   .v-card--outlined, .v-divider {
     border-color: var(--wiki-border);
   }
 
-  .v-card__subtitle, .v-card__text, .v-list-item__subtitle, .v-subheader {
-    color: var(--wiki-muted);
-  }
-
   .v-btn {
-    letter-spacing: .02em;
+    letter-spacing: .01em;
     text-transform: none;
     font-weight: 500;
   }
@@ -70,7 +77,7 @@
     background-color: var(--wiki-sidebar);
 
     .v-navigation-drawer__border {
-      display: none;
+      background-color: var(--wiki-border);
     }
 
     .v-list, .wiki-sidebar-list {
@@ -79,7 +86,7 @@
 
     .v-list-item {
       margin: 3px 8px;
-      border-radius: 0;
+      border-radius: 2px;
       border-inline-start: 3px solid transparent;
     }
 
@@ -87,6 +94,10 @@
       background-color: var(--wiki-selected);
       color: var(--wiki-link);
       border-inline-start-color: var(--wiki-link);
+
+      // The selected surface already expresses this state. Vuetify's extra
+      // tint reduces contrast between the active label and its background.
+      &::before { opacity: 0; }
     }
 
     .v-list-item__title {
@@ -124,28 +135,21 @@
     color: var(--wiki-text);
   }
 
-  .wiki-page-header {
-    background-color: var(--wiki-surface);
-
-    .page-header-section {
-      padding-top: 24px !important;
-      padding-bottom: 24px !important;
-    }
-  }
-
   .wiki-muted {
     color: var(--wiki-muted);
   }
 
   .nav-header {
+    border-bottom: 1px solid var(--wiki-border) !important;
+
     .v-text-field--solo > .v-input__control > .v-input__slot {
-      background-color: #24364d;
+      background-color: var(--wiki-surface-alt);
       border: 0;
       border-radius: 4px;
       min-height: 40px;
 
       &:focus-within {
-        box-shadow: inset 0 0 0 2px #93bdf5;
+        box-shadow: inset 0 0 0 2px var(--wiki-link);
       }
     }
 
@@ -154,6 +158,10 @@
       font-weight: 600;
       letter-spacing: -.3px;
     }
+
+    .v-icon.grey--text {
+      color: var(--wiki-muted) !important;
+    }
   }
 
   .search-results-filters .v-chip {
@@ -161,32 +169,33 @@
     border-radius: 3px;
 
     &:not(.primary) {
-      background-color: var(--wiki-surface-alt) !important;
+      background-color: var(--wiki-surface-alt);
+      color: var(--wiki-text);
     }
-  }
-
-  .page-header-tags .v-chip {
-    border: 0;
-    border-radius: 0;
-    background: transparent;
   }
 
   .v-data-table code {
     background-color: var(--wiki-surface-alt);
-    color: var(--wiki-link);
+    color: var(--wiki-text);
   }
 
   .profile-content-container, .admin-content-container {
-    padding: 20px;
+    padding: 24px;
   }
 
   .profile-header, .admin-header {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 
     .headline {
       color: var(--wiki-text) !important;
       font-weight: 600;
     }
+  }
+
+  .profile-header .subtitle-1, .admin-header .subtitle-1,
+  .recent-changes-container .grey--text, .wiki-sidebar .grey--text,
+  .nav-header .overline.grey--text {
+    color: var(--wiki-muted) !important;
   }
 
   .workspace-header-icon {
@@ -196,22 +205,18 @@
     height: 52px;
 
     .v-icon {
-      color: var(--wiki-link);
+      color: var(--wiki-muted);
     }
   }
 
   .profile-bookmarks-card.v-card {
-    border: 0;
-    border-radius: 0;
+    max-width: 1120px;
+    border-radius: 3px;
+    box-shadow: none;
     overflow: hidden;
-    background-color: transparent;
-
-    .v-list {
-      background-color: transparent;
-    }
 
     .v-list-item {
-      min-height: 88px;
+      min-height: 80px;
     }
 
     .v-list-item__title {
@@ -220,58 +225,62 @@
     }
   }
 
-  .page-toc-card.v-card, .page-comments-card.v-card, .page-shortcuts-card.v-card {
-    border: 0;
-    box-shadow: none !important;
-    border-radius: 0;
-    background-color: transparent;
-    overflow: hidden;
+  .wiki-directory-header {
+    background-color: var(--wiki-surface);
+    padding: 28px 32px !important;
+    border-bottom: 1px solid var(--wiki-border);
 
-    .v-list, .v-toolbar {
-      background-color: transparent;
+    .headline {
+      font-weight: 600;
+    }
+
+    .directory-actions {
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-inline-start: auto;
     }
   }
 
-  .page-toc-item.is-active {
-    background-color: var(--wiki-selected);
+  .wiki-directory-content {
+    padding: 28px 32px;
+    max-width: 1240px;
+    margin-inline-start: 0;
+
+    .overline {
+      color: var(--wiki-muted);
+      font-weight: 600;
+      letter-spacing: .06em !important;
+    }
   }
 
   .folder-view-card.v-card {
-    border: 0;
-    border-radius: 0;
-    background-color: transparent;
+    border-radius: 3px;
     transition: background-color .15s ease;
 
+    .v-card__text { color: var(--wiki-text); }
+
     .subtitle-2 {
-      color: var(--wiki-text);
-      font-size: 16px !important;
+      font-size: 15px !important;
+      font-weight: 600;
     }
+
+    .v-icon { color: var(--wiki-muted) !important; }
 
     &:hover {
       background-color: var(--wiki-surface-alt);
     }
   }
 
-  .comments-container .comments-header {
-    background-color: transparent;
-    color: var(--wiki-text);
-    border: 0;
-    border-radius: 0;
-    padding-inline: 0;
-    font-size: 20px;
-    font-weight: 600;
-  }
-
-  .comments-container .comments-main {
-    background-color: transparent;
-    border: 0;
-    border-radius: 0;
-    padding-inline: 0;
-  }
-
   @media (max-width: 600px) {
     .profile-content-container, .admin-content-container {
-      padding: 4px;
+      padding: 8px;
     }
+
+    .wiki-directory-header, .wiki-directory-content {
+      padding: 20px !important;
+    }
+
+    .wiki-directory-header > .d-flex { flex-wrap: wrap; gap: 20px; }
+    .wiki-directory-header .directory-actions { margin-inline-start: 0; }
   }
 }

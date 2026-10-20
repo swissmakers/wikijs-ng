@@ -41,7 +41,9 @@ See the [CHANGELOG](CHANGELOG.md) for the complete list of changes since the for
 
 ## A quick look
 
-The screenshots are generated from a demo instance with `dev/screenshots.sh` (see [`dev/BUILD.md`](dev/BUILD.md)).
+The screenshots are generated from a demo instance with `dev/screenshots.sh` (see [`dev/BUILD.md`](dev/BUILD.md)). The suite checks settings persistence and captures both dark and light themes.
+
+Light theme previews: [article](docs/screenshots/page-view-light.png), [formatting](docs/screenshots/article-formatting-light.png), [folders](docs/screenshots/folder-view-light.png), [search](docs/screenshots/search-light.png), [bookmarks](docs/screenshots/bookmarks-light.png), [recent changes](docs/screenshots/recent-changes-light.png), [comments](docs/screenshots/comments-light.png), [permissions](docs/screenshots/access-inspector-light.png), and [assets](docs/screenshots/admin-assets-light.png).
 
 **Refreshed page design** -> tags in the page header, table of contents with active-section highlighting, bookmark and watch buttons next to the page actions, backlinks and an author footer under the content.
 
@@ -75,7 +77,7 @@ The screenshots are generated from a demo instance with `dev/screenshots.sh` (se
 
 ![Assets admin](docs/screenshots/admin-assets.png)
 
-**Enterprise-style login** -> clean credentials card on the brand gradient, with all configured authentication strategies.
+**Enterprise-style login** -> a focused sign-in panel with an Unsplash office photograph and all configured authentication strategies.
 
 ![Login](docs/screenshots/login.jpg)
 

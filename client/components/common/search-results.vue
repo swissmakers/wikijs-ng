@@ -5,8 +5,8 @@
         v-chip.mx-1(
           v-if='locales.length > 0'
           small
-          :color='searchRestrictLocale ? `primary` : `grey darken-2`'
-          dark
+          :color='searchRestrictLocale ? `primary` : undefined'
+          :dark='searchRestrictLocale || $vuetify.theme.dark'
           @click='searchRestrictLocale = !searchRestrictLocale'
           )
           v-icon(left, small) mdi-translate
@@ -14,8 +14,8 @@
         v-chip.mx-1(
           v-if='currentPath'
           small
-          :color='searchRestrictPath ? `primary` : `grey darken-2`'
-          dark
+          :color='searchRestrictPath ? `primary` : undefined'
+          :dark='searchRestrictPath || $vuetify.theme.dark'
           @click='searchRestrictPath = !searchRestrictPath'
           )
           v-icon(left, small) mdi-file-tree
@@ -27,14 +27,14 @@
         orbit-spinner(
           :animation-duration='1000'
           :size='100'
-          color='#FFF'
+          :color='$vuetify.theme.currentTheme.primary'
         )
         .headline.mt-5 {{$t('common:header.searchLoading')}}
       .search-results-none(v-else-if='!searchIsLoading && (!results || results.length < 1)')
         img(src='/_assets/svg/icon-no-results.svg', alt='No Results')
         .subheading {{$t('common:header.searchNoResult')}}
       template(v-if='search && search.length >= 2 && results && results.length > 0')
-        v-subheader.white--text {{$t('common:header.searchResultsCount', { total: response.totalHits })}}
+        v-subheader {{$t('common:header.searchResultsCount', { total: response.totalHits })}}
         v-list.search-results-items.py-0(two-line, dense, tile)
           template(v-for='(item, idx) of results')
             v-list-item(@click='goToPage(item)', @click.middle="goToPageInNewTab(item)", :key='item.id', :class='idx === cursor ? `highlighted` : ``')
@@ -43,20 +43,20 @@
               v-list-item-content
                 v-list-item-title(v-text='item.title')
                 v-list-item-subtitle.caption(v-text='item.description')
-                .caption.grey--text(v-text='item.path')
+                .caption.wiki-muted(v-text='item.path')
               v-list-item-action
                 v-chip(label, outlined) {{item.locale.toUpperCase()}}
             v-divider(v-if='idx < results.length - 1')
         v-pagination.mt-3(
           v-if='paginationLength > 1'
-          dark
+          :dark='$vuetify.theme.dark'
           v-model='pagination'
           :length='paginationLength'
           circle
         )
       template(v-if='suggestions && suggestions.length > 0')
-        v-subheader.white--text.mt-3 {{$t('common:header.searchDidYouMean')}}
-        v-list.search-results-suggestions(dense, dark, tile)
+        v-subheader.mt-3 {{$t('common:header.searchDidYouMean')}}
+        v-list.search-results-suggestions(dense, :dark='$vuetify.theme.dark', tile)
           template(v-for='(term, idx) of suggestions')
             v-list-item(:key='term', @click='setSearchTerm(term)', :class='idx + results.length === cursor ? `highlighted` : ``')
               v-list-item-avatar
@@ -65,7 +65,7 @@
                 v-list-item-title(v-text='term')
             v-divider(v-if='idx < suggestions.length - 1')
       .text-xs-center.pt-5(v-if='search && search.length > 1')
-        v-btn.mx-2(outlined, color='white', @click='search = ``')
+        v-btn.mx-2(outlined, @click='search = ``')
           v-icon(left) mdi-close
           span {{$t('common:header.searchClose')}}
 </template>
@@ -206,13 +206,15 @@ export default {
   overflow-y: auto;
   width: 100%;
   height: calc(100% - 64px);
-  background-color: rgba(9, 18, 31, .94);
+  background-color: var(--wiki-search-backdrop);
+  color: var(--wiki-text);
   z-index: 100;
   text-align: center;
   animation: searchResultsReveal .6s ease;
 
   @media #{map-get($display-breakpoints, 'sm-and-down')} {
     top: 112px;
+    height: calc(100% - 112px);
   }
 
   &-container {
@@ -231,7 +233,7 @@ export default {
     padding: 32px 0;
     font-size: 18px;
     font-weight: 300;
-    color: #FFF;
+    color: var(--wiki-text);
 
     img {
       width: 104px;
@@ -244,11 +246,11 @@ export default {
     align-items: center;
     flex-direction: column;
     padding: 32px 0;
-    color: #FFF;
+    color: var(--wiki-text);
   }
 
   &-none {
-    color: #FFF;
+    color: var(--wiki-text);
 
     img {
       width: 200px;
@@ -286,11 +288,11 @@ export default {
 
 @keyframes searchResultsReveal {
   0% {
-    background-color: rgba(0,0,0,0);
+    opacity: 0;
     padding-top: 32px;
   }
   100% {
-    background-color: rgba(0,0,0,.9);
+    opacity: 1;
     padding-top: 0;
   }
 }
