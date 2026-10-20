@@ -34,7 +34,8 @@ const externalCommit = (file, content, message) => {
 }
 const remoteFile = file => {
   external('pull', '--rebase', 'origin', 'main')
-  return fs.readFileSync(path.join(EXTERNAL, file), 'utf8')
+  const filePath = path.join(EXTERNAL, file)
+  return fs.pathExistsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : null
 }
 
 global.WIKI = {
@@ -94,12 +95,18 @@ beforeEach(() => {
   commonDisk.processPage.mockClear()
   commonDisk.processAsset.mockClear()
   global.WIKI.models.pages.deletePage.mockClear()
+  global.WIKI.models.pages.movePage.mockClear()
   assetLookups.length = 0
 })
 
 describe('storage/git sync', () => {
   it('checks out the remote branch on init', () => {
     expect(fs.readFileSync(path.join(LOCAL, 'home.md'), 'utf8')).toBe('# Home\n')
+  })
+
+  it('keeps auto gc / maintenance in the foreground (no orphaned git daemons)', () => {
+    expect(git(LOCAL, 'config', '--local', 'gc.autoDetach')).toBe('false')
+    expect(git(LOCAL, 'config', '--local', 'maintenance.autoDetach')).toBe('false')
   })
 
   it('imports changes pushed to the remote', async () => {
@@ -112,6 +119,8 @@ describe('storage/git sync', () => {
     await storage.created(page('docs/new', '# New\n'))
     await storage.sync()
     expect(remoteFile('docs/new.md')).toBe('# New\n')
+    // -> The wiki's own commit must not be imported back into the DB
+    expect(commonDisk.processPage).not.toHaveBeenCalledWith(expect.objectContaining({ relPath: 'docs/new.md' }))
   })
 
   it('absorbs leftover worktree changes before pulling', async () => {
@@ -156,10 +165,41 @@ describe('storage/git sync', () => {
     pushSpy.mockRestore()
     expect(remoteFile('docs/race.md')).toBe('# Race\n')
     expect(remoteFile('docs/other.md')).toBe('# Other\n')
-
-    // -> The change fetched by the retry is imported on the next run
-    await storage.sync()
+    // -> The change fetched by the retry is imported in the same run, the wiki's own commit is not
     expect(commonDisk.processPage).toHaveBeenCalledWith(expect.objectContaining({ relPath: 'docs/other.md' }))
+    expect(commonDisk.processPage).not.toHaveBeenCalledWith(expect.objectContaining({ relPath: 'docs/race.md' }))
+  })
+
+  it('heals a page deletion whose git commands failed on the next sync', async () => {
+    externalCommit('docs/doomed.md', '# Doomed\n', 'add doomed page')
+    await storage.sync()
+    const rawSpy = jest.spyOn(storage.git, 'raw').mockRejectedValueOnce(new Error('spawn git EAGAIN'))
+    await expect(storage.deleted(page('docs/doomed', ''))).rejects.toThrow('EAGAIN')
+    rawSpy.mockRestore()
+    expect(fs.pathExistsSync(path.join(LOCAL, 'docs/doomed.md'))).toBe(false)
+
+    await storage.sync()
+    expect(remoteFile('docs/doomed.md')).toBeNull()
+    expect(global.WIKI.models.pages.deletePage).not.toHaveBeenCalled()
+  })
+
+  it('heals a page rename whose commit failed on the next sync', async () => {
+    await storage.created(page('docs/before', '# Moving\n'))
+    await storage.sync()
+    const commitSpy = jest.spyOn(storage.git, 'commit').mockRejectedValueOnce(new Error('spawn git EAGAIN'))
+    await expect(storage.renamed({
+      ...page('docs/before', '# Moving\n'),
+      destinationPath: 'docs/after',
+      destinationLocaleCode: 'en',
+      moveAuthorName: 'Editor',
+      moveAuthorEmail: 'editor@example.com'
+    })).rejects.toThrow('EAGAIN')
+    commitSpy.mockRestore()
+
+    await storage.sync()
+    expect(remoteFile('docs/before.md')).toBeNull()
+    expect(remoteFile('docs/after.md')).toBe('# Moving\n')
+    expect(global.WIKI.models.pages.movePage).not.toHaveBeenCalled()
   })
 
   it('imports added, renamed and deleted text assets', async () => {

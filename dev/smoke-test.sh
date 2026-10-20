@@ -57,6 +57,12 @@ echo ">> Starting ${IMAGE} on port ${PORT}..."
 wait_for "${BASE}/" "Wiki.js NG" || fail "Setup page did not come up"
 echo ">> Setup page is up"
 
+# node must not be PID 1: it never reaps orphaned processes, the zombies
+# accumulate until the pids limit is hit and every spawn fails with EAGAIN.
+PID1="$("$PODMAN" exec "$NAME" cat /proc/1/comm)"
+[ "$PID1" = "tini" ] || fail "PID 1 is '${PID1}', expected tini"
+echo ">> Init process OK (${PID1})"
+
 curl -sf -X POST "${BASE}/finalize" -H 'Content-Type: application/json' \
   -d "{\"adminEmail\":\"${ADMIN_EMAIL}\",\"adminPassword\":\"${ADMIN_PASS}\",\"adminPasswordConfirm\":\"${ADMIN_PASS}\",\"siteUrl\":\"${BASE}\"}" \
   | grep -q '"ok":true' || fail "Setup did not complete"

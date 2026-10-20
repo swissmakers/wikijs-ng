@@ -45,7 +45,7 @@ LABEL maintainer="swissmakers.ch" \
       org.opencontainers.image.created="$CREATED"
 
 RUN apk upgrade --no-cache && \
-    apk add bash curl git openssh gnupg sqlite --no-cache && \
+    apk add bash curl git openssh gnupg sqlite tini --no-cache && \
     mkdir -p /wiki && \
     mkdir -p /logs && \
     mkdir -p /wiki/data/content && \
@@ -70,4 +70,9 @@ EXPOSE 3443
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 CMD curl -f http://localhost:3000/healthz || exit 1
 
+# tini runs as PID 1 and reaps orphaned processes. Without it, node is PID 1
+# and every process that daemonizes (e.g. git's detached auto-maintenance after
+# fetch/commit) stays a zombie forever until the pids limit is exhausted
+# ("spawn git EAGAIN" / "unable to fork").
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", "--no-deprecation", "server"]

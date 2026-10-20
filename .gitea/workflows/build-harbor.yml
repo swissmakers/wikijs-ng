@@ -21,6 +21,10 @@ jobs:
           CYPRESS_INSTALL_BINARY: 0
         run: |
           command -v yarn >/dev/null || npm install --global yarn@1
+          # Isolate installs from stale cache entries and concurrent runner jobs.
+          yarn_cache_dir=$(mktemp -d "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/wikijs-yarn.XXXXXX")
+          trap 'rm -rf -- "$yarn_cache_dir"' EXIT
+          export YARN_CACHE_FOLDER="$yarn_cache_dir"
           yarn install --frozen-lockfile --non-interactive
 
       - name: Lint and unit tests
