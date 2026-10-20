@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **A failing storage target no longer fails the user's action.** Page and asset events are dispatched after the database change is committed; an error used to reach the editor although the page was saved, and skipped the activity log, link reconnection or a pending move. Each target is now tried independently, failures are logged and shown as the target's state in Admin → Storage (cleared by the next successful sync).
 - **Git storage heals failed deletes and renames.** Page/asset deletes and renames now change the files on disk first and stage them in git afterwards, so a failing git command leaves the change in the worktree, where the next sync absorbs and pushes it (previously the file silently stayed in the repository).
 - **Git sync no longer re-imports the wiki's own commits.** The processed-changes window now tracks the remote branch instead of the local HEAD, so pages edited in the wiki are not written back to the DB on the next sync as an edit by the administrator (extra history version, changed author). Changes fetched by a push retry are imported in the same run. In addition, storage imports skip pages that are identical to the database.
+- **Links to pages created, deleted or moved later now update their state.** With language namespacing off (the default), links are stored as `/path`, but the link reconnection only looked for `/locale/path` — links to a page created later stayed red until the linking page was saved again, links to deleted pages stayed blue, and moves never rewrote links (they also looked up the pages linking to the *new* path).
+- **Partial `pages.update` API calls keep the fields they leave out.** An update with only some fields used to fail on missing tags or content, and silently unpublished the page when `isPublished` was omitted. Restoring a page version no longer removes the page's tags (versions do not record tags).
+
+### Changed
+
+- README screenshots refreshed and extended (recent changes, comment moderation, permission inspector, bookmarks); they are now generated reproducibly with `dev/screenshots.sh` from a seeded throwaway instance.
 
 ## [2.8.0] - 2026-10-03
 

@@ -876,8 +876,10 @@ module.exports = {
           throw new WIKI.Error.PageNotFound()
         }
 
+        // -> Versions do not record tags: the page keeps its current ones
         await WIKI.models.pages.updatePage({
           ...targetVersion,
+          tags: undefined,
           id: targetVersion.pageId,
           user: context.req.user,
           action: 'restored'
