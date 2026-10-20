@@ -125,3 +125,14 @@ A full compose example (app + PostgreSQL) is in `dev/examples/docker-compose.yml
 
 - `warning lru.min@…: The engine "bun"/"deno" appears to be invalid` — Yarn 1 does not know the `bun`/`deno` engine fields declared by that package (a mysql2 dependency); nothing to fix.
 - `info There appears to be trouble with your network connection. Retrying...` — transient registry hiccup, Yarn retries automatically.
+
+# README screenshots
+
+`docs/screenshots/` is generated, not hand-made:
+
+```bash
+# as your normal user (Cypress is installed per user); images built with sudo live in root's storage
+WIKI_PODMAN="sudo podman" dev/screenshots.sh localhost/wikijs-ng:local-test
+```
+
+The script starts a throwaway container (fresh SQLite database, no storage targets, removed afterwards), seeds it with demo content (`dev/screenshots/seed-demo.js`: users, a group with page rules, a small documentation tree, assets, a moderated comment thread, bookmarks and watches) and runs `dev/cypress/integration/screenshots.spec.js` at 1600×900. Change the demo content in the seed script and the shots in the spec; the README references the files by name.

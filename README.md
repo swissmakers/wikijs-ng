@@ -15,10 +15,10 @@ Wiki.js NG is maintained by [Swissmakers GmbH](https://swissmakers.ch) and focus
 Wiki.js NG provides a complete, self-hosted knowledge management platform:
 
 - Markdown, visual (WYSIWYG), code, and AsciiDoc editors
-- Full-text search (built-in database search, Elasticsearch, and more)
+- Full-text search: built-in database search, MariaDB/MySQL and PostgreSQL full-text, Elasticsearch 7/8, Algolia, AWS CloudSearch and Azure Search
 - Fine-grained access control with groups and page rules
 - Authentication via local accounts, LDAP, SAML 2.0, OpenID Connect, OAuth2 and numerous social providers
-- Bi-directional Git synchronization and additional storage backends (S3-compatible, Azure Blob, local disk, and more)
+- Bi-directional Git synchronization, plus backups to local disk, S3 / S3-compatible storage (incl. DigitalOcean Spaces) and Azure Blob Storage
 - Runs on PostgreSQL (recommended), MySQL, MariaDB, SQLite or MS SQL Server
 
 For end-user and administration documentation, the upstream [Wiki.js 2.x documentation](https://docs.requarks.io/) remains applicable.
@@ -29,28 +29,47 @@ For end-user and administration documentation, the upstream [Wiki.js 2.x documen
 | --- | --- |
 | Runtime | Node.js 24 baseline (enforced at setup, install and image level) |
 | Dependency baseline | Fully modernized stack -> Webpack 5, Vue 2.7 / Vuetify 2.7, Apollo Server 5 + GraphQL 16, Knex 3 / Objection 3, AWS SDK v3, current passport / @node-saml |
-| Security | Removed EOL and vulnerable packages (`request`, `aws-sdk` v2, `subscriptions-transport-ws`, `raven`, multer 1.x, forced legacy `xml-crypto`, and lot more..), optional Content Security Policy, self-service two-factor authentication |
+| Security | Removed EOL and vulnerable packages (`request`, `aws-sdk` v2, `subscriptions-transport-ws`, `raven`, multer 1.x, forced legacy `xml-crypto` and many more), optional Content Security Policy that works without `'unsafe-eval'`, visual editor on CKEditor 5 v48, self-service two-factor authentication |
 | Offline | No upstream services: bundled translations (English, German, French, Italian) and module logos, no update checks, no telemetry |
-| Collaboration | Watch pages and folders with e-mail digests, bookmarks, recent changes, RSS feed and sitemap, backlinks, comment replies and moderation, PDF export |
-| Git storage | Hardened bi-directional sync with self-healing worktree recovery, deterministic conflict resolution |
-| Stability | Bounded background worker processes, scheduler fixes, resource-aware build tooling |
+| Collaboration | Watch pages and folders with e-mail digests, bookmarks, recent changes, RSS feed and sitemap, backlinks, comment replies and moderation, PDF export, keyboard shortcuts, light/dark mode that follows the system |
+| Administration | Permission inspector (shows which page rule decides), asset manager with folder operations, comment moderation queue, browsable folder views |
+| Git storage | Hardened bi-directional sync: self-healing after failed or interrupted operations, deterministic conflict resolution, only changes from the remote are imported (wiki edits keep their author) |
+| Stability | A failing storage target never fails a page save, init process in the image (no zombie processes), bounded background workers, scheduler fixes, resource-aware build tooling |
 | Delivery | Reproducible multi-arch container images (amd64 / arm64) with OCI metadata, published to Docker Hub and GHCR |
 
 See the [CHANGELOG](CHANGELOG.md) for the complete list of changes since the fork.
 
 ## A quick look
 
-**Browsable folder views** -> navigating to a path without a page of its own no longer dead-ends. You also get a proper folder page listing all subfolders and child pages.
+The screenshots are generated from a demo instance with `dev/screenshots.sh` (see [`dev/BUILD.md`](dev/BUILD.md)).
 
-![Folder view](docs/screenshots/folder-view.png)
-
-**Refreshed page design** -> tags in the page header, table of contents with active-section highlighting, and an author footer under the content.
+**Refreshed page design** -> tags in the page header, table of contents with active-section highlighting, bookmark and watch buttons next to the page actions, backlinks and an author footer under the content.
 
 ![Page view](docs/screenshots/page-view.png)
 
-**Full-text search with scoping** -> MariaDB/MySQL search engine indexes actual page content with relevance ranking, and results can be restricted to the current locale or path subtree.
+**Browsable folder views** -> navigating to a path without a page of its own no longer dead-ends. You get a folder page listing all subfolders and child pages, and you can watch the whole folder from there.
+
+![Folder view](docs/screenshots/folder-view.png)
+
+**Full-text search with scoping** -> the database search engines index the actual page content with relevance ranking, and results can be restricted to the current locale or path subtree.
 
 ![Search](docs/screenshots/search.png)
+
+**Recent changes** -> every change grouped by day, with folder and language filters and an RSS feed. Changes imported by a storage sync are marked as such.
+
+![Recent changes](docs/screenshots/recent-changes.png)
+
+**Comment threads and moderation** -> replies are grouped under their comment, and new comments can be held until a moderator approves them, inline or in the moderation queue.
+
+![Comments](docs/screenshots/comments.png)
+
+**Permission inspector** -> pick a user or group and see for every permission whether it is granted on a page and which page rule decides it.
+
+![Permission inspector](docs/screenshots/access-inspector.png)
+
+**Bookmarks and watched pages** -> star pages to find them again, watch pages or folders to get an e-mail digest of the changes.
+
+![Bookmarks](docs/screenshots/bookmarks.png)
 
 **Asset management** -> full admin file manager with folder rename/move/delete, bulk operations and drag & drop, backed by proper storage-sync events (Git sees moves as moves).
 
@@ -71,7 +90,7 @@ Images are published for `linux/amd64` and `linux/arm64`:
 | Docker Hub | [`swissmakers/wikijs-ng`](https://hub.docker.com/r/swissmakers/wikijs-ng) |
 | GitHub Container Registry | [`ghcr.io/swissmakers/wikijs-ng`](https://github.com/swissmakers/wikijs-ng/pkgs/container/wikijs-ng) |
 
-Available tags: `latest`, `v<version>` (for example `v2.6.0`), and the commit SHA for fully reproducible deployments.
+Available tags: `latest`, `v<version>` (for example `v2.8.0`), and the commit SHA for fully reproducible deployments.
 
 Quick start with PostgreSQL (Podman and Docker are interchangeable):
 
