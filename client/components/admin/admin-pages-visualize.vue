@@ -154,7 +154,7 @@ export default {
         .each(function (d) { d.path = this })
 
       g.append('g')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', 'inherit')
         .attr('font-size', 10)
         .selectAll('g')
         .data(root.descendants())
@@ -229,7 +229,7 @@ export default {
       }))
 
       const g = gZoom.append('g')
-        .attr('font-family', 'sans-serif')
+        .attr('font-family', 'inherit')
         .attr('font-size', 10)
         .attr('transform', `translate(${root.dy / 3},${root.dx - x0})`)
 

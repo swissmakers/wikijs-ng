@@ -2,10 +2,10 @@
   v-footer.justify-center(:color='bgColor', inset)
     .caption.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-1`')
       template(v-if='footerOverride')
-        span(v-html='footerOverrideRender + ` |&nbsp;`')
+        span(v-html='footerOverrideRender')
       template(v-else-if='company && company.length > 0 && contentLicense !== ``')
-        span(v-if='contentLicense === `alr`') {{ $t('common:footer.copyright', { company: company, year: currentYear, interpolation: { escapeValue: false } }) }} |&nbsp;
-        span(v-else) {{ $t('common:footer.license', { company: company, license: $t('common:license.' + contentLicense), interpolation: { escapeValue: false } }) }} |&nbsp;
+        span(v-if='contentLicense === `alr`') {{ $t('common:footer.copyright', { company: company, year: currentYear, interpolation: { escapeValue: false } }) }}
+        span(v-else) {{ $t('common:footer.license', { company: company, license: $t('common:license.' + contentLicense), interpolation: { escapeValue: false } }) }}
       span {{ $t('common:footer.poweredBy') }} #[a(href='https://github.com/swissmakers/wikijs-ng', rel='nofollow') Wiki.js NG]
 </template>
 
@@ -23,11 +23,11 @@ export default {
   props: {
     color: {
       type: String,
-      default: 'grey lighten-3'
+      default: 'var(--wiki-sidebar)'
     },
     darkColor: {
       type: String,
-      default: 'grey darken-3'
+      default: 'var(--wiki-sidebar)'
     }
   },
   data () {
@@ -56,6 +56,10 @@ export default {
 
 <style lang="scss">
   .v-footer {
+    > .caption > span:nth-child(2) {
+      display: none;
+    }
+
     a {
       text-decoration: none;
     }

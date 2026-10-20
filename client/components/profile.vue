@@ -1,7 +1,10 @@
 <template lang='pug'>
   v-app(:dark='$vuetify.theme.dark').profile
     nav-header
-    v-navigation-drawer.pb-0(v-model='profileDrawerShown', app, fixed, clipped, left, permanent)
+      template(slot='actions', v-if='$vuetify.breakpoint.smAndDown')
+        v-btn(icon, @click='profileDrawerShown = !profileDrawerShown', :aria-label='$t(`profile:title`)')
+          v-icon mdi-menu
+    v-navigation-drawer.pb-0.wiki-sidebar(v-model='profileDrawerShown', app, fixed, clipped, :right='$vuetify.rtl', :permanent='$vuetify.breakpoint.mdAndUp', :temporary='$vuetify.breakpoint.smAndDown')
       v-list(dense, nav)
         v-list-item(to='/profile', color='primary')
           v-list-item-action: v-icon mdi-face-profile
@@ -20,7 +23,7 @@
           v-list-item-content
             v-list-item-title {{$t('profile:watches.title', { defaultValue: 'Watched Pages' })}}
 
-    v-main(:class='$vuetify.theme.dark ? "grey darken-4" : "grey lighten-5"')
+    v-main
       .profile-content-container
         transition(name='profile-router')
           router-view
@@ -60,7 +63,7 @@ export default {
   i18nOptions: { namespaces: 'profile' },
   data () {
     return {
-      profileDrawerShown: true
+      profileDrawerShown: this.$vuetify.breakpoint.mdAndUp
     }
   },
   router,

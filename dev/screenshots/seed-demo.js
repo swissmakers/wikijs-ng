@@ -86,6 +86,8 @@ Browse the sidebar or use the search bar above to find what you need. Content is
 | Installation | Deploy Wiki.js NG with [Docker](/docs/installation/docker) or on [Linux](/docs/installation/linux) |
 | Administration | [Backups](/docs/administration/backups), [upgrades](/docs/administration/upgrades) and [Git sync](/docs/administration/git-sync) |
 | Development | [Building from source](/docs/development/building) and [contributing](/docs/development/contributing) |
+| Team handbook | [New starters](/docs/handbook/onboarding) and [working agreements](/docs/handbook/working-agreements) |
+| Operations | [Service catalog](/docs/operations/service-catalog) and [incident response](/docs/operations/incident-response) |
 
 New here? Start with the [FAQ](/docs/faq) and the [glossary](/docs/glossary).
 
@@ -110,13 +112,14 @@ Ask in the comments below or contact the platform team.
     title: 'Docker Installation',
     description: 'Run Wiki.js NG as a container',
     tags: ['installation', 'containers'],
-    content: `# Docker Installation
+    content: `Keep your team's knowledge available with a repeatable container deployment. This guide covers the recommended setup for our internal workspace.
 
-Wiki.js NG ships as a multi-arch container image (\`linux/amd64\`, \`linux/arm64\`).
+> **Before you begin** — provision a PostgreSQL database and a persistent data volume. The image supports both \`linux/amd64\` and \`linux/arm64\`.
+{.is-info}
 
 ## Quick start
 
-\`\`\`bash
+\`\`\`plaincommand
 podman run -d --name wikijs-ng -p 3000:3000 \\
   -e DB_TYPE=postgres -e DB_HOST=db.example.com \\
   -e DB_USER=wikijs -e DB_PASS=changeme -e DB_NAME=wiki \\
@@ -256,6 +259,77 @@ Use the bell next to the share button to watch a page or a whole folder.
 2. Create a branch and keep commits focused
 3. Run \`yarn test\` before opening a pull request
 `
+  },
+  {
+    path: 'docs/handbook/onboarding',
+    title: 'New Starter Guide',
+    description: 'Your first week: accounts, people and useful resources',
+    tags: ['people', 'onboarding'],
+    content: `## Welcome to the team
+
+Use this checklist with your onboarding buddy during your first week.
+
+- [ ] Activate your account and set up two-factor authentication
+- [ ] Read the [working agreements](/docs/handbook/working-agreements)
+- [ ] Explore the [service catalog](/docs/operations/service-catalog)
+- [ ] Bookmark the pages you use most
+
+> Questions are welcome. Leave a comment on the relevant page so the next person can benefit too.
+{.is-success}
+`
+  },
+  {
+    path: 'docs/handbook/working-agreements',
+    title: 'Working Agreements',
+    description: 'How we document decisions and collaborate across teams',
+    tags: ['people', 'collaboration'],
+    content: `## Make knowledge easy to find
+
+Write down decisions where the work happens. Give each page a clear title, a short description and an owner.
+
+| Practice | Our agreement |
+| --- | --- |
+| Decisions | Record the context, options and outcome |
+| Reviews | Ask a teammate to review substantial changes |
+| Ownership | Review operational guides every quarter |
+| Communication | Link to the source page instead of copying it |
+`
+  },
+  {
+    path: 'docs/operations/incident-response',
+    title: 'Incident Response',
+    description: 'A practical checklist for triage, communication and recovery',
+    tags: ['operations', 'runbook'],
+    content: `## First response
+
+1. Confirm the impact and appoint an incident lead.
+2. Open an incident timeline and record what changed.
+3. Stabilize the service before investigating the root cause.
+4. Share an update with affected teams every 30 minutes.
+
+> Keep a record of every action. Do not make simultaneous changes without coordination.
+{.is-warning}
+
+## After recovery
+
+Document the cause, follow-up actions and owners. Update the [service catalog](/docs/operations/service-catalog) if ownership changed.
+`
+  },
+  {
+    path: 'docs/operations/service-catalog',
+    title: 'Service Catalog',
+    description: 'Internal services, responsible teams and support channels',
+    tags: ['operations', 'reference'],
+    content: `## Our services
+
+| Service | Owner | Documentation |
+| --- | --- | --- |
+| Knowledge workspace | Platform team | [Deployment](/docs/installation/docker) |
+| Source control | Engineering | [Git synchronization](/docs/administration/git-sync) |
+| Backup and recovery | Operations | [Backup policy](/docs/administration/backups) |
+
+For urgent problems, follow the [incident response guide](/docs/operations/incident-response).
+`
   }
 ]
 
@@ -276,6 +350,11 @@ async function main () {
   await waitFor(`${BASE}/healthz`, 'ok')
   const admin = await login(ADMIN_EMAIL, ADMIN_PASS)
   log('Setup completed')
+
+  await gql(admin, `mutation { site { updateConfig(
+    title: "Swissmakers Wiki", company: "Swissmakers", contentLicense: "alr",
+    description: "Team knowledge, technical guides and working agreements"
+  ) { responseResult { succeeded message } } } }`)
 
   // -> Editors may edit everything except the administration section, readers may comment
   const group = async (name, permissions, rules) => {
@@ -326,17 +405,36 @@ async function main () {
   await edit(admin, pages[2], { d: 'Run Wiki.js NG behind a reverse proxy or standalone' })
   log(`${pages.length} pages created`)
 
+  // -> A populated sidebar makes the demo useful as a small company workspace.
+  const navItems = [
+    { kind: 'link', label: 'Wiki home', icon: 'mdi-home-outline', target: '/home' },
+    { kind: 'header', label: 'Knowledge base' },
+    { kind: 'link', label: 'All documentation', icon: 'mdi-book-open-page-variant-outline', target: '/docs' },
+    { kind: 'link', label: 'Installation', icon: 'mdi-server', target: '/docs/installation' },
+    { kind: 'link', label: 'Administration', icon: 'mdi-cog-outline', target: '/docs/administration' },
+    { kind: 'link', label: 'Development', icon: 'mdi-code-braces', target: '/docs/development' },
+    { kind: 'header', label: 'Our team' },
+    { kind: 'link', label: 'Team handbook', icon: 'mdi-account-group-outline', target: '/docs/handbook' },
+    { kind: 'link', label: 'Operations', icon: 'mdi-lifebuoy', target: '/docs/operations' },
+    { kind: 'link', label: 'Recent changes', icon: 'mdi-history', target: '/r' }
+  ].map((item, index) => ({ id: `demo-nav-${index}`, targetType: 'external', visibilityMode: 'all', visibilityGroups: [], ...item }))
+  await gql(admin, `mutation ($tree: [NavigationTreeInput]!) {
+    navigation { updateTree(tree: $tree) { responseResult { succeeded message } } }
+  }`, { tree: [{ locale: 'en', items: navItems }] })
+  log('Workspace navigation created')
+
   // -> Assets
   const folderMutation = 'mutation ($slug: String!) { assets { createFolder(parentFolderId: 0, slug: $slug) { responseResult { succeeded message } } } }'
   await gql(admin, folderMutation, { slug: 'diagrams' })
   await gql(admin, folderMutation, { slug: 'screenshots' })
   const folders = (await gql(admin, '{ assets { folders(parentFolderId: 0) { id slug } } }')).assets.folders
-  const logo = fs.readFileSync(path.join(__dirname, '../../client/static/svg/logo-swissmakers.svg'))
+  const diagram = fs.readFileSync(path.join(__dirname, 'architecture.svg'))
   const uploads = [
-    { name: 'architecture-diagram.svg', folder: 0, data: logo, type: 'image/svg+xml' },
-    { name: 'network-overview.svg', folder: folders.find(f => f.slug === 'diagrams').id, data: logo, type: 'image/svg+xml' },
-    { name: 'deployment-flow.svg', folder: folders.find(f => f.slug === 'diagrams').id, data: logo, type: 'image/svg+xml' },
-    { name: 'release-notes.txt', folder: 0, data: Buffer.from('Wiki.js NG release notes\n'), type: 'text/plain' }
+    { name: 'architecture-diagram.svg', folder: 0, data: diagram, type: 'image/svg+xml' },
+    { name: 'architecture-overview.svg', folder: folders.find(f => f.slug === 'diagrams').id, data: diagram, type: 'image/svg+xml' },
+    { name: 'office-background.jpg', folder: 0, data: fs.readFileSync(path.join(__dirname, '../../client/static/img/login-office.jpg')), type: 'image/jpeg' },
+    { name: 'deployment-checklist.txt', folder: 0, data: Buffer.from('Deployment checklist\n\n1. Verify the database backup\n2. Pull the approved image\n3. Restart the service\n4. Check /healthz\n5. Confirm sign-in and search\n'), type: 'text/plain' },
+    { name: 'release-notes.txt', folder: 0, data: Buffer.from('Workspace release notes\n\nUpdated deployment guide, onboarding checklist and incident response runbook.\n'), type: 'text/plain' }
   ]
   for (const up of uploads) {
     const form = new FormData()
@@ -376,7 +474,7 @@ async function main () {
   log('Comments created')
 
   // -> Bookmarks and watches of the admin
-  for (const p of ['home', 'docs/installation/docker', 'docs/administration/backups']) {
+  for (const p of ['home', 'docs/installation/docker', 'docs/administration/backups', 'docs/handbook/onboarding', 'docs/operations/incident-response']) {
     await gql(admin, 'mutation ($id: Int!) { bookmarks { toggle(pageId: $id) { responseResult { succeeded message } } } }', { id: pageIds[p] })
   }
   await gql(admin, 'mutation ($id: Int!) { watches { watchPage(pageId: $id) { responseResult { succeeded message } } } }', { id: pageIds['docs/installation/docker'] })

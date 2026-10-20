@@ -5,7 +5,7 @@
         v-spacer
         .overline.grey--text {{$t('admin:adminArea')}}
         v-spacer
-    v-navigation-drawer.pb-0.admin-sidebar(v-model='adminDrawerShown', app, fixed, clipped, :right='$vuetify.rtl', permanent, width='300', :class='$vuetify.theme.dark ? `grey darken-4` : ``')
+    v-navigation-drawer.pb-0.admin-sidebar.wiki-sidebar(v-model='adminDrawerShown', app, fixed, clipped, :right='$vuetify.rtl', permanent, width='300')
       vue-scroll(:ops='scrollStyle')
         v-list.radius-0(dense, nav)
           v-list-item(to='/dashboard', color='primary')
@@ -109,7 +109,7 @@
             v-list-item-avatar(size='24', tile): v-icon mdi-information-outline
             v-list-item-title {{ $t('admin:about.title', { defaultValue: 'About' }) }}
 
-    v-main(:class='$vuetify.theme.dark ? "grey darken-5" : "grey lighten-5"')
+    v-main
       .admin-content-container
         transition(name='admin-router')
           router-view
@@ -329,7 +329,7 @@ export default {
 .v-application.admin {
   code {
     box-shadow: none;
-    font-family: 'Roboto Mono', monospace;
+    font-family: $code-font-family;
     color: mc('pink', '500');
   }
 }

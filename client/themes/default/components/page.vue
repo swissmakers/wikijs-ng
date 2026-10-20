@@ -1,10 +1,9 @@
 <template lang="pug">
   v-app(v-scroll='upBtnScroll', :dark='$vuetify.theme.dark', :class='$vuetify.rtl ? `is-rtl` : `is-ltr`')
     nav-header(v-if='!printView')
-    v-navigation-drawer(
+    v-navigation-drawer.wiki-sidebar(
       v-if='navMode !== `NONE` && !printView'
-      :class='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`'
-      dark
+      :dark='$vuetify.theme.dark'
       app
       clipped
       mobile-breakpoint='600'
@@ -13,7 +12,7 @@
       :right='$vuetify.rtl'
       )
       vue-scroll(:ops='scrollStyle')
-        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`', :items='sidebarDecoded', :nav-mode='navMode')
+        nav-sidebar(color='wiki-sidebar-list', :dark='$vuetify.theme.dark', :items='sidebarDecoded', :nav-mode='navMode')
 
     v-fab-transition(v-if='navMode !== `NONE`')
       v-btn(
@@ -32,14 +31,13 @@
 
     v-main(ref='content')
       template(v-if='path !== `home`')
-        v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-3`', flat, dense, v-if='$vuetify.breakpoint.smAndUp')
+        v-toolbar.wiki-breadcrumbs(flat, dense, v-if='$vuetify.breakpoint.smAndUp')
           page-breadcrumbs(:locale='locale', :path='path')
           template(v-if='!isPublished')
             v-spacer
             .caption.red--text {{$t('common:page.unpublished')}}
             status-indicator.ml-3(negative, pulse)
-        v-divider
-      v-container.grey.pa-0(fluid, :class='$vuetify.theme.dark ? `darken-4-l3` : `lighten-4`')
+      v-container.wiki-page-header.pa-0(fluid)
         v-row.page-header-section.py-4(no-gutters, align-content='center')
           v-col.page-col-content.is-page-header(
             :offset-xl='tocPosition === `left` ? 2 : 0'
@@ -51,7 +49,7 @@
             )
             .page-header-headings
               .text-h4.page-header-title {{title}}
-              .body-2.grey--text.text--darken-1.mt-1 {{description}}
+              .body-2.wiki-muted.mt-1 {{description}}
               .page-header-tags.mt-2(v-if='tags.length > 0')
                 v-chip.mr-1(
                   label
@@ -95,7 +93,6 @@
                 )
                 v-icon.mr-2(small) {{ editShortcutsObj.editMenuExternalIcon }}
                 span.text-none {{$t(`common:page.editExternal`, { name: editShortcutsObj.editMenuExternalName })}}
-      v-divider
       v-container.pl-5.pt-4(fluid, grid-list-xl)
         v-layout(row)
           v-flex.page-col-sd(
@@ -148,7 +145,7 @@
                     span {{$t('common:comments.newComment')}}
 
             v-card.page-shortcuts-card(flat)
-              v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-3`', flat, dense)
+              v-toolbar(flat, dense)
                 v-spacer
                 page-follow(:page-id='pageId', :locale='locale', :path='path')
                 v-menu(offset-y, bottom, min-width='300')
@@ -636,7 +633,7 @@ export default {
 
 .page-toc-item {
   border-left: 2px solid transparent;
-  border-radius: 0 4px 4px 0 !important;
+  border-radius: 0 !important;
 
   &.is-active {
     border-left-color: mc('theme', 'primary');

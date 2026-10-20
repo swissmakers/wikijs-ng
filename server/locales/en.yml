@@ -509,6 +509,9 @@ admin:
   about:
     title: About
 auth:
+  workspaceLabel: Team wiki
+  workspaceTitle: Your team's knowledgebase
+  workspaceDescription: Find the answers you need and share what you know.
   actions:
     login: Log In
     register: Register

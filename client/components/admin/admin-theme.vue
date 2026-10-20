@@ -108,14 +108,14 @@ export default {
       ],
       config: {
         theme: 'default',
-        darkMode: false,
+        darkMode: true,
         iconset: '',
         tocPosition: 'left',
         injectCSS: '',
         injectHead: '',
         injectBody: ''
       },
-      darkModeInitial: false
+      darkModeInitial: true
     }
   },
   computed: {
@@ -193,7 +193,7 @@ export default {
 
 <style lang='scss'>
 .v-textarea.is-monospaced textarea {
-  font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+  font-family: $code-font-family;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.4;

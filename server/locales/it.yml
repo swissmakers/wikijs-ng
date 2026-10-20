@@ -509,6 +509,9 @@ admin:
   about:
     title: Informazioni
 auth:
+  workspaceLabel: Wiki del team
+  workspaceTitle: La base di conoscenza del tuo team
+  workspaceDescription: Trova le risposte che cerchi e condividi ciò che sai.
   actions:
     login: Accedi
     register: Registrati

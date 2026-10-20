@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320">
+  <rect width="900" height="320" rx="16" fill="#182230"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" fill="#e2eaf4">
+    <text x="40" y="48" font-size="22" font-weight="600">Knowledge workspace · deployment overview</text>
+    <text x="40" y="76" font-size="14" fill="#a5b4c7">Demo architecture / Platform team</text>
+    <g fill="#202d3d" stroke="#456181" stroke-width="2">
+      <rect x="40" y="140" width="180" height="80" rx="8"/>
+      <rect x="330" y="140" width="210" height="80" rx="8"/>
+      <rect x="650" y="105" width="210" height="65" rx="8"/>
+      <rect x="650" y="200" width="210" height="65" rx="8"/>
+    </g>
+    <g fill="none" stroke="#93bdf5" stroke-width="2">
+      <path d="M220 180 H330 M318 173 L330 180 L318 187"/>
+      <path d="M540 180 H595 V137 H650 M638 130 L650 137 L638 144"/>
+      <path d="M595 180 V232 H650 M638 225 L650 232 L638 239"/>
+    </g>
+    <g text-anchor="middle">
+      <text x="130" y="175" font-size="18">Browser</text>
+      <text x="130" y="198" font-size="13" fill="#a5b4c7">Team members</text>
+      <text x="435" y="175" font-size="18">Wiki.js NG</text>
+      <text x="435" y="198" font-size="13" fill="#a5b4c7">Application container</text>
+      <text x="755" y="133" font-size="17">PostgreSQL</text>
+      <text x="755" y="154" font-size="12" fill="#a5b4c7">Pages, users and settings</text>
+      <text x="755" y="228" font-size="17">Git repository</text>
+      <text x="755" y="249" font-size="12" fill="#a5b4c7">Content synchronization</text>
+      <text x="275" y="166" font-size="12" fill="#a5b4c7">HTTPS</text>
+    </g>
+  </g>
+</svg>

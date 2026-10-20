@@ -1,0 +1,277 @@
+// Shared surfaces keep pages, profile and administration in the same workspace.
+.v-application.theme--light, .v-application.theme--dark {
+  --wiki-background: #f5f7fa;
+  --wiki-surface: #ffffff;
+  --wiki-surface-alt: #edf2f7;
+  --wiki-sidebar: #f8fafc;
+  --wiki-border: #dce3ec;
+  --wiki-text: #243449;
+  --wiki-muted: #62748a;
+  --wiki-link: #205eac;
+  --wiki-action: #205eac;
+  --wiki-selected: #e6effb;
+  --wiki-code: #111c2b;
+
+  &:where(.theme--dark) {
+    --wiki-background: #182230;
+    --wiki-surface: #202d3d;
+    --wiki-surface-alt: #263548;
+    --wiki-sidebar: #131e2c;
+    --wiki-border: #34465b;
+    --wiki-text: #e2eaf4;
+    --wiki-muted: #a5b4c7;
+    --wiki-link: #93bdf5;
+    --wiki-action: #285e9b;
+    --wiki-selected: #263f60;
+    --wiki-code: #111a27;
+    color-scheme: dark;
+
+    .v-main .grey--text, .v-main .blue-grey--text {
+      color: var(--wiki-muted) !important;
+    }
+  }
+
+  &, .v-application--wrap, .v-main {
+    background-color: var(--wiki-background);
+    color: var(--wiki-text);
+  }
+
+  .v-card:not(.v-card--colored), .v-sheet.v-list, .v-data-table {
+    background-color: var(--wiki-surface);
+    color: var(--wiki-text);
+  }
+
+  // The wiki reads as a document and directory, with open sections.
+  .v-main .v-card {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .v-card--outlined, .v-divider {
+    border-color: var(--wiki-border);
+  }
+
+  .v-card__subtitle, .v-card__text, .v-list-item__subtitle, .v-subheader {
+    color: var(--wiki-muted);
+  }
+
+  .v-btn {
+    letter-spacing: .02em;
+    text-transform: none;
+    font-weight: 500;
+  }
+
+  .v-btn:focus-visible, a:focus-visible {
+    outline: 2px solid var(--wiki-link);
+    outline-offset: 3px;
+  }
+
+  .v-navigation-drawer.wiki-sidebar {
+    background-color: var(--wiki-sidebar);
+
+    .v-navigation-drawer__border {
+      display: none;
+    }
+
+    .v-list, .wiki-sidebar-list {
+      background-color: transparent;
+    }
+
+    .v-list-item {
+      margin: 3px 8px;
+      border-radius: 0;
+      border-inline-start: 3px solid transparent;
+    }
+
+    .v-list-item--active {
+      background-color: var(--wiki-selected);
+      color: var(--wiki-link);
+      border-inline-start-color: var(--wiki-link);
+    }
+
+    .v-list-item__title {
+      font-weight: 500;
+    }
+
+    .v-icon {
+      color: var(--wiki-muted);
+    }
+  }
+
+  .wiki-sidebar-switcher {
+    background-color: var(--wiki-sidebar);
+    gap: 8px;
+
+    .v-btn {
+      background-color: var(--wiki-surface-alt);
+      color: var(--wiki-text);
+    }
+  }
+
+  .wiki-breadcrumbs.v-toolbar {
+    background-color: var(--wiki-sidebar);
+
+    .v-breadcrumbs__item {
+      color: var(--wiki-muted);
+    }
+  }
+
+  .wiki-surface-toolbar.v-toolbar {
+    background-color: var(--wiki-surface-alt);
+  }
+
+  .wiki-title {
+    color: var(--wiki-text);
+  }
+
+  .wiki-page-header {
+    background-color: var(--wiki-surface);
+
+    .page-header-section {
+      padding-top: 24px !important;
+      padding-bottom: 24px !important;
+    }
+  }
+
+  .wiki-muted {
+    color: var(--wiki-muted);
+  }
+
+  .nav-header {
+    .v-text-field--solo > .v-input__control > .v-input__slot {
+      background-color: #24364d;
+      border: 0;
+      border-radius: 4px;
+      min-height: 40px;
+
+      &:focus-within {
+        box-shadow: inset 0 0 0 2px #93bdf5;
+      }
+    }
+
+    .v-toolbar__title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -.3px;
+    }
+  }
+
+  .search-results-filters .v-chip {
+    border: 0;
+    border-radius: 3px;
+
+    &:not(.primary) {
+      background-color: var(--wiki-surface-alt) !important;
+    }
+  }
+
+  .page-header-tags .v-chip {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .v-data-table code {
+    background-color: var(--wiki-surface-alt);
+    color: var(--wiki-link);
+  }
+
+  .profile-content-container, .admin-content-container {
+    padding: 20px;
+  }
+
+  .profile-header, .admin-header {
+    margin-bottom: 20px;
+
+    .headline {
+      color: var(--wiki-text) !important;
+      font-weight: 600;
+    }
+  }
+
+  .workspace-header-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+
+    .v-icon {
+      color: var(--wiki-link);
+    }
+  }
+
+  .profile-bookmarks-card.v-card {
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background-color: transparent;
+
+    .v-list {
+      background-color: transparent;
+    }
+
+    .v-list-item {
+      min-height: 88px;
+    }
+
+    .v-list-item__title {
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+  }
+
+  .page-toc-card.v-card, .page-comments-card.v-card, .page-shortcuts-card.v-card {
+    border: 0;
+    box-shadow: none !important;
+    border-radius: 0;
+    background-color: transparent;
+    overflow: hidden;
+
+    .v-list, .v-toolbar {
+      background-color: transparent;
+    }
+  }
+
+  .page-toc-item.is-active {
+    background-color: var(--wiki-selected);
+  }
+
+  .folder-view-card.v-card {
+    border: 0;
+    border-radius: 0;
+    background-color: transparent;
+    transition: background-color .15s ease;
+
+    .subtitle-2 {
+      color: var(--wiki-text);
+      font-size: 16px !important;
+    }
+
+    &:hover {
+      background-color: var(--wiki-surface-alt);
+    }
+  }
+
+  .comments-container .comments-header {
+    background-color: transparent;
+    color: var(--wiki-text);
+    border: 0;
+    border-radius: 0;
+    padding-inline: 0;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .comments-container .comments-main {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    padding-inline: 0;
+  }
+
+  @media (max-width: 600px) {
+    .profile-content-container, .admin-content-container {
+      padding: 4px;
+    }
+  }
+}

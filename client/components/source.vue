@@ -88,7 +88,7 @@ export default {
     box-shadow: none;
     background-color: transparent;
     color: mc('grey', '800');
-    font-family: 'Roboto Mono', sans-serif;
+    font-family: $code-font-family;
     font-weight: 400;
     font-size: 1rem;
 

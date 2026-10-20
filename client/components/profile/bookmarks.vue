@@ -3,7 +3,8 @@
     v-layout(row wrap)
       v-flex(xs12)
         .profile-header
-          img.animated.fadeInUp(src='/_assets/svg/icon-heart-health.svg', alt='Bookmarks', style='width: 80px;')
+          .workspace-header-icon
+            v-icon(size='26') mdi-bookmark-multiple-outline
           .profile-header-title
             .headline.primary--text.animated.fadeInLeft {{ $t('profile:bookmarks.title', { defaultValue: 'Bookmarks' }) }}
             .subtitle-1.grey--text.animated.fadeInLeft {{ $t('profile:bookmarks.subtitle', { defaultValue: 'Pages you marked with a star' }) }}
@@ -11,7 +12,7 @@
           v-btn.animated.fadeInDown.wait-p1s(icon, outlined, color='grey', @click='refresh')
             v-icon mdi-refresh
       v-flex(xs12)
-        v-card.animated.fadeInUp
+        v-card.profile-bookmarks-card
           v-list(two-line)
             template(v-for='(bookmark, idx) of bookmarks')
               v-divider(v-if='idx > 0', :key='`div-` + bookmark.id')

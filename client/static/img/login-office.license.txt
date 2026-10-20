@@ -1,0 +1,7 @@
+Default login background
+Photo: Glass facade of a modern office building
+Photographer: Fabian Kleiser
+Source: https://unsplash.com/photos/V5vF94h52r0
+License: https://unsplash.com/license
+Downloaded: 2026-10-20
+The image is bundled locally so sign-in does not depend on an external image service.

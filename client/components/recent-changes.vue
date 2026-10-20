@@ -1,7 +1,7 @@
 <template lang='pug'>
   v-app(:dark='$vuetify.theme.dark').recent-changes
     nav-header
-    v-main.grey(:class='$vuetify.theme.dark ? `darken-4-d5` : `lighten-3`')
+    v-main
       v-container.recent-changes-container(fluid, grid-list-lg)
         .d-flex.align-center.flex-wrap.mb-4
           .headline.primary--text {{ $t('common:recent.title', { defaultValue: 'Recent changes' }) }}
