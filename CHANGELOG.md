@@ -4,6 +4,15 @@ All notable changes to **wikijs-ng** (fork of [Requarks/wiki](https://github.com
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- **`spawn git EAGAIN` / `unable to fork` after some days of uptime.** git ≥ 2.47 runs auto-maintenance detached after every fetch/commit; the daemonized process is reparented to PID 1, which was `node` — and node never reaps foreign children. With git sync every 5 minutes the zombies piled up until the container's pids limit (2048) was exhausted and page saves and syncs failed. The image now runs `tini` as PID 1, and the git storage module sets `gc.autoDetach` / `maintenance.autoDetach` to `false` so git never leaves orphans behind, whatever the runtime. The smoke test checks that PID 1 is the init.
+- **A failing storage target no longer fails the user's action.** Page and asset events are dispatched after the database change is committed; an error used to reach the editor although the page was saved, and skipped the activity log, link reconnection or a pending move. Each target is now tried independently, failures are logged and shown as the target's state in Admin → Storage (cleared by the next successful sync).
+- **Git storage heals failed deletes and renames.** Page/asset deletes and renames now change the files on disk first and stage them in git afterwards, so a failing git command leaves the change in the worktree, where the next sync absorbs and pushes it (previously the file silently stayed in the repository).
+- **Git sync no longer re-imports the wiki's own commits.** The processed-changes window now tracks the remote branch instead of the local HEAD, so pages edited in the wiki are not written back to the DB on the next sync as an edit by the administrator (extra history version, changed author). Changes fetched by a push retry are imported in the same run. In addition, storage imports skip pages that are identical to the database.
+
 ## [2.8.0] - 2026-10-03
 
 ### Added — following changes

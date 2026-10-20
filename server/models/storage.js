@@ -132,25 +132,41 @@ module.exports = class Storage extends Model {
     }
   }
 
+  /**
+   * Dispatch a page event to all active storage targets.
+   *
+   * Storage is secondary to the database: the change is already committed when
+   * this runs, so a failing target must never fail the user's action (the
+   * activity log, link reconnection or a pending move would be skipped too).
+   * Failures are logged and shown on the target's state in the admin area —
+   * the git target re-commits leftover worktree changes on its next sync.
+   */
   static async pageEvent ({ event, page }) {
-    try {
-      for (const target of this.targets) {
-        await target.fn[event](page)
-      }
-    } catch (err) {
-      WIKI.logger.warn(err)
-      throw err
-    }
+    await this.dispatchEvent(event, `page [${page.localeCode}] ${page.path}`, page)
   }
 
   static async assetEvent ({ event, asset }) {
-    try {
-      for (const target of this.targets) {
-        await target.fn[`asset${_.capitalize(event)}`](asset)
+    await this.dispatchEvent(`asset${_.capitalize(event)}`, `asset ${asset.path}`, asset)
+  }
+
+  static async dispatchEvent (handler, label, item) {
+    for (const target of (this.targets || [])) {
+      try {
+        await target.fn[handler](item)
+      } catch (err) {
+        WIKI.logger.error(`Storage target ${target.key} failed to process ${handler} for ${label}: ${err.message}`)
+        try {
+          await WIKI.models.storage.query().patch({
+            state: {
+              status: 'error',
+              message: `${handler} ${label}: ${err.message}`,
+              lastAttempt: new Date().toISOString()
+            }
+          }).where('key', target.key)
+        } catch (errState) {
+          WIKI.logger.warn(`Failed to save state of storage target ${target.key}: ${errState.message}`)
+        }
       }
-    } catch (err) {
-      WIKI.logger.warn(err)
-      throw err
     }
   }
 

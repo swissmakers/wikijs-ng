@@ -64,6 +64,12 @@ module.exports = {
     await this.git.raw(['config', '--local', 'core.quotepath', false])
     await this.git.raw(['config', '--local', 'color.ui', false])
 
+    // Run auto gc / maintenance in the foreground. Detached, it daemonizes and gets
+    // reparented to PID 1 — when that is node (no init in the container), it is never
+    // reaped and the zombies pile up until spawning fails with EAGAIN.
+    await this.git.raw(['config', '--local', 'gc.autoDetach', false])
+    await this.git.raw(['config', '--local', 'maintenance.autoDetach', false])
+
     // Set default author
     await this.git.raw(['config', '--local', 'user.email', this.config.defaultEmail])
     await this.git.raw(['config', '--local', 'user.name', this.config.defaultName])
@@ -141,7 +147,17 @@ module.exports = {
     }
   },
   /**
-   * Read / persist the last commit hash whose changes were imported into the DB.
+   * Resolve the remote-tracking branch hash (null if it was never fetched)
+   */
+  async getRemoteHash () {
+    try {
+      return _.trim(await this.git.revparse(['--verify', `refs/remotes/origin/${this.config.branch}`]))
+    } catch (err) {
+      return null
+    }
+  },
+  /**
+   * Read / persist the last remote commit whose changes were imported into the DB.
    * Stored inside the .git directory so it survives config changes and is
    * wiped together with the repo on purge.
    */
@@ -195,28 +211,16 @@ module.exports = {
     // Ensure clean worktree (self-healing for failed page commits / interrupted rebases)
     await this.repairAndAbsorb(rootUser)
 
-    // Determine the window start for change processing
-    let lastProcessedHash = await this.getLastProcessedHash()
-    if (!lastProcessedHash) {
-      lastProcessedHash = await this.getCurrentHash()
-    }
-
-    // Pull rebase
+    // Pull rebase, then import the remote changes BEFORE pushing, so a push
+    // failure can never cause remote changes to be skipped
     if (_.includes(['sync', 'pull'], this.mode)) {
+      // -> No sync state yet: the DB reflects the remote as last fetched
+      if (!(await this.getLastProcessedHash())) {
+        await this.setLastProcessedHash(await this.getRemoteHash() || await this.getCurrentHash())
+      }
       WIKI.logger.info(`(STORAGE/GIT) Performing pull rebase from origin on branch ${this.config.branch}...`)
       await this.pullWithRecovery()
-    }
-
-    // Process changes pulled from remote BEFORE pushing, so a push failure
-    // can never cause remote changes to be skipped
-    if (_.includes(['sync', 'pull'], this.mode)) {
-      const newHead = await this.getCurrentHash()
-      if (newHead && lastProcessedHash && newHead !== lastProcessedHash) {
-        await this.processDiff(lastProcessedHash, newHead, rootUser)
-      }
-      if (newHead) {
-        await this.setLastProcessedHash(newHead)
-      }
+      await this.processRemoteChanges(rootUser)
     }
 
     // Push
@@ -232,11 +236,10 @@ module.exports = {
         if (this.mode !== 'sync') {
           throw err
         }
-        // Remote moved between our pull and push -> pull again and retry once.
-        // Changes fetched by this second pull are processed on the next sync
-        // run (the persisted hash window covers them).
+        // Remote moved between our pull and push -> pull again and retry once
         WIKI.logger.warn(`(STORAGE/GIT) Push rejected (${err.message}). Pulling latest changes and retrying...`)
         await this.pullWithRecovery()
+        await this.processRemoteChanges(rootUser)
         await this.git.push('origin', this.config.branch, pushOpts)
       }
     }
@@ -260,6 +263,30 @@ module.exports = {
       }
       throw err
     }
+  },
+  /**
+   * Import the changes the remote branch received since the last processed
+   * remote commit. Only the remote range is diffed: the wiki's own commits
+   * (rebased on top, or already pushed) are already in the DB and must not be
+   * re-imported as edits by the root user.
+   */
+  async processRemoteChanges (rootUser) {
+    const remoteHash = await this.getRemoteHash()
+    if (!remoteHash) {
+      return
+    }
+    const lastProcessedHash = await this.getLastProcessedHash()
+    if (lastProcessedHash && lastProcessedHash !== remoteHash) {
+      // -> Start at the fork point in case the marker is a local commit that never reached the remote
+      let fromHash = lastProcessedHash
+      try {
+        fromHash = _.trim(await this.git.raw(['merge-base', lastProcessedHash, remoteHash])) || lastProcessedHash
+      } catch (err) {
+        WIKI.logger.warn(`(STORAGE/GIT) Could not determine merge base of ${lastProcessedHash} and ${remoteHash}: ${err.message}`)
+      }
+      await this.processDiff(fromHash, remoteHash, rootUser)
+    }
+    await this.setLastProcessedHash(remoteHash)
   },
   /**
    * Compute the diff between two commits and import the changes into the DB
@@ -421,6 +448,28 @@ module.exports = {
     })
   },
   /**
+   * Stage the removal / addition of files that were already deleted / moved on
+   * disk and commit them. Working on the filesystem first means a failing git
+   * call leaves the change in the worktree, where the next sync absorbs it.
+   */
+  async commitPaths ({ removed = [], added = [] }, message, authorName, authorEmail) {
+    for (const filePath of removed) {
+      await this.git.raw(['rm', '--cached', '--ignore-unmatch', '--quiet', '--', filePath])
+    }
+    for (const filePath of added) {
+      await this.git.add(filePath)
+    }
+    const paths = [...removed, ...added]
+    const status = await this.git.status(['--', ...paths])
+    if (status.isClean()) {
+      WIKI.logger.info(`(STORAGE/GIT) Nothing to commit for ${paths.join(', ')}.`)
+      return
+    }
+    await this.git.commit(message, paths, {
+      '--author': `"${authorName} <${authorEmail}>"`
+    })
+  },
+  /**
    * CREATE
    *
    * @param {Object} page Page to create
@@ -474,10 +523,8 @@ module.exports = {
         WIKI.logger.warn(`(STORAGE/GIT) File ${fileName} is excluded by .gitignore, nothing to delete.`)
         return
       }
-      await this.git.rm(gitFilePath)
-      await this.git.commit(`docs: delete ${page.path}`, fileName, {
-        '--author': `"${page.authorName} <${page.authorEmail}>"`
-      })
+      await fs.remove(path.join(this.repoPath, fileName))
+      await this.commitPaths({ removed: [gitFilePath] }, `docs: delete ${page.path}`, page.authorName, page.authorEmail)
     })
   },
   /**
@@ -502,17 +549,22 @@ module.exports = {
 
       const sourceFilePath = path.join(this.repoPath, sourceFileName)
       const destinationFilePath = path.join(this.repoPath, destinationFileName)
-      await fs.move(sourceFilePath, destinationFilePath)
+      if (await fs.pathExists(sourceFilePath)) {
+        await fs.move(sourceFilePath, destinationFilePath, { overwrite: true })
+      } else {
+        // -> Source never made it into the repo (e.g. an earlier failed commit): write the page at its new location
+        WIKI.logger.warn(`(STORAGE/GIT) Source file ${sourceFileName} is missing. Writing ${destinationFileName} from the database...`)
+        await fs.outputFile(destinationFilePath, pageHelper.injectPageMetadata(page), 'utf8')
+      }
 
       if ((await this.git.checkIgnore(`./${destinationFileName}`)).length > 0) {
         WIKI.logger.warn(`(STORAGE/GIT) File ${destinationFileName} is excluded by .gitignore and will NOT be committed! Remove the matching .gitignore rule to track it.`)
         return
       }
-      await this.git.rm(`./${sourceFileName}`)
-      await this.git.add(`./${destinationFileName}`)
-      await this.git.commit(`docs: rename ${page.path} to ${page.destinationPath}`, [sourceFilePath, destinationFilePath], {
-        '--author': `"${page.moveAuthorName} <${page.moveAuthorEmail}>"`
-      })
+      await this.commitPaths({
+        removed: [`./${sourceFileName}`],
+        added: [`./${destinationFileName}`]
+      }, `docs: rename ${page.path} to ${page.destinationPath}`, page.moveAuthorName, page.moveAuthorEmail)
     })
   },
   /**
@@ -538,10 +590,8 @@ module.exports = {
     return this.mutex.runExclusive(async () => {
       WIKI.logger.info(`(STORAGE/GIT) Committing removed file ${asset.path}...`)
 
-      await this.git.rm(`./${asset.path}`)
-      await this.git.commit(`docs: delete ${asset.path}`, asset.path, {
-        '--author': `"${asset.authorName} <${asset.authorEmail}>"`
-      })
+      await fs.remove(path.join(this.repoPath, asset.path))
+      await this.commitPaths({ removed: [`./${asset.path}`] }, `docs: delete ${asset.path}`, asset.authorName, asset.authorEmail)
     })
   },
   /**
@@ -553,10 +603,11 @@ module.exports = {
     return this.mutex.runExclusive(async () => {
       WIKI.logger.info(`(STORAGE/GIT) Committing file move from ${asset.path} to ${asset.destinationPath}...`)
 
-      await this.git.mv(`./${asset.path}`, `./${asset.destinationPath}`)
-      await this.git.commit(`docs: rename ${asset.path} to ${asset.destinationPath}`, [asset.path, asset.destinationPath], {
-        '--author': `"${asset.moveAuthorName} <${asset.moveAuthorEmail}>"`
-      })
+      await fs.move(path.join(this.repoPath, asset.path), path.join(this.repoPath, asset.destinationPath), { overwrite: true })
+      await this.commitPaths({
+        removed: [`./${asset.path}`],
+        added: [`./${asset.destinationPath}`]
+      }, `docs: rename ${asset.path} to ${asset.destinationPath}`, asset.moveAuthorName, asset.moveAuthorEmail)
     })
   },
   async getLocalLocation (asset) {

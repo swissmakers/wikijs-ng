@@ -81,16 +81,30 @@ module.exports = {
     })
     const newTags = !_.isNil(pageData.tags) ? _.get(pageData, 'tags', '').split(', ') : false
     if (currentPage) {
-      // Already in the DB, can mark as modified
-      WIKI.logger.info(`(STORAGE/${moduleName}) Page marked as modified: ${normalizedRelPath}`)
-      await WIKI.models.pages.updatePage({
-        id: currentPage.id,
+      const changes = {
         title: _.get(pageData, 'title', currentPage.title),
         description: _.get(pageData, 'description', currentPage.description) || '',
         tags: newTags || currentPage.tags.map(t => t.tag),
         isPublished: _.get(pageData, 'isPublished', currentPage.isPublished),
+        content: pageData.content
+      }
+      // -> Identical to the DB (e.g. a file the wiki wrote itself): no new version, author stays untouched
+      if (
+        changes.content === currentPage.content &&
+        changes.title === currentPage.title &&
+        changes.description === (currentPage.description || '') &&
+        Boolean(changes.isPublished) === Boolean(currentPage.isPublished) &&
+        _.isEqual(_.sortBy(changes.tags), _.sortBy(currentPage.tags.map(t => t.tag)))
+      ) {
+        WIKI.logger.info(`(STORAGE/${moduleName}) Page unchanged, skipping: ${normalizedRelPath}`)
+        return
+      }
+      // Already in the DB, can mark as modified
+      WIKI.logger.info(`(STORAGE/${moduleName}) Page marked as modified: ${normalizedRelPath}`)
+      await WIKI.models.pages.updatePage({
+        id: currentPage.id,
+        ...changes,
         isPrivate: false,
-        content: pageData.content,
         user,
         skipStorage: true
       })
