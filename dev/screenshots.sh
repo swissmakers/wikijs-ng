@@ -27,8 +27,11 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SHOTS_DIR="$REPO_DIR/dev/cypress/screenshots/screenshots.spec.js"
 OUT_DIR="$REPO_DIR/docs/screenshots"
 
+TIMELINE="$(mktemp)"
+
 cleanup() {
   "${PODMAN[@]}" rm -f "$NAME" >/dev/null 2>&1 || true
+  rm -f "$TIMELINE"
 }
 trap cleanup EXIT
 
@@ -37,7 +40,13 @@ echo ">> Starting ${IMAGE} on port ${PORT}..."
   -e DB_TYPE=sqlite -e DB_FILEPATH=/wiki/data/db.sqlite \
   "$IMAGE" >/dev/null
 
-JWT="$(node "$REPO_DIR/dev/screenshots/seed-demo.js" "$BASE" "$ADMIN_EMAIL" "$ADMIN_PASS" | tail -1)"
+JWT="$(node "$REPO_DIR/dev/screenshots/seed-demo.js" "$BASE" "$ADMIN_EMAIL" "$ADMIN_PASS" "$TIMELINE" | tail -1)"
+
+# -> The API records every change as "now": spread them over the last two weeks,
+#    then drop the rendered-page cache so pages show the new dates
+echo ">> Applying the demo timeline..."
+"${PODMAN[@]}" exec -i "$NAME" sqlite3 /wiki/data/db.sqlite < "$TIMELINE"
+"${PODMAN[@]}" exec "$NAME" sh -c 'rm -rf /wiki/data/cache/*'
 
 echo ">> Taking screenshots..."
 rm -rf "$SHOTS_DIR"
