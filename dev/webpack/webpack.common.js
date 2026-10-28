@@ -12,6 +12,11 @@ const WebpackBarPlugin = require('webpackbar')
 const babelConfig = fs.readJsonSync(path.join(process.cwd(), '.babelrc'))
 const babelDir = path.join(process.cwd(), '.webpack-cache/babel')
 
+// Prism grammar ids and aliases, so the client never asks the autoloader for a grammar that does not exist
+const prismLanguages = Object.entries(require('prismjs/components.json').languages)
+  .filter(([id]) => id !== 'meta')
+  .flatMap(([id, def]) => [id, ...[].concat(def.alias || [])])
+
 const sassLoader = (indentedSyntax) => ({
   loader: 'sass-loader',
   options: {
@@ -148,6 +153,9 @@ module.exports = {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process/browser.js'
+    }),
+    new webpack.DefinePlugin({
+      PRISM_LANGUAGES: JSON.stringify(prismLanguages)
     }),
     new CopyWebpackPlugin({
       patterns: [
