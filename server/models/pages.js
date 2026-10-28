@@ -254,7 +254,7 @@ module.exports = class Page extends Model {
       locale: opts.locale,
       path: opts.path
     })) {
-      throw new WIKI.Error.PageDeleteForbidden()
+      throw new WIKI.Error.PageCreateForbidden()
     }
 
     // -> Check for duplicate
