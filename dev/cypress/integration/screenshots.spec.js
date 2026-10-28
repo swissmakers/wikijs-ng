@@ -192,6 +192,23 @@ describe('README screenshots', () => {
     })
   }
 
+  it('highlights code without requesting missing Prism grammars', () => {
+    // -> Fence names Prism has no file for (apache, plaincommand) must not trigger 404s
+    const prismRequests = []
+    cy.intercept('GET', '/_assets/js/prism/**', req => {
+      req.continue(res => { prismRequests.push(`${res.statusCode} ${req.url}`) })
+    })
+    for (const path of ['/docs/installation/linux', '/docs/installation/docker']) {
+      cy.visit(path)
+      cy.get('.contents', { timeout: 20000 }).should('be.visible')
+    }
+    cy.visit('/docs/installation/linux')
+    cy.get('.contents code.language-apacheconf .token', { timeout: 15000 }).should('exist')
+    cy.wrap(prismRequests).should(requests => {
+      expect(requests.filter(r => !r.startsWith('200')), 'failed Prism requests').to.deep.equal([])
+    })
+  })
+
   it('login', () => {
     cy.clearCookie('jwt')
     cy.visit('/login')

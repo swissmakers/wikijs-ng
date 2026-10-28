@@ -38,15 +38,24 @@
             .caption.red--text {{$t('common:page.unpublished')}}
             status-indicator.ml-3(negative, pulse)
       v-container.wiki-page-header.pa-0(fluid)
-        v-row.page-header-section(no-gutters, align-content='center')
-          v-col.page-col-content.is-page-header
+        v-row.page-header-section.py-4(no-gutters, align-content='center')
+          v-col.page-col-content.is-page-header(
+            :offset-xl='tocPosition === `left` ? 2 : 0'
+            :offset-lg='tocPosition === `left` ? 3 : 0'
+            :xl='tocPosition === `right` ? 10 : false'
+            :lg='tocPosition === `right` ? 9 : false'
+            style='margin-top: auto; margin-bottom: auto;'
+            :class='$vuetify.rtl ? `pr-4` : `pl-4`'
+            )
             .page-header-headings
-              h1.page-header-title {{title}}
-              .page-header-description.wiki-muted.mt-2(v-if='description') {{description}}
+              .text-h4.page-header-title {{title}}
+              .body-2.wiki-muted.mt-1 {{description}}
               .page-header-tags.mt-2(v-if='tags.length > 0')
                 v-chip.mr-1(
                   label
                   small
+                  outlined
+                  color='primary'
                   v-for='(tag, idx) in tags'
                   :href='`/t/` + tag.tag'
                   :key='`tag-` + tag.tag'
@@ -56,6 +65,8 @@
                 v-chip(
                   label
                   small
+                  outlined
+                  color='primary'
                   v-if='tags.length > 1'
                   :href='`/t/` + tags.map(t => t.tag).join(`/`)'
                   :aria-label='$t(`common:page.tagsMatching`)'
@@ -82,49 +93,55 @@
                 )
                 v-icon.mr-2(small) {{ editShortcutsObj.editMenuExternalIcon }}
                 span.text-none {{$t(`common:page.editExternal`, { name: editShortcutsObj.editMenuExternalName })}}
-      v-container.wiki-document-layout(fluid)
-        v-layout.page-layout(row)
+      v-container.pl-5.pt-4(fluid, grid-list-xl)
+        v-layout(row)
           v-flex.page-col-sd(
             v-if='tocPosition !== `off` && $vuetify.breakpoint.lgAndUp'
+            :order-xs1='tocPosition !== `right`'
+            :order-xs2='tocPosition === `right`'
+            lg3
+            xl2
             )
             v-card.page-toc-card.mb-5(v-if='tocDecoded.length')
-              .page-sidebar-heading {{$t('common:page.toc')}}
-              v-list(dense, nav)
+              .overline.pa-5.pb-0.primary--text {{$t('common:page.toc')}}
+              v-list.pb-3(dense, nav)
                 template(v-for='(tocItem, tocIdx) in tocDecoded')
                   v-list-item.page-toc-item(
                     @click='$vuetify.goTo(tocItem.anchor, scrollOpts)'
                     :class='activeAnchor === tocItem.anchor ? `is-active` : ``'
                     )
-                    v-list-item-title {{tocItem.title}}
+                    v-list-item-title.px-3 {{tocItem.title}}
                   template(v-for='tocSubItem in tocItem.children')
                     v-list-item.page-toc-item.is-sub(
                       @click='$vuetify.goTo(tocSubItem.anchor, scrollOpts)'
                       :class='activeAnchor === tocSubItem.anchor ? `is-active` : ``'
                       )
-                      v-list-item-title {{tocSubItem.title}}
+                      v-list-item-title.px-3.pl-6.caption {{tocSubItem.title}}
 
             v-card.page-comments-card.mb-5(v-if='commentsEnabled && commentsPerms.read')
-              div
-                .page-sidebar-heading.d-flex.align-center
+              .pa-5
+                .overline.pb-2.blue-grey--text.d-flex.align-center(:class='$vuetify.theme.dark ? `text--lighten-3` : `text--darken-2`')
                   span {{$t('common:comments.sdTitle')}}
                 .d-flex
                   v-btn.text-none(
                     @click='goToComments()'
-                    text
+                    :color='$vuetify.theme.dark ? `blue-grey` : `blue-grey darken-2`'
+                    outlined
                     style='flex: 1 1 100%;'
                     small
                     )
-                    span {{$t('common:comments.viewDiscussion')}}
+                    span.blue-grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') {{$t('common:comments.viewDiscussion')}}
                   v-tooltip(right, v-if='commentsPerms.write')
                     template(v-slot:activator='{ on }')
                       v-btn.ml-2(
                         @click='goToComments(true)'
                         v-on='on'
-                        text
+                        outlined
                         small
+                        :color='$vuetify.theme.dark ? `blue-grey` : `blue-grey darken-2`'
                         :aria-label='$t(`common:comments.newComment`)'
                         )
-                        v-icon(dense) mdi-comment-plus
+                        v-icon(:color='$vuetify.theme.dark ? `blue-grey lighten-1` : `blue-grey darken-2`', dense) mdi-comment-plus
                     span {{$t('common:comments.newComment')}}
 
             v-card.page-shortcuts-card(flat)
@@ -154,7 +171,13 @@
                   span {{$t('common:page.exportPdf', { defaultValue: 'Export as PDF' })}}
                 v-spacer
 
-          v-flex.page-col-content
+          v-flex.page-col-content(
+            xs12
+            :lg9='tocPosition !== `off`'
+            :xl10='tocPosition !== `off`'
+            :order-xs1='tocPosition === `right`'
+            :order-xs2='tocPosition !== `right`'
+            )
             v-tooltip(:right='$vuetify.rtl', :left='!$vuetify.rtl', v-if='hasAnyPagePermissions && editShortcutsObj.editFab')
               template(v-slot:activator='{ on: onEditActivator }')
                 v-speed-dial(
@@ -195,10 +218,10 @@
               span {{$t('common:page.editPage')}}
             v-alert.mb-5(v-if='!isPublished', color='red', outlined, icon='mdi-minus-circle', dense)
               .caption {{$t('common:page.unpublishedWarning')}}
-            v-expansion-panels.page-mobile-toc.mb-6(v-if='tocDecoded.length && tocPosition !== `off` && $vuetify.breakpoint.mdAndDown && !printView', flat)
+            v-expansion-panels.mb-4(v-if='tocDecoded.length && tocPosition !== `off` && $vuetify.breakpoint.mdAndDown && !printView', flat)
               v-expansion-panel
                 v-expansion-panel-header
-                  .page-sidebar-heading {{$t('common:page.toc')}}
+                  .overline(:class='$vuetify.theme.dark ? `accent--text` : `primary--text`') {{$t('common:page.toc')}}
                 v-expansion-panel-content
                   v-list(dense, nav)
                     template(v-for='(tocItem, tocIdx) in tocDecoded')
@@ -206,16 +229,16 @@
                         v-list-item-title {{tocItem.title}}
                       template(v-for='tocSubItem in tocItem.children')
                         v-list-item(@click='$vuetify.goTo(tocSubItem.anchor, scrollOpts)')
-                          v-list-item-title.pl-4.caption.wiki-muted {{tocSubItem.title}}
+                          v-list-item-title.pl-4.caption.grey--text {{tocSubItem.title}}
             .contents(ref='container')
               slot(name='contents')
-            .page-author-footer.d-flex.align-center(v-if='!printView')
-              v-avatar.page-author-avatar.mr-3(size='36')
-                span.subtitle-2 {{ authorInitials }}
+            .page-author-footer.mt-8.d-flex.align-center(v-if='!printView')
+              v-avatar.mr-3(color='primary', size='36')
+                span.white--text.subtitle-2 {{ authorInitials }}
               div
-                .caption.wiki-muted {{$t('common:page.lastEditedBy')}}
-                .body-2 {{ authorName }} · {{ updatedAt | date('calendar') }}
-                .caption.wiki-muted(v-if='createdLabel') {{ createdLabel }}
+                .caption.grey--text {{$t('common:page.lastEditedBy')}}
+                .body-2(:class='$vuetify.theme.dark ? `grey--text text--lighten-1` : `grey--text text--darken-3`') {{ authorName }} · {{ updatedAt | date('calendar') }}
+                .caption.grey--text(v-if='createdLabel') {{ createdLabel }}
               v-spacer
               v-btn(
                 text
@@ -263,6 +286,7 @@ import PageBacklinks from './page-backlinks.vue'
 import PageFollow from './page-follow.vue'
 import pageActionsMixin from '@/helpers/page-actions'
 import { decodePermissions, initials } from '@/helpers'
+import { highlightCode } from '@/helpers/prism'
 import Prism from 'prismjs'
 import mermaid from 'mermaid'
 import { get, sync } from 'vuex-pathify'
@@ -500,7 +524,7 @@ export default {
     }, 500))
 
     // -> Highlight Code Blocks
-    Prism.highlightAllUnder(this.$refs.container)
+    highlightCode(this.$refs.container)
 
     // -> Render Mermaid diagrams
     mermaid.initialize({
@@ -598,261 +622,75 @@ export default {
 
 <style lang="scss">
 
-// The document and its title share one grid; navigation stays outside the reading column.
+// Page workspace: header band on the surface colour, contents column and
+// article on the background, all colours from the theme tokens (_workspace.scss).
 .v-application.wiki-page.theme--light, .v-application.wiki-page.theme--dark {
-  .v-main, .v-main__wrap {
+  .wiki-page-header {
     background-color: var(--wiki-surface);
-  }
 
-  .wiki-page-header, .wiki-document-layout {
-    width: 100%;
-    max-width: 1236px;
-    margin-inline: auto;
-    padding-inline: 32px !important;
-    background-color: var(--wiki-surface);
-  }
-
-  .wiki-document-layout {
-    padding-top: 0;
-    padding-bottom: 56px;
-  }
-
-  .page-layout, .page-header-section {
-    display: grid;
-    grid-template-columns: minmax(0, 920px);
-    justify-content: center;
-    margin: 0;
-  }
-
-  .page-header-section {
-    padding-block: 32px 28px;
-  }
-
-  .page-col-content {
-    min-width: 0;
-    width: 100%;
-    padding: 0;
+    .page-header-section {
+      padding-top: 24px !important;
+      padding-bottom: 24px !important;
+    }
   }
 
   .page-header-title {
-    margin: 0;
     color: var(--wiki-text);
-    font-size: 2rem;
-    line-height: 1.25;
-    font-weight: 600;
-    letter-spacing: -.5px;
+    font-weight: 500;
+    letter-spacing: -.5px !important;
     overflow-wrap: break-word;
   }
 
-  .page-header-description {
-    font-size: 1rem;
-    line-height: 1.6;
-  }
-
-  .page-header-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-
-    .v-chip {
-      background-color: var(--wiki-surface-alt);
-      color: var(--wiki-muted);
-      border: 0;
-      border-radius: 3px;
-      height: 24px;
-      font-size: 12px;
-    }
-  }
-
-  .page-edit-shortcuts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 16px;
-
-    .v-btn {
-      background-color: var(--wiki-surface-alt);
-      color: var(--wiki-text);
-      border-radius: 3px;
-    }
-  }
-
-  .page-col-sd {
-    align-self: start;
-    position: sticky;
-    top: 88px;
-    max-height: calc(100vh - 112px);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--wiki-border) transparent;
+  .page-header-tags .v-chip {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .page-toc-card.v-card, .page-comments-card.v-card, .page-shortcuts-card.v-card {
-    background-color: transparent;
     border: 0;
-    box-shadow: none;
+    box-shadow: none !important;
     border-radius: 0;
+    background-color: transparent;
+    overflow: hidden;
 
     .v-list, .v-toolbar {
       background-color: transparent;
     }
   }
 
-  .page-sidebar-heading {
-    margin-bottom: 12px;
-    color: var(--wiki-muted);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.4;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-  }
-
-  .page-toc-card .v-list {
-    padding: 0;
-  }
-
   .page-toc-item {
-    min-height: 34px;
-    margin-bottom: 0 !important;
-    padding: 7px 12px;
-    border-inline-start: 2px solid var(--wiki-border);
+    border-left: 2px solid transparent;
     border-radius: 0 !important;
 
-    .v-list-item__title {
+    &.is-sub .v-list-item__title {
       color: var(--wiki-muted);
-      white-space: normal;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    &.is-sub {
-      padding-inline-start: 24px;
     }
 
     &.is-active {
-      border-inline-start-color: var(--wiki-link);
+      background-color: var(--wiki-selected);
+      border-left-color: var(--wiki-link);
 
       .v-list-item__title {
-        color: var(--wiki-text);
-        font-weight: 600;
+        color: var(--wiki-link);
       }
     }
   }
 
-  .page-comments-card {
-    padding-top: 8px;
-
-    .v-btn {
-      color: var(--wiki-muted);
-      padding-inline: 0;
-      justify-content: flex-start;
-    }
+  // Five actions (bookmark, watch, share, print, PDF) must fit the narrowest contents column
+  .page-shortcuts-card .v-btn--icon {
+    width: 40px;
+    height: 40px;
   }
 
-  .page-shortcuts-card {
-    border-top: 1px solid var(--wiki-border) !important;
-
-    .v-toolbar__content {
-      padding-inline: 0;
-    }
-
-    // Five actions must fit the 220px contents column, including watch/bookmark.
-    .v-btn--icon {
-      width: 40px;
-      height: 40px;
-    }
-  }
-
-  .page-mobile-toc {
-    border-block: 1px solid var(--wiki-border);
-    border-radius: 0;
-
-    .v-expansion-panel {
-      background-color: transparent;
-    }
-
-    .v-expansion-panel-header {
-      padding: 16px 0;
-      min-height: 48px;
-    }
-
-    .page-sidebar-heading {
-      margin-bottom: 0;
-    }
+  // Wide tables and code blocks scroll inside the article instead of widening it
+  .page-col-content {
+    min-width: 0;
   }
 
   .page-author-footer {
     border-top: 1px solid var(--wiki-border);
-    margin-top: 40px;
-    padding-top: 20px;
-    gap: 4px;
-
-    .page-author-avatar {
-      background-color: var(--wiki-surface-alt);
-      color: var(--wiki-muted);
-    }
-  }
-
-  .page-backlinks .overline.grey--text {
-    color: var(--wiki-muted) !important;
-  }
-
-  .comments-container {
-    margin-top: 40px;
-  }
-
-  @media screen and (min-width: 1264px) {
-    &.toc-left, &.toc-right {
-      .page-layout, .page-header-section {
-        column-gap: 32px;
-      }
-    }
-
-    &.toc-left {
-      .page-layout, .page-header-section {
-        grid-template-columns: 220px minmax(0, 920px);
-      }
-
-      .page-col-content {
-        grid-column: 2;
-        grid-row: 1;
-      }
-    }
-
-    &.toc-right {
-      .page-layout, .page-header-section {
-        grid-template-columns: minmax(0, 920px) 220px;
-      }
-
-      .page-col-sd {
-        grid-column: 2;
-        grid-row: 1;
-      }
-
-      .page-col-content {
-        grid-column: 1;
-        grid-row: 1;
-      }
-    }
-  }
-
-  @media screen and (max-width: 600px) {
-    .wiki-page-header, .wiki-document-layout {
-      padding-inline: 20px !important;
-    }
-
-    .page-header-section {
-      padding-block: 24px;
-    }
-
-    .page-header-title {
-      font-size: 1.75rem;
-    }
-
-    .page-author-footer {
-      flex-wrap: wrap;
-    }
+    padding-top: 16px;
   }
 }
 
@@ -862,16 +700,58 @@ export default {
   }
 }
 
-@media print {
-  .v-application.wiki-page.theme--light, .v-application.wiki-page.theme--dark {
-    .wiki-page-header, .wiki-document-layout {
-      max-width: none;
-      padding: 0 !important;
-    }
+.page-col-sd {
+  align-self: flex-start;
+  position: sticky;
+  top: 64px;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  -ms-overflow-style: none;
+}
 
-    .page-header-section {
-      display: block;
-      padding-block: 0 20px;
+.page-col-sd::-webkit-scrollbar {
+  display: none;
+}
+
+.page-header-section {
+  position: relative;
+
+  > .is-page-header {
+    position: relative;
+  }
+
+  .page-header-headings {
+    min-height: 52px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .page-edit-shortcuts {
+    position: absolute;
+    bottom: -33px;
+    right: 10px;
+
+    .v-btn {
+      border-right: 1px solid var(--wiki-border) !important;
+      border-bottom: 1px solid var(--wiki-border) !important;
+      border-radius: 0;
+      color: var(--wiki-muted);
+      background-color: var(--wiki-surface) !important;
+
+      .v-icon {
+        color: var(--wiki-link);
+      }
+
+      &:first-child {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+      }
+
+      &:last-child {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
     }
   }
 }

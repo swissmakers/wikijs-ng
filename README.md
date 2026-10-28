@@ -41,7 +41,7 @@ See the [CHANGELOG](CHANGELOG.md) for the complete list of changes since the for
 
 ## A quick look
 
-The screenshots are generated from a demo instance with `dev/screenshots.sh` (see [`dev/BUILD.md`](dev/BUILD.md)). The suite checks settings persistence and captures both dark and light themes.
+The screenshots are generated with `dev/screenshots.sh` (see [`dev/BUILD.md`](dev/BUILD.md)) from a seeded demo workspace: a fictional team with five people, about fifteen pages and two weeks of history. The suite checks settings persistence, contrast and phone layouts, and captures both dark and light themes.
 
 Light theme previews: [article](docs/screenshots/page-view-light.png), [formatting](docs/screenshots/article-formatting-light.png), [folders](docs/screenshots/folder-view-light.png), [search](docs/screenshots/search-light.png), [bookmarks](docs/screenshots/bookmarks-light.png), [recent changes](docs/screenshots/recent-changes-light.png), [comments](docs/screenshots/comments-light.png), [permissions](docs/screenshots/access-inspector-light.png), and [assets](docs/screenshots/admin-assets-light.png).
 

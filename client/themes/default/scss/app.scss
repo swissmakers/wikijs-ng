@@ -26,11 +26,6 @@
     margin-top: 0;
   }
 
-  // Keep prose readable while tables and code can use the available document width.
-  > div > p, > div > ul, > div > ol {
-    max-width: 84ch;
-  }
-
   // ---------------------------------
   // LINKS
   // ---------------------------------

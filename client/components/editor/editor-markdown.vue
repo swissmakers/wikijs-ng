@@ -217,6 +217,7 @@ import { plantumlPreview, krokiPreview } from './markdown/diagrams'
 
 // Prism (Syntax Highlighting)
 import Prism from 'prismjs'
+import { highlightCode } from '@/helpers/prism'
 
 // Mermaid
 import mermaid from 'mermaid'
@@ -414,7 +415,7 @@ export default {
       if (newValue && !oldValue) {
         this.$nextTick(() => {
           this.renderMermaidDiagrams()
-          Prism.highlightAllUnder(this.$refs.editorPreview)
+          highlightCode(this.$refs.editorPreview)
           Array.from(this.$refs.editorPreview.querySelectorAll('pre.line-numbers')).forEach(pre => pre.classList.add('prismjs'))
         })
       }
@@ -467,7 +468,7 @@ export default {
       this.$nextTick(() => {
         tabsetHelper.format()
         this.renderMermaidDiagrams()
-        Prism.highlightAllUnder(this.$refs.editorPreview)
+        highlightCode(this.$refs.editorPreview)
         Array.from(this.$refs.editorPreview.querySelectorAll('pre.line-numbers')).forEach(pre => pre.classList.add('prismjs'))
         this.scrollSync(this.cm)
       })

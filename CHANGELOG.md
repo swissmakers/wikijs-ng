@@ -14,9 +14,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Git sync no longer re-imports the wiki's own commits.** The processed-changes window now tracks the remote branch instead of the local HEAD, so pages edited in the wiki are not written back to the DB on the next sync as an edit by the administrator (extra history version, changed author). Changes fetched by a push retry are imported in the same run. In addition, storage imports skip pages that are identical to the database.
 - **Links to pages created, deleted or moved later now update their state.** With language namespacing off (the default), links are stored as `/path`, but the link reconnection only looked for `/locale/path` — links to a page created later stayed red until the linking page was saved again, links to deleted pages stayed blue, and moves never rewrote links (they also looked up the pages linking to the *new* path).
 - **Partial `pages.update` API calls keep the fields they leave out.** An update with only some fields used to fail on missing tags or content, and silently unpublished the page when `isPublished` was omitted. Restoring a page version no longer removes the page's tags (versions do not record tags).
+- Creating a page without permission reported *"You are not authorized to delete this page"*; it now reports the matching create error.
+- **Code blocks with a language Prism does not know no longer cause 404s.** The highlighter requested `/_assets/js/prism/prism-<name>.js` for every unknown fence name (e.g. `apache`, `conf`, `rsc`, and the `plaincommand` / `plainpowershell` / `logs` styles), which failed with a 404 and a MIME-type error in the console. Common alternative names are mapped (`apache` → `apacheconf`, `ps1` → `powershell`, `console` → `shell-session`, …); any other unknown name is shown as plain text without a request (page view and editor preview).
 
 ### Changed
 
+- **Page layout: full width with the contents column again.** The centred reading column (max. 1236 px) left large empty bands on wide screens. Pages use the full width next to the navigation again: title band, contents card with the active section highlighted, and the article on the right — on the neutral light/dark palette. Paragraphs are no longer capped at 84 characters.
 - README screenshots refreshed and extended (recent changes, comment moderation, permission inspector, bookmarks); they are now generated reproducibly with `dev/screenshots.sh` from a seeded throwaway instance.
 
 ## [2.8.0] - 2026-10-03
