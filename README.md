@@ -41,9 +41,9 @@ See the [CHANGELOG](CHANGELOG.md) for the complete list of changes since the for
 
 ## A quick look
 
-The screenshots are generated with `dev/screenshots.sh` (see [`dev/BUILD.md`](dev/BUILD.md)) from a seeded demo workspace: a fictional team with five people, about fifteen pages and two weeks of history. The suite checks settings persistence, contrast and phone layouts, and captures both dark and light themes.
+The screenshots are generated with `dev/screenshots.sh` (see [`dev/BUILD.md`](dev/BUILD.md)) from a seeded demo workspace: a fictional platform team with five people, about twenty pages on Linux engineering, Go programming and system hardening, and two weeks of history. The suite checks settings persistence, contrast and phone layouts, and captures both dark and light themes.
 
-Light theme previews: [article](docs/screenshots/page-view-light.png), [formatting](docs/screenshots/article-formatting-light.png), [folders](docs/screenshots/folder-view-light.png), [search](docs/screenshots/search-light.png), [bookmarks](docs/screenshots/bookmarks-light.png), [recent changes](docs/screenshots/recent-changes-light.png), [comments](docs/screenshots/comments-light.png), [permissions](docs/screenshots/access-inspector-light.png), and [assets](docs/screenshots/admin-assets-light.png).
+Light theme previews: [article](docs/screenshots/page-view-light.png), [formatting](docs/screenshots/article-formatting-light.png), [folders](docs/screenshots/folder-view-light.png), [search](docs/screenshots/search-light.png), [bookmarks](docs/screenshots/bookmarks-light.png), [recent changes](docs/screenshots/recent-changes-light.png), [history](docs/screenshots/history-light.png), [comments](docs/screenshots/comments-light.png), [permissions](docs/screenshots/access-inspector-light.png), and [assets](docs/screenshots/admin-assets-light.png).
 
 **Refreshed page design** -> tags in the page header, table of contents with active-section highlighting, bookmark and watch buttons next to the page actions, backlinks and an author footer under the content.
 
@@ -60,6 +60,10 @@ Light theme previews: [article](docs/screenshots/page-view-light.png), [formatti
 **Recent changes** -> every change grouped by day, with folder and language filters and an RSS feed. Changes imported by a storage sync are marked as such.
 
 ![Recent changes](docs/screenshots/recent-changes.png)
+
+**Page history with rendered comparison** -> pick any version to compare it with the current page as a source diff or as two rendered pages side by side that scroll together. Restore it with one click, or open it in the editor first.
+
+![Page history](docs/screenshots/history.png)
 
 **Comment threads and moderation** -> replies are grouped under their comment, and new comments can be held until a moderator approves them, inline or in the moderation queue.
 

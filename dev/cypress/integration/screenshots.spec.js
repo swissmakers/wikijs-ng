@@ -71,7 +71,7 @@ describe('README screenshots', () => {
     const capture = name => shot(theme === 'dark' ? name : name + '-light')
 
     it('page view (' + theme + ')', () => {
-      visit('/docs/installation/docker', '.contents', theme)
+      visit('/linux/systemd', '.contents', theme)
       cy.get('.wiki-sidebar').invoke('css', 'background-color').then(sidebarBackground => {
         cy.get('.wiki-breadcrumbs').should('have.css', 'background-color', sidebarBackground)
         cy.get('.v-footer').should('have.css', 'background-color', sidebarBackground)
@@ -83,7 +83,7 @@ describe('README screenshots', () => {
     })
 
     it('article formatting (' + theme + ')', () => {
-      visit('/docs/installation/docker', '.contents', theme)
+      visit('/linux/systemd', '.contents', theme)
       cy.get('.contents table').first().scrollIntoView({ offset: { top: -100, left: 0 } })
       cy.get('.contents blockquote.is-warning').should('exist')
       cy.get('.contents blockquote.is-danger').should('exist')
@@ -94,7 +94,7 @@ describe('README screenshots', () => {
     })
 
     it('folder view (' + theme + ')', () => {
-      visit('/docs', '.folder-view-card', theme)
+      visit('/linux', '.folder-view-card', theme)
       readableText('.folder-view-card .subtitle-2')
       noHorizontalOverflow()
       cy.wait(750)
@@ -102,11 +102,11 @@ describe('README screenshots', () => {
     })
 
     it('search overlay (' + theme + ')', () => {
-      visit('/docs/installation/docker', '.contents', theme)
-      cy.get('header input[type=text]').first().type('installation')
+      visit('/linux/systemd', '.contents', theme)
+      cy.get('header input[type=text]').first().type('hardening')
       cy.get('.search-results-items', { timeout: 15000 }).should('be.visible')
-      cy.contains('.search-results-filters span', 'Only under /docs/installation/docker')
-        .should('have.text', 'Only under /docs/installation/docker')
+      cy.contains('.search-results-filters span', 'Only under /linux/systemd')
+        .should('have.text', 'Only under /linux/systemd')
       readableText('.search-results-filters .v-chip span')
       readableText('.search-results-items .v-list-item__title')
       cy.wait(750)
@@ -123,10 +123,23 @@ describe('README screenshots', () => {
     it('comments (' + theme + ')', () => {
       visit('/home', '.contents', theme)
       cy.get('#discussion', { timeout: 20000 }).scrollIntoView()
-      cy.contains('#discussion', 'NAS backup', { timeout: 15000 })
+      cy.contains('#discussion', 'CIS baseline', { timeout: 15000 })
       cy.get('.comments-post').first().scrollIntoView({ offset: { top: -160, left: 0 } })
       cy.wait(1000)
       capture('comments')
+    })
+
+    it('page history (' + theme + ')', () => {
+      visit('/h/golang/errors', '.history-trail', theme)
+      cy.get('.history-item', { timeout: 20000 }).should('have.length.at.least', 4)
+      cy.get('.history-item').last().click()
+      cy.contains('.history-detail button', 'Rendered').click()
+      cy.get('.history-rendered-scroll h2', { timeout: 20000 }).should('have.length.at.least', 4)
+      readableText('.history-item-meta')
+      noHorizontalOverflow()
+      cy.scrollTo('top')
+      cy.wait(1000)
+      capture('history')
     })
 
     it('access inspector (' + theme + ')', () => {
@@ -169,15 +182,15 @@ describe('README screenshots', () => {
     it('fits articles, folders and admin on a phone (' + theme + ')', () => {
       cy.viewport(390, 844)
       for (const [path, readySelector] of [
-        ['/docs/installation/docker', '.contents'],
-        ['/docs', '.folder-view-card']
+        ['/linux/systemd', '.contents'],
+        ['/linux', '.folder-view-card']
       ]) {
         visit(path, readySelector, theme)
         cy.get('.wiki-sidebar').should('have.class', 'v-navigation-drawer--close')
         cy.get('.v-main').should('have.css', 'padding-left', '0px')
         noHorizontalOverflow()
         cy.get('.v-btn--fab .mdi-menu').closest('button').click()
-        cy.get('.wiki-sidebar').should('have.class', 'v-navigation-drawer--open').and('contain.text', 'All documentation')
+        cy.get('.wiki-sidebar').should('have.class', 'v-navigation-drawer--open').and('contain.text', 'Linux engineering')
         noHorizontalOverflow()
       }
 
@@ -198,11 +211,11 @@ describe('README screenshots', () => {
     cy.intercept('GET', '/_assets/js/prism/**', req => {
       req.continue(res => { prismRequests.push(`${res.statusCode} ${req.url}`) })
     })
-    for (const path of ['/docs/installation/linux', '/docs/installation/docker']) {
+    for (const path of ['/linux/apache', '/linux/systemd']) {
       cy.visit(path)
       cy.get('.contents', { timeout: 20000 }).should('be.visible')
     }
-    cy.visit('/docs/installation/linux')
+    cy.visit('/linux/apache')
     cy.get('.contents code.language-apacheconf .token', { timeout: 15000 }).should('exist')
     cy.wrap(prismRequests).should(requests => {
       expect(requests.filter(r => !r.startsWith('200')), 'failed Prism requests').to.deep.equal([])
