@@ -6,7 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Roll back the changes of a user since a date** (Admin → Utilities → Revert Changes), e.g. after an automated review or a faulty import. Pick the user and the start date (optionally a path prefix); a preview lists every affected page with the version it would go back to. Pages that other users edited afterwards are listed but left alone unless explicitly included, and pages the user created in that period are never touched. Each revert is a regular restore, so the overwritten version stays in the history.
+- **Rendered side-by-side view in the page history.** Next to the source diff, two versions can be compared as rendered pages. Both panes scroll together, aligned on the headings both versions share; *Scroll together* can be switched off.
+- **Edit from a past version.** *Edit first* in the history (or `/e/<path>?version=<id>`) opens the editor with that version's content and title, so it can be adjusted before it is saved as the new current version.
+
 ### Fixed
+
+- **History page layout.** Long move entries overflowed the fixed-height rows and dates wrapped over the text. The version list was rebuilt (flexible rows, readable paths, mobile layout), clicking a version now compares it with the current page, *Restore* and *Edit first* sit directly above the diff, the diff follows dark mode, and loading older versions no longer resets the selection.
+- **Restoring a version from before a move moved the page back to its old path.** A restore now only restores content, title, description and publishing state; the page keeps its location and tags.
 
 - **`spawn git EAGAIN` / `unable to fork` after some days of uptime.** git ≥ 2.47 runs auto-maintenance detached after every fetch/commit; the daemonized process is reparented to PID 1, which was `node` — and node never reaps foreign children. With git sync every 5 minutes the zombies piled up until the container's pids limit (2048) was exhausted and page saves and syncs failed. The image now runs `tini` as PID 1, and the git storage module sets `gc.autoDetach` / `maintenance.autoDetach` to `false` so git never leaves orphans behind, whatever the runtime. The smoke test checks that PID 1 is the init.
 - **A failing storage target no longer fails the user's action.** Page and asset events are dispatched after the database change is committed; an error used to reach the editor although the page was saved, and skipped the activity log, link reconnection or a pending move. Each target is now tried independently, failures are logged and shown as the target's state in Admin → Storage (cleared by the next successful sync).

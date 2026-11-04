@@ -475,6 +475,8 @@ admin:
     contentTitle: Content
     exportSubtitle: Save content to tarball for backup / migration
     exportTitle: Export to Disk
+    revertSubtitle: Roll back all changes of a user since a date
+    revertTitle: Revert Changes
     subtitle: Maintenance and miscellaneous tools
     title: Utilities
     tools: Tools
@@ -955,6 +957,9 @@ editor:
     found: An unsaved draft of this page was found.
     restore: Restore
     discard: Discard
+  fromVersion:
+    loaded: Opened the version of {{date}} by {{author}}.
+    hint: Saving restores it as the new current version. Nothing is changed until you save.
 history:
   restore:
     confirmButton: Restore

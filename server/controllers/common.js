@@ -255,6 +255,28 @@ router.get(['/e', '/e/*'], async (req, res, next) => {
     page.isPublished = (page.isPublished === true || page.isPublished === 1) ? 'true' : 'false'
     page.isTemplate = (page.isTemplate === true || page.isTemplate === 1) ? 'true' : 'false'
     page.content = Buffer.from(page.content).toString('base64')
+
+    // -> Start from a past version (saving it restores that version)
+    const versionId = _.toSafeInteger(req.query.version)
+    if (versionId > 0) {
+      if (!effectivePermissions.history.read) {
+        _.set(res.locals, 'pageMeta.title', 'Unauthorized')
+        return res.status(403).render('unauthorized', { action: 'sourceVersion' })
+      }
+      const pageVersion = await WIKI.models.pageHistory.getVersion({ pageId: page.id, versionId })
+      if (!pageVersion) {
+        _.set(res.locals, 'pageMeta.title', 'Page Not Found')
+        return res.status(404).render('notfound', { action: 'edit' })
+      }
+      page.fromVersion = Buffer.from(JSON.stringify({
+        versionId,
+        versionDate: pageVersion.versionDate,
+        authorName: pageVersion.authorName,
+        title: pageVersion.title,
+        description: pageVersion.description,
+        content: pageVersion.content
+      })).toString('base64')
+    }
   } else {
     // -> CREATE MODE
     if (!effectivePermissions.pages.write) {

@@ -475,6 +475,8 @@ admin:
     contentTitle: Contenu
     exportSubtitle: Sauvegarder le contenu dans un fichier tarball pour la sauvegarde / migration
     exportTitle: Exporter vers le disque
+    revertSubtitle: 'Annuler toutes les modifications d''un utilisateur depuis une date'
+    revertTitle: Annuler des modifications
     subtitle: Maintenance et outils divers
     title: Utilitaires
     tools: Outils
@@ -955,6 +957,9 @@ editor:
     found: Un brouillon non enregistré de cette page a été trouvé.
     restore: Restaurer
     discard: Ignorer
+  fromVersion:
+    loaded: Version du {{date}} par {{author}} ouverte.
+    hint: 'L''enregistrer la restaure comme nouvelle version actuelle. Rien n''est modifié avant l''enregistrement.'
 history:
   restore:
     confirmButton: Restaurer

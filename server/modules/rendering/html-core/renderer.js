@@ -129,7 +129,8 @@ module.exports = {
     // Detect internal link states
     // --------------------------------
 
-    const pastLinks = await this.page.$relatedQuery('links')
+    // -> A preview render (e.g. of a past version) must not touch the stored links of the page
+    const pastLinks = this.preview ? null : await this.page.$relatedQuery('links')
 
     if (internalRefs.length > 0) {
       // -> Find matching pages
@@ -163,10 +164,10 @@ module.exports = {
       })
 
       // -> Add missing links
-      const missingLinks = _.differenceWith(internalRefs, pastLinks, (nLink, pLink) => {
+      const missingLinks = _.differenceWith(internalRefs, pastLinks || [], (nLink, pLink) => {
         return nLink.localeCode === pLink.localeCode && nLink.path === pLink.path
       })
-      if (missingLinks.length > 0) {
+      if (!this.preview && missingLinks.length > 0) {
         if (WIKI.config.db.type === 'postgres') {
           await WIKI.models.pageLinks.query().insert(missingLinks.map(lnk => ({
             pageId: this.page.id,

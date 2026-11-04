@@ -25,6 +25,9 @@ module.exports = {
      */
     async history (obj, args, context, info) {
       const page = await WIKI.models.pages.query().select('path', 'localeCode').findById(args.id)
+      if (!page) {
+        throw new WIKI.Error.PageNotFound()
+      }
       if (WIKI.auth.checkAccess(context.req.user, ['read:history'], {
         path: page.path,
         locale: page.localeCode
@@ -43,11 +46,34 @@ module.exports = {
      */
     async version (obj, args, context, info) {
       const page = await WIKI.models.pages.query().select('path', 'localeCode').findById(args.pageId)
+      if (!page) {
+        throw new WIKI.Error.PageNotFound()
+      }
       if (WIKI.auth.checkAccess(context.req.user, ['read:history'], {
         path: page.path,
         locale: page.localeCode
       })) {
         return WIKI.models.pageHistory.getVersion({
+          pageId: args.pageId,
+          versionId: args.versionId
+        })
+      } else {
+        throw new WIKI.Error.PageHistoryForbidden()
+      }
+    },
+    /**
+     * RENDER PAGE VERSION
+     */
+    async renderVersion (obj, args, context, info) {
+      const page = await WIKI.models.pages.query().select('path', 'localeCode').findById(args.pageId)
+      if (!page) {
+        throw new WIKI.Error.PageNotFound()
+      }
+      if (WIKI.auth.checkAccess(context.req.user, ['read:history'], {
+        path: page.path,
+        locale: page.localeCode
+      })) {
+        return WIKI.models.pageHistory.renderVersion({
           pageId: args.pageId,
           versionId: args.versionId
         })
@@ -871,22 +897,37 @@ module.exports = {
           throw new WIKI.Error.PageRestoreForbidden()
         }
 
-        const targetVersion = await WIKI.models.pageHistory.getVersion({ pageId: args.pageId, versionId: args.versionId })
-        if (!targetVersion) {
-          throw new WIKI.Error.PageNotFound()
-        }
-
-        // -> Versions do not record tags: the page keeps its current ones
-        await WIKI.models.pages.updatePage({
-          ...targetVersion,
-          tags: undefined,
-          id: targetVersion.pageId,
-          user: context.req.user,
-          action: 'restored'
+        // -> Content only: the page keeps its current location and tags
+        await WIKI.models.pageHistory.restoreVersion({
+          pageId: args.pageId,
+          versionId: args.versionId,
+          user: context.req.user
         })
 
         return {
           responseResult: graphHelper.generateSuccess('Page version restored successfully.')
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
+    /**
+     * REVERT ALL CHANGES OF A USER SINCE A DATE
+     */
+    async revertChanges (obj, args, context) {
+      try {
+        const items = await WIKI.models.pageHistory.revertChanges({
+          authorId: args.authorId,
+          since: args.since,
+          pathPrefix: args.pathPrefix,
+          includeOthers: args.includeOthers === true,
+          pageIds: args.pageIds,
+          dryRun: args.dryRun !== false,
+          user: context.req.user
+        })
+        return {
+          responseResult: graphHelper.generateSuccess(args.dryRun !== false ? 'Revert preview generated.' : 'Changes reverted.'),
+          items
         }
       } catch (err) {
         return graphHelper.generateError(err)

@@ -26,6 +26,11 @@ type PageQuery {
     versionId: Int!
   ): PageVersion @auth(requires: ["manage:system", "read:history"])
 
+  renderVersion(
+    pageId: Int!
+    versionId: Int!
+  ): String @auth(requires: ["manage:system", "read:history"])
+
   search(
     query: String!
     path: String
@@ -209,6 +214,15 @@ type PageMutation {
     versionId: Int!
   ): DefaultResponse @auth(requires: ["write:pages", "manage:pages", "manage:system"])
 
+  revertChanges(
+    authorId: Int!
+    since: Date!
+    pathPrefix: String
+    includeOthers: Boolean
+    pageIds: [Int!]
+    dryRun: Boolean!
+  ): PageRevertResponse @auth(requires: ["manage:system"])
+
   purgeHistory (
     olderThan: String!
   ): DefaultResponse @auth(requires: ["manage:system"])
@@ -221,6 +235,24 @@ type PageMutation {
 type PageResponse {
   responseResult: ResponseStatus!
   page: Page
+}
+
+type PageRevertResponse {
+  responseResult: ResponseStatus!
+  items: [PageRevertItem!]
+}
+
+type PageRevertItem {
+  pageId: Int!
+  path: String!
+  locale: String!
+  title: String!
+  status: String!
+  changes: Int!
+  otherAuthors: [String!]!
+  baselineVersionId: Int
+  baselineDate: Date
+  message: String
 }
 
 type PageMigrationResponse {

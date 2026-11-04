@@ -58,6 +58,12 @@
         v-btn(text, color='green lighten-2', v-bind='attrs', @click='restoreDraft') {{$t('editor:draft.restore', { defaultValue: 'Restore' })}}
         v-btn(text, color='orange lighten-2', v-bind='attrs', @click='discardDraftAction') {{$t('editor:draft.discard', { defaultValue: 'Discard' })}}
 
+    v-snackbar(v-model='fromVersionBannerShown', :timeout='-1', bottom, color='blue darken-3')
+      .body-2 {{ fromVersionLabel }}
+      .caption {{$t('editor:fromVersion.hint')}}
+      template(v-slot:action='{ attrs }')
+        v-btn(text, v-bind='attrs', @click='fromVersionBannerShown = false') {{$t('common:actions.close')}}
+
     loader(v-model='dialogProgress', :title='$t(`editor:save.processing`)', :subtitle='$t(`editor:save.pleaseWait`)')
     notify
 </template>
@@ -155,6 +161,10 @@ export default {
       type: String,
       default: null
     },
+    fromVersion: {
+      type: String,
+      default: ''
+    },
     pageId: {
       type: Number,
       default: 0
@@ -180,6 +190,8 @@ export default {
       initContentParsed: '',
       draftFound: null,
       draftBannerShown: false,
+      fromVersionInfo: null,
+      fromVersionBannerShown: false,
       draftAutosaveHandle: null,
       lastDraftContent: '',
       savedState: {
@@ -201,6 +213,13 @@ export default {
     activeModal: sync('editor/activeModal'),
     mode: get('editor/mode'),
     welcomeMode () { return this.mode === 'create' && this.path === 'home' },
+    fromVersionLabel () {
+      if (!this.fromVersionInfo) { return '' }
+      return this.$t('editor:fromVersion.loaded', {
+        date: this.$options.filters.date(this.fromVersionInfo.versionDate, 'LLL'),
+        author: this.fromVersionInfo.authorName
+      })
+    },
     currentPageTitle: sync('page/title'),
     checkoutDateActive: sync('editor/checkoutDateActive'),
     currentStyling: get('page/scriptCss'),
@@ -264,6 +283,20 @@ export default {
 
     this.initContentParsed = this.initContent ? Buffer.from(this.initContent, 'base64').toString('utf8') : ''
     this.$store.set('editor/content', this.initContentParsed)
+
+    // -> Start from a past version: the live content stays the reference, so the editor is dirty
+    if (this.fromVersion) {
+      try {
+        this.fromVersionInfo = JSON.parse(Buffer.from(this.fromVersion, 'base64').toString('utf8'))
+        this.$store.set('editor/content', this.fromVersionInfo.content)
+        this.$store.set('page/title', this.fromVersionInfo.title)
+        this.$store.set('page/description', this.fromVersionInfo.description)
+        this.fromVersionBannerShown = true
+      } catch (err) {
+        console.warn('Could not load the page version:', err.message)
+      }
+    }
+
     if (this.mode === 'create' && !this.initEditor) {
       _.delay(() => {
         this.dialogEditorSelector = true
@@ -288,7 +321,9 @@ export default {
 
     // -> Check for an unsaved draft + start autosave
     this.lastDraftContent = this.initContentParsed
-    this.checkForDraft()
+    if (!this.fromVersionInfo) {
+      this.checkForDraft()
+    }
     this.draftAutosaveHandle = setInterval(() => {
       this.saveDraftSilent()
     }, 30000)
