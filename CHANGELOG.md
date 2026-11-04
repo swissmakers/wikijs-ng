@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- **"Page Contents" follows the reading position on long pages.** When the list was taller than the window, the highlighted chapter scrolled out of view and the reader had to scroll the list by hand; it now scrolls along (down and up) as soon as the active entry nears its edge. The active chapter is now taken from the heading positions on every scroll, so fast scrolling picks the right one and short final chapters are highlighted at the bottom of the page.
 - **History page layout.** Long move entries overflowed the fixed-height rows and dates wrapped over the text. The version list was rebuilt (flexible rows, readable paths, mobile layout), clicking a version now compares it with the current page, *Restore* and *Edit first* sit directly above the diff, the diff follows dark mode, and loading older versions no longer resets the selection.
 - **Restoring a version from before a move moved the page back to its old path.** A restore now only restores content, title, description and publishing state; the page keeps its location and tags.
 
