@@ -96,6 +96,7 @@
       v-container.pl-5.pt-4(fluid, grid-list-xl)
         v-layout(row)
           v-flex.page-col-sd(
+            ref='sideCol'
             v-if='tocPosition !== `off` && $vuetify.breakpoint.lgAndUp'
             :order-xs1='tocPosition !== `right`'
             :order-xs2='tocPosition === `right`'
@@ -399,7 +400,8 @@ export default {
       upBtnShown: false,
       pageEditFab: false,
       activeAnchor: '',
-      tocObserver: null,
+      tocHeadings: [],
+      tocScrollFrame: null,
       scrollOpts: {
         duration: 1500,
         offset: 0,
@@ -501,19 +503,12 @@ export default {
     }
 
     // -> Track active section for the TOC
-    if (this.tocDecoded.length && window.IntersectionObserver) {
-      this.tocObserver = new IntersectionObserver(entries => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            this.activeAnchor = `#${entry.target.id}`
-            break
-          }
-        }
-      }, { rootMargin: '0px 0px -75% 0px' })
+    if (this.tocDecoded.length) {
       this.$nextTick(() => {
-        this.$refs.container.querySelectorAll('h1[id], h2[id], h3[id]').forEach(el => {
-          this.tocObserver.observe(el)
-        })
+        this.tocHeadings = Array.from(this.$refs.container.querySelectorAll('h1[id], h2[id], h3[id]'))
+        window.addEventListener('scroll', this.onTocScroll, { passive: true })
+        window.addEventListener('resize', this.onTocScroll, { passive: true })
+        this.updateActiveAnchor()
       })
     }
 
@@ -560,11 +555,67 @@ export default {
     })
   },
   beforeDestroy () {
-    if (this.tocObserver) {
-      this.tocObserver.disconnect()
+    window.removeEventListener('scroll', this.onTocScroll)
+    window.removeEventListener('resize', this.onTocScroll)
+    if (this.tocScrollFrame) {
+      window.cancelAnimationFrame(this.tocScrollFrame)
     }
   },
   methods: {
+    onTocScroll () {
+      if (!this.tocScrollFrame) {
+        this.tocScrollFrame = window.requestAnimationFrame(() => {
+          this.tocScrollFrame = null
+          this.updateActiveAnchor()
+        })
+      }
+    },
+    /**
+     * The active section is the last heading above the top quarter of the window.
+     * At the bottom of the page, the last visible heading wins: short final sections never reach the top.
+     */
+    updateActiveAnchor () {
+      const threshold = window.innerHeight * 0.25
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2
+      let active = null
+      for (const el of this.tocHeadings) {
+        const top = el.getBoundingClientRect().top
+        if (top <= threshold || (atBottom && top < window.innerHeight)) {
+          active = el
+        } else if (!atBottom) {
+          break
+        }
+      }
+      const anchor = active ? `#${active.id}` : ''
+      if (anchor !== this.activeAnchor) {
+        this.activeAnchor = anchor
+        this.$nextTick(this.revealActiveTocItem)
+      }
+    },
+    /**
+     * Keep the active entry visible when the contents list is taller than the window:
+     * the sticky side column scrolls on its own, so follow the page once the entry nears its edge.
+     */
+    revealActiveTocItem () {
+      // -> v-flex is a functional component: the ref is the element itself
+      const col = this.$refs.sideCol && (this.$refs.sideCol.$el || this.$refs.sideCol)
+      const item = col && col.querySelector('.page-toc-item.is-active')
+      if (!item || col.scrollHeight <= col.clientHeight) {
+        return
+      }
+      const margin = Math.min(80, col.clientHeight / 4)
+      const itemTop = item.getBoundingClientRect().top - col.getBoundingClientRect().top + col.scrollTop
+      const itemBottom = itemTop + item.offsetHeight
+      let target = null
+      if (itemTop < col.scrollTop + margin) {
+        target = itemTop - margin
+      } else if (itemBottom > col.scrollTop + col.clientHeight - margin) {
+        target = itemBottom - col.clientHeight + margin
+      }
+      if (target !== null) {
+        col.scrollTo({ top: Math.max(0, target), behavior: 'smooth' })
+      }
+    },
     upBtnScroll () {
       const scrollOffset = window.pageYOffset || document.documentElement.scrollTop
       this.upBtnShown = scrollOffset > window.innerHeight * 0.33

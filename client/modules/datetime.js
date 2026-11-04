@@ -65,7 +65,7 @@ export default {
    * Format a date (ISO string, Date or timestamp)
    *
    * @param {*} value Date value
-   * @param {string} format calendar, from, L, ll, LL, lll, LLL or LLLL
+   * @param {string} format calendar, from, L, LT, ll, LL, lll, LLL or LLLL
    * @returns {string} Formatted date, '' for empty / invalid values
    */
   formatDate (value, format = 'LLL') {
@@ -80,6 +80,8 @@ export default {
         return calendar(dt)
       case 'L':
         return shortDate(dt)
+      case 'LT':
+        return dt.toLocaleString(TIME)
       case 'll':
         return dt.toLocaleString(DateTime.DATE_MED)
       case 'LL':

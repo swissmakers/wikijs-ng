@@ -475,6 +475,8 @@ admin:
     contentTitle: Inhalt
     exportSubtitle: Inhalte für Sicherung / Migration als tarball speichern
     exportTitle: Auf Festplatte exportieren
+    revertSubtitle: Alle Änderungen eines Benutzers seit einem Datum zurücknehmen
+    revertTitle: Änderungen zurücksetzen
     subtitle: Wartung und verschiedene Werkzeuge
     title: Dienstprogramme
     tools: Werkzeuge
@@ -955,6 +957,9 @@ editor:
     found: Ein ungespeicherter Entwurf dieser Seite wurde gefunden.
     restore: Wiederherstellen
     discard: Verwerfen
+  fromVersion:
+    loaded: Version vom {{date}} von {{author}} geöffnet.
+    hint: Beim Speichern wird sie zur neuen aktuellen Version. Bis dahin wird nichts geändert.
 history:
   restore:
     confirmButton: Wiederherstellen

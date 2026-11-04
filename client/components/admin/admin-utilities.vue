@@ -36,6 +36,7 @@ export default {
   components: {
     UtilityAuth: () => import(/* webpackChunkName: "admin" */ './admin-utilities-auth.vue'),
     UtilityContent: () => import(/* webpackChunkName: "admin" */ './admin-utilities-content.vue'),
+    UtilityRevert: () => import(/* webpackChunkName: "admin" */ './admin-utilities-revert.vue'),
     UtilityCache: () => import(/* webpackChunkName: "admin" */ './admin-utilities-cache.vue'),
     UtilityExport: () => import(/* webpackChunkName: "admin" */ './admin-utilities-export.vue')
   },
@@ -53,6 +54,12 @@ export default {
           key: 'UtilityContent',
           icon: 'mdi-content-duplicate',
           i18nKey: 'content',
+          isAvailable: true
+        },
+        {
+          key: 'UtilityRevert',
+          icon: 'mdi-history',
+          i18nKey: 'revert',
           isAvailable: true
         },
         {

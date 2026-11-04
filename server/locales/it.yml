@@ -475,6 +475,8 @@ admin:
     contentTitle: Contenuto
     exportSubtitle: Salva il contenuto su tarball per backup / migrazione
     exportTitle: Esporta su disco
+    revertSubtitle: Annulla tutte le modifiche di un utente da una data
+    revertTitle: Annulla modifiche
     subtitle: Strumenti vari e di manutenzione
     title: Strumenti
     tools: Strumenti
@@ -955,6 +957,9 @@ editor:
     found: È stata trovata una bozza non salvata di questa pagina.
     restore: Ripristina
     discard: Scarta
+  fromVersion:
+    loaded: Aperta la versione del {{date}} di {{author}}.
+    hint: Salvandola diventa la nuova versione attuale. Nulla cambia finché non salvi.
 history:
   restore:
     confirmButton: Ripristina
